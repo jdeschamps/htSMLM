@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry including="**/*.java" kind="src" output="target/classes" path="src">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry combineaccessrules="false" kind="src" path="/EMU"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/ij.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/MMCoreJ.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/MMJ_.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/activation-1.1.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/AppleJavaExtensions-1.4.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/args4j-2.0.29.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/badtrack-0.1.4.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/Big.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/bio-formats-tools-5.5.3.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/bridj-0.7.0.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/bsh-2.0b6.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/clearaudio-1.0.2.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/clearcl-0.5.2.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/clearcuda-0.9.4.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/cleargl-2.1.0.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/clearvolume-1.4.1.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/clojure-1.3.0.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/commons-collections-3.2.1.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/commons-io-2.5.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/commons-lang-2.6.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/commons-lang3-3.5.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/commons-math-2.2.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/commons-math3-3.4.1.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/core.cache-0.6.2.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/core.memoize-0.5.2.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/CoreMem-0.4.3.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/coremem-0.4.4.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/data.json-0.1.1.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/dx-1.7.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/eventbus-1.4.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/formats-api-5.5.3.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/formats-bsd-5.5.3.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/formats-common-5.1.1.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/formats-gpl-5.5.3.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/gentyref-1.1.0.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/gluegen-2.3.2.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/gluegen-rt-2.3.2-natives-linux-amd64.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/gluegen-rt-local-2.3.2.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/gluegen-rt-main-local-2.3.2.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/gluegen-rt-natives-macosx-universal-2.3.2.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/gluegen-rt-natives-windows-amd64-2.3.2.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/gluegen-rt-natives-windows-i586-2.3.2.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/gson-2.2.4.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/guava-17.0.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/hamcrest-core-1.3.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/iconloader-GIT.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/imagej-common-0.24.4.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/imglib2-4.2.1.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/imglib2-roi-0.4.6.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/jai_imageio-5.5.3.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/javacl-1.0.0-RC4.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/javacl-core-1.0.0-RC4.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/jcommon-1.0.23.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/jcuda-maven-7.5.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/jfreechart-1.0.19.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/jgoodies-common-1.7.0.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/jgoodies-forms-1.7.2.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/jhdf5-14.12.0.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/jocl-2.0.0.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/joda-time-2.2.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/jogl-all-local-2.3.2.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/jogl-all-main-local-2.3.2.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/jogl-all-natives-macosx-universal-2.3.2.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/jogl-all-natives-windows-amd64-2.3.2.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/jogl-all-natives-windows-i586-2.3.2.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/junit-4.12.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/JWlz-1.4.0.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/jxrlib-all-0.2.1.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/kryo-2.24.0.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/log4j-api-2.1.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/log4j-core-2.1.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/logback-classic-1.1.1.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/logback-core-1.1.1.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/mail-1.5.0-b01.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/mapdb-1.0.3.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/metadata-extractor-2.6.2.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/metakit-5.3.0.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/miglayout-3.7.4.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/miglayout-core-4.2.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/miglayout-swing-4.2.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/minlog-1.2.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/MMAcqEngine.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/native-lib-loader-2.1.4.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/nativelibs4java-utils-1.6.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/netcdf-4.3.22.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/objenesis-2.1.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/ome-common-5.3.1.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/ome-mdbtools-5.3.0.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/ome-poi-5.3.1.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/ome-xml-5.1.1.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/ome-xml-5.5.4.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/opencl4java-1.0.0-RC4.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/parsington-1.0.1.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/perf4j-0.9.13.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/Projector.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/protobuf-java-2.5.0.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/rsyntaxtextarea-2.5.2.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/scifio-0.33.0.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/scifio-jai-imageio-1.1.1.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/scijava-common-2.66.0.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/serializer-2.7.2.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/slf4j-api-1.7.6.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/specification-5.5.4.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/swingx-0.9.5.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/trove4j-3.0.3.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/turbojpeg-5.5.3.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/udunits-4.3.18.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/vecmath-1.5.2.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/xalan-2.7.2.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/xercesImpl-2.8.1.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/xml-apis-1.3.04.jar"/>
+	<classpathentry kind="lib" path="D:/Micromanager/Micro-Manager-2.0gamma/plugins/Micro-Manager/xmpcore-5.1.2.jar"/>
+	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="target/classes"/>
+</classpath>
