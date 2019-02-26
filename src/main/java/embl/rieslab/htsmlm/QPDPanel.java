@@ -1,4 +1,4 @@
-package main.java.embl.rieslab.emu.uiexamples.focuslock;
+package main.java.embl.rieslab.htsmlm;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -43,20 +43,17 @@ public class QPDPanel extends ConfigurablePanel {
 	private Chart graph_;
 	private JPanel graphpanel_;
 	
+	private static final long serialVersionUID = 7082332561417231746L;
+
 	public QPDPanel(String label) {
 		super(label);
 	}
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 7082332561417231746L;
 
 	@Override
 	public void setupPanel() {
 		this.setLayout(new GridBagLayout());
 		
-		newGraph();
+		graph_ = newGraph();
 		chartupdater_ = new ChartUpdater(graph_,getUIProperty(QPD_X),getUIProperty(QPD_Y),idle_);
 		graphpanel_ = new JPanel();
 		graphpanel_.add(graph_.getChart());
@@ -116,8 +113,8 @@ public class QPDPanel extends ConfigurablePanel {
 		}
 	}
 
-	private void newGraph(){
-		graph_ = new Chart("QPD","X","Y",1,270,270, xymax_);
+	private Chart newGraph(){
+		return new Chart("QPD","X","Y",1,270,270, xymax_);
 	}
 
 	@Override
@@ -146,25 +143,25 @@ public class QPDPanel extends ConfigurablePanel {
 	@Override
 	public void parameterhasChanged(String label) {
 		if(label.equals(PARAM_XYMAX)){
-			int val = getIntegerUIParameterValue(PARAM_XYMAX);
-			if(val != xymax_){
-				xymax_ = val;
+			int newval = getIntegerUIParameterValue(PARAM_XYMAX);
+			if(newval != xymax_){
+				xymax_ = newval;
 				graphpanel_.remove(graph_.getChart());
-				newGraph();
+				graph_ = newGraph();
 				graphpanel_.add(graph_.getChart());
 				graphpanel_.updateUI();
 				chartupdater_.changeChart(graph_);
 			}
 		} else if(label.equals(PARAM_ZMAX)){
-			int val = getIntegerUIParameterValue(PARAM_ZMAX);
-			if(val != zmax_){
-				zmax_ = val;
+			int newval = getIntegerUIParameterValue(PARAM_ZMAX);
+			if(newval != zmax_){
+				zmax_ = newval;
 				progressBar_.setMaximum(zmax_);
 			}
 		}else if(label.equals(PARAM_IDLE)){
-			int val = getIntegerUIParameterValue(PARAM_IDLE);
-			if(val != idle_){
-				idle_ = val;
+			int newval = getIntegerUIParameterValue(PARAM_IDLE);
+			if(newval != idle_){
+				idle_ = newval;
 				chartupdater_.changeIdleTime(idle_);
 				progressbarupdater_.changeIdleTime(idle_);
 			}
@@ -186,7 +183,7 @@ public class QPDPanel extends ConfigurablePanel {
 	protected void initializeInternalProperties() {
 		// Do nothing
 	}
-
+	
 	@Override
 	public void internalpropertyhasChanged(String label) {
 		// Do nothing

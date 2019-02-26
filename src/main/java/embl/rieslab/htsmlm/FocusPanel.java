@@ -1,4 +1,4 @@
-package main.java.embl.rieslab.emu.uiexamples.focuslock;
+package main.java.embl.rieslab.htsmlm;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -24,18 +24,18 @@ import javax.swing.border.TitledBorder;
 import main.java.embl.rieslab.emu.ui.ConfigurablePanel;
 import main.java.embl.rieslab.emu.ui.uiparameters.DoubleUIParameter;
 import main.java.embl.rieslab.emu.ui.uiparameters.IntegerUIParameter;
+import main.java.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
 import main.java.embl.rieslab.emu.ui.uiproperties.UIProperty;
 import main.java.embl.rieslab.emu.utils.utils;
+import main.java.embl.rieslab.htsmlm.flags.FocusStabFlag;
 import main.java.embl.rieslab.htsmlm.graph.TimeChart;
-import main.java.embl.rieslab.htsmlm.tasks.Task;
-import main.java.embl.rieslab.htsmlm.tasks.TaskHolder;
 import main.java.embl.rieslab.htsmlm.updaters.TimeChartUpdater;
 
 /**
  *
  * @author Joran Deschamps
  */
-public class PIFocusPanel extends ConfigurablePanel implements TaskHolder<Double> {
+public class FocusPanel extends ConfigurablePanel {
 
 	/**
 	 * 
@@ -62,7 +62,6 @@ public class PIFocusPanel extends ConfigurablePanel implements TaskHolder<Double
 	
 	//////// Thread
 	private TimeChartUpdater updater_;
-	private SimpleFocusMaintainingTask task_;
 
 	//////// Properties
 	public final static String FOCUS_POSITION = "Z stage position";
@@ -73,25 +72,18 @@ public class PIFocusPanel extends ConfigurablePanel implements TaskHolder<Double
 	public final static String PARAM_SMALLSTEP = "Small step";
 	public final static String PARAM_IDLE = "Idle time (ms)";
 	public final static String PARAM_NPOS = "Number of points";
-	public final static String PARAM_PI_SETPOINT = "PI setpoint";
-	public final static String PARAM_PI_SCALING = "PI scaling";
-	public final static String PARAM_PI_KP = "PI Kp";
-	public final static String PARAM_PI_KI = "PI Ki";
-	public final static String PARAM_PI_IDLE = "PI idle time (ms)";
 	
 	//////// Default parameters
 	private double smallstep_, largestep_;
-	private int idlePI_;
-	private double kiPI_, kpPI_, setpointPI_,scalingPI_;
 	private int idle_, npos_; 
 	private boolean initialised = false; // used only for initial textfield value
 	
-	public PIFocusPanel(String label) {
+	public FocusPanel(String label) {
 		super(label);
 	}
 	
 	public void setupPanel() {
-		newGraph();
+		graph_ = newGraph();
 		updater_ = new TimeChartUpdater(graph_,getUIProperty(FOCUS_POSITION),idle_);
 		
 		this.setLayout(new BoxLayout(this,BoxLayout.X_AXIS));
@@ -361,11 +353,9 @@ public class PIFocusPanel extends ConfigurablePanel implements TaskHolder<Double
 
 	protected void lockPosition(boolean b) {
 		if(b){
-			//changeProperty(FOCUS_STABILIZATION,TwoStateUIProperty.getOnStateName());
-			this.startTask();
+			setUIPropertyValue(FOCUS_STABILIZATION,TwoStateUIProperty.getOnStateName());
 		} else {
-			this.stopTask();
-			//changeProperty(FOCUS_STABILIZATION,TwoStateUIProperty.getOffStateName());
+			setUIPropertyValue(FOCUS_STABILIZATION,TwoStateUIProperty.getOffStateName());
 		}
 	}
 
@@ -389,14 +379,14 @@ public class PIFocusPanel extends ConfigurablePanel implements TaskHolder<Double
 		return null;
 	}
 	
-	private void newGraph(){
-		graph_ = new TimeChart("position","time","position",npos_,310,150,false);
+	private TimeChart newGraph(){
+		return new TimeChart("position","time","position",npos_,310,150,false);
 	}
 
 	@Override
 	protected void initializeProperties() {
 		addUIProperty(new UIProperty(this, FOCUS_POSITION,"Position of the stage, used to move the stage and monitor its position."));
-		addUIProperty(new UIProperty(this, FOCUS_STABILIZATION,"Property used for focus stabilization."));
+		addUIProperty(new TwoStateUIProperty(this, FOCUS_STABILIZATION,"Property used for focus stabilization.", new FocusStabFlag()));
 	}
 	
 	@Override
@@ -410,18 +400,6 @@ public class PIFocusPanel extends ConfigurablePanel implements TaskHolder<Double
 		addUIParameter(new DoubleUIParameter(this, PARAM_SMALLSTEP,"Default value for small z stage step.",smallstep_));
 		addUIParameter(new IntegerUIParameter(this, PARAM_IDLE,"Idle time in ms of the stage position monitoring.",idle_)); // thread idle time
 		addUIParameter(new IntegerUIParameter(this, PARAM_NPOS,"Number of stage positions displayed in the chart.",npos_)); // number of point in the graph
-
-		idlePI_ = 500;
-		kiPI_ = 1;
-		kpPI_ = 1;
-		setpointPI_ = 512;
-		scalingPI_ = 1024;
-
-		addUIParameter(new IntegerUIParameter(this, PARAM_PI_IDLE,"",idlePI_));
-		addUIParameter(new DoubleUIParameter(this, PARAM_PI_KI,"",kiPI_));
-		addUIParameter(new DoubleUIParameter(this, PARAM_PI_KP,"",kpPI_));
-		addUIParameter(new DoubleUIParameter(this, PARAM_PI_SETPOINT,"",setpointPI_));
-		addUIParameter(new DoubleUIParameter(this, PARAM_PI_SCALING,"",scalingPI_));
 	}
 
 	@Override
@@ -432,6 +410,12 @@ public class PIFocusPanel extends ConfigurablePanel implements TaskHolder<Double
 					initialised = true;
 					textfieldPosition_.setText(newvalue);
 				}
+			}
+		} else if(name.equals(FOCUS_STABILIZATION)){
+			if(newvalue.equals(((TwoStateUIProperty) getUIProperty(FOCUS_STABILIZATION)).getOnStateValue())){
+				togglebuttonLock_.setSelected(true);
+			} else {
+				togglebuttonLock_.setSelected(false);
 			}
 		}
 	}
@@ -457,27 +441,18 @@ public class PIFocusPanel extends ConfigurablePanel implements TaskHolder<Double
 			if(val != npos_){
 				npos_ = val;
 				panelGraph_.remove(graph_.getChart());
-				newGraph();
+				graph_ = newGraph();
 				panelGraph_.add(graph_.getChart());
 				panelGraph_.updateUI();
 				updater_.changeChart(graph_);
 			}
-		} else if(label.equals(PARAM_PI_IDLE)){
-			idlePI_ = getIntegerUIParameterValue(PARAM_PI_IDLE);
-		} else if(label.equals(PARAM_PI_KI)){
-			kiPI_ = getDoubleUIParameterValue(PARAM_PI_KI);
-		} else if(label.equals(PARAM_PI_KP)){
-			kpPI_ = getDoubleUIParameterValue(PARAM_PI_KP);
-		} else if(label.equals(PARAM_PI_SETPOINT)){
-			setpointPI_ = getDoubleUIParameterValue(PARAM_PI_SETPOINT);
-		}else if(label.equals(PARAM_PI_SCALING)){
-			scalingPI_ = getDoubleUIParameterValue(PARAM_PI_SCALING);
 		}
 	}
 
 	@Override
 	public void shutDown() {
 		updater_.stopUpdater();
+		setUIPropertyValue(FOCUS_STABILIZATION,TwoStateUIProperty.getOffStateName());
 	}
 
 	@Override
@@ -490,97 +465,9 @@ public class PIFocusPanel extends ConfigurablePanel implements TaskHolder<Double
 	protected void initializeInternalProperties() {
 		// Do nothing
 	}
-
+	
 	@Override
 	public void internalpropertyhasChanged(String label) {
 		// Do nothing
-	}
-	
-	//////////////////////////////////////// TaskHolder methods
-
-	@Override
-	public void update(Double[] output) {
-		// do nothing
-	}
-
-	@Override
-	public Double[] retrieveAllParameters() {
-		return null;
-	}
-
-	@Override
-	public boolean startTask() {
-		if(task_ == null){
-			task_ = new SimpleFocusMaintainingTask(this, getUIProperty(FOCUS_POSITION), getUIProperty(FOCUS_STABILIZATION), 
-				idlePI_, kpPI_, kiPI_, setpointPI_, scalingPI_);
-		}
-		
-		if(!task_.isRunning()){
-			task_.startTask();
-		}
-		
-		return true;
-	}
-
-	@Override
-	public void stopTask() {
-		if(task_ != null && task_.isRunning()){
-			task_.stopTask();
-		}
-	}
-
-	@Override
-	public boolean isPausable() {
-		if(task_ != null){
-			return task_.isPausable();
-		}
-		return false;
-	}
-
-	@Override
-	public void pauseTask() {
-		if(task_ != null){
-			task_.pauseTask();
-		}
-	}
-
-	@Override
-	public void resumeTask() {
-		if(task_ != null){
-			task_.resumeTask();
-		}
-	}
-
-	@Override
-	public boolean isTaskRunning() {
-		if(task_ != null){
-			return task_.isRunning();
-		}
-		return false;
-	}
-
-	@Override
-	public String getTaskName() {
-		return "Focus maintaining task";
-	}
-
-	@Override
-	public boolean isCriterionReached() {
-		return false;
-	}
-
-	@Override
-	public Task<Double> getTask() {
-		return null;
-	}
-
-	@Override
-	public void taskDone() {
-		// do nothing
-	}
-
-	@Override
-	public void initializeTask() {
-		// do nothing
 	}
 }

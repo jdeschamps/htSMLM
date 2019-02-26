@@ -4,8 +4,8 @@ package main.java.embl.rieslab.emu.uiexamples.focuslock;
 import javax.swing.SwingUtilities;
 
 import main.java.embl.rieslab.emu.ui.uiproperties.UIProperty;
-import main.java.embl.rieslab.emu.uiexamples.htsmlm.tasks.Task;
-import main.java.embl.rieslab.emu.uiexamples.htsmlm.tasks.TaskHolder;
+import main.java.embl.rieslab.htsmlm.tasks.Task;
+import main.java.embl.rieslab.htsmlm.tasks.TaskHolder;
 
 public class SimpleFocusMaintainingTask implements Task<Double> {
 	
