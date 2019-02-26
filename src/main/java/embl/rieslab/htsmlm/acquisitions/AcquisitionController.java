@@ -1,6 +1,5 @@
 package main.java.embl.rieslab.htsmlm.acquisitions;
 
-
 import java.util.ArrayList;
 
 import javax.swing.SwingUtilities;
