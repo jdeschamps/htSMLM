@@ -20,7 +20,6 @@ import main.java.embl.rieslab.emu.utils.utils;
 import main.java.embl.rieslab.htsmlm.AcquisitionPanel;
 import main.java.embl.rieslab.htsmlm.ActivationPanel;
 import main.java.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
-import main.java.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AutofocusAcquisition;
 import main.java.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.BFPAcquisition;
 import main.java.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.BrightFieldAcquisition;
 import main.java.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.LocalizationAcquisition;
@@ -81,9 +80,6 @@ public class AcquisitionFactory {
 			return new SnapAcquisition(controller_.getExposure());
 		} else if(type.equals(AcquisitionType.ZSTACK.getTypeValue())){
 			return new ZStackAcquisition(controller_.getExposure(), zdevices_, controller_.getCore().getFocusDevice(),
-					(TwoStateUIProperty) controller_.getProperty(acqcontroller_.getAcquisitionParameterValue(AcquisitionPanel.PARAM_LOCKING)));
-		} else if(type.equals(AcquisitionType.AUTOFOCUS.getTypeValue())){
-			return new AutofocusAcquisition(controller_.getExposure(), zdevices_, controller_.getCore().getFocusDevice(),
 					(TwoStateUIProperty) controller_.getProperty(acqcontroller_.getAcquisitionParameterValue(AcquisitionPanel.PARAM_LOCKING)));
 		} else if(type.equals(AcquisitionType.BFP.getTypeValue())){
 			return new BFPAcquisition(controller_.getExposure(),
@@ -210,17 +206,6 @@ public class AcquisitionFactory {
 						acq.setZRange(Double.parseDouble(acqw.additionalParameters[0][1]), Double.parseDouble(acqw.additionalParameters[1][1]), Double.parseDouble(acqw.additionalParameters[2][1]));
 						acq.setZDevice(acqw.additionalParameters[3][1]);
 						acq.setUseFocusLock(Boolean.parseBoolean(acqw.additionalParameters[4][1]));
-						
-						acqlist.add(acq);
-
-					}  else if(acqw.type.equals(AcquisitionType.AUTOFOCUS.getTypeValue())){
-						AutofocusAcquisition acq = (AutofocusAcquisition) getAcquisition(acqw.type);
-						configureGeneralAcquistion(acq, acqw);
-
-						acq.setZRange(Double.parseDouble(acqw.additionalParameters[0][1]), Double.parseDouble(acqw.additionalParameters[1][1]), Double.parseDouble(acqw.additionalParameters[2][1]));
-						acq.setZDevice(acqw.additionalParameters[3][1]);
-						acq.setUseFocusLock(Boolean.parseBoolean(acqw.additionalParameters[4][1]));
-						acq.setMetrics(acqw.additionalParameters[5][1]);
 						
 						acqlist.add(acq);
 
