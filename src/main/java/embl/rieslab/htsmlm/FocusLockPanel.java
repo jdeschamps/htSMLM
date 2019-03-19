@@ -60,10 +60,11 @@ public class FocusLockPanel extends ConfigurablePanel {
 	
 	public FocusLockPanel(String label) {
 		super(label);
+		
+		setupPanel();
 	}
 
-	@Override
-	public void setupPanel() {
+	private void setupPanel() {
 
 		///////////////////////////////////////////////////////////////////////////// set-up components
 		// Power text field

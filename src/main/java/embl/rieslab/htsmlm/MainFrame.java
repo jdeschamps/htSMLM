@@ -197,21 +197,6 @@ public class MainFrame extends ConfigurableMainFrame{
 		this.add(lowerpanel,c2);*/
 		this.add(lowerpanel);
 		
-		// Register property panels
-        registerConfigurablePanel(focusPanel);
-        registerConfigurablePanel(qpdPanel);
-        registerConfigurablePanel(focuslockpanel);
-        registerConfigurablePanel(filterPanel);
-        registerConfigurablePanel(pulsePanel);
-        for(int i=0;i<triggerPanels.length;i++){
-        	registerConfigurablePanel(triggerPanels[i]);
-        	registerConfigurablePanel(controlPanels[i]);
-        }
-        registerConfigurablePanel(addcontrolPanel);
-        registerConfigurablePanel(activationPanel);
-        registerConfigurablePanel(acqPanel);
-        registerConfigurablePanel(addFiltersPanel);
-        
         // tasks, ignore the acquisition task as it is not supposed to be called by another panel
         taskholders_ = new HashMap<String,TaskHolder>();
         taskholders_.put(activationPanel.getTaskName(), activationPanel);

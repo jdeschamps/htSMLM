@@ -47,10 +47,11 @@ public class QPDPanel extends ConfigurablePanel {
 
 	public QPDPanel(String label) {
 		super(label);
+		
+		setupPanel();
 	}
 
-	@Override
-	public void setupPanel() {
+	private void setupPanel() {
 		this.setLayout(new GridBagLayout());
 		
 		graph_ = newGraph();

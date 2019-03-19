@@ -80,9 +80,11 @@ public class FocusPanel extends ConfigurablePanel {
 	
 	public FocusPanel(String label) {
 		super(label);
+		
+		setupPanel();
 	}
 	
-	public void setupPanel() {
+	private void setupPanel() {
 		graph_ = newGraph();
 		updater_ = new TimeChartUpdater(graph_,getUIProperty(FOCUS_POSITION),idle_);
 		

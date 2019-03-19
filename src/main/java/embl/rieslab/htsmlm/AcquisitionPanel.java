@@ -76,6 +76,8 @@ public class AcquisitionPanel extends ConfigurablePanel{
 		super("Acquisitions");
 		controller_ = controller;
 		
+		initPanel();
+		
 		acqcontroller_ = new AcquisitionController(controller, this, new AcquisitionInformationPanel(jTextPane_progress));
 		
 		// listen to window movement to place the summary panel at the right place
@@ -120,7 +122,7 @@ public class AcquisitionPanel extends ConfigurablePanel{
 		
 	}
 	
-	private void initiPanel() {
+	private void initPanel() {
 	    jButton_setpath = new JButton("...");
 	    jButton_setpath .addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -396,11 +398,6 @@ public class AcquisitionPanel extends ConfigurablePanel{
 		addUIParameter(new UIPropertyParameter(this, PARAM_BFP,"UIProperty corresponding to the insertion of the BFP lens.", new TwoStateFlag()));
 		addUIParameter(new UIPropertyParameter(this, PARAM_LOCKING,"UIProperty corresponding to the locking of the focus stabilization.", new FocusStabFlag())); 
 		addUIParameter(new UIPropertyParameter(this, PARAM_BRIGHTFIELD,"UIProperty corresponding to the triggering of the white light illumination.", new TwoStateFlag())); 
-	}
-
-	@Override
-	public void setupPanel() {
-		initiPanel();
 	}
 
 	@Override

@@ -57,10 +57,11 @@ public class LaserControlPanel extends ConfigurablePanel {
 	
 	public LaserControlPanel(String label) {
 		super(label);
+		
+		setupPanel();
 	}
 	
-	@Override
-	public void setupPanel() {
+	private void setupPanel() {
 		
 		this.setLayout(new GridBagLayout());
 		

@@ -91,15 +91,17 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 	public ActivationPanel(String label, CMMCore core) {
 		super(label);
 		
+		setupPanel();
+		
 		task_ = new ActivationTask(this, core, idletime_);
     	ip_ = new ShortProcessor(200,200);
 		im_ = new ImagePlus("NMS result");
 		
 		params = new Double[ActivationTask.NUM_PARAMETERS];
+		
 	}
 	
-	@Override
-	public void setupPanel() {
+	private void setupPanel() {
 		this.setLayout(new GridBagLayout());
 		
 		GridBagConstraints c = new GridBagConstraints();

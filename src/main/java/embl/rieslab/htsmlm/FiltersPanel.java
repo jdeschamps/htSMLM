@@ -45,10 +45,11 @@ public class FiltersPanel extends ConfigurablePanel {
 
 	public FiltersPanel(String label) {
 		super(label);
+		
+		setupPanel();
 	}
 	
-	@Override
-	public void setupPanel() {
+	private void setupPanel() {
 		this.setLayout(new GridBagLayout());
 		this.setBorder(BorderFactory.createTitledBorder(null, getLabel(), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, null, new Color(0,0,0)));
 		((TitledBorder) this.getBorder()).setTitleFont(((TitledBorder) this.getBorder()).getTitleFont().deriveFont(Font.BOLD, 12));
@@ -101,7 +102,7 @@ public class FiltersPanel extends ConfigurablePanel {
 	
 	private void setNames(){
 		String[] astr = names_.split(",");
-		int maxind = togglebuttons_.length > astr.length ? astr.length : togglebuttons_.length;
+		int maxind = togglebuttons_.length > astr.length ? astr.length : togglebuttons_.length; 
 		for(int i=0;i<maxind;i++){
 			togglebuttons_[i].setText(astr[i]);
 		}
@@ -123,7 +124,7 @@ public class FiltersPanel extends ConfigurablePanel {
 	
 	@Override
 	protected void initializeProperties() {
-		addUIProperty(new MultiStateUIProperty(this, FW_POSITION,"Filter wheel position property.", new FilterWheelFlag(),NUM_POS));		
+		addUIProperty(new MultiStateUIProperty(this, FW_POSITION, "Filter wheel position property.", new FilterWheelFlag(),NUM_POS));		
 	}
 
 	@Override

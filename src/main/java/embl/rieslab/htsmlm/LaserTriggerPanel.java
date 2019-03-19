@@ -63,10 +63,11 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 	
 	public LaserTriggerPanel(String label) {
 		super(label);
+		
+		setupPanel();
 	}
 
-	@Override
-	public void setupPanel() {
+	private void setupPanel() {
 		this.setLayout(new GridBagLayout());
 		
 		border_ = BorderFactory.createTitledBorder(null, title_, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION,  null, color_);

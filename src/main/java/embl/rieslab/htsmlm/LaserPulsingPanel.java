@@ -57,10 +57,11 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 	
 	public LaserPulsingPanel(String label) {
 		super(label);
+		
+		setupPanel();
 	}
 
-	@Override
-	public void setupPanel() {
+	private void setupPanel() {
 
 		this.setLayout(new GridBagLayout());
 		

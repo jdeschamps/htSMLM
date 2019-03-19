@@ -54,10 +54,11 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 
 	public AdditionalFiltersPanel(String label) {
 		super(label);
+		
+		setupPanel();
 	}
 	
-	@Override
-	public void setupPanel() {
+	private void setupPanel() {
 		JPanel pane1 = new JPanel();
 		pane1.setLayout(new GridBagLayout());
 		

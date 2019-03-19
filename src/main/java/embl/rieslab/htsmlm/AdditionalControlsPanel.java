@@ -49,10 +49,11 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 	
 	public AdditionalControlsPanel(String label) {
 		super(label);
+		
+		setupPanel();
 	}
 	
-	@Override
-	public void setupPanel() {
+	private void setupPanel() {
 		this.setLayout(new GridBagLayout());
 		border_ = BorderFactory.createTitledBorder(null, getLabel(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, new Color(0,0,0));
 		this.setBorder(border_);
