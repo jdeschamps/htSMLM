@@ -19,7 +19,7 @@ import main.java.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
 import main.java.embl.rieslab.htsmlm.acquisitions.wrappers.Experiment;
 import mmcorej.CMMCore;
 
-public class AcquisitionTask  implements Task<Integer>{
+public class AcquisitionTask implements Task<Integer>{
 
 	private Studio studio_;
 	private CMMCore core_;
