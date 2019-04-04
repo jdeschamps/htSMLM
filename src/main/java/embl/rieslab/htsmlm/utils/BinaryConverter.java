@@ -21,7 +21,7 @@ public class BinaryConverter {
 	}
 	
 	/**
-	 * Tests if a string is represents 16bits.
+	 * Tests if a string represents 16bits.
 	 * 
 	 * @param s
 	 * @return True if the string represents 16 bits, false otherwise.

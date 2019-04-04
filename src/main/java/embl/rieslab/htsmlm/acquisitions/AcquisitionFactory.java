@@ -289,7 +289,7 @@ public class AcquisitionFactory {
 		
 		public static String[] getList(){
 			String[] s = {AcquisitionType.LOCALIZATION.getTypeValue(), AcquisitionType.BFP.getTypeValue(), AcquisitionType.BF.getTypeValue(),
-					AcquisitionType.ZSTACK.getTypeValue(), AcquisitionType.SNAP.getTypeValue(),AcquisitionType.TIME.getTypeValue(),AcquisitionType.AUTOFOCUS.getTypeValue()};
+					AcquisitionType.ZSTACK.getTypeValue(), AcquisitionType.SNAP.getTypeValue(),AcquisitionType.TIME.getTypeValue()};
 			return s;
 		}
 	}; 

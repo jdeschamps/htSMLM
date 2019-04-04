@@ -88,7 +88,7 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 		combobehaviour_.addActionListener(new ActionListener(){
 	    	public void actionPerformed(ActionEvent e){
 	    		String val= String.valueOf(combobehaviour_.getSelectedIndex());
-	    		setUIPropertyValue(getLabel()+" "+TRIGGER_BEHAVIOUR,val);
+	    		setUIPropertyValue(getPropertyLabel(TRIGGER_BEHAVIOUR),val);
 	    	}
         });
 
@@ -101,11 +101,11 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 				if (utils.isInteger(s)) {
 					if(Integer.parseInt(s)<=HTSMLMConstants.FPGA_MAX_PULSE){
 						sliderpulse_.setValue(Integer.parseInt(s));
-						setUIPropertyValue(getLabel()+" "+PULSE_LENGTH,s);
+						setUIPropertyValue(getPropertyLabel(PULSE_LENGTH),s);
 					} else {
 						sliderpulse_.setValue(HTSMLMConstants.FPGA_MAX_PULSE);
 						textfieldpulselength_.setText(String.valueOf(HTSMLMConstants.FPGA_MAX_PULSE));
-						setUIPropertyValue(getLabel()+" "+PULSE_LENGTH,String.valueOf(HTSMLMConstants.FPGA_MAX_PULSE));
+						setUIPropertyValue(getPropertyLabel(PULSE_LENGTH),String.valueOf(HTSMLMConstants.FPGA_MAX_PULSE));
 					}
 				}
 	         }
@@ -120,11 +120,11 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 				if (utils.isInteger(s)) {
 					if (Integer.parseInt(s) <= HTSMLMConstants.FPGA_MAX_PULSE) {
 						sliderpulse_.setValue(Integer.parseInt(s));
-						setUIPropertyValue(getLabel()+" "+PULSE_LENGTH, s);
+						setUIPropertyValue(getPropertyLabel(PULSE_LENGTH), s);
 					} else {
 						sliderpulse_.setValue(HTSMLMConstants.FPGA_MAX_PULSE);
 						textfieldpulselength_.setText(String.valueOf(HTSMLMConstants.FPGA_MAX_PULSE));
-						setUIPropertyValue(getLabel()+" "+PULSE_LENGTH,String.valueOf(HTSMLMConstants.FPGA_MAX_PULSE));
+						setUIPropertyValue(getPropertyLabel(PULSE_LENGTH),String.valueOf(HTSMLMConstants.FPGA_MAX_PULSE));
 					}
 				}
 			}
@@ -134,7 +134,7 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 		sliderpulse_.addMouseListener(new MouseAdapter() {
 			public void mouseReleased(MouseEvent e) {				
 				  textfieldpulselength_.setText(String.valueOf(sliderpulse_.getValue()));
-				  setUIPropertyValue(getLabel()+" "+PULSE_LENGTH,String.valueOf(sliderpulse_.getValue()));
+				  setUIPropertyValue(getPropertyLabel(PULSE_LENGTH),String.valueOf(sliderpulse_.getValue()));
 			}});
 		
 
@@ -147,7 +147,7 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 				if (BinaryConverter.is16bits(s)) {
 					textfieldsequence_.setForeground(ColorRepository.getColor("black"));
 					String str = String.valueOf(BinaryConverter.getDecimal16bits(s));
-					setUIPropertyValue(getLabel()+" "+TRIGGER_SEQUENCE,str);
+					setUIPropertyValue(getPropertyLabel(TRIGGER_SEQUENCE),str);
 				} else if(BinaryConverter.isBits(s)) {
 					textfieldsequence_.setForeground(ColorRepository.getColor("blue"));
 				} else {
@@ -165,7 +165,7 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 				if (BinaryConverter.is16bits(s)) {
 					textfieldsequence_.setForeground(ColorRepository.getColor("black"));
 					String str = String.valueOf(BinaryConverter.getDecimal16bits(s));
-					setUIPropertyValue(getLabel()+" "+TRIGGER_SEQUENCE,str);
+					setUIPropertyValue(getPropertyLabel(TRIGGER_SEQUENCE),str);
 				
 				} else if(BinaryConverter.isBits(s)) {
 					textfieldsequence_.setForeground(ColorRepository.getColor("blue"));
@@ -222,9 +222,9 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 			map.put(HTSMLMConstants.FPGA_BEHAVIOURS[i], String.valueOf(i));
 		}
 		
-		addUIProperty(new ImmutableMultiStateUIProperty(this, getLabel()+" "+TRIGGER_BEHAVIOUR,"From Micro-Mojo FPGA: property dictating the behaviour of the laser trigger, from camera to pulsing.", new LaserFlag(),map));
-		addUIProperty(new UIProperty(this, getLabel()+" "+TRIGGER_SEQUENCE,"From Micro-Mojo FPGA: trigger sequence property, following a 16 bits pattern of 0 (not triggered) and 1 (triggered).", new LaserFlag()));
-		addUIProperty(new UIProperty(this, getLabel()+" "+PULSE_LENGTH,"From Micro-Mojo FPGA: duration of the laser pulses.", new LaserFlag()));
+		addUIProperty(new ImmutableMultiStateUIProperty(this, getPropertyLabel(TRIGGER_BEHAVIOUR),"From Micro-Mojo FPGA: property dictating the behaviour of the laser trigger, from camera to pulsing.", new LaserFlag(),map));
+		addUIProperty(new UIProperty(this, getPropertyLabel(TRIGGER_SEQUENCE),"From Micro-Mojo FPGA: trigger sequence property, following a 16 bits pattern of 0 (not triggered) and 1 (triggered).", new LaserFlag()));
+		addUIProperty(new UIProperty(this, getPropertyLabel(PULSE_LENGTH),"From Micro-Mojo FPGA: duration of the laser pulses.", new LaserFlag()));
 	}
 
 	@Override
@@ -241,15 +241,15 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 
 	@Override
 	public void propertyhasChanged(String name, String newvalue) {
-		if(name.equals(getLabel()+" "+TRIGGER_BEHAVIOUR)){
+		if(name.equals(getPropertyLabel(TRIGGER_BEHAVIOUR))){
 			combobehaviour_.setSelectedItem(newvalue);
-		} else if(name.equals(getLabel()+" "+TRIGGER_SEQUENCE)){
+		} else if(name.equals(getPropertyLabel(TRIGGER_SEQUENCE))){
 			if(utils.isInteger(newvalue)){
 				textfieldsequence_.setText(BinaryConverter.getBinary16bits(Integer.parseInt(newvalue)));
 			} else {
 				textfieldsequence_.setText(BinaryConverter.getBinary16bits(HTSMLMConstants.FPGA_MAX_SEQUENCE));
 			}
-		} else if(name.equals(getLabel()+" "+PULSE_LENGTH)){
+		} else if(name.equals(getPropertyLabel(PULSE_LENGTH))){
 			textfieldpulselength_.setText(newvalue);
 			if(utils.isInteger(newvalue)){
 				sliderpulse_.setValue(Integer.parseInt(newvalue));
@@ -272,13 +272,13 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 			this.repaint();
 		} else if(label.equals(PARAM_DEF_BEHAVIOUR)){
 			behaviour_ = getComboUIParameterValue(PARAM_DEF_BEHAVIOUR);
-			combobehaviour_.setSelectedItem(behaviour_); // triggers the action listener
+			combobehaviour_.setSelectedItem(behaviour_); // this triggers the action listener
 		} else if(label.equals(PARAM_DEF_SEQUENCE)){
 			String newval = getStringUIParameterValue(PARAM_DEF_SEQUENCE);
 			if(BinaryConverter.is16bits(newval)){
 				sequence_ = newval;
-				textfieldsequence_.setText(sequence_);
-				setUIPropertyValue(TRIGGER_SEQUENCE,String.valueOf(BinaryConverter.getDecimal16bits(sequence_))); // setting text on JTextField does not trigger the action listeners in this case
+				textfieldsequence_.setText(sequence_); // setting text on JTextField does not trigger the action listeners in this case
+				setUIPropertyValue(getPropertyLabel(TRIGGER_SEQUENCE),String.valueOf(BinaryConverter.getDecimal16bits(sequence_)));
 			}
 		}
 	}
@@ -305,5 +305,9 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 	@Override
 	public void internalpropertyhasChanged(String label) {
 		// Do nothing
+	}
+	
+	private String getPropertyLabel(String propName) {
+		return getLabel()+" "+propName;
 	}
 }
