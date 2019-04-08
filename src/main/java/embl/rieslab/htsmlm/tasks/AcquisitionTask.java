@@ -175,11 +175,11 @@ public class AcquisitionTask implements Task<Integer>{
 				currAcq = exp_.getAcquisitionList().get(k);
 
 				// set-up system
-				system_.setUpSystem(currAcq.getParameters().getPropertyValues());
+				system_.setUpSystem(currAcq.getAcquisitionParameters().getPropertyValues());
 
 				// set configuration settings
-				if (!currAcq.getParameters().getMMConfigurationGroupValues().isEmpty()) {
-					HashMap<String, String> configs = currAcq.getParameters().getMMConfigurationGroupValues();
+				if (!currAcq.getAcquisitionParameters().getMMConfigurationGroupValues().isEmpty()) {
+					HashMap<String, String> configs = currAcq.getAcquisitionParameters().getMMConfigurationGroupValues();
 					Iterator<String> it = configs.keySet().iterator();
 					while (it.hasNext()) {
 						String group = it.next();

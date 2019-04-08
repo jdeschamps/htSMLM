@@ -19,14 +19,14 @@ public class AcquisitionWrapper {
 	}
 	
 	public AcquisitionWrapper(Acquisition acq){
-        type = acq.getParameters().getAcquisitionType().getTypeValue();
-        exposure=acq.getParameters().getExposureTime();
-        interval= acq.getParameters().getIntervalMs();
-        numFrames=acq.getParameters().getNumberFrames();
-        waitingTime= acq.getParameters().getWaitingTime();
+        type = acq.getAcquisitionParameters().getAcquisitionType().getTypeValue();
+        exposure=acq.getAcquisitionParameters().getExposureTime();
+        interval= acq.getAcquisitionParameters().getIntervalMs();
+        numFrames=acq.getAcquisitionParameters().getNumberFrames();
+        waitingTime= acq.getAcquisitionParameters().getWaitingTime();
         
         
-        HashMap<String,String> conf = acq.getParameters().getMMConfigurationGroupValues();
+        HashMap<String,String> conf = acq.getAcquisitionParameters().getMMConfigurationGroupValues();
         String[] confkeys = conf.keySet().toArray(new String[0]);
         Arrays.sort(confkeys);
         configurations = new String[confkeys.length][2];
@@ -36,7 +36,7 @@ public class AcquisitionWrapper {
        	}
 
         
-        HashMap<String,String> prop = acq.getParameters().getPropertyValues();
+        HashMap<String,String> prop = acq.getAcquisitionParameters().getPropertyValues();
         String[] propkeys = prop.keySet().toArray(new String[0]);
         Arrays.sort(propkeys);
         properties = new String[propkeys.length][2];

@@ -162,7 +162,7 @@ public class AcquisitionTab extends JPanel {
 				((TitledBorder) pane.getBorder()).setTitleFont(((TitledBorder) pane.getBorder()).getTitleFont().deriveFont(Font.BOLD, 12));
 				acqpanels_[i] = pane;
 				acqpanes_[i] = createPanel(acqpanels_[i],acquisition.getPropertyFilter(), 
-						acquisition.getParameters().getMMConfigurationGroupValues(), acquisition.getParameters().getPropertyValues());
+						acquisition.getAcquisitionParameters().getMMConfigurationGroupValues(), acquisition.getAcquisitionParameters().getPropertyValues());
 				acqcard_.add(acqpanes_[i],acqtypes_[i]);
 			} else {
 				acqpanels_[i] = factory_.getAcquisition(acqtypes_[i]).getPanel();
@@ -618,13 +618,13 @@ public class AcquisitionTab extends JPanel {
 		Acquisition acq = factory_.getAcquisition(acqtypes_[currind]);
 		
 		// set mm configuration groups
-		acq.getParameters().setMMConfigurationGroupValues(registerMMConfGroups(acqpanes_[currind], new HashMap<String, String>()));
+		acq.getAcquisitionParameters().setMMConfigurationGroupValues(registerMMConfGroups(acqpanes_[currind], new HashMap<String, String>()));
 		
 		// set properties value in the acquisition
-		acq.getParameters().setPropertyValues(registerProperties(acqpanes_[currind], new HashMap<String, String>()));
+		acq.getAcquisitionParameters().setPropertyValues(registerProperties(acqpanes_[currind], new HashMap<String, String>()));
 		
 		// read out the JPanel related to the acquisition
-		acq.readOutParameters(acqpanels_[currind]);
+		acq.readOutAcquisitionParameters(acqpanels_[currind]);
 		
 		return acq;
 	}

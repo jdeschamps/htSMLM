@@ -53,12 +53,12 @@ public class ExperimentTreeSummary {
 	    	    }
 	            
 	    	    //////// MM configuration groups
-	    	    String[] confgroup = new String[acq.getParameters().getMMConfigurationGroupValues().size()];
-	    	    Iterator<String> it = acq.getParameters().getMMConfigurationGroupValues().keySet().iterator();
+	    	    String[] confgroup = new String[acq.getAcquisitionParameters().getMMConfigurationGroupValues().size()];
+	    	    Iterator<String> it = acq.getAcquisitionParameters().getMMConfigurationGroupValues().keySet().iterator();
 	    	    int j=0;
 	    	    while(it.hasNext()){
 	    	    	s = it.next();  
-	    	    	confgroup[j] = s+": "+acq.getParameters().getMMConfigurationGroupValues().get(s);
+	    	    	confgroup[j] = s+": "+acq.getAcquisitionParameters().getMMConfigurationGroupValues().get(s);
 	    	    	j++;
 	    	    }
 	    	    Arrays.sort(confgroup);
@@ -68,12 +68,12 @@ public class ExperimentTreeSummary {
 	    	    }
 	    	    
 	    	    //////// UIProperties values
-	    	    String[] propval = new String[acq.getParameters().getPropertyValues().size()];
-	    	    it = acq.getParameters().getPropertyValues().keySet().iterator();
+	    	    String[] propval = new String[acq.getAcquisitionParameters().getPropertyValues().size()];
+	    	    it = acq.getAcquisitionParameters().getPropertyValues().keySet().iterator();
 	    	    j=0;
 	    	    while(it.hasNext()){
 	    	    	s = it.next();  
-	    	    	propval[j] = controller.getProperty(s).getFriendlyName()+": "+acq.getParameters().getPropertyValues().get(s);
+	    	    	propval[j] = controller.getProperty(s).getFriendlyName()+": "+acq.getAcquisitionParameters().getPropertyValues().get(s);
 	    	    	j++;
 	    	    }
 	    	    Arrays.sort(propval);

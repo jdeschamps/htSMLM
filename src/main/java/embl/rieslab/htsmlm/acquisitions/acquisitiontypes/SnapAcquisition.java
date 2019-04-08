@@ -70,7 +70,7 @@ public class SnapAcquisition implements Acquisition{
 	}
 
 	@Override
-	public void readOutParameters(JPanel pane) {
+	public void readOutAcquisitionParameters(JPanel pane) {
 		if(pane.getName().equals(getPanelName())){
 			Component[] pancomp = pane.getComponents();
 			for(int j=0;j<pancomp.length;j++){
@@ -108,7 +108,7 @@ public class SnapAcquisition implements Acquisition{
 	}
 
 	@Override
-	public GenericAcquisitionParameters getParameters() {
+	public GenericAcquisitionParameters getAcquisitionParameters() {
 		return params_;
 	}
 

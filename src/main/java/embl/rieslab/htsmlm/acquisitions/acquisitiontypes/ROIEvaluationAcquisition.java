@@ -11,7 +11,7 @@ import main.java.embl.rieslab.htsmlm.filters.PropertyFilter;
 public class ROIEvaluationAcquisition implements Acquisition {
 
 	@Override
-	public GenericAcquisitionParameters getParameters() {
+	public GenericAcquisitionParameters getAcquisitionParameters() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -52,7 +52,7 @@ public class ROIEvaluationAcquisition implements Acquisition {
 	}
 
 	@Override
-	public void readOutParameters(JPanel pane) {
+	public void readOutAcquisitionParameters(JPanel pane) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -16,6 +16,5 @@ public class HTSMLMConstants {
 	
 	// Acquisition
 	public final static String ACQ_EXT = "uiacq";
-	public final static String ACQ_NAME = "AcquisitionList."+ACQ_EXT;
 
 }

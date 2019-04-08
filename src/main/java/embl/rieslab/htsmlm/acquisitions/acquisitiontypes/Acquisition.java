@@ -10,7 +10,7 @@ import main.java.embl.rieslab.htsmlm.filters.PropertyFilter;
 
 public interface Acquisition {
 	
-	public abstract GenericAcquisitionParameters getParameters();
+	public abstract GenericAcquisitionParameters getAcquisitionParameters();
 	
 	public abstract void performAcquisition(Studio studio, Datastore store); // should make sure that the store is empty
 	
@@ -24,7 +24,7 @@ public interface Acquisition {
 	
 	public abstract String getPanelName();
 		
-	public abstract void readOutParameters(JPanel pane);
+	public abstract void readOutAcquisitionParameters(JPanel pane);
 	
 	public abstract PropertyFilter getPropertyFilter();
 	

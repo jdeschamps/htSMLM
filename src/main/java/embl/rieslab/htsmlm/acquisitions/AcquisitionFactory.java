@@ -107,9 +107,9 @@ public class AcquisitionFactory {
 		if(filepath.endsWith(HTSMLMConstants.ACQ_EXT)){
 			filename = filepath;
 		} else if(!filepath.endsWith("/")){
-			filename = filepath+"/"+HTSMLMConstants.ACQ_NAME;
+			filename = filepath+"/"+name+HTSMLMConstants.ACQ_EXT;
 		} else {
-			filename = filepath+HTSMLMConstants.ACQ_NAME;
+			filename = filepath+name+HTSMLMConstants.ACQ_EXT;
 		}
 		
 		boolean fileExists = true;
@@ -251,8 +251,8 @@ public class AcquisitionFactory {
 	}
 	
 	private void configureGeneralAcquistion(Acquisition acq, AcquisitionWrapper acqw){
-		acq.getParameters().setExposureTime(acqw.exposure);
-		acq.getParameters().setWaitingTime(acqw.waitingTime);
+		acq.getAcquisitionParameters().setExposureTime(acqw.exposure);
+		acq.getAcquisitionParameters().setWaitingTime(acqw.waitingTime);
 		
 		HashMap<String,String> confs = new HashMap<String,String>();
 		if(acqw.configurations != null){
@@ -260,7 +260,7 @@ public class AcquisitionFactory {
 				confs.put(acqw.configurations[j][0], acqw.configurations[j][1]);
 			}
 		}
-		acq.getParameters().setMMConfigurationGroupValues(confs);
+		acq.getAcquisitionParameters().setMMConfigurationGroupValues(confs);
 		
 		HashMap<String,String> props = new HashMap<String,String>();
 		if(acqw.properties != null){
@@ -268,10 +268,10 @@ public class AcquisitionFactory {
 				props.put(acqw.properties[j][0], acqw.properties[j][1]);
 			}
 		}
-		acq.getParameters().setPropertyValues(props);
+		acq.getAcquisitionParameters().setPropertyValues(props);
 		
-		acq.getParameters().setNumberFrames(acqw.numFrames);
-		acq.getParameters().setIntervalMs(acqw.interval);		
+		acq.getAcquisitionParameters().setNumberFrames(acqw.numFrames);
+		acq.getAcquisitionParameters().setIntervalMs(acqw.interval);		
 	}
 	
 	public enum AcquisitionType { 
