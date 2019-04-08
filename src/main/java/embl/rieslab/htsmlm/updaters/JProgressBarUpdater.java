@@ -18,9 +18,11 @@ public class JProgressBarUpdater extends ComponentUpdater<JProgressBar>{
 
 	@Override
 	public boolean sanityCheck(UIProperty prop) {
-		if(utils.isNumeric(prop.getPropertyValue())){
+		// performs sanity check
+		if(prop.isAssigned() && utils.isNumeric(prop.getPropertyValue())) {
 			return true;
 		}
+
 		return false;
 	}
 

@@ -22,7 +22,6 @@ public abstract class ComponentUpdater<T extends JComponent> {
 		
 		idletime_ = idletime;
 		
-		initialised_ = sanityCheck(prop);
 	}
 	
 	public boolean isInitialised(){
@@ -34,6 +33,9 @@ public abstract class ComponentUpdater<T extends JComponent> {
 	}
 	
 	public void startUpdater(){
+		// perform sanity check
+		initialised_ = sanityCheck(property_);
+
 		if(!running_ && initialised_){
 			running_ = true;
 			task_ = new UIupdater( );
