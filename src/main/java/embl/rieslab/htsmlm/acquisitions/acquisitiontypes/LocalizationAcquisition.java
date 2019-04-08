@@ -48,7 +48,7 @@ public class LocalizationAcquisition implements Acquisition{
 	@SuppressWarnings("rawtypes")
 	public LocalizationAcquisition(TaskHolder activationtask, double exposure) {
 		
-		if(activationTask_ == null){
+		if(activationtask == null){
 			nullActivation_ = true;
 			useactivation_ = false;
 		} else {
