@@ -147,7 +147,7 @@ public class TimeAcquisition implements Acquisition{
 	}
 
 	@Override
-	public void startAcquisition(Studio studio, Datastore store) {
+	public void performAcquisition(Studio studio, Datastore store) {
 		
 		stopAcq_ = false;
 		running_ = true;

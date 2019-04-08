@@ -127,7 +127,7 @@ public class BrightFieldAcquisition implements Acquisition{
 	}
 
 	@Override
-	public void startAcquisition(Studio studio, Datastore store) {
+	public void performAcquisition(Studio studio, Datastore store) {
 		// turn on BF
 		bfprop_.setPropertyValue(TwoStateUIProperty.getOnStateName());
 

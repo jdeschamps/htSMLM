@@ -17,7 +17,7 @@ public class ROIEvaluationAcquisition implements Acquisition {
 	}
 
 	@Override
-	public void startAcquisition(Studio studio, Datastore store) {
+	public void performAcquisition(Studio studio, Datastore store) {
 		// TODO Auto-generated method stub
 	}
 

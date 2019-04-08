@@ -113,7 +113,7 @@ public class SnapAcquisition implements Acquisition{
 	}
 
 	@Override
-	public void startAcquisition(Studio studio, Datastore store) {
+	public void performAcquisition(Studio studio, Datastore store) {
 
 		studio.displays().createDisplay(store);
 		

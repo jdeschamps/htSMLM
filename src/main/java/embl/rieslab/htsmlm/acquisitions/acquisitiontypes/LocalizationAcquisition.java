@@ -223,7 +223,7 @@ public class LocalizationAcquisition implements Acquisition{
 	}
 
 	@Override
-	public void startAcquisition(Studio studio, Datastore store) {
+	public void performAcquisition(Studio studio, Datastore store) {
 		
 		if(useactivation_){			
 			activationTask_.initializeTask();

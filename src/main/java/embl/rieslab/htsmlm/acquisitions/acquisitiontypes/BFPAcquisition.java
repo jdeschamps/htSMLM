@@ -127,7 +127,7 @@ public class BFPAcquisition implements Acquisition{
 	}
 
 	@Override
-	public void startAcquisition(Studio studio, Datastore store) {
+	public void performAcquisition(Studio studio, Datastore store) {
 		// turn on BFP
 		bfpprop_.setPropertyValue(TwoStateUIProperty.getOnStateName());
 

@@ -32,7 +32,7 @@ public class ZStackAcquisition implements Acquisition {
 	private final static String PANE_NAME = "Autofocus panel";
 	private final static String LABEL_EXPOSURE = "Exposure (ms):";
 	private final static String LABEL_PAUSE = "Pause (s):";
-	private final static String LABEL_ZSTART = "Z start:";
+	private final static String LABEL_ZSTART = "Z start / Z end / Z step:";
 	private final static String LABEL_ZEND = "Z end (um):";
 	private final static String LABEL_ZSTEP = "Z step (um):";
 	private final static String LABEL_ZDEVICE = "Z stage:";
@@ -108,7 +108,7 @@ public class ZStackAcquisition implements Acquisition {
 	}
 
 	@Override
-	public void startAcquisition(Studio studio, Datastore store) {
+	public void performAcquisition(Studio studio, Datastore store) {
 		stopAcq_ = false;
 		running_ = true;
 		

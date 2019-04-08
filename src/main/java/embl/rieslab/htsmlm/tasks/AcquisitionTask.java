@@ -116,8 +116,6 @@ public class AcquisitionTask implements Task<Integer>{
 			if (numPosition > 0) {
 				MultiStagePosition currPos;
 
-				String xystage = core_.getXYStageDevice();
-
 				// retrieve max number of positions
 				int maxNumPosition = numPosition;
 				if (exp_.getNumberPositions() > 0) {
@@ -202,7 +200,8 @@ public class AcquisitionTask implements Task<Integer>{
 				if(sm == SaveMode.MULTIPAGE_TIFF){
 					try {
 						currAcqStore = studio_.data().createMultipageTIFFDatastore(exppath_+name, true, true);
-						currAcq.startAcquisition(studio_, currAcqStore);
+						currAcq.performAcquisition(studio_, currAcqStore);
+						currAcqStore.close();
 
 					} catch (IOException e) {
 						stop_ = true;
@@ -212,15 +211,16 @@ public class AcquisitionTask implements Task<Integer>{
 				} else {
 					try {
 						currAcqStore = studio_.data().createSinglePlaneTIFFSeriesDatastore(exppath_+name);
-						currAcq.startAcquisition(studio_, currAcqStore);
+						currAcq.performAcquisition(studio_, currAcqStore);
+						currAcqStore.close();
+
 					} catch (IOException e) {
 						stop_ = true;
 						System.out.println("Failed to create single page TIFF");
 						e.printStackTrace();
 					}
 				}
-				
-				
+								
 				if (stop_) {
 					System.out.println("Stop is true in acquisition");
 					break;

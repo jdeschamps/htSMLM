@@ -12,7 +12,7 @@ public interface Acquisition {
 	
 	public abstract GenericAcquisitionParameters getParameters();
 	
-	public abstract void startAcquisition(Studio studio, Datastore store); // should make sure that the store is empty
+	public abstract void performAcquisition(Studio studio, Datastore store); // should make sure that the store is empty
 	
 	public abstract void stopAcquisition(); 
 	
