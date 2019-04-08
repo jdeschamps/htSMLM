@@ -146,7 +146,7 @@ public class AcquisitionTask implements Task<Integer>{
 						performAcquisitions(i);
 						
 						if (stop_) {
-							System.out.println("Stop is true in position");
+							System.out.println("Stop before next position");
 							break;
 						}
 
@@ -160,9 +160,7 @@ public class AcquisitionTask implements Task<Integer>{
 					}
 				}
 			} else { // perform on current position
-				System.out.println("Position list empty");
-				
-				// TODO show message?
+				performAcquisitions(0);
 			}
 
 			publish(-1);
