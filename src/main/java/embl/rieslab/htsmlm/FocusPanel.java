@@ -123,10 +123,10 @@ public class FocusPanel extends ConfigurablePanel {
         	        return;
         	    } 
 				try {
-					double val = Double.parseDouble(typed);
+					double val = Double.parseDouble(typed.replaceAll(",","."));
 					if (val >= 0) {
 						if (!togglebuttonLock_.isSelected()) {
-							setUIPropertyValue(FOCUS_POSITION, typed);
+							setUIPropertyValue(FOCUS_POSITION, typed.replaceAll(",","."));
 						}
 					}
 				} catch (Exception e) {
@@ -142,10 +142,10 @@ public class FocusPanel extends ConfigurablePanel {
         	        return;
         	    } 
 				try {
-					double val = Double.parseDouble(typed);
+					double val = Double.parseDouble(typed.replaceAll(",","."));
 					if (val >= 0) {
 						if (!togglebuttonLock_.isSelected()) {
-							setUIPropertyValue(FOCUS_POSITION, typed);
+							setUIPropertyValue(FOCUS_POSITION, typed.replaceAll(",","."));
 						}
 					}
 				} catch (Exception exc) {
