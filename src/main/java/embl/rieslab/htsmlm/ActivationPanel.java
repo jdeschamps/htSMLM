@@ -629,7 +629,6 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		}
 		
 		if(activate_){
-			
 			setUIPropertyValue(LASER_PULSE,String.valueOf(output[ActivationTask.OUTPUT_NEWPULSE]));
 		}
 		
@@ -643,7 +642,7 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		params[ActivationTask.PARAM_CUTOFF] = cutoff_; 
 		params[ActivationTask.PARAM_dT] = dT_; 
 		params[ActivationTask.PARAM_FEEDBACK] = feedback_; 
-		params[ActivationTask.PARAM_MAXPULSE] = (double) maxpulse_; // what to do for this? 
+		params[ActivationTask.PARAM_MAXPULSE] = (double) maxpulse_;
 		params[ActivationTask.PARAM_N0] = N0_; 
 		
 		if(utils.isNumeric(getUIProperty(LASER_PULSE).getPropertyValue())){

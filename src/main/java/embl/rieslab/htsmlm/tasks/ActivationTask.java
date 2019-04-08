@@ -156,7 +156,7 @@ public class ActivationTask implements Task<Double> {
 	
 	private void getPulse(double feedback, double N0, double pulse, double maxpulse){
 		double N = output_[OUTPUT_N];
-		double temppulse=0;
+		double temppulse = 0;
 		double min = 0.4;
 		
 		if(Math.abs(previous_pulse_-pulse)>1){ // in case of user intervention
@@ -166,7 +166,6 @@ public class ActivationTask implements Task<Double> {
 		
 		double npulse = previous_pulse_;// avoid getting stuck between 0 and 1 (otherwise newp=0.4+0.4*1.99*coeff < 1 unless coeff ~> 0.7 
 										// which is not good for higher values of the pulse) by reusing the previous pulse and not the current pulse
-		
 		
 		if(core_.isSequenceRunning()){
 						
@@ -182,9 +181,11 @@ public class ActivationTask implements Task<Double> {
 				return;
 			}
 			
+			
 			if(temppulse < min){
 				temppulse = min;
 			}
+			
 	
 			// if new pulse is higher than camera exposure
 			double exp;
@@ -207,7 +208,7 @@ public class ActivationTask implements Task<Double> {
 			npulse = maxpulse;
 		}		
 		
-		
+	
 		previous_pulse_ = npulse;
 		output_[OUTPUT_NEWPULSE] = Math.floor(npulse);
 	}

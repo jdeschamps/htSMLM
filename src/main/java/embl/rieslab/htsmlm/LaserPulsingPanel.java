@@ -226,6 +226,7 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 	protected void initializeParameters() {
 		title_ = "UV";	
 		color_ = Color.black;
+		maxpulse_  = 10000;
 		
 		addUIParameter(new StringUIParameter(this, PARAM_TITLE,"Panel title.",title_));
 		addUIParameter(new ColorUIParameter(this, PARAM_COLOR,"Default value for large z stage step.",color_));
@@ -296,9 +297,7 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 	}
 
 	@Override
-	protected void initializeInternalProperties() {
-		maxpulse_  = 10000;
-		
+	protected void initializeInternalProperties() {		
 		addInternalProperty(new IntegerInternalProperty(this, INTERNAL_MAXPULSE, maxpulse_));
 	}
 
