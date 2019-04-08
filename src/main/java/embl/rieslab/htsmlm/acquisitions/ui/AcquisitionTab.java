@@ -467,9 +467,9 @@ public class AcquisitionTab extends JPanel {
 				} else if (prop instanceof SingleStateUIProperty) {
 					model.addRow(new Object[] {prop.getFriendlyName(),((SingleStateUIProperty) prop).getStateValue() });
 				} else if (prop instanceof MultiStateUIProperty) {
-					model.addRow(new Object[] {prop.getFriendlyName(),((MultiStateUIProperty) prop).getStatesName()[0] });
+					model.addRow(new Object[] {prop.getFriendlyName(),((MultiStateUIProperty) prop).getStateNameFromValue(prop.getPropertyValue()) });
 				} else if (prop instanceof ImmutableMultiStateUIProperty) {
-					model.addRow(new Object[] {prop.getFriendlyName(),((ImmutableMultiStateUIProperty) prop).getStatesName()[0] });
+					model.addRow(new Object[] {prop.getFriendlyName(),((ImmutableMultiStateUIProperty) prop).getStateName(prop.getPropertyValue())});
 				} else {
 					model.addRow(new Object[] {prop.getFriendlyName(),prop.getPropertyValue() });
 				}
@@ -502,9 +502,9 @@ public class AcquisitionTab extends JPanel {
 					if (getValueAt(row, column) instanceof Boolean) {
 						return super.getDefaultEditor(Boolean.class);
 					} else if (props_.get(propsfriendlyname_.get(s)) instanceof MultiStateUIProperty) { 
-						return new DefaultCellEditor(new JComboBox<String>(((MultiStateUIProperty) props_.get(propsfriendlyname_.get(s))).getStatesName()));
+						return new DefaultCellEditor(new JComboBox<String>(((MultiStateUIProperty) props_.get(propsfriendlyname_.get(s))).getStateNames()));
 					} else if (props_.get(propsfriendlyname_.get(s)) instanceof ImmutableMultiStateUIProperty) { 
-						return new DefaultCellEditor(new JComboBox<String>(((ImmutableMultiStateUIProperty) props_.get(propsfriendlyname_.get(s))).getStatesName()));
+						return new DefaultCellEditor(new JComboBox<String>(((ImmutableMultiStateUIProperty) props_.get(propsfriendlyname_.get(s))).getStateNames()));
 					} else if (props_.get(propsfriendlyname_.get(s)).hasMMPropertyAllowedValues()){
 						return new DefaultCellEditor(new JComboBox<String>(props_.get(propsfriendlyname_.get(s)).getAllowedValues()));
 					} else {

@@ -64,6 +64,7 @@ public class AcquisitionWizard {
 		frame_.add(contentpane);
 		
 		frame_.pack();
+		frame_.setLocationRelativeTo(null);
 		frame_.setVisible(true);
 	}
 

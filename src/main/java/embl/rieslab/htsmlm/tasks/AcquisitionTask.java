@@ -1,8 +1,10 @@
 package main.java.embl.rieslab.htsmlm.tasks;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import javax.swing.SwingWorker;
@@ -170,6 +172,9 @@ public class AcquisitionTask implements Task<Integer>{
 
 		private void performAcquisitions(int pos){
 			
+			// create acq names
+			String[] acqShortName = createAcqShortNameSet(exp_.getAcquisitionList()).toArray(new String[0]);
+
 			// perform each acquisition sequentially
 			for (int k = 0; k < exp_.getAcquisitionList().size(); k++) {
 				currAcq = exp_.getAcquisitionList().get(k);
@@ -193,8 +198,8 @@ public class AcquisitionTask implements Task<Integer>{
 				}
 				
 				// build name
-				String name = "Pos"+String.valueOf(pos)+"_"+expname_+"_"+currAcq.getShortName();
-
+				String name = "Pos"+String.valueOf(pos)+"_"+expname_+"_"+acqShortName[k];
+				
 				// run acquisition
 				SaveMode sm = studio_.data().getPreferredSaveMode();
 				if(sm == SaveMode.MULTIPAGE_TIFF){
@@ -227,6 +232,22 @@ public class AcquisitionTask implements Task<Integer>{
 				}
 			}
 		}
+		private LinkedHashSet<String> createAcqShortNameSet(ArrayList<Acquisition> acquisitionList) {
+			LinkedHashSet<String> names = new LinkedHashSet<String>();
+			for (int k = 0; k < exp_.getAcquisitionList().size(); k++) {
+				if(!names.add(exp_.getAcquisitionList().get(k).getShortName())) {
+					addToSetWithIncrementalName(names, exp_.getAcquisitionList().get(k).getShortName(), 2);
+				}
+			}			
+			return null;
+		}
+
+		private void addToSetWithIncrementalName(LinkedHashSet<String> set, String element, int increment) {
+			if(!set.add(element+"_"+increment)) {
+				addToSetWithIncrementalName(set, element, increment++);
+			}
+		}
+		
 		/*
 		private String createAcqName(Acquisition acq, int i){
 			String acqname;
