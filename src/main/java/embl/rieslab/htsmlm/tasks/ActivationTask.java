@@ -72,6 +72,7 @@ public class ActivationTask implements Task<Double> {
 
 	@Override
 	public void stopTask() {
+		System.out.println("Stop requested in ActivationTask");
 		running_ = false;
 	}
 
@@ -101,55 +102,56 @@ public class ActivationTask implements Task<Double> {
 			width = (int) core_.getImageWidth();
 			height = (int) core_.getImageHeight();
 
-			int buffsize = core_.getImageBufferSize();
-
-			if (buffsize > HTSMLMConstants.CAM_BIT_DEPTH) {
+			// the buffer is not circular and is emptied as soon as it is full, therefore we check the number
+			// of images before pooling images.
+			if ((core_.getBufferTotalCapacity() - core_.getBufferFreeCapacity()) > HTSMLMConstants.FPGA_SEQUENCE_LENGTH) {
 				try {
 					tagged1 = core_.getLastTaggedImage();
 					tagged2 = core_.getNBeforeLastTaggedImage(HTSMLMConstants.FPGA_SEQUENCE_LENGTH);
+					
+					ip = new ShortProcessor(width, height);
+					ip2 = new ShortProcessor(width, height);
+
+					ip.setPixels(tagged1.pix);
+					ip2.setPixels(tagged2.pix);
+
+					imp = new ImagePlus("", ip);
+					imp2 = new ImagePlus("", ip2);
+
+					// Subtraction
+					imp3 = calcul.run("Substract create", imp, imp2);
+
+					// Gaussian filter
+					gau.blurGaussian(imp3.getProcessor(),
+							HTSMLMConstants.gaussianMaskSize,
+							HTSMLMConstants.gaussianMaskSize,
+							HTSMLMConstants.gaussianMaskPrecision);
+
+					try {
+						tempcutoff = imp3.getStatistics().mean + sdcoeff
+								* imp3.getStatistics().stdDev;
+					} catch (Exception e) {
+						tempcutoff = cutoff;
+					}
+
+					double newcutoff;
+					if (autocutoff) {
+						newcutoff = (1 - 1 / dT) * cutoff + tempcutoff / dT;
+						newcutoff = Math.floor(10 * newcutoff + 0.5) / 10;
+					} else {
+						newcutoff = cutoff;
+						if (newcutoff == 0) {
+							newcutoff = Math.floor(10 * tempcutoff + 0.5) / 10;;
+						}
+					}
+					
+					ip_ = NMSuppr.run(imp3, HTSMLMConstants.nmsMaskSize, newcutoff);
+					output_[OUTPUT_NEWCUTOFF] = newcutoff;
+					output_[OUTPUT_N] = (double) NMSuppr.getN();
 				} catch (Exception e) {
 					// exit?
+					e.printStackTrace();
 				}
-
-				ip = new ShortProcessor(width, height);
-				ip2 = new ShortProcessor(width, height);
-
-				ip.setPixels(tagged1.pix);
-				ip2.setPixels(tagged2.pix);
-
-				imp = new ImagePlus("", ip);
-				imp2 = new ImagePlus("", ip2);
-
-				// Subtraction
-				imp3 = calcul.run("Substract create", imp, imp2);
-
-				// Gaussian filter
-				gau.blurGaussian(imp3.getProcessor(),
-						HTSMLMConstants.gaussianMaskSize,
-						HTSMLMConstants.gaussianMaskSize,
-						HTSMLMConstants.gaussianMaskPrecision);
-
-				try {
-					tempcutoff = imp3.getStatistics().mean + sdcoeff
-							* imp3.getStatistics().stdDev;
-				} catch (Exception e) {
-					tempcutoff = cutoff;
-				}
-
-				double newcutoff;
-				if (autocutoff) {
-					newcutoff = (1 - 1 / dT) * cutoff + tempcutoff / dT;
-					newcutoff = Math.floor(10 * newcutoff + 0.5) / 10;
-				} else {
-					newcutoff = cutoff;
-					if (newcutoff == 0) {
-						newcutoff = Math.floor(10 * tempcutoff + 0.5) / 10;;
-					}
-				}
-				
-				ip_ = NMSuppr.run(imp3, HTSMLMConstants.nmsMaskSize, newcutoff);
-				output_[OUTPUT_NEWCUTOFF] = newcutoff;
-				output_[OUTPUT_N] = (double) NMSuppr.getN();
 			}
 		}
 	}
