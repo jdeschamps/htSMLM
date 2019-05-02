@@ -502,9 +502,9 @@ public class AcquisitionTab extends JPanel {
 					if (getValueAt(row, column) instanceof Boolean) {
 						return super.getDefaultEditor(Boolean.class);
 					} else if (props_.get(propsfriendlyname_.get(s)) instanceof MultiStateUIProperty) { 
-						return new DefaultCellEditor(new JComboBox<String>(((MultiStateUIProperty) props_.get(propsfriendlyname_.get(s))).getStateNames()));
+						return new DefaultCellEditor(new JComboBox<String>(((MultiStateUIProperty) props_.get(propsfriendlyname_.get(s))).getStatesName()));
 					} else if (props_.get(propsfriendlyname_.get(s)) instanceof ImmutableMultiStateUIProperty) { 
-						return new DefaultCellEditor(new JComboBox<String>(((ImmutableMultiStateUIProperty) props_.get(propsfriendlyname_.get(s))).getStateNames()));
+						return new DefaultCellEditor(new JComboBox<String>(((ImmutableMultiStateUIProperty) props_.get(propsfriendlyname_.get(s))).getStatesName()));
 					} else if (props_.get(propsfriendlyname_.get(s)).hasMMPropertyAllowedValues()){
 						return new DefaultCellEditor(new JComboBox<String>(props_.get(propsfriendlyname_.get(s)).getAllowedValues()));
 					} else {
