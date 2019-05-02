@@ -29,7 +29,7 @@ public class JProgressBarUpdater extends ComponentUpdater<JProgressBar>{
 	@Override
 	public void updateComponent(String val) {
 		if(utils.isNumeric(val)){
-			int value = (int) Math.round(Double.parseDouble(val));
+			int value = (int) Double.parseDouble(val);
 			component_.setValue(value);
 		}
 	}

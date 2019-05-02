@@ -62,7 +62,7 @@ public class QPDPanel extends ConfigurablePanel {
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = 0;
-//		c.fill = GridBagConstraints.BOTH;
+		//	c.fill = GridBagConstraints.BOTH;
 		c.insets = new Insets(2,2,2,2);
 		c.gridwidth = 3;
 		c.gridheight = 3;
