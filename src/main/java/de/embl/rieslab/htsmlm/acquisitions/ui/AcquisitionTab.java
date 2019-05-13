@@ -59,6 +59,10 @@ import main.java.de.embl.rieslab.htsmlm.flags.FocusLockFlag;
 import main.java.de.embl.rieslab.htsmlm.flags.FocusStabFlag;
 import main.java.de.embl.rieslab.htsmlm.flags.LaserFlag;
 
+/**
+ * This class is super messy and difficult to read... Need to go over it again.
+ * 
+ */
 public class AcquisitionTab extends JPanel {
 
 	/**
@@ -67,6 +71,7 @@ public class AcquisitionTab extends JPanel {
 	private static final long serialVersionUID = 7966565586677957738L;
 
 	public final static String KEY_IGNORED = "Ignored";
+	public final static String KEY_PRESET = "NewPreset"; // from MM
 	private final static String KEY_MMCONF = "Configuration settings";
 
 	private AcquisitionWizard wizard_;
@@ -263,15 +268,7 @@ public class AcquisitionTab extends JPanel {
 		temp = filt.filterStringProperties(props);
 		props = filt.filteredProperties(props);
 
-		///////////////////////////////////////////////////////////////// This works on
-		///////////////////////////////////////////////////////////////// the assumption
-		///////////////////////////////////////////////////////////////// that all
-		///////////////////////////////////////////////////////////////// lasers are
-		///////////////////////////////////////////////////////////////// called "Laser
-		///////////////////////////////////////////////////////////////// #"
-		///////////////////////////////////////////////////////////////// to mark a
-		///////////////////////////////////////////////////////////////// border between
-		///////////////////////////////////////////////////////////////// them
+		/////////This works on the assumption that all lasers are called "Laser #" to mark a border between them
 		if (temp.length > 0) {
 
 			// fine laser number of the first file
@@ -396,12 +393,15 @@ public class AcquisitionTab extends JPanel {
 
 	private JPanel createMMConfigTable(MMConfigurationGroupsRegistry mmconfigreg,
 			HashMap<String, String> mmconfigGroups) {
+		
+		// is mmconfigGroups supposed to be already set configurations?
+		
 		JPanel pane = new JPanel();
 
 		// Defines table model
 		DefaultTableModel model = new DefaultTableModel(new Object[] { "Property", "Value" }, 0);
 
-		final HashMap<String, String[]> map = mmconfigreg.getMMConfigurationChannels();
+		final HashMap<String, String[]> map = mmconfigreg.getMMConfigurationChannels();// keys = configuration group's name, object = list of configurations
 		final HashMap<String, MMConfigurationGroup> groups = mmconfigreg.getMMConfigurationGroups();
 
 		String[] keys = map.keySet().toArray(new String[0]);
@@ -411,14 +411,28 @@ public class AcquisitionTab extends JPanel {
 		for (int i = 0; i < keys.length; i++) {
 			if (map.get(keys[i]) != null && map.get(keys[i]).length > 0) {
 				String s = mmconfigreg.getCurrentMMConfigurationChannel(keys[i]);
-				if (s.length() > 0) {
-					model.addRow(new Object[] { keys[i], s });
+				if (s.length() > 0 && !s.equals(KEY_PRESET)) {
+					System.out.println("Key: "+keys[i]);
+					System.out.println("lengthy S: "+s);
+					model.addRow(new Object[] { keys[i], s }); // I guess this is when something has been set in MM already?
 				} else if (s != null) {
+					System.out.println("------");
+					System.out.println("Key: "+keys[i]);
+					System.out.println("S: "+s);
+					System.out.println("Size: "+groups.get(keys[i]).getAffectedProperties().size());
+					System.out.println(mmconfigGroups.containsKey(keys[i]) && mmconfigreg.getMMConfigurationGroups().get(keys[i])
+							.hasConfiguration(mmconfigGroups.get(keys[i])));
+
 					if (mmconfigGroups.containsKey(keys[i]) && mmconfigreg.getMMConfigurationGroups().get(keys[i])
 							.hasConfiguration(mmconfigGroups.get(keys[i]))) {
-						model.addRow(new Object[] { keys[i], mmconfigGroups.get(keys[i]) });
+						
+						model.addRow(new Object[] { keys[i], mmconfigGroups.get( keys[i]) });
 					} else {
-						model.addRow(new Object[] { keys[i], KEY_IGNORED });
+						if(groups.get(keys[i]).getAffectedProperties().size()  == 1) {
+							model.addRow(new Object[] { keys[i], groups.get(keys[i]).getAffectedProperties().get(0).getValue()});
+						} else {
+							model.addRow(new Object[] { keys[i], KEY_IGNORED });
+						}
 					}
 				}
 			}
@@ -643,7 +657,7 @@ public class AcquisitionTab extends JPanel {
 			int nrow = model.getRowCount();
 			for (int k = 0; k < nrow; k++) { // loop through the rows
 				String group = (String) model.getValueAt(k, 0);
-				String val = (String) model.getValueAt(k, 1);
+				String val = String.valueOf(model.getValueAt(k, 1));
 
 				if (!val.equals(KEY_IGNORED)) {
 					confgroups.put(group, val);
@@ -747,19 +761,20 @@ public class AcquisitionTab extends JPanel {
 			Component comp;
 
 			SliderPanel slider = new SliderPanel();
+
 			if (prop.getType().equals(MMProperty.TYPE_INTEGER)) {
 				slider.setLimits((int) prop.getMin(), (int) prop.getMax());
 			} if (prop.getType().equals(MMProperty.TYPE_FLOAT)) {
-				slider.setLimits((double) prop.getMin(), (double) prop.getMax());
+				slider.setLimits((float) prop.getMin(), (float) prop.getMax());
 			} else {
 				slider.setLimits(Double.parseDouble((String) prop.getMin()), Double.parseDouble((String) prop.getMin()));
 			}
 			try {
-				slider.setText((String) value);
+				slider.setText(String.valueOf(value));
 			} catch (ParseException ex) {
 				ReportingUtils.logError(ex);
 			}
-			slider.setToolTipText((String) value);
+			slider.setToolTipText(String.valueOf(value));
 			comp = slider;
 
 			comp.setBackground(DaytimeNighttime.getInstance().getBackgroundColor());
@@ -813,13 +828,13 @@ public class AcquisitionTab extends JPanel {
 	    	if (prop.getType().equals(MMProperty.TYPE_INTEGER)) {
 	    		slider_.setLimits((int) prop.getMin(), (int) prop.getMax());
 			} if (prop.getType().equals(MMProperty.TYPE_FLOAT)) {
-				slider_.setLimits((double) prop.getMin(), (double) prop.getMax());
+				slider_.setLimits((float) prop.getMin(), (float) prop.getMax());
 			} else {
 				slider_.setLimits(Double.parseDouble((String) prop.getMin()), Double.parseDouble((String) prop.getMin()));
 			}
 	    	
 			try {
-				slider_.setText((String) value);
+				slider_.setText(String.valueOf(value));
 			} catch (ParseException ex) {
 				ReportingUtils.logError(ex);
 			}

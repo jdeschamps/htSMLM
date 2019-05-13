@@ -2,7 +2,12 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.embl.rieslab</groupId>
   <artifactId>htSMLM</artifactId>
-  <version>1.0</version>
+  <version>1.0-SNAPSHOTs</version>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+  
   <build>
     <sourceDirectory>src</sourceDirectory>
     <plugins>
@@ -32,11 +37,52 @@
   		<artifactId>jackson-core</artifactId>
   		<version>2.8.11</version>
   	</dependency>
-  	<dependency>
-  		<groupId>edu.emory.mathcs</groupId>
-  		<artifactId>JTransforms</artifactId>
-  		<version>2.4</version>
-  	</dependency>
+	<dependency>
+		<groupId>edu.emory.mathcs</groupId>
+		<artifactId>JTransforms</artifactId>
+		<version>2.4</version>
+	</dependency>
+	<dependency>
+		<groupId>org.micromanager</groupId>
+		<artifactId>MMCoreJ</artifactId>
+		<version>2.0.0-SNAPSHOT</version>
+		<scope>provided</scope>
+	</dependency>
+	<dependency>
+		<groupId>org.micromanager</groupId>
+		<artifactId>MMAcqEngine</artifactId>
+		<version>2.0.0-SNAPSHOT</version>
+		<scope>provided</scope>
+	</dependency>
+	<dependency>
+		<groupId>org.micromanager</groupId>
+		<artifactId>MMJ_</artifactId>
+		<version>2.0.0-SNAPSHOT</version>
+		<scope>provided</scope>
+	</dependency>
+	<dependency>
+		<groupId>org.scijava</groupId>
+		<artifactId>scijava-common</artifactId>
+		<version>2.50.1</version>
+		<scope>provided</scope>
+	</dependency>
+	<dependency>
+		<groupId>net.imagej</groupId>
+		<artifactId>ij</artifactId>
+		<version>1.49h</version>
+		<scope>provided</scope>
+	</dependency>
+	<dependency>
+		<groupId>jfree</groupId>
+		<artifactId>jfreechart</artifactId>
+		<version>1.0.13</version>
+		<scope>provided</scope>
+	</dependency>
+	<dependency>
+		<groupId>de.embl.rieslab</groupId>
+		<artifactId>EMU</artifactId>
+		<version>1.0-SNAPSHOT</version>
+		<scope>provided</scope>
+	</dependency>
   </dependencies>
-  
 </project>
