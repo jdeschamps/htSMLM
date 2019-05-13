@@ -71,36 +71,42 @@ public class AcquisitionTab extends JPanel {
 	private static final long serialVersionUID = 7966565586677957738L;
 
 	public final static String KEY_IGNORED = "Ignored";
-	public final static String KEY_PRESET = "NewPreset"; // from MM
 	private final static String KEY_MMCONF = "Configuration settings";
 
 	private AcquisitionWizard wizard_;
 	private AcquisitionFactory factory_;
-	private JPanel acqcard_;
-	private JPanel[] acqpanes_, acqpanels_;
-	private JComboBox<String> acqtype_;
-	private String[] acqtypes_;
+	private JPanel acqcard_; // card layout containing all acqTab
+	private JPanel[] acqTab_; // tab for each acquisition
+	private JPanel[] acqSettingsPanels_; // specific acquisition settings in the acq tab
+	private JComboBox<String> acqTypeComboBox_;
+	private String[] acqTypesArray_;
 	private int currind;
 	private HashMap<String, UIProperty> props_;
 	private HashMap<String, String> propsfriendlyname_;
 
+	/**
+	 * Creates a default acquisition tab panel.
+	 *  
+	 * @param wizard Current acquisition wizard.
+	 * @param factory Acquisition factory.
+	 */
 	public AcquisitionTab(AcquisitionWizard wizard, AcquisitionFactory factory) {
 		factory_ = factory;
 		wizard_ = wizard;
 
 		// Get the array of acquisition types and create a JComboBox
-		acqtypes_ = factory_.getAcquisitionTypeList();
-		acqtype_ = new JComboBox<String>(acqtypes_);
-		acqtype_.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
-		acqtype_.addActionListener(new ActionListener() {
+		acqTypesArray_ = factory_.getAcquisitionTypeList();
+		acqTypeComboBox_ = new JComboBox<String>(acqTypesArray_);
+		acqTypeComboBox_.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
+		acqTypeComboBox_.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				changeAcquisition((String) acqtype_.getSelectedItem());
+				changeAcquisition((String) acqTypeComboBox_.getSelectedItem());
 			}
 		});
 
 		// Set the current tab acquisition
 		currind = 0;
-		this.setName(acqtypes_[currind]);
+		this.setName(acqTypesArray_[currind]);
 
 		// Filter out read-only properties from the system properties
 		props_ = (new NonConfigGroupPropertyFilter(new AllocatedPropertyFilter(new ReadOnlyPropertyFilter())))
@@ -115,50 +121,59 @@ public class AcquisitionTab extends JPanel {
 
 		// Create acquisition panels
 		acqcard_ = new JPanel(new CardLayout());
-		acqpanes_ = new JPanel[acqtypes_.length];
-		acqpanels_ = new JPanel[acqtypes_.length];
-		for (int i = 0; i < acqtypes_.length; i++) {
+		acqTab_ = new JPanel[acqTypesArray_.length];
+		acqSettingsPanels_ = new JPanel[acqTypesArray_.length];
+		for (int i = 0; i < acqTypesArray_.length; i++) {
 
-			Acquisition acq = factory_.getAcquisition(acqtypes_[i]);
+			Acquisition acq = factory_.getAcquisition(acqTypesArray_[i]);
 			JPanel pane = acq.getPanel();
 
 			pane.setBorder(BorderFactory.createTitledBorder(null, "Acquisition Settings",
 					TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, new Color(0, 0, 0)));
 			((TitledBorder) pane.getBorder())
 					.setTitleFont(((TitledBorder) pane.getBorder()).getTitleFont().deriveFont(Font.BOLD, 12));
-
-			acqpanels_[i] = pane;
-			acqpanes_[i] = createPanel(acqpanels_[i], acq.getPropertyFilter(), new HashMap<String, String>(),
+			
+			acqSettingsPanels_[i] = pane;
+			
+			// creates the default panel
+			acqTab_[i] = createPanel(acqSettingsPanels_[i], acq.getPropertyFilter(), new HashMap<String, String>(),
 					new HashMap<String, String>());
-			acqcard_.add(acqpanes_[i], acqtypes_[i]);
+			acqcard_.add(acqTab_[i], acqTypesArray_[i]);
 		}
 
 		setUpPanel();
 	}
 
+	/**
+	 * Creates an acquisition tab panel from an acquisition.
+	 * 
+	 * @param wizard Current acquisition wizard.
+	 * @param factory Acquisition factory.
+	 * @param acquisition Current acquisition.
+	 */
 	public AcquisitionTab(AcquisitionWizard wizard, AcquisitionFactory factory, Acquisition acquisition) {
 		factory_ = factory;
 		wizard_ = wizard;
 
 		// Get the array of acquisition types and create a JComboBox
-		acqtypes_ = factory_.getAcquisitionTypeList();
-		acqtype_ = new JComboBox<String>(acqtypes_);
-		acqtype_.addActionListener(new ActionListener() {
+		acqTypesArray_ = factory_.getAcquisitionTypeList();
+		acqTypeComboBox_ = new JComboBox<String>(acqTypesArray_);
+		acqTypeComboBox_.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				changeAcquisition((String) acqtype_.getSelectedItem());
+				changeAcquisition((String) acqTypeComboBox_.getSelectedItem());
 			}
 		});
 
 		// Set current acquisition to the acquisition passed as parameter
 		currind = 0;
-		for (int i = 0; i < acqtypes_.length; i++) {
-			if (acqtypes_[i].equals(acquisition.getType().getTypeValue())) {
+		for (int i = 0; i < acqTypesArray_.length; i++) {
+			if (acqTypesArray_[i].equals(acquisition.getType().getTypeValue())) {
 				currind = i;
 				break;
 			}
 		}
-		this.setName(acqtypes_[currind]);
-		acqtype_.setSelectedIndex(currind);
+		this.setName(acqTypesArray_[currind]);
+		acqTypeComboBox_.setSelectedIndex(currind);
 
 		// Filter out read-only properties from the system properties
 		props_ = (new NonConfigGroupPropertyFilter(new AllocatedPropertyFilter(new ReadOnlyPropertyFilter())))
@@ -174,9 +189,9 @@ public class AcquisitionTab extends JPanel {
 		// Create acquisition panels and set the property values for the current
 		// acquisition tab
 		acqcard_ = new JPanel(new CardLayout());
-		acqpanes_ = new JPanel[acqtypes_.length];
-		acqpanels_ = new JPanel[acqtypes_.length];
-		for (int i = 0; i < acqtypes_.length; i++) {
+		acqTab_ = new JPanel[acqTypesArray_.length];
+		acqSettingsPanels_ = new JPanel[acqTypesArray_.length];
+		for (int i = 0; i < acqTypesArray_.length; i++) {
 			if (i == currind) {
 				JPanel pane = acquisition.getPanel();
 
@@ -184,28 +199,30 @@ public class AcquisitionTab extends JPanel {
 						TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, new Color(0, 0, 0)));
 				((TitledBorder) pane.getBorder())
 						.setTitleFont(((TitledBorder) pane.getBorder()).getTitleFont().deriveFont(Font.BOLD, 12));
-				acqpanels_[i] = pane;
-				acqpanes_[i] = createPanel(acqpanels_[i], acquisition.getPropertyFilter(),
+				acqSettingsPanels_[i] = pane;
+				
+				// creates a panel by passing the presets
+				acqTab_[i] = createPanel(acqSettingsPanels_[i], acquisition.getPropertyFilter(),
 						acquisition.getAcquisitionParameters().getMMConfigurationGroupValues(),
 						acquisition.getAcquisitionParameters().getPropertyValues());
-				acqcard_.add(acqpanes_[i], acqtypes_[i]);
+				acqcard_.add(acqTab_[i], acqTypesArray_[i]);
 			} else {
-				acqpanels_[i] = factory_.getAcquisition(acqtypes_[i]).getPanel();
-				acqpanes_[i] = createPanel(acqpanels_[i], factory_.getAcquisition(acqtypes_[i]).getPropertyFilter(),
+				acqSettingsPanels_[i] = factory_.getAcquisition(acqTypesArray_[i]).getPanel();
+				acqTab_[i] = createPanel(acqSettingsPanels_[i], factory_.getAcquisition(acqTypesArray_[i]).getPropertyFilter(),
 						new HashMap<String, String>(), new HashMap<String, String>());
-				acqcard_.add(acqpanes_[i], acqtypes_[i]);
+				acqcard_.add(acqTab_[i], acqTypesArray_[i]);
 			}
 		}
 
 		setUpPanel();
 
 		CardLayout cl = (CardLayout) (acqcard_.getLayout());
-		cl.show(acqcard_, acqtypes_[currind]);
+		cl.show(acqcard_, acqTypesArray_[currind]);
 
 	}
 
-	private JPanel createPanel(JPanel acqpane, PropertyFilter filter, HashMap<String, String> mmconfigGroups,
-			HashMap<String, String> propertyValues) {
+	private JPanel createPanel(JPanel acqpane, PropertyFilter filter, HashMap<String, String> mmconfigGroupValues,
+			HashMap<String, String> uipropertyValues) {
 		JPanel pane = new JPanel();
 		pane.setLayout(new BoxLayout(pane, BoxLayout.PAGE_AXIS));
 
@@ -217,7 +234,7 @@ public class AcquisitionTab extends JPanel {
 		pane.add(Box.createVerticalStrut(10));
 
 		// MM config groups
-		JPanel mmconfig = createMMConfigTable(wizard_.getMMConfigurationGroups(), mmconfigGroups);
+		JPanel mmconfig = createMMConfigTable(wizard_.getMMConfigurationRegistry(), mmconfigGroupValues);
 		mmconfig.setBorder(BorderFactory.createTitledBorder(null, KEY_MMCONF, TitledBorder.DEFAULT_JUSTIFICATION,
 				TitledBorder.DEFAULT_POSITION, null, new Color(0, 0, 0)));
 		((TitledBorder) mmconfig.getBorder())
@@ -237,7 +254,7 @@ public class AcquisitionTab extends JPanel {
 		props = filt.filteredProperties(props);
 
 		if (temp.length > 0) {
-			JPanel focstab = createPropertyTable(temp, true, propertyValues);
+			JPanel focstab = createPropertyTable(temp, true, uipropertyValues);
 			focstab.setBorder(BorderFactory.createTitledBorder(null, "Focus stabilization",
 					TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, new Color(0, 0, 0)));
 			((TitledBorder) focstab.getBorder())
@@ -253,7 +270,7 @@ public class AcquisitionTab extends JPanel {
 		props = filt.filteredProperties(props);
 
 		if (temp.length > 0) {
-			JPanel fw = createPropertyTable(temp, false, propertyValues);
+			JPanel fw = createPropertyTable(temp, false, uipropertyValues);
 			fw.setBorder(BorderFactory.createTitledBorder(null, "Filter wheel", TitledBorder.DEFAULT_JUSTIFICATION,
 					TitledBorder.DEFAULT_POSITION, null, new Color(0, 0, 0)));
 			((TitledBorder) fw.getBorder())
@@ -311,23 +328,23 @@ public class AcquisitionTab extends JPanel {
 				} else if (ind2 == ind && j == temp.length - 1) {
 					// create a jpanel
 					templaser.add(temp[j]);
-					JPanel subpanel = createPropertyTable(templaser.toArray(new String[0]), false, propertyValues);
+					JPanel subpanel = createPropertyTable(templaser.toArray(new String[0]), false, uipropertyValues);
 					lasertab.add(subpanel);
 				} else if (ind2 != ind && j == temp.length - 1) {
 					// create a jpanel
-					JPanel subpanel = createPropertyTable(templaser.toArray(new String[0]), false, propertyValues);
+					JPanel subpanel = createPropertyTable(templaser.toArray(new String[0]), false, uipropertyValues);
 					lasertab.add(subpanel);
 
 					templaser = new ArrayList<String>();
 					templaser.add(temp[j]);
 
-					subpanel = createPropertyTable(templaser.toArray(new String[0]), false, propertyValues);
+					subpanel = createPropertyTable(templaser.toArray(new String[0]), false, uipropertyValues);
 					lasertab.add(subpanel);
 				} else {
 					ind = ind2;
 
 					// create a jpanel
-					JPanel subpanel = createPropertyTable(templaser.toArray(new String[0]), false, propertyValues);
+					JPanel subpanel = createPropertyTable(templaser.toArray(new String[0]), false, uipropertyValues);
 					lasertab.add(subpanel);
 
 					templaser = new ArrayList<String>();
@@ -345,7 +362,7 @@ public class AcquisitionTab extends JPanel {
 		props = filt.filteredProperties(props);
 
 		if (temp.length > 0) {
-			JPanel twostate = createPropertyTable(temp, false, propertyValues);
+			JPanel twostate = createPropertyTable(temp, false, uipropertyValues);
 			twostate.setBorder(BorderFactory.createTitledBorder(null, "Two-state", TitledBorder.DEFAULT_JUSTIFICATION,
 					TitledBorder.DEFAULT_POSITION, null, new Color(0, 0, 0)));
 			((TitledBorder) twostate.getBorder())
@@ -381,7 +398,7 @@ public class AcquisitionTab extends JPanel {
 		contentpane.add(Box.createVerticalStrut(5));
 
 		JPanel combopanel = new JPanel(new GridLayout(0, 4));
-		combopanel.add(acqtype_);
+		combopanel.add(acqTypeComboBox_);
 		contentpane.add(combopanel);
 
 		contentpane.add(acqcard_);
@@ -391,48 +408,47 @@ public class AcquisitionTab extends JPanel {
 
 	}
 
-	private JPanel createMMConfigTable(MMConfigurationGroupsRegistry mmconfigreg,
-			HashMap<String, String> mmconfigGroups) {
+	private JPanel createMMConfigTable(MMConfigurationGroupsRegistry mmconfigurationRegistry,
+			HashMap<String, String> mmconfigGroupValues) {
 		
-		// is mmconfigGroups supposed to be already set configurations?
+		// mmconfigGroupValues are the values to set in the table, if there
+		// mmconfigurationRegistry holds the reference to all configuration groups
 		
 		JPanel pane = new JPanel();
 
 		// Defines table model
 		DefaultTableModel model = new DefaultTableModel(new Object[] { "Property", "Value" }, 0);
 
-		final HashMap<String, String[]> map = mmconfigreg.getMMConfigurationChannels();// keys = configuration group's name, object = list of configurations
-		final HashMap<String, MMConfigurationGroup> groups = mmconfigreg.getMMConfigurationGroups();
+		final HashMap<String, String[]> map = mmconfigurationRegistry.getMMConfigurationChannels();// keys = configuration group's name, object = list of configurations
+		final HashMap<String, MMConfigurationGroup> groups = mmconfigurationRegistry.getMMConfigurationGroups(); // hashmap of the configuration group objects
 
 		String[] keys = map.keySet().toArray(new String[0]);
 		Arrays.sort(keys);
 
 		// For each configuration group
 		for (int i = 0; i < keys.length; i++) {
-			if (map.get(keys[i]) != null && map.get(keys[i]).length > 0) {
-				String s = mmconfigreg.getCurrentMMConfigurationChannel(keys[i]);
-				if (s.length() > 0 && !s.equals(KEY_PRESET)) {
-					System.out.println("Key: "+keys[i]);
-					System.out.println("lengthy S: "+s);
-					model.addRow(new Object[] { keys[i], s }); // I guess this is when something has been set in MM already?
-				} else if (s != null) {
-					System.out.println("------");
-					System.out.println("Key: "+keys[i]);
-					System.out.println("S: "+s);
-					System.out.println("Size: "+groups.get(keys[i]).getAffectedProperties().size());
-					System.out.println(mmconfigGroups.containsKey(keys[i]) && mmconfigreg.getMMConfigurationGroups().get(keys[i])
-							.hasConfiguration(mmconfigGroups.get(keys[i])));
-
-					if (mmconfigGroups.containsKey(keys[i]) && mmconfigreg.getMMConfigurationGroups().get(keys[i])
-							.hasConfiguration(mmconfigGroups.get(keys[i]))) {
-						
-						model.addRow(new Object[] { keys[i], mmconfigGroups.get( keys[i]) });
+			if (map.get(keys[i]) != null && map.get(keys[i]).length > 0) { // if the String[] is not null and not empty
+				
+				String currentValue = mmconfigurationRegistry.getCurrentMMConfigurationChannel(keys[i]);
+				if (currentValue.length() > 0 && !mmconfigGroupValues.containsKey(keys[i])) { // this is when a value is set in MM but not in the acquisition
+					if(map.get(keys[i]).length == 1 && groups.get(keys[i]).getAffectedProperties().size() == 1) { // if the presets has only one preset value and one property then we show the value 
+						model.addRow(new Object[] { keys[i], groups.get(keys[i]).getAffectedProperties().get(0).getValue() }); 
 					} else {
-						if(groups.get(keys[i]).getAffectedProperties().size()  == 1) {
-							model.addRow(new Object[] { keys[i], groups.get(keys[i]).getAffectedProperties().get(0).getValue()});
-						} else {
-							model.addRow(new Object[] { keys[i], KEY_IGNORED });
-						}
+						model.addRow(new Object[] { keys[i], currentValue }); 
+					}
+				} else if (currentValue != null) { // no value currently set 
+		
+					if (mmconfigGroupValues.containsKey(keys[i]) && mmconfigurationRegistry.getMMConfigurationGroups().get(keys[i])
+							.hasConfiguration(mmconfigGroupValues.get(keys[i]))) { // if acquisition has a value set for this configuration and the configuration exists 
+						
+						model.addRow(new Object[] { keys[i], mmconfigGroupValues.get( keys[i]) }); // sets the value
+					} else if (mmconfigGroupValues.containsKey(keys[i]) && map.get(keys[i]).length == 1 && groups.get(keys[i]).getAffectedProperties().size() == 1){
+						
+						// if there is a value and the configuration group has only one preset and one property
+						model.addRow(new Object[] { keys[i], mmconfigGroupValues.get( keys[i]) }); // sets the value
+						
+					} else { 
+						model.addRow(new Object[] { keys[i], KEY_IGNORED });
 					}
 				}
 			}
@@ -447,7 +463,7 @@ public class AcquisitionTab extends JPanel {
 				case 0:
 					return new BoldTableCellRenderer(); // first column is written in bold font
 				case 1:
-					if (column == 1 && groups.get((String) this.getValueAt(row, 0)).getNumberOfMMProperties() == 1) {
+					if (column == 1 && groups.get((String) this.getValueAt(row, 0)).getNumberOfMMProperties() == 1 && groups.get((String) this.getValueAt(row, 0)).getGroupSize() == 1) {
 						if (groups.get((String) this.getValueAt(row, 0)).getAffectedProperties().get(0)
 								.hasLimits()) {
 							return new LimitedPropertyTableCellRenderer(groups.get((String) this.getValueAt(row, 0)).getAffectedProperties().get(0));
@@ -463,7 +479,8 @@ public class AcquisitionTab extends JPanel {
 			public TableCellEditor getCellEditor(int row, int column) {
 				String s = (String) this.getValueAt(row, 0);
 
-				if (column == 1 && groups.get((String) this.getValueAt(row, 0)).getNumberOfMMProperties() == 1) {
+				if (column == 1 && groups.get((String) this.getValueAt(row, 0)).getNumberOfMMProperties() == 1
+						 && groups.get((String) this.getValueAt(row, 0)).getGroupSize() == 1) {
 					if (groups.get((String) this.getValueAt(row, 0)).getAffectedProperties().get(0)
 							.hasAllowedValues()) {
 						String[] states = groups.get((String) this.getValueAt(row, 0)).getAffectedProperties().get(0)
@@ -673,13 +690,13 @@ public class AcquisitionTab extends JPanel {
 	}
 
 	public String getTypeName() {
-		return acqtypes_[currind];
+		return acqTypesArray_[currind];
 	}
 
 	private void changeAcquisition(String type) {
 		int temp = currind;
-		for (int i = 0; i < acqtypes_.length; i++) {
-			if (acqtypes_[i].equals(type)) {
+		for (int i = 0; i < acqTypesArray_.length; i++) {
+			if (acqTypesArray_[i].equals(type)) {
 				currind = i;
 				break;
 			}
@@ -698,18 +715,18 @@ public class AcquisitionTab extends JPanel {
 
 	public Acquisition getAcquisition() {
 		// get acquisition from factory with the right type
-		Acquisition acq = factory_.getAcquisition(acqtypes_[currind]);
+		Acquisition acq = factory_.getAcquisition(acqTypesArray_[currind]);
 
 		// set mm configuration groups
 		acq.getAcquisitionParameters()
-				.setMMConfigurationGroupValues(registerMMConfGroups(acqpanes_[currind], new HashMap<String, String>()));
+				.setMMConfigurationGroupValues(registerMMConfGroups(acqTab_[currind], new HashMap<String, String>()));
 
 		// set properties value in the acquisition
 		acq.getAcquisitionParameters()
-				.setPropertyValues(registerProperties(acqpanes_[currind], new HashMap<String, String>()));
+				.setPropertyValues(registerProperties(acqTab_[currind], new HashMap<String, String>()));
 
 		// read out the JPanel related to the acquisition
-		acq.readOutAcquisitionParameters(acqpanels_[currind]);
+		acq.readOutAcquisitionParameters(acqSettingsPanels_[currind]);
 
 		return acq;
 	}

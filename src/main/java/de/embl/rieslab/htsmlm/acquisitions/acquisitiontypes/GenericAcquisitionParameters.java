@@ -101,6 +101,11 @@ public class GenericAcquisitionParameters {
 		zslices_ = zslices;
 	}
 	
+	/**
+	 * Returns a HashMap of the UIProperties value indexed by their name (as keys).
+	 * 
+	 * @return HashMap of the UIProperties value.
+	 */
 	public HashMap<String,String> getPropertyValues(){
 		return propvalues_;
 	}
@@ -109,6 +114,11 @@ public class GenericAcquisitionParameters {
 		propvalues_ = prop;
 	}
 
+	/**
+	 * Returns a HashMap containing the values of the Configuration group indexed by their name (as keys).
+	 * 
+	 * @return HashMap<Config group name, Config group value>
+	 */
 	public HashMap<String,String> getMMConfigurationGroupValues(){
 		return mmconfgroups_;
 	}
