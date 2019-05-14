@@ -17,7 +17,9 @@ import org.micromanager.data.Datastore;
 import org.micromanager.data.Datastore.SaveMode;
 
 import main.java.de.embl.rieslab.emu.controller.SystemController;
+import main.java.de.embl.rieslab.emu.micromanager.configgroups.MMConfigurationGroup;
 import main.java.de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
+import main.java.de.embl.rieslab.htsmlm.acquisitions.ui.AcquisitionTab;
 import main.java.de.embl.rieslab.htsmlm.acquisitions.wrappers.Experiment;
 import mmcorej.CMMCore;
 
@@ -186,11 +188,18 @@ public class AcquisitionTask implements Task<Integer>{
 					Iterator<String> it = configs.keySet().iterator();
 					while (it.hasNext()) {
 						String group = it.next();
-						try {
-							core_.setConfig(group, configs.get(group));
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+
+						MMConfigurationGroup configgroup = system_.getMMConfigGroupRegistry().getMMConfigurationGroups().get(group);
+						if(configgroup.hasConfiguration(configs.get(group))) {	// if the configuration is known
+							try {
+								core_.setConfig(group, configs.get(group));
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						} else if(!configs.get(group).equals(AcquisitionTab.KEY_IGNORED)) { // else if it is not ignored and a single presets with a single property, try to set it
+							if(configgroup.getGroupSize() == 1 && configgroup.getNumberOfMMProperties() == 1) {
+								configgroup.getAffectedProperties().get(0).setStringValue(configs.get(group), null);
+							}
 						}
 					}
 				}
@@ -230,6 +239,7 @@ public class AcquisitionTask implements Task<Integer>{
 				}
 			}
 		}
+		
 		private LinkedHashSet<String> createAcqShortNameSet(ArrayList<Acquisition> acquisitionList) {
 			LinkedHashSet<String> names = new LinkedHashSet<String>();
 			for (int k = 0; k < exp_.getAcquisitionList().size(); k++) {
@@ -237,7 +247,7 @@ public class AcquisitionTask implements Task<Integer>{
 					addToSetWithIncrementalName(names, exp_.getAcquisitionList().get(k).getShortName(), 2);
 				}
 			}			
-			return null;
+			return names;
 		}
 
 		private void addToSetWithIncrementalName(LinkedHashSet<String> set, String element, int increment) {

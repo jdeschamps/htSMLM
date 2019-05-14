@@ -430,13 +430,13 @@ public class AcquisitionTab extends JPanel {
 			if (map.get(keys[i]) != null && map.get(keys[i]).length > 0) { // if the String[] is not null and not empty
 				
 				String currentValue = mmconfigurationRegistry.getCurrentMMConfigurationChannel(keys[i]);
-				if (currentValue.length() > 0 && !mmconfigGroupValues.containsKey(keys[i])) { // this is when a value is set in MM but not in the acquisition
+				if (currentValue != null && currentValue.length() > 0 && !mmconfigGroupValues.containsKey(keys[i])) { // this is when a value is set in MM but not in the acquisition
 					if(map.get(keys[i]).length == 1 && groups.get(keys[i]).getAffectedProperties().size() == 1) { // if the presets has only one preset value and one property then we show the value 
 						model.addRow(new Object[] { keys[i], groups.get(keys[i]).getAffectedProperties().get(0).getValue() }); 
 					} else {
 						model.addRow(new Object[] { keys[i], currentValue }); 
 					}
-				} else if (currentValue != null) { // no value currently set 
+				} else if(currentValue != null) { // no value currently set 
 		
 					if (mmconfigGroupValues.containsKey(keys[i]) && mmconfigurationRegistry.getMMConfigurationGroups().get(keys[i])
 							.hasConfiguration(mmconfigGroupValues.get(keys[i]))) { // if acquisition has a value set for this configuration and the configuration exists 
@@ -676,9 +676,7 @@ public class AcquisitionTab extends JPanel {
 				String group = (String) model.getValueAt(k, 0);
 				String val = String.valueOf(model.getValueAt(k, 1));
 
-				if (!val.equals(KEY_IGNORED)) {
-					confgroups.put(group, val);
-				}
+				confgroups.put(group, val);
 			}
 		} else if (c instanceof JPanel) {
 			Component[] subcomps = ((JPanel) c).getComponents();
