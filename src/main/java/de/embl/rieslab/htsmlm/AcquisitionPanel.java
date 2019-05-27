@@ -40,6 +40,7 @@ import main.java.de.embl.rieslab.htsmlm.constants.HTSMLMConstants;
 import main.java.de.embl.rieslab.htsmlm.flags.FocusStabFlag;
 import main.java.de.embl.rieslab.htsmlm.flags.TwoStateFlag;
 import main.java.de.embl.rieslab.htsmlm.tasks.TaskHolder;
+import main.test.TestAcq;
 
 public class AcquisitionPanel extends ConfigurablePanel{
 
@@ -175,7 +176,8 @@ public class AcquisitionPanel extends ConfigurablePanel{
         jButton_configAcq.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				showAcquisitionConfiguration();
+			//showAcquisitionConfiguration();
+				TestAcq.testAcquisitionSpeed(controller_.getStudio());
 			}
         });
         
