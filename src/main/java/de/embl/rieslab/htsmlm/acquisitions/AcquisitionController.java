@@ -155,15 +155,14 @@ public class AcquisitionController implements TaskHolder<Integer>{
 	
 	@Override
 	public void taskDone() {
-		Runnable doDone = new Runnable() {
-			public void run() {
-				done();
-			}
-		};
 		if (SwingUtilities.isEventDispatchThread()) {
-			doDone.run();
-		} else {
 			done();
+		} else {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					done();
+				}
+			});
 		}
 	}
 
