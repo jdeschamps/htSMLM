@@ -3,7 +3,6 @@ package main.java.de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes;
 import javax.swing.JPanel;
 
 import org.micromanager.Studio;
-import org.micromanager.data.Datastore;
 
 import main.java.de.embl.rieslab.htsmlm.acquisitions.AcquisitionFactory.AcquisitionType;
 import main.java.de.embl.rieslab.htsmlm.filters.PropertyFilter;
@@ -17,8 +16,9 @@ public class ROIEvaluationAcquisition implements Acquisition {
 	}
 
 	@Override
-	public void performAcquisition(Studio studio, Datastore store) {
+	public boolean performAcquisition(Studio studio, String name, String path) {
 		// TODO Auto-generated method stub
+		return true;
 	}
 
 	@Override

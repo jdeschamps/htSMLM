@@ -104,12 +104,12 @@ public class AcquisitionFactory {
 		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 		
 		String filename;
-		if(filepath.endsWith(HTSMLMConstants.ACQ_EXT)){
+		if(filepath.endsWith("."+HTSMLMConstants.ACQ_EXT)){
 			filename = filepath;
 		} else if(!filepath.endsWith("/")){
-			filename = filepath+"/"+name+HTSMLMConstants.ACQ_EXT;
+			filename = filepath+"/"+name+"."+HTSMLMConstants.ACQ_EXT;
 		} else {
-			filename = filepath+name+HTSMLMConstants.ACQ_EXT;
+			filename = filepath+name+"."+HTSMLMConstants.ACQ_EXT;
 		}
 		
 		boolean fileExists = true;
@@ -143,7 +143,7 @@ public class AcquisitionFactory {
 	}
 	
 	private String incrementAcquisitionFileName(String name) {
-		String newname = name.substring(0, name.length()-HTSMLMConstants.ACQ_EXT.length()-1);
+		String newname = name.substring(0, name.length()-HTSMLMConstants.ACQ_EXT.length());
 		int ind = 0;
 		for(int i=0;i<newname.length();i++){
 			if(newname.charAt(i) == '_'){

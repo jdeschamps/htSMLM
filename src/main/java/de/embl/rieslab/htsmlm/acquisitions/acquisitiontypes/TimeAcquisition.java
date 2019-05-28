@@ -11,10 +11,9 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
 import org.micromanager.Studio;
-import org.micromanager.data.Coords;
+import org.micromanager.acquisition.SequenceSettings;
+import org.micromanager.acquisition.internal.DefaultAcquisitionManager;
 import org.micromanager.data.Datastore;
-import org.micromanager.data.Image;
-import org.micromanager.data.internal.DefaultCoords;
 
 import main.java.de.embl.rieslab.htsmlm.acquisitions.AcquisitionFactory.AcquisitionType;
 import main.java.de.embl.rieslab.htsmlm.filters.NoPropertyFilter;
@@ -147,42 +146,62 @@ public class TimeAcquisition implements Acquisition{
 	}
 
 	@Override
-	public void performAcquisition(Studio studio, Datastore store) {
-		
+	public boolean performAcquisition(Studio studio, String name, String path) {		
 		stopAcq_ = false;
 		running_ = true;
 		
-		studio.displays().createDisplay(store);
+		SequenceSettings settings = new SequenceSettings();
+		settings.save = true;
+		settings.timeFirst = true;
+		settings.usePositionList = false;
+		settings.root = path;
+		settings.prefix = name;
+		settings.numFrames = params_.getNumberFrames();
+		settings.intervalMs = 0;
+		settings.shouldDisplayImages = true;
 		
-		Image image;
-		Coords.CoordsBuilder builder = new DefaultCoords.Builder();
-		builder.channel(0).z(0).stagePosition(0);
-		
-		for(int i=0;i<params_.getNumberFrames();i++){
-			
-			builder = builder.time(i);
-			image = studio.live().snap(false).get(0);
-			image = image.copyAtCoords(builder.build());
-			
-			try {
-				store.putImage(image);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			
+		// run acquisition
+		Datastore store = studio.acquisitions().runAcquisitionWithSettings(settings, false);
+
+		// loop to check if needs to be stopped or not
+		while(studio.acquisitions().isAcquisitionRunning()) {
 			// check if exit
 			if(stopAcq_){
-				break;
+				interruptAcquisition(studio);
 			}
-		
+			
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				return false;
+			}
 		}
-		running_ = false;
 		
-		// close display
 		studio.displays().closeDisplaysFor(store);
 		
+		try {
+			store.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+		running_ = false;
+		return true;
 	}
 
+	private void interruptAcquisition(Studio studio) {
+		try {
+			// not pretty but I could not find any other way to stop the acquisition without getting a JDialog popping up and requesting user input
+			((DefaultAcquisitionManager) studio.acquisitions()).getAcquisitionEngine().stop(true);;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
 	@Override
 	public void stopAcquisition() {
 		stopAcq_ = true;

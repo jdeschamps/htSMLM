@@ -12,17 +12,16 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
 import org.micromanager.Studio;
-import org.micromanager.data.Coords;
+import org.micromanager.acquisition.SequenceSettings;
+import org.micromanager.acquisition.internal.DefaultAcquisitionManager;
 import org.micromanager.data.Datastore;
-import org.micromanager.data.Image;
-import org.micromanager.data.internal.DefaultCoords;
 
 import main.java.de.embl.rieslab.htsmlm.acquisitions.AcquisitionFactory.AcquisitionType;
 import main.java.de.embl.rieslab.htsmlm.filters.NoPropertyFilter;
 import main.java.de.embl.rieslab.htsmlm.filters.PropertyFilter;
 import main.java.de.embl.rieslab.htsmlm.tasks.TaskHolder;
 
-public class LocalizationAcquisition implements Acquisition{
+public class LocalizationAcquisition implements Acquisition {
 	
 	private GenericAcquisitionParameters params_;
 	
@@ -223,7 +222,7 @@ public class LocalizationAcquisition implements Acquisition{
 	}
 
 	@Override
-	public void performAcquisition(Studio studio, Datastore store) {
+	public boolean performAcquisition(Studio studio, String name, String path) {
 		
 		if(useactivation_){			
 			activationTask_.initializeTask();
@@ -233,42 +232,55 @@ public class LocalizationAcquisition implements Acquisition{
 		stopAcq_ = false;
 		running_ = true;
 		
-		// get approximation for the stop on max delay in terms of frames
-		int stopAfterN = (int) (1000*stoponmaxdelay_/params_.getExposureTime());
-		int stopCounter = 0;
+		SequenceSettings settings = new SequenceSettings();
+		settings.save = true;
+		settings.timeFirst = true;
+		settings.usePositionList = false;
+		settings.root = path;
+		settings.prefix = name;
+		settings.numFrames = params_.getNumberFrames();
+		settings.intervalMs = 0;
+		settings.shouldDisplayImages = true;
 		
-		studio.displays().createDisplay(store);
-		
-		Image image;
-		Coords.CoordsBuilder builder = new DefaultCoords.Builder();
-		builder.channel(0).z(0).stagePosition(0);
-		
-		for(int i=0;i<params_.getNumberFrames();i++){
+		// run acquisition
+		Datastore store = studio.acquisitions().runAcquisitionWithSettings(settings, false);
+
+		// loop to check if needs to be stopped or not
+		while(studio.acquisitions().isAcquisitionRunning()) {
 			
-			builder = builder.time(i);
-			image = studio.live().snap(false).get(0);
-			image = image.copyAtCoords(builder.build());
-			
-			try {
-				store.putImage(image);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			
-			// check if stop criterion reached
+			// check if reached stop criterion
 			if(useactivation_ && stoponmax_ && activationTask_.isCriterionReached()){
-				stopCounter ++;
-				
-				if(stopCounter == stopAfterN){
-					break; // exit loop
+				try {
+					Thread.sleep(1000*stoponmaxdelay_);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+					return false;
 				}
+								
+				interruptAcquisition(studio);
 			}
 			
 			// check if exit
 			if(stopAcq_){
-				break;
+				interruptAcquisition(studio);
 			}
+			
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
 		
+		System.out.println("Going to close display");
+		studio.displays().closeDisplaysFor(store);
+		
+		try {
+			store.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
 		}
 		
 		if(useactivation_){			
@@ -277,10 +289,20 @@ public class LocalizationAcquisition implements Acquisition{
 		
 		running_ = false;
 		
-		// close display
-		studio.displays().closeDisplaysFor(store);
+		return true;
 	}
 
+	private void interruptAcquisition(Studio studio) {
+		try {
+			// not pretty but I could not find any other way to stop the acquisition without getting a JDialog popping up and requesting user input
+			((DefaultAcquisitionManager) studio.acquisitions()).getAcquisitionEngine().stop(true);;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
 	@Override
 	public void stopAcquisition() {
 		stopAcq_ = true;

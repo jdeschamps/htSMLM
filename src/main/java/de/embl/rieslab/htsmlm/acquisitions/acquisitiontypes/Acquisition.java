@@ -3,7 +3,6 @@ package main.java.de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes;
 import javax.swing.JPanel;
 
 import org.micromanager.Studio;
-import org.micromanager.data.Datastore;
 
 import main.java.de.embl.rieslab.htsmlm.acquisitions.AcquisitionFactory.AcquisitionType;
 import main.java.de.embl.rieslab.htsmlm.filters.PropertyFilter;
@@ -12,7 +11,7 @@ public interface Acquisition {
 	
 	public abstract GenericAcquisitionParameters getAcquisitionParameters();
 	
-	public abstract void performAcquisition(Studio studio, Datastore store); // should make sure that the store is empty
+	public abstract boolean performAcquisition(Studio studio, String name, String path);
 	
 	public abstract void stopAcquisition(); 
 	

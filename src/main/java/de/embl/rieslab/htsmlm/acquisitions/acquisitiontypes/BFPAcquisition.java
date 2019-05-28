@@ -127,31 +127,34 @@ public class BFPAcquisition implements Acquisition{
 	}
 
 	@Override
-	public void performAcquisition(Studio studio, Datastore store) {
-		// turn on BFP
+	public boolean performAcquisition(Studio studio, String name, String path) {
+		// turn on BF
 		bfpprop_.setPropertyValue(TwoStateUIProperty.getOnStateName());
 
-		studio.displays().createDisplay(store);
-		
-		Image image;
-		Coords.CoordsBuilder builder = new DefaultCoords.Builder();
-		builder.time(0).channel(0).z(0).stagePosition(0);
-		
-			
-		image = studio.live().snap(false).get(0);
-		image = image.copyAtCoords(builder.build());
-			
+		// create datastore and write an image to it
 		try {
+			Datastore store = studio.data().createSinglePlaneTIFFSeriesDatastore(path+name);
+			studio.displays().createDisplay(store);
+
+			Coords.CoordsBuilder builder = new DefaultCoords.Builder();
+			builder.time(0).channel(0).z(0).stagePosition(0);
+				
+			Image image = studio.live().snap(false).get(0);
+			image = image.copyAtCoords(builder.build());
+				
 			store.putImage(image);
+			studio.displays().closeDisplaysFor(store);
+			store.close();
+
 		} catch (IOException e) {
 			e.printStackTrace();
+			return false;
 		}
 		
-		// close display
-		studio.displays().closeDisplaysFor(store);
+		// turn off BF
+		bfpprop_.setPropertyValue(TwoStateUIProperty.getOffStateName());
 		
-		// turn off BFP
-		bfpprop_.setPropertyValue(TwoStateUIProperty.getOffStateName()); 
+		return true;
 	}
 
 	@Override

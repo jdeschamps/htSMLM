@@ -1,6 +1,5 @@
 package main.java.de.embl.rieslab.htsmlm.tasks;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -13,8 +12,6 @@ import org.micromanager.MultiStagePosition;
 import org.micromanager.PositionList;
 import org.micromanager.PositionListManager;
 import org.micromanager.Studio;
-import org.micromanager.data.Datastore;
-import org.micromanager.data.Datastore.SaveMode;
 
 import main.java.de.embl.rieslab.emu.controller.SystemController;
 import main.java.de.embl.rieslab.emu.micromanager.configgroups.MMConfigurationGroup;
@@ -98,7 +95,6 @@ public class AcquisitionTask implements Task<Integer>{
 	class AcquisitionRun extends SwingWorker<Integer, Integer> {
 
 		private Experiment exp_;
-		private Datastore currAcqStore;
 		private Acquisition currAcq;
 		private boolean stop_ = false;
 
@@ -208,30 +204,7 @@ public class AcquisitionTask implements Task<Integer>{
 				String name = "Pos"+String.valueOf(pos)+"_"+expname_+"_"+acqShortName[k];
 				
 				// run acquisition
-				SaveMode sm = studio_.data().getPreferredSaveMode();
-				if(sm == SaveMode.MULTIPAGE_TIFF){
-					try {
-						currAcqStore = studio_.data().createMultipageTIFFDatastore(exppath_+name, true, true);
-						currAcq.performAcquisition(studio_, currAcqStore);
-						currAcqStore.close();
-
-					} catch (IOException e) {
-						stop_ = true;
-						System.out.println("Failed to create multi page TIFF");
-						e.printStackTrace();
-					}
-				} else {
-					try {
-						currAcqStore = studio_.data().createSinglePlaneTIFFSeriesDatastore(exppath_+name);
-						currAcq.performAcquisition(studio_, currAcqStore);
-						currAcqStore.close();
-
-					} catch (IOException e) {
-						stop_ = true;
-						System.out.println("Failed to create single page TIFF");
-						e.printStackTrace();
-					}
-				}
+				currAcq.performAcquisition(studio_, name, exppath_); // should check if returns false here, so that we can tell the user an experiment went wrong
 								
 				if (stop_) {
 					System.out.println("Stop is true in acquisition");

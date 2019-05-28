@@ -93,8 +93,7 @@ public class TestAcq {
 						studio.acquisitions().runAcquisition("acq_"+exposures[e], path);
 				
 						end = System.currentTimeMillis(); 
-						acqs[n][e] = (end-start)/1000.;
-				
+						acqs[n][e] = (end-start)/1000.;			
 				   	}
 		    	}
 			    

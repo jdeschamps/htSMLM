@@ -21,10 +21,9 @@ import main.java.de.embl.rieslab.htsmlm.filters.PropertyFilter;
 import main.java.de.embl.rieslab.htsmlm.filters.SinglePropertyFilter;
 
 import org.micromanager.Studio;
-import org.micromanager.data.Coords;
+import org.micromanager.acquisition.SequenceSettings;
+import org.micromanager.acquisition.internal.DefaultAcquisitionManager;
 import org.micromanager.data.Datastore;
-import org.micromanager.data.Image;
-import org.micromanager.data.internal.DefaultCoords;
 
 public class ZStackAcquisition implements Acquisition {
 	
@@ -108,7 +107,7 @@ public class ZStackAcquisition implements Acquisition {
 	}
 
 	@Override
-	public void performAcquisition(Studio studio, Datastore store) {
+	public boolean performAcquisition(Studio studio, String name, String path) {
 		stopAcq_ = false;
 		running_ = true;
 		
@@ -116,51 +115,71 @@ public class ZStackAcquisition implements Acquisition {
 			stabprop_.setPropertyValue(TwoStateUIProperty.getOffStateName());
 		}
 		
-		studio.displays().createDisplay(store);
+			
+		SequenceSettings settings = new SequenceSettings();
+		settings.save = true;
+		settings.slicesFirst = true;
+		settings.relativeZSlice = true;
+		settings.slices = params_.getZSlices();
 		
-		Image image;
-		Coords.CoordsBuilder builder = new DefaultCoords.Builder();
-		builder.time(0).channel(0).stagePosition(0);
-		
-		try{
-			double z0 = studio.getCMMCore().getPosition(zdevice_);
-			
-			for(int i=0;i<params_.getZSlices().size();i++){
-				
-				// set stage position
-				double pos = z0 + params_.getZSlices().get(i);
-				studio.getCMMCore().setPosition(zdevice_, pos);
-				
-				builder = builder.z(i);
-				image = studio.live().snap(false).get(0);
-				image = image.copyAtCoords(builder.build());
-				
-				try {
-					store.putImage(image);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				
-				// check if exit
-				if(stopAcq_){
-					break;
-				}
-			
-			}
-			running_ = false;
-			
-			// close display
-			studio.displays().closeDisplaysFor(store);
-			
-			// go back to original position
-			studio.getCMMCore().setPosition(zdevice_, z0);
-			
-		} catch (Exception e){
-			e.printStackTrace();
+		double z0;
+		try {
+			z0 = studio.getCMMCore().getPosition(zdevice_);
+			settings.zReference = z0;
+		} catch (Exception e1) {
+			e1.printStackTrace();
 		}
 		
+		settings.usePositionList = false;
+		settings.root = path;
+		settings.prefix = name;
+		settings.numFrames = 1;
+		settings.intervalMs = 0;
+		settings.shouldDisplayImages = true;
+
+		// run acquisition
+		Datastore store = studio.acquisitions().runAcquisitionWithSettings(settings, false);
+
+		// loop to check if needs to be stopped or not
+		while(studio.acquisitions().isAcquisitionRunning()) {
+			// check if exit
+			if(stopAcq_){
+				interruptAcquisition(studio);
+			}
+			
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+		
+		studio.displays().closeDisplaysFor(store);
+		
+		try {
+			store.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+
 		if(zstab_ && zstabuse_){
 			stabprop_.setPropertyValue(TwoStateUIProperty.getOnStateName());
+		}
+		
+		running_ = false;
+		return true;
+			
+	}
+	
+	private void interruptAcquisition(Studio studio) {
+		try {
+			// not pretty but I could not find any other way to stop the acquisition without getting a JDialog popping up and requesting user input
+			((DefaultAcquisitionManager) studio.acquisitions()).getAcquisitionEngine().stop(true);;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
