@@ -17,6 +17,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.HashMap;
 
+import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -40,7 +41,6 @@ import main.java.de.embl.rieslab.htsmlm.constants.HTSMLMConstants;
 import main.java.de.embl.rieslab.htsmlm.flags.FocusStabFlag;
 import main.java.de.embl.rieslab.htsmlm.flags.TwoStateFlag;
 import main.java.de.embl.rieslab.htsmlm.tasks.TaskHolder;
-import main.test.TestAcq;
 
 public class AcquisitionPanel extends ConfigurablePanel{
 
@@ -132,10 +132,11 @@ public class AcquisitionPanel extends ConfigurablePanel{
         });
 
 	    jToggle_startstop = new JToggleButton("Start");
-	    jToggle_startstop.addItemListener(new ItemListener(){
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				if(e.getStateChange()==ItemEvent.SELECTED){
+	    jToggle_startstop.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent actionEvent) {
+				AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
+				boolean selected = abstractButton.getModel().isSelected();
+				if(selected) {
 					String path = getExperimentPath();
 					String name = getExperimentName();
 
@@ -157,12 +158,12 @@ public class AcquisitionPanel extends ConfigurablePanel{
 							jToggle_startstop.setSelected(false);
 						}
 					}
-				} else if(e.getStateChange()==ItemEvent.DESELECTED){
+				} else {
 					jToggle_startstop.setText("Start");
 					acqcontroller_.stopTask();
 				}
 			}
-        });
+		});
         
         jButton_load = new JButton("Load");
         jButton_load.addActionListener(new ActionListener(){
@@ -176,8 +177,7 @@ public class AcquisitionPanel extends ConfigurablePanel{
         jButton_configAcq.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-			//showAcquisitionConfiguration();
-				TestAcq.testAcquisitionSpeed(controller_.getStudio());
+			showAcquisitionConfiguration();
 			}
         });
         
