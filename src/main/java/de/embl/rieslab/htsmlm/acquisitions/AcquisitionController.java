@@ -173,7 +173,7 @@ public class AcquisitionController implements TaskHolder<Integer>{
 			infopanel_.setStopText();
 			
 			// refresh all properties to make sure things are synchronized
-			controller_.update();
+			controller_.forceUpdate();
 		}
 	}
 

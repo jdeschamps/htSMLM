@@ -83,7 +83,7 @@ public class FocusLockPanel extends ConfigurablePanel {
 	
 					try {
 						double val = Double.parseDouble(typed);
-						if (val <= max_power && val >= 0) {
+						if (Double.compare(val, max_power) <= 0 && Double.compare(val, 0.) >= 0) {
 							setUIPropertyValue(getLabel()+" "+LASER_POWER,typed);
 							sliderPower_.setValue((int) val);
 						}
@@ -105,7 +105,7 @@ public class FocusLockPanel extends ConfigurablePanel {
 	
 					try {
 						double val = Double.parseDouble(typed);
-						if (val <= max_power && val >= 0) {
+						if (Double.compare(val, max_power) <= 0 && Double.compare(val, 0.) >= 0) {
 							setUIPropertyValue(getLabel()+" "+LASER_POWER,typed);
 							sliderPower_.setValue((int) val);
 						}
@@ -126,27 +126,19 @@ public class FocusLockPanel extends ConfigurablePanel {
 		
 		
 
-		// slider fina a
+		// slider fine a
 		sliderFinea_ = new JSlider(JSlider.HORIZONTAL, 0, 100, 0);
 		sliderFinea_.addMouseListener(new MouseAdapter() {
 			public void mouseReleased(MouseEvent e) {
-				if(sliderFinea_.getValue() < 100){
-					fineaperc_.setText(String.valueOf(sliderFinea_.getValue())+" %");				
-				} else {
-					fineaperc_.setText(String.valueOf(sliderFinea_.getValue())+" %");		
-				}
+				fineaperc_.setText(String.valueOf(sliderFinea_.getValue())+" %");		
 				setUIPropertyValue(getLabel()+" "+LASER_PERCFINEA,String.valueOf(sliderFinea_.getValue()));
 			}});
 
-		// slider fina b
+		// slider fine b
 		sliderFineb_ = new JSlider(JSlider.HORIZONTAL, 0, 100, 0);
 		sliderFineb_.addMouseListener(new MouseAdapter() {
 			public void mouseReleased(MouseEvent e) {	
-				if(sliderFineb_.getValue() < 100){
-					finebperc_.setText(String.valueOf(sliderFineb_.getValue())+" %");				
-				} else {
-					finebperc_.setText(String.valueOf(sliderFineb_.getValue())+" %");		
-				}				
+				finebperc_.setText(String.valueOf(sliderFineb_.getValue())+" %");						
 				setUIPropertyValue(getLabel()+" "+LASER_PERCFINEB,String.valueOf(sliderFineb_.getValue()));
 			}});
 		
