@@ -27,20 +27,24 @@ public class FiltersPanel extends ConfigurablePanel {
 	private static final long serialVersionUID = -8562433353787092702L;
 
 	//////// Components
-	private JToggleButton[] togglebuttons_;
+	private JToggleButton[] togglebuttons1_;
+	private JToggleButton[] togglebuttons2_;
 	
 	//////// Properties
-	public static String FW_POSITION = "Filter wheel position";
+	public static String FW_POSITION1 = "FW1 pos";
+	public static String FW_POSITION2 = "FW2 pos";
 	
 	//////// Parameters
-	public final static String PARAM_NAMES = "Filters name";
-	public final static String PARAM_COLORS = "Filters color";
+	public final static String PARAM_NAMES1 = "Filters name 1";
+	public final static String PARAM_COLORS1 = "Filters color 1";
+	public final static String PARAM_NAMES2 = "Filters name 2";
+	public final static String PARAM_COLORS2 = "Filters color 2";
 	
 	//////// Initial parameters
 	public final static int NUM_POS = 6;
 	public final static String NAME_EMPTY = "None";
 	public final static String COLOR_EMPTY = ColorRepository.strgray;
-	String names_, colors_; 
+	String names1_, colors1_, names2_, colors2_; 
 
 
 	public FiltersPanel(String label) {
@@ -62,104 +66,179 @@ public class FiltersPanel extends ConfigurablePanel {
 		c.gridy = 0;
 		c.insets = new Insets(2,0,2,0);
 
-		ButtonGroup group=new ButtonGroup();
-
-		togglebuttons_ = new JToggleButton[NUM_POS];
-		for(int i=0;i<togglebuttons_.length;i++){
-			togglebuttons_[i] = new JToggleButton();
+		ButtonGroup group1 = new ButtonGroup();
+		togglebuttons1_ = new JToggleButton[NUM_POS];
+		for(int i=0;i<togglebuttons1_.length;i++){
+			togglebuttons1_[i] = new JToggleButton();
 			
 			c.gridx = i;
-			this.add(togglebuttons_[i], c);
+			this.add(togglebuttons1_[i], c);
 			
-			group.add(togglebuttons_[i]);
+			group1.add(togglebuttons1_[i]);
 			
-			togglebuttons_[i].addItemListener(new ItemListener(){
+			togglebuttons1_[i].addItemListener(new ItemListener(){
 				@Override
 				public void itemStateChanged(ItemEvent e) {
 					if(e.getStateChange()==ItemEvent.SELECTED){
-						int pos = getSelectedButtonNumber();
-						if(pos>=0 && pos<togglebuttons_.length){
-							setUIPropertyValue(FW_POSITION,getValueFromPosition(pos));
+						int pos = getSelectedButtonNumber(0);
+						if(pos>=0 && pos<togglebuttons1_.length){
+							setUIPropertyValue(FW_POSITION1,getValueFromPosition(0, pos));
 						}				
 					} 
 				}
 	        });
 		}  
-		setNames();
-		setColors();
+		
+
+		c.gridy = 1;
+		ButtonGroup group2 = new ButtonGroup();
+		togglebuttons2_ = new JToggleButton[NUM_POS];
+		for(int i=0;i<togglebuttons2_.length;i++){
+			togglebuttons2_[i] = new JToggleButton();
+			
+			c.gridx = i;
+			this.add(togglebuttons2_[i], c);
+			
+			group2.add(togglebuttons2_[i]);
+			
+			togglebuttons2_[i].addItemListener(new ItemListener(){
+				@Override
+				public void itemStateChanged(ItemEvent e) {
+					if(e.getStateChange()==ItemEvent.SELECTED){
+						int pos = getSelectedButtonNumber(1);
+						if(pos>=0 && pos<togglebuttons2_.length){
+							setUIPropertyValue(FW_POSITION2,getValueFromPosition(1, pos));
+						}				
+					} 
+				}
+	        });
+		}  
+
+		setNames(0);
+		setColors(0);
+		setNames(1);
+		setColors(1);
 	}
 
-	protected int getSelectedButtonNumber() {
+	protected int getSelectedButtonNumber(int fw_num) {
 		int val=-1;
-		
-		for(int i=0;i<togglebuttons_.length;i++){
-			if(togglebuttons_[i].isSelected()){
-				return i;
+		if(fw_num == 0) {
+			for(int i=0;i<togglebuttons1_.length;i++){
+				if(togglebuttons1_[i].isSelected()){
+					return i;
+				}
+			}
+		} else {
+			for(int i=0;i<togglebuttons2_.length;i++){
+				if(togglebuttons2_[i].isSelected()){
+					return i;
+				}
 			}
 		}
 		return val;
 	}
 	
-	private void setNames(){
-		String[] astr = names_.split(",");
-		int maxind = togglebuttons_.length > astr.length ? astr.length : togglebuttons_.length; 
-		for(int i=0;i<maxind;i++){
-			togglebuttons_[i].setText(astr[i]);
+	private void setNames(int fw){
+		if(fw == 0) {
+			String[] astr = names1_.split(",");
+			int maxind = togglebuttons1_.length > astr.length ? astr.length : togglebuttons1_.length; 
+			for(int i=0;i<maxind;i++){
+				togglebuttons1_[i].setText(astr[i]);
+			}
+			((MultiStateUIProperty) getUIProperty(FW_POSITION1)).setStatesName(astr);
+		} else {
+			String[] astr = names2_.split(",");
+			int maxind = togglebuttons2_.length > astr.length ? astr.length : togglebuttons2_.length; 
+			for(int i=0;i<maxind;i++){
+				togglebuttons2_[i].setText(astr[i]);
+			}
+			((MultiStateUIProperty) getUIProperty(FW_POSITION2)).setStatesName(astr);
 		}
-		((MultiStateUIProperty) getUIProperty(FW_POSITION)).setStatesName(astr);
 	}
 	
-	private void setColors(){
-		String[] astr = colors_.split(",");
-		int maxind = togglebuttons_.length > astr.length ? astr.length : togglebuttons_.length;
-		for(int i=0;i<maxind;i++){
-			togglebuttons_[i].setForeground(ColorRepository.getColor(astr[i]));
+	private void setColors(int fw){
+		if(fw == 0) {
+			String[] astr = colors1_.split(",");
+			int maxind = togglebuttons1_.length > astr.length ? astr.length : togglebuttons1_.length;
+			for(int i=0;i<maxind;i++){
+				togglebuttons1_[i].setForeground(ColorRepository.getColor(astr[i]));
+			}
+		} else {
+			String[] astr = colors2_.split(",");
+			int maxind = togglebuttons2_.length > astr.length ? astr.length : togglebuttons2_.length;
+			for(int i=0;i<maxind;i++){
+				togglebuttons2_[i].setForeground(ColorRepository.getColor(astr[i]));
+			}
 		}
 	}
 	
 	
-	protected String getValueFromPosition(int pos){
-		return ((MultiStateUIProperty) getUIProperty(FW_POSITION)).getStateValue(pos);
+	protected String getValueFromPosition(int fw, int pos){
+		if(fw == 0) {
+			return ((MultiStateUIProperty) getUIProperty(FW_POSITION1)).getStateValue(pos);
+		} else {
+			return ((MultiStateUIProperty) getUIProperty(FW_POSITION2)).getStateValue(pos);
+		}
 	}
 	
 	@Override
 	protected void initializeProperties() {
-		addUIProperty(new MultiStateUIProperty(this, FW_POSITION, "Filter wheel position property.", new FilterWheelFlag(),NUM_POS));		
+		addUIProperty(new MultiStateUIProperty(this, FW_POSITION1, "Filter wheel 1 position property.", new FilterWheelFlag(),NUM_POS));
+		addUIProperty(new MultiStateUIProperty(this, FW_POSITION2, "Filter wheel 2 position property.", new FilterWheelFlag(),NUM_POS));		
 	}
 
 	@Override
 	protected void initializeParameters() {
-		names_ = NAME_EMPTY;
-		colors_ = COLOR_EMPTY;
+		names1_ = NAME_EMPTY;
+		colors1_ = COLOR_EMPTY;
 		for(int i=0;i<NUM_POS-1;i++){
-			names_ += ","+NAME_EMPTY; 
-			colors_ += ","+COLOR_EMPTY; 
+			names1_ += ","+NAME_EMPTY; 
+			colors1_ += ","+COLOR_EMPTY; 
 		}
+		names2_ = names1_;
+		colors2_ = colors1_;
 		
-		addUIParameter(new StringUIParameter(this, PARAM_NAMES,"Filter names displayed by the UI. The entry should be written as \"name1,name2,name3,None,None,None\". The names should be separated by a comma. "
-				+ "The maximum number of filters name is "+NUM_POS+", beyond that the names will be ignored. If the comma are not present, then the entry will be set as the name of the first filter.",names_));
-		addUIParameter(new StringUIParameter(this, PARAM_COLORS,"Filter colors displayed by the UI. The entry should be written as \"color1,color2,color3,grey,grey,grey\". The names should be separated by a comma. "
-				+ "The maximum number of filters color is "+NUM_POS+", beyond that the colors will be ignored. If the comma are not present, then no color will be allocated. The available colors are:\n"+ColorRepository.getColorsInOneColumn(),colors_));
+		addUIParameter(new StringUIParameter(this, PARAM_NAMES1,"Filter names displayed by the UI. The entry should be written as \"name1,name2,name3,None,None,None\". The names should be separated by a comma. "
+				+ "The maximum number of filters name is "+NUM_POS+", beyond that the names will be ignored. If the comma are not present, then the entry will be set as the name of the first filter.",names1_));
+		addUIParameter(new StringUIParameter(this, PARAM_COLORS1,"Filter colors displayed by the UI. The entry should be written as \"color1,color2,color3,grey,grey,grey\". The names should be separated by a comma. "
+				+ "The maximum number of filters color is "+NUM_POS+", beyond that the colors will be ignored. If the comma are not present, then no color will be allocated. The available colors are:\n"+ColorRepository.getColorsInOneColumn(),colors1_));
+	
+		addUIParameter(new StringUIParameter(this, PARAM_NAMES2,"Filter names displayed by the UI. The entry should be written as \"name1,name2,name3,None,None,None\". The names should be separated by a comma. "
+				+ "The maximum number of filters name is "+NUM_POS+", beyond that the names will be ignored. If the comma are not present, then the entry will be set as the name of the first filter.",names2_));
+		addUIParameter(new StringUIParameter(this, PARAM_COLORS2,"Filter colors displayed by the UI. The entry should be written as \"color1,color2,color3,grey,grey,grey\". The names should be separated by a comma. "
+				+ "The maximum number of filters color is "+NUM_POS+", beyond that the colors will be ignored. If the comma are not present, then no color will be allocated. The available colors are:\n"+ColorRepository.getColorsInOneColumn(),colors2_));
+	
 	}
 
 	@Override
 	public void propertyhasChanged(String name, String newvalue) {
-		if(name.equals(FW_POSITION)){
-			int pos = ((MultiStateUIProperty) getUIProperty(FW_POSITION)).getStatePositionNumber(newvalue);
-			if(pos<togglebuttons_.length){
-				togglebuttons_[pos].setSelected(true);
+		if(name.equals(FW_POSITION1)){
+			int pos = ((MultiStateUIProperty) getUIProperty(FW_POSITION1)).getStatePositionNumber(newvalue);
+			if(pos<togglebuttons1_.length){
+				togglebuttons1_[pos].setSelected(true);
+			}
+		} else if(name.equals(FW_POSITION2)){
+			int pos = ((MultiStateUIProperty) getUIProperty(FW_POSITION2)).getStatePositionNumber(newvalue);
+			if(pos<togglebuttons2_.length){
+				togglebuttons2_[pos].setSelected(true);
 			}
 		}
 	}
 
 	@Override
 	public void parameterhasChanged(String label) {
-		if(label.equals(PARAM_NAMES)){
-			names_ = getStringUIParameterValue(PARAM_NAMES);
-			setNames();
-		} else if(label.equals(PARAM_COLORS)){
-			colors_ = getStringUIParameterValue(PARAM_COLORS);
-			setColors();
+		if(label.equals(PARAM_NAMES1)){
+			names1_ = getStringUIParameterValue(PARAM_NAMES1);
+			setNames(0);
+		} else if(label.equals(PARAM_COLORS1)){
+			colors1_ = getStringUIParameterValue(PARAM_COLORS1);
+			setColors(0);
+		} else if(label.equals(PARAM_NAMES2)){
+			names2_ = getStringUIParameterValue(PARAM_NAMES2);
+			setNames(1);
+		} else if(label.equals(PARAM_COLORS2)){
+			colors2_ = getStringUIParameterValue(PARAM_COLORS2);
+			setColors(1);
 		}
 	}
 
