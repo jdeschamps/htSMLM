@@ -85,66 +85,6 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 		c.ipady = 7;
 		this.add(textfieldmax_, c);
 		
-		textfieldmax_.addActionListener(new java.awt.event.ActionListener() {
-	         public void actionPerformed(java.awt.event.ActionEvent evt) {	
-				String s = textfieldmax_.getText();
-				if (utils.isInteger(s)) {
-					int max = Integer.parseInt(s);
-					String str = getUIProperty(CAMERA_EXPOSURE)
-							.getPropertyValue();
-
-					if (utils.isNumeric(str)) {
-						double exp = Double.parseDouble(str);
-
-						if (max > 1000 * exp) {
-							max = (int) Math.round(1000 * exp);
-						}
-					}
-
-					logslider_.setMaxWithin(max);
-					if (logslider_.getValue() > logslider_.getMaxWithin()) {
-						logslider_.setValueWithin(logslider_.getMaxWithin());
-						textfieldvalue_.setText(String.valueOf(logslider_.getValue()));
-						setUIPropertyValue(LASER_PULSE,String.valueOf(logslider_.getValue()));
-					}
-
-					changeMaxPulseProperty(max);
-				}
-			}
-		});
-		textfieldmax_.addFocusListener(new FocusListener() {
-			@Override
-			public void focusGained(FocusEvent ex) {
-			}
-
-			@Override
-			public void focusLost(FocusEvent ex) {
-				String s = textfieldmax_.getText();
-				if (utils.isInteger(s)) {
-					int max = Integer.parseInt(s);
-					String str = getUIProperty(CAMERA_EXPOSURE)
-							.getPropertyValue();
-
-					if (utils.isNumeric(str)) {
-						double exp = Double.parseDouble(str);
-
-						if (max > 1000 * exp) {
-							max = (int) Math.round(1000 * exp);
-						}
-					}
-
-					logslider_.setMaxWithin(max);
-					if (logslider_.getValue() > logslider_.getMaxWithin()) {
-						logslider_.setValueWithin(logslider_.getMaxWithin());
-						textfieldvalue_.setText(String.valueOf(logslider_.getValue()));
-						setUIPropertyValue(LASER_PULSE,String.valueOf(logslider_.getValue()));
-					}
-
-					changeMaxPulseProperty(max);
-				}
-			}
-
-		});
 		
 		///////////////////////////////////////////////////////////////////////// User value text field
 		textfieldvalue_ = new JTextField();
@@ -317,5 +257,10 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 
 	private void changeMaxPulseProperty(int val){
 		setInternalPropertyValue(INTERNAL_MAXPULSE,val);
+	}
+
+	@Override
+	protected void addComponentListeners() {
+		// Do nothing 
 	}
 }

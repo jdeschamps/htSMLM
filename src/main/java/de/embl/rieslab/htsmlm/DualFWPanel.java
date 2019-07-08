@@ -262,4 +262,9 @@ public class DualFWPanel extends ConfigurablePanel {
 		// Do nothing
 	}
 
+	@Override
+	protected void addComponentListeners() {
+		// Do nothing		
+	}
+
 }

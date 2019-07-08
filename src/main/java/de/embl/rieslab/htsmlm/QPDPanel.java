@@ -3,8 +3,6 @@ package main.java.de.embl.rieslab.htsmlm;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -14,6 +12,7 @@ import javax.swing.SwingConstants;
 import main.java.de.embl.rieslab.emu.ui.ConfigurablePanel;
 import main.java.de.embl.rieslab.emu.ui.uiparameters.IntegerUIParameter;
 import main.java.de.embl.rieslab.emu.ui.uiproperties.UIProperty;
+import main.java.de.embl.rieslab.emu.utils.SwingUIActions;
 import main.java.de.embl.rieslab.htsmlm.graph.Chart;
 import main.java.de.embl.rieslab.htsmlm.updaters.ChartUpdater;
 import main.java.de.embl.rieslab.htsmlm.updaters.JProgressBarUpdater;
@@ -90,16 +89,7 @@ public class QPDPanel extends ConfigurablePanel {
 		c.gridwidth = 1;
 		c.gridheight = 1;
 		togglebuttonMonitor_ = new JToggleButton("Monitor");
-		togglebuttonMonitor_.addItemListener(new ItemListener(){
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				if(e.getStateChange()==ItemEvent.SELECTED){
-					monitorQPD(true);
-				} else if(e.getStateChange()==ItemEvent.DESELECTED){
-					monitorQPD(false);
-				}
-			}
-        });
+		
 		this.add(togglebuttonMonitor_,c);
 
 	}
@@ -188,5 +178,10 @@ public class QPDPanel extends ConfigurablePanel {
 	@Override
 	public void internalpropertyhasChanged(String label) {
 		// Do nothing
+	}
+
+	@Override
+	protected void addComponentListeners() {
+		SwingUIActions.addBooleanValueAction(b -> monitorQPD(b), togglebuttonMonitor_);
 	}
 }

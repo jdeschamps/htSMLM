@@ -177,7 +177,7 @@ public class AcquisitionPanel extends ConfigurablePanel{
         jButton_configAcq.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-			showAcquisitionConfiguration();
+				showAcquisitionConfiguration();
 			}
         });
         
@@ -467,5 +467,10 @@ public class AcquisitionPanel extends ConfigurablePanel{
 	@SuppressWarnings("rawtypes")
 	public HashMap<String, TaskHolder> getTaskHolders() {
 		return owner_.getTaskHolders();
+	}
+
+	@Override
+	protected void addComponentListeners() {
+		// Do nothing
 	}
 }

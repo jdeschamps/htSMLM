@@ -5,8 +5,6 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JToggleButton;
@@ -16,6 +14,7 @@ import main.java.de.embl.rieslab.emu.ui.ConfigurablePanel;
 import main.java.de.embl.rieslab.emu.ui.uiparameters.BoolUIParameter;
 import main.java.de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
 import main.java.de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
+import main.java.de.embl.rieslab.emu.utils.SwingUIActions;
 import main.java.de.embl.rieslab.htsmlm.flags.TwoStateFlag;
 
 public class AdditionalControlsPanel extends ConfigurablePanel{
@@ -68,66 +67,21 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 		c.ipady = 10;
 		c.weightx = 0.2;
 		
+		String[] devices = {DEVICE_1, DEVICE_2, DEVICE_3, DEVICE_4};
 		for(int i=0;i<togglebuttons_.length;i++){
 			togglebuttons_[i] = new JToggleButton();
 			
-			if(i==togglebuttons_.length-1){
+			if(i == togglebuttons_.length-1){
 				c.insets = new Insets(2,2,30,2);	
 			}
 			
 			c.gridy = i;
 			this.add(togglebuttons_[i], c);
-						
-			togglebuttons_[i].addItemListener(new ItemListener(){
-				@Override
-				public void itemStateChanged(ItemEvent e) {
-					int pos = getButtonNumber((JToggleButton) e.getItem());
-					if(e.getStateChange()==ItemEvent.SELECTED){
-						switch(pos){
-						case 0:
-							setUIPropertyValue(DEVICE_1, TwoStateUIProperty.getOnStateName());
-							break;
-						case 1:
-							setUIPropertyValue(DEVICE_2, TwoStateUIProperty.getOnStateName());
-							break;
-						case 2:
-							setUIPropertyValue(DEVICE_3, TwoStateUIProperty.getOnStateName());
-							break;
-						case 3:
-							setUIPropertyValue(DEVICE_4, TwoStateUIProperty.getOnStateName());
-							break;
-						}
-					} else if (e.getStateChange()==ItemEvent.DESELECTED){
-						switch(pos){
-						case 0:
-							setUIPropertyValue(DEVICE_1, TwoStateUIProperty.getOffStateName());
-							break;
-						case 1:
-							setUIPropertyValue(DEVICE_2, TwoStateUIProperty.getOffStateName());
-							break;
-						case 2:
-							setUIPropertyValue(DEVICE_3, TwoStateUIProperty.getOffStateName());
-							break;
-						case 3:
-							setUIPropertyValue(DEVICE_4, TwoStateUIProperty.getOffStateName());
-							break;
-						}
-					} 
-				}
-	       });
+			
+			SwingUIActions.addBooleanValueAction(this, devices[i], togglebuttons_[i]);
 		}  
 	}
-	
-	private int getButtonNumber(JToggleButton button){
-		int pos = -1;
-		for(int i=0; i<togglebuttons_.length;i++){
-			if(togglebuttons_[i].equals(button)){
-				pos = i;
-			}
-		}
-		return pos;
-	}
-	
+		
 	@Override
 	protected void initializeProperties() {
 		addUIProperty(new TwoStateUIProperty(this, DEVICE_1,"Position property of the first two-state device.", new TwoStateFlag()));
@@ -232,5 +186,11 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 	@Override
 	public void internalpropertyhasChanged(String label) {
 		// Do nothing
+	}
+
+	@Override
+	protected void addComponentListeners() {
+		// TODO Auto-generated method stub
+		
 	}
 }

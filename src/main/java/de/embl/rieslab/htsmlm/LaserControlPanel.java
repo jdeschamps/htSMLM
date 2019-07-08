@@ -24,6 +24,7 @@ import main.java.de.embl.rieslab.emu.ui.uiparameters.IntegerUIParameter;
 import main.java.de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
 import main.java.de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
 import main.java.de.embl.rieslab.emu.ui.uiproperties.UIProperty;
+import main.java.de.embl.rieslab.emu.utils.SwingUIActions;
 import main.java.de.embl.rieslab.emu.utils.utils;
 import main.java.de.embl.rieslab.htsmlm.components.TogglePower;
 import main.java.de.embl.rieslab.htsmlm.flags.LaserFlag;
@@ -190,39 +191,9 @@ public class LaserControlPanel extends ConfigurablePanel {
         togglebutton1_.setMargin(new Insets(2,8,2,8));
         
 		///////////////////////////////////////////////////////////////////////// On/Off button
-		/*togglebuttonOnOff_ = new JToggleButton();
-		
-		togglebuttonOnOff_.addItemListener(new ItemListener(){
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				if(e.getStateChange()==ItemEvent.SELECTED){
-					setUIPropertyValue(LASER_OPERATION,TwoStateUIProperty.getOnStateName());
-				} else if(e.getStateChange()==ItemEvent.DESELECTED){
-					setUIPropertyValue(LASER_OPERATION,TwoStateUIProperty.getOffStateName());
-				}
-			}
-        });
-
-		togglebuttonOnOff_.setBorderPainted(false);
-		togglebuttonOnOff_.setBorder(null);
-		togglebuttonOnOff_.setFocusable(false);
-		togglebuttonOnOff_.setContentAreaFilled(false);	
-		togglebuttonOnOff_.setIcon(new ImageIcon(getClass().getResource("/images/off.png")));
-		togglebuttonOnOff_.setSelectedIcon(new ImageIcon(getClass().getResource("/images/on.png")));
-		togglebuttonOnOff_.setDisabledIcon(new ImageIcon(getClass().getResource("/images/off.png")));	
-		*/
-        
+       
         togglebuttonOnOff_ = new TogglePower();
-		togglebuttonOnOff_.addItemListener(new ItemListener(){
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				if(e.getStateChange()==ItemEvent.SELECTED){
-					setUIPropertyValue(getLabel()+" "+LASER_OPERATION,TwoStateUIProperty.getOnStateName());
-				} else if(e.getStateChange()==ItemEvent.DESELECTED){
-					setUIPropertyValue(getLabel()+" "+LASER_OPERATION,TwoStateUIProperty.getOffStateName());
-				}
-			}
-        });
+        SwingUIActions.addBooleanValueAction(this, getLabel()+" "+LASER_OPERATION, togglebuttonOnOff_);
         
 		////// grid bag layout
 		GridBagConstraints c = new GridBagConstraints();
@@ -346,6 +317,11 @@ public class LaserControlPanel extends ConfigurablePanel {
 
 	@Override
 	public void internalpropertyhasChanged(String label) {
+		// Do nothing
+	}
+
+	@Override
+	protected void addComponentListeners() {
 		// Do nothing
 	}
 }

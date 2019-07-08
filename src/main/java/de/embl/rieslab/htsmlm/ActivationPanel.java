@@ -9,12 +9,6 @@ import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -29,6 +23,7 @@ import main.java.de.embl.rieslab.emu.ui.internalproperties.IntegerInternalProper
 import main.java.de.embl.rieslab.emu.ui.uiparameters.DoubleUIParameter;
 import main.java.de.embl.rieslab.emu.ui.uiparameters.IntegerUIParameter;
 import main.java.de.embl.rieslab.emu.ui.uiproperties.UIProperty;
+import main.java.de.embl.rieslab.emu.utils.SwingUIActions;
 import main.java.de.embl.rieslab.emu.utils.utils;
 import main.java.de.embl.rieslab.htsmlm.graph.TimeChart;
 import main.java.de.embl.rieslab.htsmlm.tasks.ActivationTask;
@@ -149,42 +144,8 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		pane.add(labelsdcoeff_,c);
 		
 		textfieldsdcoeff_ = new JTextField(String.valueOf(sdcoeff_));
-		textfieldsdcoeff_.addFocusListener(new FocusListener() {
-			@Override
-			public void focusGained(FocusEvent arg0) {}
-			@Override
-			public void focusLost(FocusEvent arg0) {
-				String typed = textfieldsdcoeff_.getText();
-        	    if(!utils.isNumeric(typed)) {
-        	        return;
-        	    } 
-				try {
-					double val = Double.parseDouble(typed);
-					if (val >= 0) {
-						sdcoeff_ = val;
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-        	}
-         });
-		textfieldsdcoeff_.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent ex) {
-				String typed = textfieldsdcoeff_.getText();
-        	    if(!utils.isNumeric(typed)) {
-        	        return;
-        	    } 
-				try {
-					double val = Double.parseDouble(typed);
-					if (val >= 0) {
-						sdcoeff_ = val;
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-        	}
-        });
+		SwingUIActions.addDoubleValueAction(val -> sdcoeff_ = val, textfieldsdcoeff_, 0, Double.POSITIVE_INFINITY);
+
 		c.gridy = 1;
 		pane.add(textfieldsdcoeff_,c);	
 		
@@ -193,42 +154,8 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		pane.add(labelfeeback_,c);
 		
 		textfieldfeedback_ = new JTextField(String.valueOf(feedback_));
-		textfieldfeedback_.addFocusListener(new FocusListener() {
-			@Override
-			public void focusGained(FocusEvent arg0) {}
-			@Override
-			public void focusLost(FocusEvent arg0) {
-				String typed = textfieldfeedback_.getText();
-        	    if(!utils.isNumeric(typed)) {
-        	        return;
-        	    } 
-				try {
-					double val = Double.parseDouble(typed);
-					if (val >= 0) {
-						feedback_ = val;
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-        	}
-         });
-		textfieldfeedback_.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent ex) {
-				String typed = textfieldfeedback_.getText();
-        	    if(!utils.isNumeric(typed)) {
-        	        return;
-        	    } 
-				try {
-					double val = Double.parseDouble(typed);
-					if (val >= 0) {
-						feedback_ = val;
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-        	}
-        });
+		SwingUIActions.addDoubleValueAction(val -> feedback_ = val, textfieldfeedback_, 0, Double.POSITIVE_INFINITY);
+
 		c.gridy = 3;
 		pane.add(textfieldfeedback_,c);	
 		
@@ -238,46 +165,8 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 
 		dT_ = 1.;
 		textfielddT_ = new JTextField(String.valueOf(dT_));
-		textfielddT_.addFocusListener(new FocusListener() {
-			@Override
-			public void focusGained(FocusEvent arg0) {}
-			@Override
-			public void focusLost(FocusEvent arg0) {
-				String typed = textfielddT_.getText();
-        	    if(!utils.isNumeric(typed)) {
-        	        return;
-        	    } 
-				try {
-					double val = Double.parseDouble(typed);
-					if (val > 1) {
-						dT_ = val;
-					} else {
-						dT_ = 1;
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-        	}
-         });
-		textfielddT_.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent ex) {
-				String typed = textfielddT_.getText();
-        	    if(!utils.isNumeric(typed)) {
-        	        return;
-        	    } 
-				try {
-					double val = Double.parseDouble(typed);
-					if (val > 1) {
-						dT_ = val;
-					} else {
-						dT_ = 1;
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-        	}
-        });
+		SwingUIActions.addDoubleValueAction(val -> dT_ = val, textfielddT_, 1, Double.POSITIVE_INFINITY);
+
 		c.gridy = 5;
 		pane.add(textfielddT_,c);	
 		
@@ -295,72 +184,22 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		
 		N0_ = 1;
 		textfieldN0_ = new JTextField(String.valueOf(N0_));
-		textfieldN0_.addFocusListener(new FocusListener() {
-			@Override
-			public void focusGained(FocusEvent arg0) {}
-			@Override
-			public void focusLost(FocusEvent arg0) {
-				String typed = textfieldN0_.getText();
-        	    if(!utils.isNumeric(typed)) {
-        	        return;
-        	    } 
-				try {
-					double val = Double.parseDouble(typed);
-					if (val >= 0) {
-						N0_ = val;
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-        	}
-         });
-		textfieldN0_.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent ex) {
-				String typed = textfieldN0_.getText();
-        	    if(!utils.isNumeric(typed)) {
-        	        return;
-        	    } 
-				try {
-					double val = Double.parseDouble(typed);
-					if (val >= 0) {
-						N0_ = val;
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-        	}
-        });
+		SwingUIActions.addDoubleValueAction(val -> N0_ = val, textfieldN0_, 1, Double.POSITIVE_INFINITY);
+
 		c.gridy = 7;
 		c.insets = new Insets(2,6,2,6);
 		pane.add(textfieldN0_,c);
 		
 		checkboxactivate_ = new JCheckBox("Activate");
-		checkboxactivate_.addItemListener(new ItemListener(){
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				if(e.getStateChange()==ItemEvent.SELECTED){
-					activate_ = true;
-				} else if(e.getStateChange()==ItemEvent.DESELECTED){
-					activate_ = false;
-				}
-			}
-        });
+		SwingUIActions.addBooleanValueAction(b -> activate_ = b, checkboxactivate_);
+
 		c.gridy = 8;
 		c.insets = new Insets(40,6,2,6);
 		pane.add(checkboxactivate_,c);	
 		
 		togglebuttonrun_ = new JToggleButton("Run");
-		togglebuttonrun_.addItemListener(new ItemListener(){
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				if(e.getStateChange()==ItemEvent.SELECTED){
-					runActivation(true);
-				} else if(e.getStateChange()==ItemEvent.DESELECTED){
-					runActivation(false);
-				}
-			}
-        });
+		SwingUIActions.addBooleanValueAction(b -> runActivation(b), togglebuttonrun_);
+
 		togglebuttonrun_.setPreferredSize(new Dimension(40,40));
 		c.gridy = 9;
 		c.gridheight = 2;
@@ -380,72 +219,12 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 	public JPanel getlowerpanel(){
 		JPanel pane = new JPanel();
 		pane.setLayout(new GridBagLayout());
-		
-//		labelcutoff_ = new JLabel("Cut-off:");
-//		c.gridx = 0;
-//		pane.add(labelcutoff_,c);
-		
+				
 		textfieldcutoff_ = new JTextField(String.valueOf(cutoff_));
-		textfieldcutoff_.addFocusListener(new FocusListener() {
-			@Override
-			public void focusGained(FocusEvent arg0) {}
-			@Override
-			public void focusLost(FocusEvent arg0) {
-				String typed = textfieldcutoff_.getText();
-        	    if(!utils.isNumeric(typed)) {
-        	        return;
-        	    } 
-				try {
-					double val = Double.parseDouble(typed);
-					if (val >= 0) {
-						cutoff_ = val;
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-        	}
-         });
-		textfieldcutoff_.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent ex) {
-				String typed = textfieldcutoff_.getText();
-        	    if(!utils.isNumeric(typed)) {
-        	        return;
-        	    } 
-				try {
-					double val = Double.parseDouble(typed);
-					if (val >= 0) {
-						cutoff_ = val;
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-        	}
-        });
+		SwingUIActions.addDoubleValueAction(val -> cutoff_ = val, textfieldcutoff_, 0., Double.POSITIVE_INFINITY);
 		
-
-		/*buttongetcutoff_ = new JButton("Get Cutoff");
-		buttongetcutoff_.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-            	textfieldcutoff_.setText(getProperty("Cutoff").getValue());
-            }
-        });
-		c.gridx = 1;
-		c.fill = GridBagConstraints.NONE;
-		pane.add(buttongetcutoff_,c);*/
-
 		togglebuttonautocutoff_ = new JToggleButton("Auto");
-		togglebuttonautocutoff_.addItemListener(new ItemListener(){
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				if(e.getStateChange()==ItemEvent.SELECTED){
-					autocutoff_ = true;
-				} else if(e.getStateChange()==ItemEvent.DESELECTED){
-					autocutoff_ = false;
-				}
-			}
-        });
-
+		SwingUIActions.addBooleanValueAction(b -> autocutoff_ = b, togglebuttonautocutoff_);
 		
 		buttonclear_ = new JButton("Clear");
 		buttonclear_.addActionListener(new java.awt.event.ActionListener() {
@@ -455,16 +234,7 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
         });	
 		
 		checkboxnms_ = new JCheckBox("NMS");
-		checkboxnms_.addItemListener(new ItemListener(){
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				if(e.getStateChange()==ItemEvent.SELECTED){
-					showNMS(true);
-				} else if(e.getStateChange()==ItemEvent.DESELECTED){
-					showNMS(false);
-				}
-			}
-        });
+		SwingUIActions.addBooleanValueAction(b -> showNMS(b), checkboxnms_);
 		
 		//////////////////////////////// grid bag setup
 		GridBagConstraints c = new GridBagConstraints();
@@ -767,6 +537,11 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 
 	@Override
 	public void taskDone() {
+		// Do nothing
+	}
+
+	@Override
+	protected void addComponentListeners() {
 		// Do nothing
 	}
 

@@ -8,8 +8,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -25,6 +23,7 @@ import main.java.de.embl.rieslab.emu.ui.ConfigurablePanel;
 import main.java.de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
 import main.java.de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 import main.java.de.embl.rieslab.emu.utils.ColorRepository;
+import main.java.de.embl.rieslab.emu.utils.SwingUIActions;
 import main.java.de.embl.rieslab.emu.utils.utils;
 import main.java.de.embl.rieslab.htsmlm.components.TogglePower;
 import main.java.de.embl.rieslab.htsmlm.components.ToggleSlider;
@@ -118,14 +117,8 @@ public class FocusLockPanel extends ConfigurablePanel {
 		
 		// slider channel 1
 		sliderPower_ = new JSlider(JSlider.HORIZONTAL, 0, (int) max_power, 0);
-		sliderPower_.addMouseListener(new MouseAdapter() {
-			public void mouseReleased(MouseEvent e) {				
-				textfieldUserPower_.setText(String.valueOf(sliderPower_.getValue()));
-				setUIPropertyValue(getLabel()+" "+LASER_POWER,String.valueOf(sliderPower_.getValue()));
-			}});
+		SwingUIActions.addIntegerValueAction(this, getLabel()+" "+LASER_POWER, sliderPower_, textfieldUserPower_);
 		
-		
-
 		// slider fine a
 		sliderFinea_ = new JSlider(JSlider.HORIZONTAL, 0, 100, 0);
 		sliderFinea_.addMouseListener(new MouseAdapter() {
@@ -143,29 +136,11 @@ public class FocusLockPanel extends ConfigurablePanel {
 			}});
 		
 		togglebuttonLaser_ = new TogglePower();
-		togglebuttonLaser_.addItemListener(new ItemListener(){
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				if(e.getStateChange()==ItemEvent.SELECTED){
-					setUIPropertyValue(getLabel()+" "+LASER_OPERATION,TwoStateUIProperty.getOnStateName());
-				} else if(e.getStateChange()==ItemEvent.DESELECTED){
-					setUIPropertyValue(getLabel()+" "+LASER_OPERATION,TwoStateUIProperty.getOffStateName());
-				}
-			}
-        });
+		SwingUIActions.addBooleanValueAction(this, getLabel()+" "+LASER_OPERATION, togglebuttonLaser_);
 		
 		// Fine enable
 		togglesliderenableFine_ = new ToggleSlider();
-		togglesliderenableFine_.addItemListener(new ItemListener(){
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				if(e.getStateChange()==ItemEvent.SELECTED){
-					setUIPropertyValue(getLabel()+" "+LASER_ENABLEFINE,TwoStateUIProperty.getOnStateName());
-				} else if(e.getStateChange()==ItemEvent.DESELECTED){
-					setUIPropertyValue(getLabel()+" "+LASER_ENABLEFINE,TwoStateUIProperty.getOffStateName());
-				}
-			}
-        });
+		SwingUIActions.addBooleanValueAction(this, getLabel()+" "+LASER_ENABLEFINE, togglesliderenableFine_);
 
 		fineaperc_ = new JLabel("100 %");
 		finebperc_ = new JLabel("100 %");
@@ -380,5 +355,11 @@ public class FocusLockPanel extends ConfigurablePanel {
 	@Override
 	public void parameterhasChanged(String label) {
 		// Do nothing		
+	}
+
+	@Override
+	protected void addComponentListeners() {
+		// TODO Auto-generated method stub
+		
 	}
 }

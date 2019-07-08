@@ -5,12 +5,8 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.LinkedHashMap;
 
 import javax.swing.BorderFactory;
@@ -27,6 +23,7 @@ import main.java.de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
 import main.java.de.embl.rieslab.emu.ui.uiproperties.ImmutableMultiStateUIProperty;
 import main.java.de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 import main.java.de.embl.rieslab.emu.utils.ColorRepository;
+import main.java.de.embl.rieslab.emu.utils.SwingUIActions;
 import main.java.de.embl.rieslab.emu.utils.utils;
 import main.java.de.embl.rieslab.htsmlm.constants.HTSMLMConstants;
 import main.java.de.embl.rieslab.htsmlm.flags.LaserFlag;
@@ -85,96 +82,17 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 		/////////////////////////////////////////////////////// behaviour combobox
 		combobehaviour_ = new JComboBox<String>(HTSMLMConstants.FPGA_BEHAVIOURS);
 		//combobehaviour_.setMinimumSize(new Dimension(40,10));
-		combobehaviour_.addActionListener(new ActionListener(){
-	    	public void actionPerformed(ActionEvent e){
-	    		String val= String.valueOf(combobehaviour_.getSelectedIndex());
-	    		setUIPropertyValue(getPropertyLabel(TRIGGER_BEHAVIOUR),val);
-	    	}
-        });
 
 		/////////////////////////////////////////////////////// pulse length
 		textfieldpulselength_ = new JTextField();
 		//textfieldpulselength_.setPreferredSize(new Dimension(60,20));
-		textfieldpulselength_.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {	
-				String s = textfieldpulselength_.getText();
-				if (utils.isInteger(s)) {
-					if(Integer.parseInt(s)<=HTSMLMConstants.FPGA_MAX_PULSE){
-						sliderpulse_.setValue(Integer.parseInt(s));
-						setUIPropertyValue(getPropertyLabel(PULSE_LENGTH),s);
-					} else {
-						sliderpulse_.setValue(HTSMLMConstants.FPGA_MAX_PULSE);
-						textfieldpulselength_.setText(String.valueOf(HTSMLMConstants.FPGA_MAX_PULSE));
-						setUIPropertyValue(getPropertyLabel(PULSE_LENGTH),String.valueOf(HTSMLMConstants.FPGA_MAX_PULSE));
-					}
-				}
-	         }
-	    });
-		textfieldpulselength_.addFocusListener(new FocusListener() {
-			@Override
-			public void focusGained(FocusEvent ex) {}
-
-			@Override
-			public void focusLost(FocusEvent ex) {
-				String s = textfieldpulselength_.getText();
-				if (utils.isInteger(s)) {
-					if (Integer.parseInt(s) <= HTSMLMConstants.FPGA_MAX_PULSE) {
-						sliderpulse_.setValue(Integer.parseInt(s));
-						setUIPropertyValue(getPropertyLabel(PULSE_LENGTH), s);
-					} else {
-						sliderpulse_.setValue(HTSMLMConstants.FPGA_MAX_PULSE);
-						textfieldpulselength_.setText(String.valueOf(HTSMLMConstants.FPGA_MAX_PULSE));
-						setUIPropertyValue(getPropertyLabel(PULSE_LENGTH),String.valueOf(HTSMLMConstants.FPGA_MAX_PULSE));
-					}
-				}
-			}
-		});
 		
 		sliderpulse_ = new JSlider(JSlider.HORIZONTAL, 0, HTSMLMConstants.FPGA_MAX_PULSE, 0);
-		sliderpulse_.addMouseListener(new MouseAdapter() {
-			public void mouseReleased(MouseEvent e) {				
-				  textfieldpulselength_.setText(String.valueOf(sliderpulse_.getValue()));
-				  setUIPropertyValue(getPropertyLabel(PULSE_LENGTH),String.valueOf(sliderpulse_.getValue()));
-			}});
 		
 
 		/////////////////////////////////////////////////////// sequence
 		textfieldsequence_ = new JTextField();
 		//textfieldsequence_.setPreferredSize(new Dimension(105,20));
-		textfieldsequence_.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {	
-				String s = textfieldsequence_.getText();
-				if (BinaryConverter.is16bits(s)) {
-					textfieldsequence_.setForeground(ColorRepository.getColor("black"));
-					String str = String.valueOf(BinaryConverter.getDecimal16bits(s));
-					setUIPropertyValue(getPropertyLabel(TRIGGER_SEQUENCE),str);
-				} else if(BinaryConverter.isBits(s)) {
-					textfieldsequence_.setForeground(ColorRepository.getColor("blue"));
-				} else {
-					textfieldsequence_.setForeground(ColorRepository.getColor("red"));
-				}
-	         }
-	    });
-		textfieldsequence_.addFocusListener(new FocusListener() {
-			@Override
-			public void focusGained(FocusEvent ex) {}
-
-			@Override
-			public void focusLost(FocusEvent ex) {
-				String s = textfieldsequence_.getText();
-				if (BinaryConverter.is16bits(s)) {
-					textfieldsequence_.setForeground(ColorRepository.getColor("black"));
-					String str = String.valueOf(BinaryConverter.getDecimal16bits(s));
-					setUIPropertyValue(getPropertyLabel(TRIGGER_SEQUENCE),str);
-				
-				} else if(BinaryConverter.isBits(s)) {
-					textfieldsequence_.setForeground(ColorRepository.getColor("blue"));
-				} else {
-					textfieldsequence_.setForeground(ColorRepository.getColor("red"));
-				}
-	         }
-		});
-		
 
 		/////////////////////////////////////////////////////// place components
 		GridBagConstraints c = new GridBagConstraints();
@@ -309,5 +227,86 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 	
 	private String getPropertyLabel(String propName) {
 		return getLabel()+" "+propName;
+	}
+
+	@Override
+	protected void addComponentListeners() {
+		
+		// updates TRIGGER_BEHAVIOUR based on the index of the JComboBox
+		SwingUIActions.addIndexValueAction(this, getPropertyLabel(TRIGGER_BEHAVIOUR), combobehaviour_);
+		
+		// Updates JSlider when updating PULSE_LENGTH from the JTextField
+		textfieldpulselength_.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {	
+				String s = textfieldpulselength_.getText();
+				if (utils.isInteger(s)) {
+					if(Integer.parseInt(s)<=HTSMLMConstants.FPGA_MAX_PULSE){
+						sliderpulse_.setValue(Integer.parseInt(s));
+						setUIPropertyValue(getPropertyLabel(PULSE_LENGTH),s);
+					} else {
+						sliderpulse_.setValue(HTSMLMConstants.FPGA_MAX_PULSE);
+						textfieldpulselength_.setText(String.valueOf(HTSMLMConstants.FPGA_MAX_PULSE));
+						setUIPropertyValue(getPropertyLabel(PULSE_LENGTH),String.valueOf(HTSMLMConstants.FPGA_MAX_PULSE));
+					}
+				}
+	         }
+	    });
+		textfieldpulselength_.addFocusListener(new FocusListener() {
+			@Override
+			public void focusGained(FocusEvent ex) {}
+
+			@Override
+			public void focusLost(FocusEvent ex) {
+				String s = textfieldpulselength_.getText();
+				if (utils.isInteger(s)) {
+					if (Integer.parseInt(s) <= HTSMLMConstants.FPGA_MAX_PULSE) {
+						sliderpulse_.setValue(Integer.parseInt(s));
+						setUIPropertyValue(getPropertyLabel(PULSE_LENGTH), s);
+					} else {
+						sliderpulse_.setValue(HTSMLMConstants.FPGA_MAX_PULSE);
+						textfieldpulselength_.setText(String.valueOf(HTSMLMConstants.FPGA_MAX_PULSE));
+						setUIPropertyValue(getPropertyLabel(PULSE_LENGTH),String.valueOf(HTSMLMConstants.FPGA_MAX_PULSE));
+					}
+				}
+			}
+		});
+		
+		// Same from the JSlider point of view
+		SwingUIActions.addIntegerValueAction(this, getPropertyLabel(PULSE_LENGTH), sliderpulse_, textfieldpulselength_);
+
+		// JTextField sequence with 16 x {0} or {1}, check the user input
+		textfieldsequence_.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {	
+				String s = textfieldsequence_.getText();
+				if (BinaryConverter.is16bits(s)) {
+					textfieldsequence_.setForeground(ColorRepository.getColor("black"));
+					String str = String.valueOf(BinaryConverter.getDecimal16bits(s));
+					setUIPropertyValue(getPropertyLabel(TRIGGER_SEQUENCE),str);
+				} else if(BinaryConverter.isBits(s)) {
+					textfieldsequence_.setForeground(ColorRepository.getColor("blue"));
+				} else {
+					textfieldsequence_.setForeground(ColorRepository.getColor("red"));
+				}
+	         }
+	    });
+		textfieldsequence_.addFocusListener(new FocusListener() {
+			@Override
+			public void focusGained(FocusEvent ex) {}
+
+			@Override
+			public void focusLost(FocusEvent ex) {
+				String s = textfieldsequence_.getText();
+				if (BinaryConverter.is16bits(s)) {
+					textfieldsequence_.setForeground(ColorRepository.getColor("black"));
+					String str = String.valueOf(BinaryConverter.getDecimal16bits(s));
+					setUIPropertyValue(getPropertyLabel(TRIGGER_SEQUENCE),str);
+				
+				} else if(BinaryConverter.isBits(s)) {
+					textfieldsequence_.setForeground(ColorRepository.getColor("blue"));
+				} else {
+					textfieldsequence_.setForeground(ColorRepository.getColor("red"));
+				}
+	         }
+		});
 	}
 }

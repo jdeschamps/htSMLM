@@ -9,8 +9,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -26,6 +24,7 @@ import main.java.de.embl.rieslab.emu.ui.uiparameters.DoubleUIParameter;
 import main.java.de.embl.rieslab.emu.ui.uiparameters.IntegerUIParameter;
 import main.java.de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
 import main.java.de.embl.rieslab.emu.ui.uiproperties.UIProperty;
+import main.java.de.embl.rieslab.emu.utils.SwingUIActions;
 import main.java.de.embl.rieslab.emu.utils.utils;
 import main.java.de.embl.rieslab.htsmlm.flags.FocusStabFlag;
 import main.java.de.embl.rieslab.htsmlm.graph.TimeChart;
@@ -112,7 +111,7 @@ public class FocusPanel extends ConfigurablePanel {
 		poslabel_ = new JLabel("Position:");
 
 		
-		textfieldPosition_ = new JTextField();
+		textfieldPosition_ = new JTextField();	
 		textfieldPosition_.addFocusListener(new FocusListener() {
 			@Override
 			public void focusGained(FocusEvent arg0) {}
@@ -155,28 +154,10 @@ public class FocusPanel extends ConfigurablePanel {
         });
 
 		togglebuttonMonitor_ = new JToggleButton("Monitor");
-		togglebuttonMonitor_.addItemListener(new ItemListener(){
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				if(e.getStateChange()==ItemEvent.SELECTED){
-					monitorPosition(true);
-				} else if(e.getStateChange()==ItemEvent.DESELECTED){
-					monitorPosition(false);
-				}
-			}
-        });
+		SwingUIActions.addBooleanValueAction(b -> monitorPosition(b), togglebuttonMonitor_);
 
 		togglebuttonLock_ = new JToggleButton("Lock");
-		togglebuttonLock_.addItemListener(new ItemListener(){
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				if(e.getStateChange()==ItemEvent.SELECTED){
-					lockPosition(true);
-				} else if(e.getStateChange()==ItemEvent.DESELECTED){
-					lockPosition(false);
-				}
-			}
-        });
+		SwingUIActions.addBooleanValueAction(this, FOCUS_STABILIZATION, togglebuttonLock_);
 		
 		///// grid bag 
 		GridBagConstraints c = new GridBagConstraints();
@@ -224,64 +205,12 @@ public class FocusPanel extends ConfigurablePanel {
 
 		largesteplabel_ = new JLabel(">>");
 		textfieldLargeStep_ = new JTextField(String.valueOf(largestep_));
-		textfieldLargeStep_.addFocusListener(new FocusListener() {
-			@Override
-			public void focusGained(FocusEvent arg0) {}
-			@Override
-			public void focusLost(FocusEvent arg0) {
-        	    if(!utils.isNumeric(textfieldLargeStep_.getText())) {
-        	        return;
-        	    } 
-				try {
-					largestep_ = Double.parseDouble(textfieldLargeStep_.getText());
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-        	}
-         });
-		textfieldPosition_.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-        	    if(!utils.isNumeric(textfieldLargeStep_.getText())) {
-        	        return;
-        	    } 
-				try {
-					largestep_ = Double.parseDouble(textfieldLargeStep_.getText());
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-        	}
-        });
+		SwingUIActions.addDoubleValueAction(d -> largestep_ = d, textfieldLargeStep_);
+
 		smallsteplabel_ = new JLabel(">");
 		textfieldSmallStep_ = new JTextField(String.valueOf(smallstep_));
-		textfieldSmallStep_.addFocusListener(new FocusListener() {  
-			@Override
-			public void focusGained(FocusEvent arg0) {}
-			@Override
-			public void focusLost(FocusEvent arg0) {
-        	    if(!utils.isNumeric(textfieldSmallStep_.getText())) {
-        	        return;
-        	    } 
-				try {
-					smallstep_ = Double.parseDouble(textfieldSmallStep_.getText());
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-        	}
-         });
-		textfieldSmallStep_.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-        	    if(!utils.isNumeric(textfieldSmallStep_.getText())) {
-        	        return;
-        	    } 
-				try {
-					smallstep_ = Double.parseDouble(textfieldSmallStep_.getText());
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-        	}
-        });
+		SwingUIActions.addDoubleValueAction(d -> smallstep_ = d, textfieldSmallStep_);
+				
 		buttonSmallStepsDown_ = new JButton("v");
 		buttonSmallStepsDown_.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -351,14 +280,6 @@ public class FocusPanel extends ConfigurablePanel {
     		double val = Double.parseDouble(s)+step;
     		setUIPropertyValue(FOCUS_POSITION,String.valueOf(val));
     	}		
-	}
-
-	protected void lockPosition(boolean b) {
-		if(b){
-			setUIPropertyValue(FOCUS_STABILIZATION,TwoStateUIProperty.getOnStateName());
-		} else {
-			setUIPropertyValue(FOCUS_STABILIZATION,TwoStateUIProperty.getOffStateName());
-		}
 	}
 
 	protected void monitorPosition(boolean b) {
@@ -470,6 +391,11 @@ public class FocusPanel extends ConfigurablePanel {
 	
 	@Override
 	public void internalpropertyhasChanged(String label) {
+		// Do nothing
+	}
+
+	@Override
+	protected void addComponentListeners() {
 		// Do nothing
 	}
 }
