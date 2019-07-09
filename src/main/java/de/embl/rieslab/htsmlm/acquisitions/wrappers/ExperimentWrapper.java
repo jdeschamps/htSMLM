@@ -1,4 +1,4 @@
-package main.java.de.embl.rieslab.htsmlm.acquisitions.wrappers;
+package de.embl.rieslab.htsmlm.acquisitions.wrappers;
 
 import java.util.ArrayList;
 

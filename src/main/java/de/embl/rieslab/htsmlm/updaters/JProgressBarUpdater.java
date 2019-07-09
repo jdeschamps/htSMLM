@@ -1,12 +1,12 @@
-package main.java.de.embl.rieslab.htsmlm.updaters;
+package de.embl.rieslab.htsmlm.updaters;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import javax.swing.JProgressBar;
 
-import main.java.de.embl.rieslab.emu.ui.uiproperties.UIProperty;
-import main.java.de.embl.rieslab.emu.utils.utils;
+import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
+import de.embl.rieslab.emu.utils.utils;
 
 public class JProgressBarUpdater extends ComponentUpdater<JProgressBar>{
 

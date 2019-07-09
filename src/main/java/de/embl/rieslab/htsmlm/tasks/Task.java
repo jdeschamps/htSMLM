@@ -1,4 +1,4 @@
-package main.java.de.embl.rieslab.htsmlm.tasks;
+package de.embl.rieslab.htsmlm.tasks;
 
 public interface Task<T> {
 

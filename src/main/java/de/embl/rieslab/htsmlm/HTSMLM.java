@@ -1,8 +1,8 @@
-package main.java.de.embl.rieslab.htsmlm;
+package de.embl.rieslab.htsmlm;
 
-import main.java.de.embl.rieslab.emu.controller.SystemController;
-import main.java.de.embl.rieslab.emu.plugin.UIPlugin;
-import main.java.de.embl.rieslab.emu.ui.ConfigurableMainFrame;
+import de.embl.rieslab.emu.controller.SystemController;
+import de.embl.rieslab.emu.plugin.UIPlugin;
+import de.embl.rieslab.emu.ui.ConfigurableMainFrame;
 
 public class HTSMLM implements UIPlugin{
 

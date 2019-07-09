@@ -1,4 +1,4 @@
-package main.java.de.embl.rieslab.htsmlm;
+package de.embl.rieslab.htsmlm;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -18,16 +18,16 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.border.TitledBorder;
 
-import main.java.de.embl.rieslab.emu.ui.ConfigurablePanel;
-import main.java.de.embl.rieslab.emu.ui.uiparameters.ColorUIParameter;
-import main.java.de.embl.rieslab.emu.ui.uiparameters.IntegerUIParameter;
-import main.java.de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
-import main.java.de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
-import main.java.de.embl.rieslab.emu.ui.uiproperties.UIProperty;
-import main.java.de.embl.rieslab.emu.utils.SwingUIActions;
-import main.java.de.embl.rieslab.emu.utils.utils;
-import main.java.de.embl.rieslab.htsmlm.components.TogglePower;
-import main.java.de.embl.rieslab.htsmlm.flags.LaserFlag;
+import de.embl.rieslab.emu.swinglisteners.SwingUIListeners;
+import de.embl.rieslab.emu.ui.ConfigurablePanel;
+import de.embl.rieslab.emu.ui.uiparameters.ColorUIParameter;
+import de.embl.rieslab.emu.ui.uiparameters.IntegerUIParameter;
+import de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
+import de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
+import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
+import de.embl.rieslab.emu.utils.utils;
+import de.embl.rieslab.htsmlm.components.TogglePower;
+import de.embl.rieslab.htsmlm.flags.LaserFlag;
 
 public class LaserControlPanel extends ConfigurablePanel {
 
@@ -193,7 +193,7 @@ public class LaserControlPanel extends ConfigurablePanel {
 		///////////////////////////////////////////////////////////////////////// On/Off button
        
         togglebuttonOnOff_ = new TogglePower();
-        SwingUIActions.addBooleanValueAction(this, getLabel()+" "+LASER_OPERATION, togglebuttonOnOff_);
+        SwingUIListeners.addBooleanValueAction(this, getLabel()+" "+LASER_OPERATION, togglebuttonOnOff_);
         
 		////// grid bag layout
 		GridBagConstraints c = new GridBagConstraints();

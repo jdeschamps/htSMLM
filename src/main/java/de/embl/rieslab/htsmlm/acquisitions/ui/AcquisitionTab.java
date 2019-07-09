@@ -1,4 +1,4 @@
-package main.java.de.embl.rieslab.htsmlm.acquisitions.ui;
+package de.embl.rieslab.htsmlm.acquisitions.ui;
 
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -37,27 +37,27 @@ import org.micromanager.internal.utils.DaytimeNighttime;
 import org.micromanager.internal.utils.ReportingUtils;
 import org.micromanager.internal.utils.SliderPanel;
 
-import main.java.de.embl.rieslab.emu.micromanager.configgroups.MMConfigurationGroup;
-import main.java.de.embl.rieslab.emu.micromanager.configgroups.MMConfigurationGroupsRegistry;
-import main.java.de.embl.rieslab.emu.micromanager.mmproperties.MMProperty;
-import main.java.de.embl.rieslab.emu.ui.uiproperties.ImmutableMultiStateUIProperty;
-import main.java.de.embl.rieslab.emu.ui.uiproperties.MultiStateUIProperty;
-import main.java.de.embl.rieslab.emu.ui.uiproperties.SingleStateUIProperty;
-import main.java.de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
-import main.java.de.embl.rieslab.emu.ui.uiproperties.UIProperty;
-import main.java.de.embl.rieslab.htsmlm.acquisitions.AcquisitionFactory;
-import main.java.de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
-import main.java.de.embl.rieslab.htsmlm.filters.AllocatedPropertyFilter;
-import main.java.de.embl.rieslab.htsmlm.filters.AntiFlagPropertyFilter;
-import main.java.de.embl.rieslab.htsmlm.filters.FlagPropertyFilter;
-import main.java.de.embl.rieslab.htsmlm.filters.NonConfigGroupPropertyFilter;
-import main.java.de.embl.rieslab.htsmlm.filters.PropertyFilter;
-import main.java.de.embl.rieslab.htsmlm.filters.ReadOnlyPropertyFilter;
-import main.java.de.embl.rieslab.htsmlm.filters.TwoStatePropertyFilter;
-import main.java.de.embl.rieslab.htsmlm.flags.FilterWheelFlag;
-import main.java.de.embl.rieslab.htsmlm.flags.FocusLockFlag;
-import main.java.de.embl.rieslab.htsmlm.flags.FocusStabFlag;
-import main.java.de.embl.rieslab.htsmlm.flags.LaserFlag;
+import de.embl.rieslab.emu.micromanager.configgroups.MMConfigurationGroup;
+import de.embl.rieslab.emu.micromanager.configgroups.MMConfigurationGroupsRegistry;
+import de.embl.rieslab.emu.micromanager.mmproperties.MMProperty;
+import de.embl.rieslab.emu.ui.uiproperties.ImmutableMultiStateUIProperty;
+import de.embl.rieslab.emu.ui.uiproperties.MultiStateUIProperty;
+import de.embl.rieslab.emu.ui.uiproperties.SingleStateUIProperty;
+import de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
+import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
+import de.embl.rieslab.htsmlm.acquisitions.AcquisitionFactory;
+import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
+import de.embl.rieslab.htsmlm.filters.AllocatedPropertyFilter;
+import de.embl.rieslab.htsmlm.filters.AntiFlagPropertyFilter;
+import de.embl.rieslab.htsmlm.filters.FlagPropertyFilter;
+import de.embl.rieslab.htsmlm.filters.NonConfigGroupPropertyFilter;
+import de.embl.rieslab.htsmlm.filters.PropertyFilter;
+import de.embl.rieslab.htsmlm.filters.ReadOnlyPropertyFilter;
+import de.embl.rieslab.htsmlm.filters.TwoStatePropertyFilter;
+import de.embl.rieslab.htsmlm.flags.FilterWheelFlag;
+import de.embl.rieslab.htsmlm.flags.FocusLockFlag;
+import de.embl.rieslab.htsmlm.flags.FocusStabFlag;
+import de.embl.rieslab.htsmlm.flags.LaserFlag;
 
 /**
  * This class is super messy and difficult to read... Need to go over it again.

@@ -1,4 +1,4 @@
-package main.java.de.embl.rieslab.htsmlm;
+package de.embl.rieslab.htsmlm;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -13,11 +13,11 @@ import javax.swing.ButtonGroup;
 import javax.swing.JToggleButton;
 import javax.swing.border.TitledBorder;
 
-import main.java.de.embl.rieslab.emu.ui.ConfigurablePanel;
-import main.java.de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
-import main.java.de.embl.rieslab.emu.ui.uiproperties.MultiStateUIProperty;
-import main.java.de.embl.rieslab.emu.utils.ColorRepository;
-import main.java.de.embl.rieslab.htsmlm.flags.FilterWheelFlag;
+import de.embl.rieslab.emu.ui.ConfigurablePanel;
+import de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
+import de.embl.rieslab.emu.ui.uiproperties.MultiStateUIProperty;
+import de.embl.rieslab.emu.utils.ColorRepository;
+import de.embl.rieslab.htsmlm.flags.FilterWheelFlag;
 
 public class DualFWPanel extends ConfigurablePanel {
 

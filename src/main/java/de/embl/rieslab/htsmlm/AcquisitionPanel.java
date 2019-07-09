@@ -1,4 +1,4 @@
-package main.java.de.embl.rieslab.htsmlm;
+package de.embl.rieslab.htsmlm;
 
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
@@ -30,17 +30,17 @@ import javax.swing.JTextPane;
 import javax.swing.JToggleButton;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import main.java.de.embl.rieslab.emu.controller.SystemController;
-import main.java.de.embl.rieslab.emu.ui.ConfigurablePanel;
-import main.java.de.embl.rieslab.emu.ui.uiparameters.UIPropertyParameter;
-import main.java.de.embl.rieslab.htsmlm.acquisitions.AcquisitionController;
-import main.java.de.embl.rieslab.htsmlm.acquisitions.utils.AcquisitionDialogs;
-import main.java.de.embl.rieslab.htsmlm.acquisitions.utils.AcquisitionInformationPanel;
-import main.java.de.embl.rieslab.htsmlm.acquisitions.utils.ExperimentTreeSummary;
-import main.java.de.embl.rieslab.htsmlm.constants.HTSMLMConstants;
-import main.java.de.embl.rieslab.htsmlm.flags.FocusStabFlag;
-import main.java.de.embl.rieslab.htsmlm.flags.TwoStateFlag;
-import main.java.de.embl.rieslab.htsmlm.tasks.TaskHolder;
+import de.embl.rieslab.emu.controller.SystemController;
+import de.embl.rieslab.emu.ui.ConfigurablePanel;
+import de.embl.rieslab.emu.ui.uiparameters.UIPropertyParameter;
+import de.embl.rieslab.htsmlm.acquisitions.AcquisitionController;
+import de.embl.rieslab.htsmlm.acquisitions.utils.AcquisitionDialogs;
+import de.embl.rieslab.htsmlm.acquisitions.utils.AcquisitionInformationPanel;
+import de.embl.rieslab.htsmlm.acquisitions.utils.ExperimentTreeSummary;
+import de.embl.rieslab.htsmlm.constants.HTSMLMConstants;
+import de.embl.rieslab.htsmlm.flags.FocusStabFlag;
+import de.embl.rieslab.htsmlm.flags.TwoStateFlag;
+import de.embl.rieslab.htsmlm.tasks.TaskHolder;
 
 public class AcquisitionPanel extends ConfigurablePanel{
 

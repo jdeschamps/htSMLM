@@ -1,10 +1,10 @@
-package main.java.de.embl.rieslab.htsmlm.filters;
+package de.embl.rieslab.htsmlm.filters;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import main.java.de.embl.rieslab.emu.ui.uiproperties.UIProperty;
+import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 
 public abstract class PropertyFilter {
 	

@@ -1,21 +1,21 @@
-package main.java.de.embl.rieslab.htsmlm.acquisitions;
+package de.embl.rieslab.htsmlm.acquisitions;
 
 import java.util.ArrayList;
 
 import javax.swing.SwingUtilities;
 
-import main.java.de.embl.rieslab.emu.controller.SystemController;
-import main.java.de.embl.rieslab.emu.ui.uiparameters.UIPropertyParameter;
-import main.java.de.embl.rieslab.htsmlm.AcquisitionPanel;
-import main.java.de.embl.rieslab.htsmlm.acquisitions.AcquisitionFactory.AcquisitionType;
-import main.java.de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
-import main.java.de.embl.rieslab.htsmlm.acquisitions.ui.AcquisitionWizard;
-import main.java.de.embl.rieslab.htsmlm.acquisitions.utils.AcquisitionInformationPanel;
-import main.java.de.embl.rieslab.htsmlm.acquisitions.wrappers.Experiment;
-import main.java.de.embl.rieslab.htsmlm.constants.HTSMLMConstants;
-import main.java.de.embl.rieslab.htsmlm.tasks.AcquisitionTask;
-import main.java.de.embl.rieslab.htsmlm.tasks.Task;
-import main.java.de.embl.rieslab.htsmlm.tasks.TaskHolder;
+import de.embl.rieslab.emu.controller.SystemController;
+import de.embl.rieslab.emu.ui.uiparameters.UIPropertyParameter;
+import de.embl.rieslab.htsmlm.AcquisitionPanel;
+import de.embl.rieslab.htsmlm.acquisitions.AcquisitionFactory.AcquisitionType;
+import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
+import de.embl.rieslab.htsmlm.acquisitions.ui.AcquisitionWizard;
+import de.embl.rieslab.htsmlm.acquisitions.utils.AcquisitionInformationPanel;
+import de.embl.rieslab.htsmlm.acquisitions.wrappers.Experiment;
+import de.embl.rieslab.htsmlm.constants.HTSMLMConstants;
+import de.embl.rieslab.htsmlm.tasks.AcquisitionTask;
+import de.embl.rieslab.htsmlm.tasks.Task;
+import de.embl.rieslab.htsmlm.tasks.TaskHolder;
 
 public class AcquisitionController implements TaskHolder<Integer>{
 

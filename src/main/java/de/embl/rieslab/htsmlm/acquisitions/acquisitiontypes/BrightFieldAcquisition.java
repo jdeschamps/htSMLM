@@ -1,4 +1,4 @@
-package main.java.de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes;
+package de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes;
 
 import java.awt.Component;
 import java.awt.GridLayout;
@@ -10,10 +10,10 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
-import main.java.de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
-import main.java.de.embl.rieslab.htsmlm.acquisitions.AcquisitionFactory.AcquisitionType;
-import main.java.de.embl.rieslab.htsmlm.filters.PropertyFilter;
-import main.java.de.embl.rieslab.htsmlm.filters.SinglePropertyFilter;
+import de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
+import de.embl.rieslab.htsmlm.acquisitions.AcquisitionFactory.AcquisitionType;
+import de.embl.rieslab.htsmlm.filters.PropertyFilter;
+import de.embl.rieslab.htsmlm.filters.SinglePropertyFilter;
 
 import org.micromanager.Studio;
 import org.micromanager.data.Coords;

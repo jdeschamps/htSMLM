@@ -1,4 +1,4 @@
-package main.java.de.embl.rieslab.htsmlm.tasks;
+package de.embl.rieslab.htsmlm.tasks;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,11 +13,11 @@ import org.micromanager.PositionList;
 import org.micromanager.PositionListManager;
 import org.micromanager.Studio;
 
-import main.java.de.embl.rieslab.emu.controller.SystemController;
-import main.java.de.embl.rieslab.emu.micromanager.configgroups.MMConfigurationGroup;
-import main.java.de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
-import main.java.de.embl.rieslab.htsmlm.acquisitions.ui.AcquisitionTab;
-import main.java.de.embl.rieslab.htsmlm.acquisitions.wrappers.Experiment;
+import de.embl.rieslab.emu.controller.SystemController;
+import de.embl.rieslab.emu.micromanager.configgroups.MMConfigurationGroup;
+import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
+import de.embl.rieslab.htsmlm.acquisitions.ui.AcquisitionTab;
+import de.embl.rieslab.htsmlm.acquisitions.wrappers.Experiment;
 import mmcorej.CMMCore;
 
 public class AcquisitionTask implements Task<Integer>{

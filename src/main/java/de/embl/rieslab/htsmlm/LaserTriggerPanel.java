@@ -1,4 +1,4 @@
-package main.java.de.embl.rieslab.htsmlm;
+package de.embl.rieslab.htsmlm;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -16,18 +16,18 @@ import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
-import main.java.de.embl.rieslab.emu.ui.ConfigurablePanel;
-import main.java.de.embl.rieslab.emu.ui.uiparameters.ColorUIParameter;
-import main.java.de.embl.rieslab.emu.ui.uiparameters.ComboUIParameter;
-import main.java.de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
-import main.java.de.embl.rieslab.emu.ui.uiproperties.ImmutableMultiStateUIProperty;
-import main.java.de.embl.rieslab.emu.ui.uiproperties.UIProperty;
-import main.java.de.embl.rieslab.emu.utils.ColorRepository;
-import main.java.de.embl.rieslab.emu.utils.SwingUIActions;
-import main.java.de.embl.rieslab.emu.utils.utils;
-import main.java.de.embl.rieslab.htsmlm.constants.HTSMLMConstants;
-import main.java.de.embl.rieslab.htsmlm.flags.LaserFlag;
-import main.java.de.embl.rieslab.htsmlm.utils.BinaryConverter;
+import de.embl.rieslab.emu.swinglisteners.SwingUIListeners;
+import de.embl.rieslab.emu.ui.ConfigurablePanel;
+import de.embl.rieslab.emu.ui.uiparameters.ColorUIParameter;
+import de.embl.rieslab.emu.ui.uiparameters.ComboUIParameter;
+import de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
+import de.embl.rieslab.emu.ui.uiproperties.ImmutableMultiStateUIProperty;
+import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
+import de.embl.rieslab.emu.utils.ColorRepository;
+import de.embl.rieslab.emu.utils.utils;
+import de.embl.rieslab.htsmlm.constants.HTSMLMConstants;
+import de.embl.rieslab.htsmlm.flags.LaserFlag;
+import de.embl.rieslab.htsmlm.utils.BinaryConverter;
 
 
 public class LaserTriggerPanel extends ConfigurablePanel {
@@ -233,7 +233,7 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 	protected void addComponentListeners() {
 		
 		// updates TRIGGER_BEHAVIOUR based on the index of the JComboBox
-		SwingUIActions.addIndexValueAction(this, getPropertyLabel(TRIGGER_BEHAVIOUR), combobehaviour_);
+		SwingUIListeners.addIndexValueAction(this, getPropertyLabel(TRIGGER_BEHAVIOUR), combobehaviour_);
 		
 		// Updates JSlider when updating PULSE_LENGTH from the JTextField
 		textfieldpulselength_.addActionListener(new java.awt.event.ActionListener() {
@@ -272,7 +272,7 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 		});
 		
 		// Same from the JSlider point of view
-		SwingUIActions.addIntegerValueAction(this, getPropertyLabel(PULSE_LENGTH), sliderpulse_, textfieldpulselength_);
+		SwingUIListeners.addIntegerValueAction(this, getPropertyLabel(PULSE_LENGTH), sliderpulse_, textfieldpulselength_);
 
 		// JTextField sequence with 16 x {0} or {1}, check the user input
 		textfieldsequence_.addActionListener(new java.awt.event.ActionListener() {

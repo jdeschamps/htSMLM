@@ -1,4 +1,4 @@
-package main.java.de.embl.rieslab.htsmlm.acquisitions.utils;
+package de.embl.rieslab.htsmlm.acquisitions.utils;
 
 import javax.swing.JOptionPane;
 

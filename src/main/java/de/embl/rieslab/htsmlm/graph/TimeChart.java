@@ -1,4 +1,4 @@
-package main.java.de.embl.rieslab.htsmlm.graph;
+package de.embl.rieslab.htsmlm.graph;
 
 import java.awt.BasicStroke;
 import java.awt.Color;

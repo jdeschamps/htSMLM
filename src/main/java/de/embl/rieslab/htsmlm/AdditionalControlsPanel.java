@@ -1,4 +1,4 @@
-package main.java.de.embl.rieslab.htsmlm;
+package de.embl.rieslab.htsmlm;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -10,12 +10,12 @@ import javax.swing.BorderFactory;
 import javax.swing.JToggleButton;
 import javax.swing.border.TitledBorder;
 
-import main.java.de.embl.rieslab.emu.ui.ConfigurablePanel;
-import main.java.de.embl.rieslab.emu.ui.uiparameters.BoolUIParameter;
-import main.java.de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
-import main.java.de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
-import main.java.de.embl.rieslab.emu.utils.SwingUIActions;
-import main.java.de.embl.rieslab.htsmlm.flags.TwoStateFlag;
+import de.embl.rieslab.emu.swinglisteners.SwingUIListeners;
+import de.embl.rieslab.emu.ui.ConfigurablePanel;
+import de.embl.rieslab.emu.ui.uiparameters.BoolUIParameter;
+import de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
+import de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
+import de.embl.rieslab.htsmlm.flags.TwoStateFlag;
 
 public class AdditionalControlsPanel extends ConfigurablePanel{
 
@@ -78,7 +78,7 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 			c.gridy = i;
 			this.add(togglebuttons_[i], c);
 			
-			SwingUIActions.addBooleanValueAction(this, devices[i], togglebuttons_[i]);
+			SwingUIListeners.addBooleanValueAction(this, devices[i], togglebuttons_[i]);
 		}  
 	}
 		

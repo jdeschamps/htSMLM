@@ -1,4 +1,4 @@
-package main.java.de.embl.rieslab.htsmlm.acquisitions;
+package de.embl.rieslab.htsmlm.acquisitions;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,22 +14,22 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import main.java.de.embl.rieslab.emu.controller.SystemController;
-import main.java.de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
-import main.java.de.embl.rieslab.emu.utils.utils;
-import main.java.de.embl.rieslab.htsmlm.AcquisitionPanel;
-import main.java.de.embl.rieslab.htsmlm.ActivationPanel;
-import main.java.de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
-import main.java.de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.BFPAcquisition;
-import main.java.de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.BrightFieldAcquisition;
-import main.java.de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.LocalizationAcquisition;
-import main.java.de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.SnapAcquisition;
-import main.java.de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.TimeAcquisition;
-import main.java.de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.ZStackAcquisition;
-import main.java.de.embl.rieslab.htsmlm.acquisitions.wrappers.AcquisitionWrapper;
-import main.java.de.embl.rieslab.htsmlm.acquisitions.wrappers.Experiment;
-import main.java.de.embl.rieslab.htsmlm.acquisitions.wrappers.ExperimentWrapper;
-import main.java.de.embl.rieslab.htsmlm.constants.HTSMLMConstants;
+import de.embl.rieslab.emu.controller.SystemController;
+import de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
+import de.embl.rieslab.emu.utils.utils;
+import de.embl.rieslab.htsmlm.AcquisitionPanel;
+import de.embl.rieslab.htsmlm.ActivationPanel;
+import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
+import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.BFPAcquisition;
+import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.BrightFieldAcquisition;
+import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.LocalizationAcquisition;
+import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.SnapAcquisition;
+import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.TimeAcquisition;
+import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.ZStackAcquisition;
+import de.embl.rieslab.htsmlm.acquisitions.wrappers.AcquisitionWrapper;
+import de.embl.rieslab.htsmlm.acquisitions.wrappers.Experiment;
+import de.embl.rieslab.htsmlm.acquisitions.wrappers.ExperimentWrapper;
+import de.embl.rieslab.htsmlm.constants.HTSMLMConstants;
 import mmcorej.DeviceType;
 import mmcorej.StrVector;
 

@@ -1,4 +1,4 @@
-package main.java.de.embl.rieslab.htsmlm.acquisitions.utils;
+package de.embl.rieslab.htsmlm.acquisitions.utils;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -12,9 +12,9 @@ import javax.swing.JTree;
 import javax.swing.border.TitledBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import main.java.de.embl.rieslab.emu.controller.SystemController;
-import main.java.de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
-import main.java.de.embl.rieslab.htsmlm.acquisitions.wrappers.Experiment;
+import de.embl.rieslab.emu.controller.SystemController;
+import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
+import de.embl.rieslab.htsmlm.acquisitions.wrappers.Experiment;
 
 public class ExperimentTreeSummary {
 

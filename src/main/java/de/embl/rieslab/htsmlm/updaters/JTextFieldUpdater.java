@@ -1,8 +1,8 @@
-package main.java.de.embl.rieslab.htsmlm.updaters;
+package de.embl.rieslab.htsmlm.updaters;
 
 import javax.swing.JTextField;
 
-import main.java.de.embl.rieslab.emu.ui.uiproperties.UIProperty;
+import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 
 public class JTextFieldUpdater extends ComponentUpdater<JTextField> {
 

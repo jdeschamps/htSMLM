@@ -1,4 +1,4 @@
-package main.java.de.embl.rieslab.htsmlm.constants;
+package de.embl.rieslab.htsmlm.constants;
 
 public class HTSMLMConstants {
 	

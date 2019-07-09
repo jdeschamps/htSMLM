@@ -1,4 +1,4 @@
-package main.java.de.embl.rieslab.htsmlm.utils;
+package de.embl.rieslab.htsmlm.utils;
 
 public class BinaryConverter {
 

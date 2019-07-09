@@ -1,4 +1,4 @@
-package main.java.de.embl.rieslab.htsmlm;
+package de.embl.rieslab.htsmlm;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -9,13 +9,13 @@ import javax.swing.JProgressBar;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 
-import main.java.de.embl.rieslab.emu.ui.ConfigurablePanel;
-import main.java.de.embl.rieslab.emu.ui.uiparameters.IntegerUIParameter;
-import main.java.de.embl.rieslab.emu.ui.uiproperties.UIProperty;
-import main.java.de.embl.rieslab.emu.utils.SwingUIActions;
-import main.java.de.embl.rieslab.htsmlm.graph.Chart;
-import main.java.de.embl.rieslab.htsmlm.updaters.ChartUpdater;
-import main.java.de.embl.rieslab.htsmlm.updaters.JProgressBarUpdater;
+import de.embl.rieslab.emu.swinglisteners.SwingUIListeners;
+import de.embl.rieslab.emu.ui.ConfigurablePanel;
+import de.embl.rieslab.emu.ui.uiparameters.IntegerUIParameter;
+import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
+import de.embl.rieslab.htsmlm.graph.Chart;
+import de.embl.rieslab.htsmlm.updaters.ChartUpdater;
+import de.embl.rieslab.htsmlm.updaters.JProgressBarUpdater;
 
 public class QPDPanel extends ConfigurablePanel {
 
@@ -182,6 +182,6 @@ public class QPDPanel extends ConfigurablePanel {
 
 	@Override
 	protected void addComponentListeners() {
-		SwingUIActions.addBooleanValueAction(b -> monitorQPD(b), togglebuttonMonitor_);
+		SwingUIListeners.addBooleanValueAction(b -> monitorQPD(b), togglebuttonMonitor_);
 	}
 }

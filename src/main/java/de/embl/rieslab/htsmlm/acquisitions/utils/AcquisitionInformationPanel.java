@@ -1,11 +1,11 @@
-package main.java.de.embl.rieslab.htsmlm.acquisitions.utils;
+package de.embl.rieslab.htsmlm.acquisitions.utils;
 
 import java.util.ArrayList;
 
 import javax.swing.JTextPane;
 
-import main.java.de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
-import main.java.de.embl.rieslab.htsmlm.acquisitions.wrappers.Experiment;
+import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
+import de.embl.rieslab.htsmlm.acquisitions.wrappers.Experiment;
 
 public class AcquisitionInformationPanel {
 

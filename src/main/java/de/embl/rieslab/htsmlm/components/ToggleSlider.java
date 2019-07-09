@@ -1,4 +1,4 @@
-package main.java.de.embl.rieslab.htsmlm.components;
+package de.embl.rieslab.htsmlm.components;
 
 import java.awt.Dimension;
 

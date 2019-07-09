@@ -1,6 +1,6 @@
-package main.java.de.embl.rieslab.htsmlm.flags;
+package de.embl.rieslab.htsmlm.flags;
 
-import main.java.de.embl.rieslab.emu.ui.uiproperties.flag.PropertyFlag;
+import de.embl.rieslab.emu.ui.uiproperties.flag.PropertyFlag;
 
 public class FocusStabFlag extends PropertyFlag{
 

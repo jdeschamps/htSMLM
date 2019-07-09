@@ -1,9 +1,9 @@
-package main.java.de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes;
+package de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import main.java.de.embl.rieslab.htsmlm.acquisitions.AcquisitionFactory.AcquisitionType;
+import de.embl.rieslab.htsmlm.acquisitions.AcquisitionFactory.AcquisitionType;
 
 public class GenericAcquisitionParameters {
 

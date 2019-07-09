@@ -1,11 +1,11 @@
-package main.java.de.embl.rieslab.htsmlm.updaters;
+package de.embl.rieslab.htsmlm.updaters;
 
 import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.SwingWorker;
 
-import main.java.de.embl.rieslab.emu.ui.uiproperties.UIProperty;
+import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 
 public abstract class ComponentUpdater<T extends JComponent> {
 

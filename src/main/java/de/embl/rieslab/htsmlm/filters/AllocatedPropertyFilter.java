@@ -1,6 +1,6 @@
-package main.java.de.embl.rieslab.htsmlm.filters;
+package de.embl.rieslab.htsmlm.filters;
 
-import main.java.de.embl.rieslab.emu.ui.uiproperties.UIProperty;
+import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 
 public class AllocatedPropertyFilter extends PropertyFilter {
 	

@@ -1,4 +1,4 @@
-package main.java.de.embl.rieslab.htsmlm;
+package de.embl.rieslab.htsmlm;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -19,15 +19,15 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.border.TitledBorder;
 
-import main.java.de.embl.rieslab.emu.ui.ConfigurablePanel;
-import main.java.de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
-import main.java.de.embl.rieslab.emu.ui.uiproperties.UIProperty;
-import main.java.de.embl.rieslab.emu.utils.ColorRepository;
-import main.java.de.embl.rieslab.emu.utils.SwingUIActions;
-import main.java.de.embl.rieslab.emu.utils.utils;
-import main.java.de.embl.rieslab.htsmlm.components.TogglePower;
-import main.java.de.embl.rieslab.htsmlm.components.ToggleSlider;
-import main.java.de.embl.rieslab.htsmlm.flags.FocusLockFlag;
+import de.embl.rieslab.emu.swinglisteners.SwingUIListeners;
+import de.embl.rieslab.emu.ui.ConfigurablePanel;
+import de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
+import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
+import de.embl.rieslab.emu.utils.ColorRepository;
+import de.embl.rieslab.emu.utils.utils;
+import de.embl.rieslab.htsmlm.components.TogglePower;
+import de.embl.rieslab.htsmlm.components.ToggleSlider;
+import de.embl.rieslab.htsmlm.flags.FocusLockFlag;
 
 public class FocusLockPanel extends ConfigurablePanel {
 
@@ -117,7 +117,7 @@ public class FocusLockPanel extends ConfigurablePanel {
 		
 		// slider channel 1
 		sliderPower_ = new JSlider(JSlider.HORIZONTAL, 0, (int) max_power, 0);
-		SwingUIActions.addIntegerValueAction(this, getLabel()+" "+LASER_POWER, sliderPower_, textfieldUserPower_);
+		SwingUIListeners.addIntegerValueAction(this, getLabel()+" "+LASER_POWER, sliderPower_, textfieldUserPower_);
 		
 		// slider fine a
 		sliderFinea_ = new JSlider(JSlider.HORIZONTAL, 0, 100, 0);
@@ -136,11 +136,11 @@ public class FocusLockPanel extends ConfigurablePanel {
 			}});
 		
 		togglebuttonLaser_ = new TogglePower();
-		SwingUIActions.addBooleanValueAction(this, getLabel()+" "+LASER_OPERATION, togglebuttonLaser_);
+		SwingUIListeners.addBooleanValueAction(this, getLabel()+" "+LASER_OPERATION, togglebuttonLaser_);
 		
 		// Fine enable
 		togglesliderenableFine_ = new ToggleSlider();
-		SwingUIActions.addBooleanValueAction(this, getLabel()+" "+LASER_ENABLEFINE, togglesliderenableFine_);
+		SwingUIListeners.addBooleanValueAction(this, getLabel()+" "+LASER_ENABLEFINE, togglesliderenableFine_);
 
 		fineaperc_ = new JLabel("100 %");
 		finebperc_ = new JLabel("100 %");

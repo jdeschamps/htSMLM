@@ -1,11 +1,11 @@
-package main.java.de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes;
+package de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes;
 
 import javax.swing.JPanel;
 
 import org.micromanager.Studio;
 
-import main.java.de.embl.rieslab.htsmlm.acquisitions.AcquisitionFactory.AcquisitionType;
-import main.java.de.embl.rieslab.htsmlm.filters.PropertyFilter;
+import de.embl.rieslab.htsmlm.acquisitions.AcquisitionFactory.AcquisitionType;
+import de.embl.rieslab.htsmlm.filters.PropertyFilter;
 
 public class ROIEvaluationAcquisition implements Acquisition {
 

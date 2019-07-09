@@ -1,4 +1,4 @@
-package main.java.de.embl.rieslab.htsmlm.acquisitions.ui;
+package de.embl.rieslab.htsmlm.acquisitions.ui;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -17,14 +17,14 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
-import main.java.de.embl.rieslab.emu.controller.SystemController;
-import main.java.de.embl.rieslab.emu.micromanager.configgroups.MMConfigurationGroupsRegistry;
-import main.java.de.embl.rieslab.emu.ui.uiproperties.UIProperty;
-import main.java.de.embl.rieslab.emu.utils.utils;
-import main.java.de.embl.rieslab.htsmlm.acquisitions.AcquisitionController;
-import main.java.de.embl.rieslab.htsmlm.acquisitions.AcquisitionFactory;
-import main.java.de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
-import main.java.de.embl.rieslab.htsmlm.acquisitions.wrappers.Experiment;
+import de.embl.rieslab.emu.controller.SystemController;
+import de.embl.rieslab.emu.micromanager.configgroups.MMConfigurationGroupsRegistry;
+import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
+import de.embl.rieslab.emu.utils.utils;
+import de.embl.rieslab.htsmlm.acquisitions.AcquisitionController;
+import de.embl.rieslab.htsmlm.acquisitions.AcquisitionFactory;
+import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
+import de.embl.rieslab.htsmlm.acquisitions.wrappers.Experiment;
 
 public class AcquisitionWizard {
 

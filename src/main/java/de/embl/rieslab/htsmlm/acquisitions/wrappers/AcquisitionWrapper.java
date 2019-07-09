@@ -1,9 +1,9 @@
-package main.java.de.embl.rieslab.htsmlm.acquisitions.wrappers;
+package de.embl.rieslab.htsmlm.acquisitions.wrappers;
 
 import java.util.Arrays;
 import java.util.HashMap;
 
-import main.java.de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
+import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
 
 public class AcquisitionWrapper {
 

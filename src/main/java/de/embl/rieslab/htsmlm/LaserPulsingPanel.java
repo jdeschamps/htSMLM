@@ -1,4 +1,4 @@
-package main.java.de.embl.rieslab.htsmlm;
+package de.embl.rieslab.htsmlm;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -18,15 +18,15 @@ import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
-import main.java.de.embl.rieslab.emu.ui.ConfigurablePanel;
-import main.java.de.embl.rieslab.emu.ui.internalproperties.IntegerInternalProperty;
-import main.java.de.embl.rieslab.emu.ui.uiparameters.ColorUIParameter;
-import main.java.de.embl.rieslab.emu.ui.uiparameters.IntegerUIParameter;
-import main.java.de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
-import main.java.de.embl.rieslab.emu.ui.uiproperties.UIProperty;
-import main.java.de.embl.rieslab.emu.utils.utils;
-import main.java.de.embl.rieslab.htsmlm.components.LogarithmicJSlider;
-import main.java.de.embl.rieslab.htsmlm.flags.CameraExpFlag;
+import de.embl.rieslab.emu.ui.ConfigurablePanel;
+import de.embl.rieslab.emu.ui.internalproperties.IntegerInternalProperty;
+import de.embl.rieslab.emu.ui.uiparameters.ColorUIParameter;
+import de.embl.rieslab.emu.ui.uiparameters.IntegerUIParameter;
+import de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
+import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
+import de.embl.rieslab.emu.utils.utils;
+import de.embl.rieslab.htsmlm.components.LogarithmicJSlider;
+import de.embl.rieslab.htsmlm.flags.CameraExpFlag;
 
 public class LaserPulsingPanel extends ConfigurablePanel {
 	
