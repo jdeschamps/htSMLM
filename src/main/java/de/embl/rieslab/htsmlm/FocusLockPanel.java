@@ -117,7 +117,7 @@ public class FocusLockPanel extends ConfigurablePanel {
 		
 		// slider channel 1
 		sliderPower_ = new JSlider(JSlider.HORIZONTAL, 0, (int) max_power, 0);
-		SwingUIListeners.addIntegerValueAction(this, getLabel()+" "+LASER_POWER, sliderPower_, textfieldUserPower_);
+		SwingUIListeners.addActionListenerOnIntegerValue(this, getLabel()+" "+LASER_POWER, sliderPower_, textfieldUserPower_);
 		
 		// slider fine a
 		sliderFinea_ = new JSlider(JSlider.HORIZONTAL, 0, 100, 0);
@@ -136,11 +136,11 @@ public class FocusLockPanel extends ConfigurablePanel {
 			}});
 		
 		togglebuttonLaser_ = new TogglePower();
-		SwingUIListeners.addBooleanValueAction(this, getLabel()+" "+LASER_OPERATION, togglebuttonLaser_);
+		SwingUIListeners.addActionListenerToTwoState(this, getLabel()+" "+LASER_OPERATION, togglebuttonLaser_);
 		
 		// Fine enable
 		togglesliderenableFine_ = new ToggleSlider();
-		SwingUIListeners.addBooleanValueAction(this, getLabel()+" "+LASER_ENABLEFINE, togglesliderenableFine_);
+		SwingUIListeners.addActionListenerToTwoState(this, getLabel()+" "+LASER_ENABLEFINE, togglesliderenableFine_);
 
 		fineaperc_ = new JLabel("100 %");
 		finebperc_ = new JLabel("100 %");

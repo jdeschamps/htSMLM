@@ -17,6 +17,7 @@ import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
 import de.embl.rieslab.emu.swinglisteners.SwingUIListeners;
+import de.embl.rieslab.emu.swinglisteners.Trigger;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.uiparameters.ColorUIParameter;
 import de.embl.rieslab.emu.ui.uiparameters.ComboUIParameter;
@@ -233,7 +234,7 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 	protected void addComponentListeners() {
 		
 		// updates TRIGGER_BEHAVIOUR based on the index of the JComboBox
-		SwingUIListeners.addIndexValueAction(this, getPropertyLabel(TRIGGER_BEHAVIOUR), combobehaviour_);
+		SwingUIListeners.addActionListenerOnSelectedIndex(this, getPropertyLabel(TRIGGER_BEHAVIOUR), combobehaviour_);
 		
 		// Updates JSlider when updating PULSE_LENGTH from the JTextField
 		textfieldpulselength_.addActionListener(new java.awt.event.ActionListener() {
@@ -272,7 +273,7 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 		});
 		
 		// Same from the JSlider point of view
-		SwingUIListeners.addIntegerValueAction(this, getPropertyLabel(PULSE_LENGTH), sliderpulse_, textfieldpulselength_);
+		SwingUIListeners.addActionListenerOnIntegerValue(this, getPropertyLabel(PULSE_LENGTH), sliderpulse_, textfieldpulselength_);
 
 		// JTextField sequence with 16 x {0} or {1}, check the user input
 		textfieldsequence_.addActionListener(new java.awt.event.ActionListener() {

@@ -193,7 +193,7 @@ public class LaserControlPanel extends ConfigurablePanel {
 		///////////////////////////////////////////////////////////////////////// On/Off button
        
         togglebuttonOnOff_ = new TogglePower();
-        SwingUIListeners.addBooleanValueAction(this, getLabel()+" "+LASER_OPERATION, togglebuttonOnOff_);
+        SwingUIListeners.addActionListenerToTwoState(this, getLabel()+" "+LASER_OPERATION, togglebuttonOnOff_);
         
 		////// grid bag layout
 		GridBagConstraints c = new GridBagConstraints();

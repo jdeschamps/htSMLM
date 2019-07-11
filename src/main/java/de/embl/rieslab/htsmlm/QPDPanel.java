@@ -182,6 +182,6 @@ public class QPDPanel extends ConfigurablePanel {
 
 	@Override
 	protected void addComponentListeners() {
-		SwingUIListeners.addBooleanValueAction(b -> monitorQPD(b), togglebuttonMonitor_);
+		SwingUIListeners.addActionListenerToBooleanTrigger(b -> monitorQPD(b), togglebuttonMonitor_);
 	}
 }

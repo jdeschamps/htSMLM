@@ -144,7 +144,7 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		pane.add(labelsdcoeff_,c);
 		
 		textfieldsdcoeff_ = new JTextField(String.valueOf(sdcoeff_));
-		SwingUIListeners.addDoubleValueAction(val -> sdcoeff_ = val, textfieldsdcoeff_, 0, Double.POSITIVE_INFINITY);
+		SwingUIListeners.addActionListenerToDoubleTrigger(val -> sdcoeff_ = val, textfieldsdcoeff_, 0, Double.POSITIVE_INFINITY);
 
 		c.gridy = 1;
 		pane.add(textfieldsdcoeff_,c);	
@@ -154,7 +154,7 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		pane.add(labelfeeback_,c);
 		
 		textfieldfeedback_ = new JTextField(String.valueOf(feedback_));
-		SwingUIListeners.addDoubleValueAction(val -> feedback_ = val, textfieldfeedback_, 0, Double.POSITIVE_INFINITY);
+		SwingUIListeners.addActionListenerToDoubleTrigger(val -> feedback_ = val, textfieldfeedback_, 0, Double.POSITIVE_INFINITY);
 
 		c.gridy = 3;
 		pane.add(textfieldfeedback_,c);	
@@ -165,7 +165,7 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 
 		dT_ = 1.;
 		textfielddT_ = new JTextField(String.valueOf(dT_));
-		SwingUIListeners.addDoubleValueAction(val -> dT_ = val, textfielddT_, 1, Double.POSITIVE_INFINITY);
+		SwingUIListeners.addActionListenerToDoubleTrigger(val -> dT_ = val, textfielddT_, 1, Double.POSITIVE_INFINITY);
 
 		c.gridy = 5;
 		pane.add(textfielddT_,c);	
@@ -184,21 +184,21 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		
 		N0_ = 1;
 		textfieldN0_ = new JTextField(String.valueOf(N0_));
-		SwingUIListeners.addDoubleValueAction(val -> N0_ = val, textfieldN0_, 1, Double.POSITIVE_INFINITY);
+		SwingUIListeners.addActionListenerToDoubleTrigger(val -> N0_ = val, textfieldN0_, 1, Double.POSITIVE_INFINITY);
 
 		c.gridy = 7;
 		c.insets = new Insets(2,6,2,6);
 		pane.add(textfieldN0_,c);
 		
 		checkboxactivate_ = new JCheckBox("Activate");
-		SwingUIListeners.addBooleanValueAction(b -> activate_ = b, checkboxactivate_);
+		SwingUIListeners.addActionListenerToBooleanTrigger(b -> activate_ = b, checkboxactivate_);
 
 		c.gridy = 8;
 		c.insets = new Insets(40,6,2,6);
 		pane.add(checkboxactivate_,c);	
 		
 		togglebuttonrun_ = new JToggleButton("Run");
-		SwingUIListeners.addBooleanValueAction(b -> runActivation(b), togglebuttonrun_);
+		SwingUIListeners.addActionListenerToBooleanTrigger(b -> runActivation(b), togglebuttonrun_);
 
 		togglebuttonrun_.setPreferredSize(new Dimension(40,40));
 		c.gridy = 9;
@@ -221,10 +221,10 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		pane.setLayout(new GridBagLayout());
 				
 		textfieldcutoff_ = new JTextField(String.valueOf(cutoff_));
-		SwingUIListeners.addDoubleValueAction(val -> cutoff_ = val, textfieldcutoff_, 0., Double.POSITIVE_INFINITY);
+		SwingUIListeners.addActionListenerToDoubleTrigger(val -> cutoff_ = val, textfieldcutoff_, 0., Double.POSITIVE_INFINITY);
 		
 		togglebuttonautocutoff_ = new JToggleButton("Auto");
-		SwingUIListeners.addBooleanValueAction(b -> autocutoff_ = b, togglebuttonautocutoff_);
+		SwingUIListeners.addActionListenerToBooleanTrigger(b -> autocutoff_ = b, togglebuttonautocutoff_);
 		
 		buttonclear_ = new JButton("Clear");
 		buttonclear_.addActionListener(new java.awt.event.ActionListener() {
@@ -234,7 +234,7 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
         });	
 		
 		checkboxnms_ = new JCheckBox("NMS");
-		SwingUIListeners.addBooleanValueAction(b -> showNMS(b), checkboxnms_);
+		SwingUIListeners.addActionListenerToBooleanTrigger(b -> showNMS(b), checkboxnms_);
 		
 		//////////////////////////////// grid bag setup
 		GridBagConstraints c = new GridBagConstraints();

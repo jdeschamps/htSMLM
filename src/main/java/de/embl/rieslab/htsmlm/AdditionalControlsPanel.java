@@ -78,7 +78,7 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 			c.gridy = i;
 			this.add(togglebuttons_[i], c);
 			
-			SwingUIListeners.addBooleanValueAction(this, devices[i], togglebuttons_[i]);
+			SwingUIListeners.addActionListenerToTwoState(this, devices[i], togglebuttons_[i]);
 		}  
 	}
 		
