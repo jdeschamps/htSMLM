@@ -25,7 +25,7 @@ public class MainFrame extends ConfigurableMainFrame{
 	private FocusPanel focusPanel;
 	private QPDPanel qpdPanel;
 	private FocusLockPanel focuslockpanel;
-	private DualFWPanel filterPanel;
+	private FiltersPanel filterPanel;
 	private LaserControlPanel[] controlPanels;
 	private LaserPulsingPanel pulsePanel;
 	private LaserTriggerPanel[] triggerPanels;
@@ -108,7 +108,7 @@ public class MainFrame extends ConfigurableMainFrame{
 		c2.fill = GridBagConstraints.VERTICAL;
 		upperpane.add(lasers,c2);
 		
-		filterPanel = new DualFWPanel("Filters");
+		filterPanel = new FiltersPanel("Filters");
 		c2.gridx = 1;
 		c2.gridy = 2;
 		c2.gridwidth = 3;
