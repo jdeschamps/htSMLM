@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.border.TitledBorder;
 
+import de.embl.rieslab.emu.exceptions.IncorrectParameterTypeException;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
 import de.embl.rieslab.emu.ui.uiproperties.MultiStateUIProperty;
@@ -179,14 +180,14 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 			for(int i=0;i<maxind;i++){
 				togglebuttons1_[i].setText(astr[i]);
 			}
-			((MultiStateUIProperty) getUIProperty(SLIDER1_POSITION)).setStatesName(astr);
+			((MultiStateUIProperty) getUIProperty(SLIDER1_POSITION)).setStateNames(astr);
 		} else if(j==1){	
 			String[] astr = names2_.split(",");
 			int maxind = togglebuttons2_.length > astr.length ? astr.length : togglebuttons2_.length;
 			for(int i=0;i<maxind;i++){
 				togglebuttons2_[i].setText(astr[i]);
 			}
-			((MultiStateUIProperty) getUIProperty(SLIDER2_POSITION)).setStatesName(astr);
+			((MultiStateUIProperty) getUIProperty(SLIDER2_POSITION)).setStateNames(astr);
 		}
 	}
 	
@@ -266,25 +267,49 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 	@Override
 	public void parameterhasChanged(String label) {
 		if(label.equals(PARAM1_NAMES)){
-			names1_ = getStringUIParameterValue(PARAM1_NAMES);
-			setNames(0);
+			try {
+				names1_ = getStringUIParameterValue(PARAM1_NAMES);
+				setNames(0);
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
+			}
 		} else if(label.equals(PARAM1_COLORS)){
-			colors1_ = getStringUIParameterValue(PARAM1_COLORS);
-			setColors(0);
+			try {
+				colors1_ = getStringUIParameterValue(PARAM1_COLORS);
+				setColors(0);
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
+			}
 		} else if(label.equals(PARAM2_NAMES)){
-			names2_ = getStringUIParameterValue(PARAM2_NAMES);
-			setNames(1);
+			try {
+				names2_ = getStringUIParameterValue(PARAM2_NAMES);
+				setNames(1);
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
+			}
 		} else if(label.equals(PARAM2_COLORS)){
-			colors2_ = getStringUIParameterValue(PARAM2_COLORS);
-			setColors(1);
+			try {
+				colors2_ = getStringUIParameterValue(PARAM2_COLORS);
+				setColors(1);
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
+			}
 		} else if(label.equals(PARAM1_TITLE)){
-			title1_ = getStringUIParameterValue(PARAM1_TITLE);
-			border1_.setTitle(title1_);
-			this.repaint();
+			try {
+				title1_ = getStringUIParameterValue(PARAM1_TITLE);
+				border1_.setTitle(title1_);
+				this.repaint();
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
+			}
 		} else if(label.equals(PARAM2_TITLE)){
-			title2_ = getStringUIParameterValue(PARAM2_TITLE);
-			border2_.setTitle(title2_);
-			this.repaint();
+			try {
+				title2_ = getStringUIParameterValue(PARAM2_TITLE);
+				border2_.setTitle(title2_);
+				this.repaint();
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

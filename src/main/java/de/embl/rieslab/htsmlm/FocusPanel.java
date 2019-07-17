@@ -19,6 +19,8 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.border.TitledBorder;
 
+import de.embl.rieslab.emu.exceptions.IncorrectParameterTypeException;
+import de.embl.rieslab.emu.exceptions.IncorrectPropertyTypeException;
 import de.embl.rieslab.emu.swinglisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.uiparameters.DoubleUIParameter;
@@ -157,7 +159,11 @@ public class FocusPanel extends ConfigurablePanel {
 		SwingUIListeners.addActionListenerToBooleanTrigger(b -> monitorPosition(b), togglebuttonMonitor_);
 
 		togglebuttonLock_ = new JToggleButton("Lock");
-		SwingUIListeners.addActionListenerToTwoState(this, FOCUS_STABILIZATION, togglebuttonLock_);
+		try {
+			SwingUIListeners.addActionListenerToTwoState(this, FOCUS_STABILIZATION, togglebuttonLock_);
+		} catch (IncorrectPropertyTypeException e1) {
+			e1.printStackTrace();
+		}
 		
 		///// grid bag 
 		GridBagConstraints c = new GridBagConstraints();
@@ -348,26 +354,42 @@ public class FocusPanel extends ConfigurablePanel {
 	@Override
 	public void parameterhasChanged(String label) {
 		if(label.equals(PARAM_LARGESTEP)){
-			largestep_ = getDoubleUIParameterValue(PARAM_LARGESTEP);
-			textfieldLargeStep_.setText(String.valueOf(largestep_));
+			try {
+				largestep_ = getDoubleUIParameterValue(PARAM_LARGESTEP);
+				textfieldLargeStep_.setText(String.valueOf(largestep_));
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
+			}
 		} else if(label.equals(PARAM_SMALLSTEP)){
-			smallstep_ = getDoubleUIParameterValue(PARAM_SMALLSTEP);
-			textfieldSmallStep_.setText(String.valueOf(smallstep_));
+			try {
+				smallstep_ = getDoubleUIParameterValue(PARAM_SMALLSTEP);
+				textfieldSmallStep_.setText(String.valueOf(smallstep_));
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
+			}
 		}else if(label.equals(PARAM_IDLE)){
-			int val = getIntegerUIParameterValue(PARAM_IDLE);
-			if(val != idle_){
-				idle_ = val;
-				updater_.changeIdleTime(idle_);
+			try {
+				int val = getIntegerUIParameterValue(PARAM_IDLE);
+				if(val != idle_){
+					idle_ = val;
+					updater_.changeIdleTime(idle_);
+				}
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
 			}
 		}else if(label.equals(PARAM_NPOS)){
-			int val = getIntegerUIParameterValue(PARAM_NPOS);
-			if(val != npos_){
-				npos_ = val;
-				panelGraph_.remove(graph_.getChart());
-				graph_ = newGraph();
-				panelGraph_.add(graph_.getChart());
-				panelGraph_.updateUI();
-				updater_.changeChart(graph_);
+			try {
+				int val = getIntegerUIParameterValue(PARAM_NPOS);
+				if(val != npos_){
+					npos_ = val;
+					panelGraph_.remove(graph_.getChart());
+					graph_ = newGraph();
+					panelGraph_.add(graph_.getChart());
+					panelGraph_.updateUI();
+					updater_.changeChart(graph_);
+				}
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
 			}
 		}
 	}

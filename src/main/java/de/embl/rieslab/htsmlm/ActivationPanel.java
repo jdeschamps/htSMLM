@@ -18,6 +18,7 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 
+import de.embl.rieslab.emu.exceptions.IncorrectParameterTypeException;
 import de.embl.rieslab.emu.swinglisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.internalproperties.IntegerInternalProperty;
@@ -325,25 +326,41 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 	@Override
 	public void parameterhasChanged(String label) {
 		if(label.equals(PARAM_DEF_SD)){
-			sdcoeff_ = getDoubleUIParameterValue(PARAM_DEF_SD);
-			textfieldsdcoeff_.setText(String.valueOf(sdcoeff_));
+			try {
+				sdcoeff_ = getDoubleUIParameterValue(PARAM_DEF_SD);
+				textfieldsdcoeff_.setText(String.valueOf(sdcoeff_));
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
+			}
 		} else if(label.equals(PARAM_DEF_FB)){
-			feedback_ = getDoubleUIParameterValue(PARAM_DEF_FB);
-			textfieldfeedback_.setText(String.valueOf(feedback_));
+			try {
+				feedback_ = getDoubleUIParameterValue(PARAM_DEF_FB);
+				textfieldfeedback_.setText(String.valueOf(feedback_));
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
+			}
 		}else if(label.equals(PARAM_IDLE)){
-			int val = getIntegerUIParameterValue(PARAM_IDLE);
-			if(val != idletime_){
-				idletime_ = val;
-				task_.setIdleTime(idletime_);
+			try {
+				int val = getIntegerUIParameterValue(PARAM_IDLE);
+				if(val != idletime_){
+					idletime_ = val;
+					task_.setIdleTime(idletime_);
+					}
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
 			}
 		}else if(label.equals(PARAM_NPOS)){
-			int val = getIntegerUIParameterValue(PARAM_NPOS);
-			if(val != npos_){
-				npos_ = val;
-				graphpane_.remove(graph_.getChart());
-				graph_ = newGraph();
-				graphpane_.add(graph_.getChart());
-				graphpane_.updateUI();
+			try {
+				int val = getIntegerUIParameterValue(PARAM_NPOS);
+				if(val != npos_){
+					npos_ = val;
+					graphpane_.remove(graph_.getChart());
+					graph_ = newGraph();
+					graphpane_.add(graph_.getChart());
+					graphpane_.updateUI();
+				}
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
 			}
 		}
 	}

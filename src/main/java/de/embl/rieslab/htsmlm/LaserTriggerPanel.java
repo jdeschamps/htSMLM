@@ -16,8 +16,8 @@ import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
+import de.embl.rieslab.emu.exceptions.IncorrectParameterTypeException;
 import de.embl.rieslab.emu.swinglisteners.SwingUIListeners;
-import de.embl.rieslab.emu.swinglisteners.Trigger;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.uiparameters.ColorUIParameter;
 import de.embl.rieslab.emu.ui.uiparameters.ComboUIParameter;
@@ -179,25 +179,40 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 	@Override
 	public void parameterhasChanged(String label) {
 		if(label.equals(PARAM_TITLE)){
-			title_ = getStringUIParameterValue(PARAM_TITLE);
-			border_.setTitle(title_);
-			this.repaint();
-			getUIProperty(getLabel()+" "+TRIGGER_BEHAVIOUR).setFriendlyName(title_+" "+TRIGGER_BEHAVIOUR);
-			getUIProperty(getLabel()+" "+TRIGGER_SEQUENCE).setFriendlyName(title_+" "+TRIGGER_SEQUENCE);
-			getUIProperty(getLabel()+" "+PULSE_LENGTH).setFriendlyName(title_+" "+PULSE_LENGTH);
+			try {
+				title_ = getStringUIParameterValue(PARAM_TITLE);
+				border_.setTitle(title_);
+				this.repaint();
+				getUIProperty(getLabel()+" "+TRIGGER_BEHAVIOUR).setFriendlyName(title_+" "+TRIGGER_BEHAVIOUR);
+				getUIProperty(getLabel()+" "+TRIGGER_SEQUENCE).setFriendlyName(title_+" "+TRIGGER_SEQUENCE);
+				getUIProperty(getLabel()+" "+PULSE_LENGTH).setFriendlyName(title_+" "+PULSE_LENGTH);
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
+			}
 		} else if(label.equals(PARAM_COLOR)){
-			color_ = getColorUIParameterValue(PARAM_COLOR);
-			border_.setTitleColor(color_);
-			this.repaint();
+			try {
+				color_ = getColorUIParameterValue(PARAM_COLOR);
+				border_.setTitleColor(color_);
+				this.repaint();			} catch (IncorrectParameterTypeException e) {
+					e.printStackTrace();
+				}
 		} else if(label.equals(PARAM_DEF_BEHAVIOUR)){
-			behaviour_ = getComboUIParameterValue(PARAM_DEF_BEHAVIOUR);
-			combobehaviour_.setSelectedItem(behaviour_); // this triggers the action listener
+			try {
+				behaviour_ = getComboUIParameterValue(PARAM_DEF_BEHAVIOUR);
+				combobehaviour_.setSelectedItem(behaviour_); // this triggers the action listener			
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
+			}
 		} else if(label.equals(PARAM_DEF_SEQUENCE)){
-			String newval = getStringUIParameterValue(PARAM_DEF_SEQUENCE);
-			if(BinaryConverter.is16bits(newval)){
-				sequence_ = newval;
-				textfieldsequence_.setText(sequence_); // setting text on JTextField does not trigger the action listeners in this case
-				setUIPropertyValue(getPropertyLabel(TRIGGER_SEQUENCE),String.valueOf(BinaryConverter.getDecimal16bits(sequence_)));
+			try {
+				String newval = getStringUIParameterValue(PARAM_DEF_SEQUENCE);
+				if(BinaryConverter.is16bits(newval)){
+					sequence_ = newval;
+					textfieldsequence_.setText(sequence_); // setting text on JTextField does not trigger the action listeners in this case
+					setUIPropertyValue(getPropertyLabel(TRIGGER_SEQUENCE),String.valueOf(BinaryConverter.getDecimal16bits(sequence_)));
+				}
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
 			}
 		}
 	}

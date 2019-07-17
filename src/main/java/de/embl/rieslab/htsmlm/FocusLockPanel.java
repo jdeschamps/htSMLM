@@ -19,6 +19,7 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.border.TitledBorder;
 
+import de.embl.rieslab.emu.exceptions.IncorrectPropertyTypeException;
 import de.embl.rieslab.emu.swinglisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
@@ -136,11 +137,19 @@ public class FocusLockPanel extends ConfigurablePanel {
 			}});
 		
 		togglebuttonLaser_ = new TogglePower();
-		SwingUIListeners.addActionListenerToTwoState(this, getLabel()+" "+LASER_OPERATION, togglebuttonLaser_);
+		try {
+			SwingUIListeners.addActionListenerToTwoState(this, getLabel()+" "+LASER_OPERATION, togglebuttonLaser_);
+		} catch (IncorrectPropertyTypeException e1) {
+			e1.printStackTrace();
+		}
 		
 		// Fine enable
 		togglesliderenableFine_ = new ToggleSlider();
-		SwingUIListeners.addActionListenerToTwoState(this, getLabel()+" "+LASER_ENABLEFINE, togglesliderenableFine_);
+		try {
+			SwingUIListeners.addActionListenerToTwoState(this, getLabel()+" "+LASER_ENABLEFINE, togglesliderenableFine_);
+		} catch (IncorrectPropertyTypeException e1) {
+			e1.printStackTrace();
+		}
 
 		fineaperc_ = new JLabel("100 %");
 		finebperc_ = new JLabel("100 %");
@@ -324,7 +333,6 @@ public class FocusLockPanel extends ConfigurablePanel {
 		}
 		turnOnComponentTriggering();
 	}
-
 
 	@Override
 	public void shutDown() {

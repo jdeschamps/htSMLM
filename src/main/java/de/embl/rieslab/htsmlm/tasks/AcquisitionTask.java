@@ -194,7 +194,7 @@ public class AcquisitionTask implements Task<Integer>{
 							}
 						} else if(!configs.get(group).equals(AcquisitionTab.KEY_IGNORED)) { // else if it is not ignored and a single presets with a single property, try to set it
 							if(configgroup.getGroupSize() == 1 && configgroup.getNumberOfMMProperties() == 1) {
-								configgroup.getAffectedProperties().get(0).setStringValue(configs.get(group), null);
+								configgroup.getAffectedProperties().get(0).setValue(configs.get(group), null);
 							}
 						}
 					}

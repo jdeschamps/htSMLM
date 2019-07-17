@@ -18,6 +18,8 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.border.TitledBorder;
 
+import de.embl.rieslab.emu.exceptions.IncorrectParameterTypeException;
+import de.embl.rieslab.emu.exceptions.IncorrectPropertyTypeException;
 import de.embl.rieslab.emu.swinglisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.uiparameters.ColorUIParameter;
@@ -193,7 +195,11 @@ public class LaserControlPanel extends ConfigurablePanel {
 		///////////////////////////////////////////////////////////////////////// On/Off button
        
         togglebuttonOnOff_ = new TogglePower();
-        SwingUIListeners.addActionListenerToTwoState(this, getLabel()+" "+LASER_OPERATION, togglebuttonOnOff_);
+        try {
+			SwingUIListeners.addActionListenerToTwoState(this, getLabel()+" "+LASER_OPERATION, togglebuttonOnOff_);
+		} catch (IncorrectPropertyTypeException e1) {
+			e1.printStackTrace();
+		}
         
 		////// grid bag layout
 		GridBagConstraints c = new GridBagConstraints();
@@ -286,17 +292,29 @@ public class LaserControlPanel extends ConfigurablePanel {
 	@Override
 	public void parameterhasChanged(String label) {
 		if(label.equals(PARAM_TITLE)){
-			title_ = getStringUIParameterValue(PARAM_TITLE);
-			border_.setTitle(title_);
-			this.repaint();
-			getUIProperty(getLabel()+" "+LASER_PERCENTAGE).setFriendlyName(title_+" "+LASER_PERCENTAGE);
-			getUIProperty(getLabel()+" "+LASER_OPERATION).setFriendlyName(title_+" "+LASER_OPERATION);
+			try {
+				title_ = getStringUIParameterValue(PARAM_TITLE);
+				border_.setTitle(title_);
+				this.repaint();
+				getUIProperty(getLabel()+" "+LASER_PERCENTAGE).setFriendlyName(title_+" "+LASER_PERCENTAGE);
+				getUIProperty(getLabel()+" "+LASER_OPERATION).setFriendlyName(title_+" "+LASER_OPERATION);
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
+			}
 		} else if(label.equals(PARAM_COLOR)){
-			color_ = getColorUIParameterValue(PARAM_COLOR);
-			border_.setTitleColor(color_);
-			this.repaint();
+			try {
+				color_ = getColorUIParameterValue(PARAM_COLOR);
+				border_.setTitleColor(color_);
+				this.repaint();
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
+			}
 		}else if(label.equals(PARAM_SCALING)){
-			scaling_ = getIntegerUIParameterValue(PARAM_SCALING);
+			try {
+				scaling_ = getIntegerUIParameterValue(PARAM_SCALING);
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

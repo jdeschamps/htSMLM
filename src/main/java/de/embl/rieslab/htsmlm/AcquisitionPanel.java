@@ -31,6 +31,7 @@ import javax.swing.JToggleButton;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import de.embl.rieslab.emu.controller.SystemController;
+import de.embl.rieslab.emu.exceptions.IncorrectParameterTypeException;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.uiparameters.UIPropertyParameter;
 import de.embl.rieslab.htsmlm.acquisitions.AcquisitionController;
@@ -379,8 +380,7 @@ public class AcquisitionPanel extends ConfigurablePanel{
 	//////
 	////// PropertyPanel methods
 	//////
-
-
+	
 	@Override
 	protected void initializeProperties() {
 		// Do nothing
@@ -410,11 +410,23 @@ public class AcquisitionPanel extends ConfigurablePanel{
 	@Override
 	public void parameterhasChanged(String label) {
 		if(label.equals(PARAM_BFP)){
-			paramBFP_ = getUIPropertyParameterValue(PARAM_BFP);
+			try {
+				paramBFP_ = getUIPropertyParameterValue(PARAM_BFP);
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
+			}
 		} else if(label.equals(PARAM_LOCKING)){
-			paramLocking_ = getUIPropertyParameterValue(PARAM_LOCKING);
+			try {
+				paramLocking_ = getUIPropertyParameterValue(PARAM_LOCKING);
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
+			}
 		} else if(label.equals(PARAM_BRIGHTFIELD)){
-			paramBrightField_ = getUIPropertyParameterValue(PARAM_BRIGHTFIELD);
+			try {
+				paramBrightField_ = getUIPropertyParameterValue(PARAM_BRIGHTFIELD);
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	

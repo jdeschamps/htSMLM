@@ -18,6 +18,7 @@ import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
+import de.embl.rieslab.emu.exceptions.IncorrectParameterTypeException;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.internalproperties.IntegerInternalProperty;
 import de.embl.rieslab.emu.ui.uiparameters.ColorUIParameter;
@@ -205,23 +206,35 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 	@Override
 	public void parameterhasChanged(String label) {
 		if(label.equals(PARAM_TITLE)){
-			title_ = getStringUIParameterValue(PARAM_TITLE);
-			border_.setTitle(title_);
-			this.repaint();
-		} else if(label.equals(PARAM_COLOR)){
-			color_ = getColorUIParameterValue(PARAM_COLOR);
-			border_.setTitleColor(color_);
-			this.repaint();
-		} else if(label.equals(PARAM_DEFAULT_MAX)){
-			maxpulse_ = getIntegerUIParameterValue(PARAM_DEFAULT_MAX);
-			logslider_.setMaxWithin(maxpulse_);
-			if (logslider_.getValue() > logslider_.getMaxWithin()) {
-				logslider_.setValueWithin(logslider_.getMaxWithin());
-				textfieldvalue_.setText(String.valueOf(logslider_.getValue()));
-				setUIPropertyValue(LASER_PULSE,String.valueOf(logslider_.getValue()));
+			try { 
+				title_ = getStringUIParameterValue(PARAM_TITLE);
+				border_.setTitle(title_);
+				this.repaint();
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
 			}
-			textfieldmax_.setText(String.valueOf(maxpulse_));
-			changeMaxPulseProperty(maxpulse_);
+		} else if(label.equals(PARAM_COLOR)){
+			try {
+				color_ = getColorUIParameterValue(PARAM_COLOR);
+				border_.setTitleColor(color_);	
+				this.repaint();
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
+			}
+		} else if(label.equals(PARAM_DEFAULT_MAX)){
+			try {
+				maxpulse_ = getIntegerUIParameterValue(PARAM_DEFAULT_MAX);
+				logslider_.setMaxWithin(maxpulse_);
+				if (logslider_.getValue() > logslider_.getMaxWithin()) {
+					logslider_.setValueWithin(logslider_.getMaxWithin());
+					textfieldvalue_.setText(String.valueOf(logslider_.getValue()));
+					setUIPropertyValue(LASER_PULSE,String.valueOf(logslider_.getValue()));
+				}
+				textfieldmax_.setText(String.valueOf(maxpulse_));
+				changeMaxPulseProperty(maxpulse_);
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

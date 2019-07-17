@@ -9,6 +9,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 
+import de.embl.rieslab.emu.exceptions.IncorrectParameterTypeException;
 import de.embl.rieslab.emu.swinglisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.uiparameters.IntegerUIParameter;
@@ -134,27 +135,39 @@ public class QPDPanel extends ConfigurablePanel {
 	@Override
 	public void parameterhasChanged(String label) {
 		if(label.equals(PARAM_XYMAX)){
-			int newval = getIntegerUIParameterValue(PARAM_XYMAX);
-			if(newval != xymax_){
-				xymax_ = newval;
-				graphpanel_.remove(graph_.getChart());
-				graph_ = newGraph();
-				graphpanel_.add(graph_.getChart());
-				graphpanel_.updateUI();
-				chartupdater_.changeChart(graph_);
+			try {
+				int newval = getIntegerUIParameterValue(PARAM_XYMAX);			
+				if(newval != xymax_){
+					xymax_ = newval;
+					graphpanel_.remove(graph_.getChart());
+					graph_ = newGraph();
+					graphpanel_.add(graph_.getChart());
+					graphpanel_.updateUI();
+					chartupdater_.changeChart(graph_);
+				}
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
 			}
 		} else if(label.equals(PARAM_ZMAX)){
-			int newval = getIntegerUIParameterValue(PARAM_ZMAX);
-			if(newval != zmax_){
-				zmax_ = newval;
-				progressBar_.setMaximum(zmax_);
+			try {
+				int newval = getIntegerUIParameterValue(PARAM_ZMAX);
+				if(newval != zmax_){
+					zmax_ = newval;
+					progressBar_.setMaximum(zmax_);
+				}
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
 			}
 		}else if(label.equals(PARAM_IDLE)){
-			int newval = getIntegerUIParameterValue(PARAM_IDLE);
-			if(newval != idle_){
-				idle_ = newval;
-				chartupdater_.changeIdleTime(idle_);
-				progressbarupdater_.changeIdleTime(idle_);
+			try {
+				int newval = getIntegerUIParameterValue(PARAM_IDLE);
+				if(newval != idle_){
+					idle_ = newval;
+					chartupdater_.changeIdleTime(idle_);
+					progressbarupdater_.changeIdleTime(idle_);
+				}
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
 			}
 		}
 	}

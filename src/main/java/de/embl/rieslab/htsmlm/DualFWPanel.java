@@ -13,6 +13,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JToggleButton;
 import javax.swing.border.TitledBorder;
 
+import de.embl.rieslab.emu.exceptions.IncorrectParameterTypeException;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
 import de.embl.rieslab.emu.ui.uiproperties.MultiStateUIProperty;
@@ -145,14 +146,14 @@ public class DualFWPanel extends ConfigurablePanel {
 			for(int i=0;i<maxind;i++){
 				togglebuttons1_[i].setText(astr[i]);
 			}
-			((MultiStateUIProperty) getUIProperty(FW_POSITION1)).setStatesName(astr);
+			((MultiStateUIProperty) getUIProperty(FW_POSITION1)).setStateNames(astr);
 		} else {
 			String[] astr = names2_.split(",");
 			int maxind = togglebuttons2_.length > astr.length ? astr.length : togglebuttons2_.length; 
 			for(int i=0;i<maxind;i++){
 				togglebuttons2_[i].setText(astr[i]);
 			}
-			((MultiStateUIProperty) getUIProperty(FW_POSITION2)).setStatesName(astr);
+			((MultiStateUIProperty) getUIProperty(FW_POSITION2)).setStateNames(astr);
 		}
 	}
 	
@@ -228,17 +229,33 @@ public class DualFWPanel extends ConfigurablePanel {
 	@Override
 	public void parameterhasChanged(String label) {
 		if(label.equals(PARAM_NAMES1)){
-			names1_ = getStringUIParameterValue(PARAM_NAMES1);
-			setNames(0);
+			try {
+				names1_ = getStringUIParameterValue(PARAM_NAMES1);
+				setNames(0);
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
+			}
 		} else if(label.equals(PARAM_COLORS1)){
-			colors1_ = getStringUIParameterValue(PARAM_COLORS1);
-			setColors(0);
+			try {
+				colors1_ = getStringUIParameterValue(PARAM_COLORS1);
+				setColors(0);
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
+			}
 		} else if(label.equals(PARAM_NAMES2)){
-			names2_ = getStringUIParameterValue(PARAM_NAMES2);
-			setNames(1);
+			try {
+				names2_ = getStringUIParameterValue(PARAM_NAMES2);
+				setNames(1);
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
+			}
 		} else if(label.equals(PARAM_COLORS2)){
-			colors2_ = getStringUIParameterValue(PARAM_COLORS2);
-			setColors(1);
+			try {
+				colors2_ = getStringUIParameterValue(PARAM_COLORS2);
+				setColors(1);
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

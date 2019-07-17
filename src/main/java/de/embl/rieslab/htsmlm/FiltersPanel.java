@@ -13,6 +13,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JToggleButton;
 import javax.swing.border.TitledBorder;
 
+import de.embl.rieslab.emu.exceptions.IncorrectParameterTypeException;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
 import de.embl.rieslab.emu.ui.uiproperties.MultiStateUIProperty;
@@ -106,7 +107,7 @@ public class FiltersPanel extends ConfigurablePanel {
 		for(int i=0;i<maxind;i++){
 			togglebuttons_[i].setText(astr[i]);
 		}
-		((MultiStateUIProperty) getUIProperty(FW_POSITION)).setStatesName(astr);
+		((MultiStateUIProperty) getUIProperty(FW_POSITION)).setStateNames(astr);
 	}
 	
 	private void setColors(){
@@ -155,11 +156,19 @@ public class FiltersPanel extends ConfigurablePanel {
 	@Override
 	public void parameterhasChanged(String label) {
 		if(label.equals(PARAM_NAMES)){
-			names_ = getStringUIParameterValue(PARAM_NAMES);
-			setNames();
+			try {
+				names_ = getStringUIParameterValue(PARAM_NAMES);
+				setNames();
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
+			}
 		} else if(label.equals(PARAM_COLORS)){
-			colors_ = getStringUIParameterValue(PARAM_COLORS);
-			setColors();
+			try {
+				colors_ = getStringUIParameterValue(PARAM_COLORS);
+				setColors();
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

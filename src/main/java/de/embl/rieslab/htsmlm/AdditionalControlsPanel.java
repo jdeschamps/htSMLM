@@ -10,6 +10,8 @@ import javax.swing.BorderFactory;
 import javax.swing.JToggleButton;
 import javax.swing.border.TitledBorder;
 
+import de.embl.rieslab.emu.exceptions.IncorrectParameterTypeException;
+import de.embl.rieslab.emu.exceptions.IncorrectPropertyTypeException;
 import de.embl.rieslab.emu.swinglisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.uiparameters.BoolUIParameter;
@@ -78,7 +80,11 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 			c.gridy = i;
 			this.add(togglebuttons_[i], c);
 			
-			SwingUIListeners.addActionListenerToTwoState(this, devices[i], togglebuttons_[i]);
+			try {
+				SwingUIListeners.addActionListenerToTwoState(this, devices[i], togglebuttons_[i]);
+			} catch (IncorrectPropertyTypeException e) {
+				e.printStackTrace();
+			}
 		}  
 	}
 		
@@ -135,36 +141,72 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 	@Override
 	public void parameterhasChanged(String label) {
 		if(label.equals(PARAM_NAME1)){
-			String s = getStringUIParameterValue(PARAM_NAME1);
-			togglebuttons_[0].setText(s);
-			getUIProperty(DEVICE_1).setFriendlyName(s);
+			try {
+				String s = getStringUIParameterValue(PARAM_NAME1);
+				togglebuttons_[0].setText(s);
+				getUIProperty(DEVICE_1).setFriendlyName(s);
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
+			}
 		} else if(label.equals(PARAM_NAME2)){
-			String s = getStringUIParameterValue(PARAM_NAME2);
-			togglebuttons_[1].setText(s);
-			getUIProperty(DEVICE_2).setFriendlyName(s);
+			try {
+				String s = getStringUIParameterValue(PARAM_NAME2);
+				togglebuttons_[1].setText(s);
+				getUIProperty(DEVICE_2).setFriendlyName(s);
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
+			}
 		} else if(label.equals(PARAM_NAME3)){
-			String s = getStringUIParameterValue(PARAM_NAME3);
-			togglebuttons_[2].setText(s);
-			getUIProperty(DEVICE_3).setFriendlyName(s);
+			try {
+				String s = getStringUIParameterValue(PARAM_NAME3);
+				togglebuttons_[2].setText(s);
+				getUIProperty(DEVICE_3).setFriendlyName(s);
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
+			}
 		} else if(label.equals(PARAM_NAME4)){
-			String s = getStringUIParameterValue(PARAM_NAME4);
-			togglebuttons_[3].setText(s);
-			getUIProperty(DEVICE_4).setFriendlyName(s);
+			try {
+				String s = getStringUIParameterValue(PARAM_NAME4);
+				togglebuttons_[3].setText(s);
+				getUIProperty(DEVICE_4).setFriendlyName(s);
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
+			}
 		} else if(label.equals(PARAM_ENABLE1)){
-			boolean b = getBoolUIParameterValue(PARAM_ENABLE1);
-			togglebuttons_[0].setEnabled(b);
+			try {
+				boolean b = getBoolUIParameterValue(PARAM_ENABLE1);
+				togglebuttons_[0].setEnabled(b);
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
+			}
 		} else if(label.equals(PARAM_ENABLE2)){
-			boolean b = getBoolUIParameterValue(PARAM_ENABLE2);
-			togglebuttons_[1].setEnabled(b);
+			try {
+				boolean b = getBoolUIParameterValue(PARAM_ENABLE2);
+				togglebuttons_[1].setEnabled(b);
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
+			}
 		} else if(label.equals(PARAM_ENABLE3)){
-			boolean b = getBoolUIParameterValue(PARAM_ENABLE3);
-			togglebuttons_[2].setEnabled(b);
+			try {
+				boolean b = getBoolUIParameterValue(PARAM_ENABLE3);
+				togglebuttons_[2].setEnabled(b);
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
+			}
 		} else if(label.equals(PARAM_ENABLE4)){
-			boolean b = getBoolUIParameterValue(PARAM_ENABLE4);
-			togglebuttons_[3].setEnabled(b);
+			try {
+				boolean b = getBoolUIParameterValue(PARAM_ENABLE4);
+				togglebuttons_[3].setEnabled(b);
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
+			}
 		} else if(label.equals(PARAM_TITLE)){
-			border_.setTitle(getStringUIParameterValue(PARAM_TITLE));
-			this.repaint();
+			try {
+				border_.setTitle(getStringUIParameterValue(PARAM_TITLE));
+				this.repaint();
+			} catch (IncorrectParameterTypeException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
