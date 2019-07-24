@@ -1,11 +1,14 @@
 package de.embl.rieslab.htsmlm.acquisitions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import javax.swing.SwingUtilities;
 
 import de.embl.rieslab.emu.controller.SystemController;
 import de.embl.rieslab.emu.ui.uiparameters.UIPropertyParameter;
+import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 import de.embl.rieslab.htsmlm.AcquisitionPanel;
 import de.embl.rieslab.htsmlm.acquisitions.AcquisitionFactory.AcquisitionType;
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
@@ -13,6 +16,9 @@ import de.embl.rieslab.htsmlm.acquisitions.ui.AcquisitionWizard;
 import de.embl.rieslab.htsmlm.acquisitions.utils.AcquisitionInformationPanel;
 import de.embl.rieslab.htsmlm.acquisitions.wrappers.Experiment;
 import de.embl.rieslab.htsmlm.constants.HTSMLMConstants;
+import de.embl.rieslab.htsmlm.filters.AllocatedPropertyFilter;
+import de.embl.rieslab.htsmlm.filters.NonConfigGroupPropertyFilter;
+import de.embl.rieslab.htsmlm.filters.ReadOnlyPropertyFilter;
 import de.embl.rieslab.htsmlm.tasks.AcquisitionTask;
 import de.embl.rieslab.htsmlm.tasks.Task;
 import de.embl.rieslab.htsmlm.tasks.TaskHolder;
@@ -178,11 +184,22 @@ public class AcquisitionController implements TaskHolder<Integer>{
 	}
 
 	public void startWizard() {
+		// first, let's grab all the current property values
+		HashMap<String, UIProperty> props = (new NonConfigGroupPropertyFilter(new AllocatedPropertyFilter(new ReadOnlyPropertyFilter())))
+				.filterProperties(controller_.getPropertiesMap());
+		HashMap<String, String> propValues = new HashMap<String, String>();
+		
+		Iterator<String> it = props.keySet().iterator();
+		while(it.hasNext()) {
+			String s = it.next();
+			propValues.put(s, props.get(s).getPropertyValue());
+		}
+		
 		if(!isAcquisitionListEmpty()){
 			System.out.println("is not empty");
-			wizard_ = new AcquisitionWizard(controller_, this, exp_);
+			wizard_ = new AcquisitionWizard(controller_, this, propValues, exp_);
 		} else {
-			wizard_ = new AcquisitionWizard(controller_, this);	
+			wizard_ = new AcquisitionWizard(controller_, this, propValues);	
 		}
 	}
 

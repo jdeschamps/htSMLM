@@ -15,6 +15,7 @@ import org.micromanager.Studio;
 
 import de.embl.rieslab.emu.controller.SystemController;
 import de.embl.rieslab.emu.micromanager.configgroups.MMConfigurationGroup;
+import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
 import de.embl.rieslab.htsmlm.acquisitions.ui.AcquisitionTab;
 import de.embl.rieslab.htsmlm.acquisitions.wrappers.Experiment;
@@ -176,7 +177,7 @@ public class AcquisitionTask implements Task<Integer>{
 				currAcq = exp_.getAcquisitionList().get(k);
 
 				// set-up system
-				system_.setUpSystem(currAcq.getAcquisitionParameters().getPropertyValues());
+				setUpSystem(currAcq.getAcquisitionParameters().getPropertyValues());
 
 				// set configuration settings
 				if (!currAcq.getAcquisitionParameters().getMMConfigurationGroupValues().isEmpty()) {
@@ -268,6 +269,18 @@ public class AcquisitionTask implements Task<Integer>{
 					running_ = false;
 					holder_.taskDone();
 				}
+			}
+		}
+	}
+
+	public void setUpSystem(HashMap<String, String> propertyValues) {
+		HashMap<String, UIProperty> uiproperties = system_.getPropertiesMap();
+		Iterator<String> it = propertyValues.keySet().iterator();
+		String s;
+		while(it.hasNext()){
+			s = it.next();
+			if(uiproperties.containsKey(s)){
+				uiproperties.get(s).setPropertyValue(propertyValues.get(s));
 			}
 		}
 	}

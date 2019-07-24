@@ -45,6 +45,7 @@ import de.embl.rieslab.emu.ui.uiproperties.MultiStateUIProperty;
 import de.embl.rieslab.emu.ui.uiproperties.SingleStateUIProperty;
 import de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
 import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
+import de.embl.rieslab.emu.ui.uiproperties.UIPropertyType;
 import de.embl.rieslab.htsmlm.acquisitions.AcquisitionFactory;
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
 import de.embl.rieslab.htsmlm.filters.AllocatedPropertyFilter;
@@ -65,9 +66,7 @@ import de.embl.rieslab.htsmlm.flags.LaserFlag;
  */
 public class AcquisitionTab extends JPanel {
 
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 7966565586677957738L;
 
 	public final static String KEY_IGNORED = "Ignored";
@@ -82,6 +81,7 @@ public class AcquisitionTab extends JPanel {
 	private String[] acqTypesArray_;
 	private int currind;
 	private HashMap<String, UIProperty> props_;
+	private HashMap<String, String> cachedPropertyValues_;
 	private HashMap<String, String> propsfriendlyname_;
 
 	/**
@@ -90,9 +90,10 @@ public class AcquisitionTab extends JPanel {
 	 * @param wizard Current acquisition wizard.
 	 * @param factory Acquisition factory.
 	 */
-	public AcquisitionTab(AcquisitionWizard wizard, AcquisitionFactory factory) {
+	public AcquisitionTab(AcquisitionWizard wizard, AcquisitionFactory factory, HashMap<String, String> propertyValues) {
 		factory_ = factory;
 		wizard_ = wizard;
+		cachedPropertyValues_ = propertyValues;
 
 		// Get the array of acquisition types and create a JComboBox
 		acqTypesArray_ = factory_.getAcquisitionTypeList();
@@ -151,9 +152,10 @@ public class AcquisitionTab extends JPanel {
 	 * @param factory Acquisition factory.
 	 * @param acquisition Current acquisition.
 	 */
-	public AcquisitionTab(AcquisitionWizard wizard, AcquisitionFactory factory, Acquisition acquisition) {
+	public AcquisitionTab(AcquisitionWizard wizard, AcquisitionFactory factory, HashMap<String, String> propertyValues, Acquisition acquisition) {
 		factory_ = factory;
 		wizard_ = wizard;
+		cachedPropertyValues_ = propertyValues;
 
 		// Get the array of acquisition types and create a JComboBox
 		acqTypesArray_ = factory_.getAcquisitionTypeList();
@@ -221,6 +223,15 @@ public class AcquisitionTab extends JPanel {
 
 	}
 
+	/**
+	 * Set up sub-panels.
+	 * 
+	 * @param acqpane
+	 * @param filter
+	 * @param mmconfigGroupValues
+	 * @param uipropertyValues
+	 * @return
+	 */
 	private JPanel createPanel(JPanel acqpane, PropertyFilter filter, HashMap<String, String> mmconfigGroupValues,
 			HashMap<String, String> uipropertyValues) {
 		JPanel pane = new JPanel();
@@ -408,6 +419,13 @@ public class AcquisitionTab extends JPanel {
 
 	}
 
+	/**
+	 * Creates a JTable holding the MMConfigurationGroup values.
+	 * 
+	 * @param mmconfigurationRegistry
+	 * @param mmconfigGroupValues
+	 * @return
+	 */
 	private JPanel createMMConfigTable(MMConfigurationGroupsRegistry mmconfigurationRegistry,
 			HashMap<String, String> mmconfigGroupValues) {
 		
@@ -526,16 +544,15 @@ public class AcquisitionTab extends JPanel {
 	}
 
 	/**
-	 * Creates a JPanel holding a JTable of the filtered properties with the current
-	 * values of the acquisition properties.
+	 * Creates a JTable of the filtered properties with the current values set for the acquisition.
 	 * 
 	 * @param filteredProperties Properties to add to the table
 	 * @param twostatedefault_   Default value for TwoStateProperties
-	 * @param propertyValues     Property values of the current acquisition
+	 * @param acqPropertyValues     Property values of the current acquisition
 	 * @return JPanel with the filtered UIProperties JTable.
 	 */
 	private JPanel createPropertyTable(String[] filteredProperties, boolean twostatedefault_,
-			HashMap<String, String> propertyValues) {
+			HashMap<String, String> acqPropertyValues) {
 		JPanel pane = new JPanel();
 
 		// Defines table model
@@ -544,31 +561,49 @@ public class AcquisitionTab extends JPanel {
 		// For each property of the UI
 		for (int i = 0; i < filteredProperties.length; i++) {
 			UIProperty prop = props_.get(filteredProperties[i]);
-			if (propertyValues.containsKey(filteredProperties[i])) { // if the property is found in the acquisition
+			if (acqPropertyValues.containsKey(filteredProperties[i])) { // if the property is found in the acquisition
 																		// properties
 				if (prop instanceof TwoStateUIProperty) {
-					if (propertyValues.get(filteredProperties[i]).equals(TwoStateUIProperty.getOnStateName())) {
+					if (acqPropertyValues.get(filteredProperties[i]).equals(TwoStateUIProperty.getOnStateName())) {
 						model.addRow(new Object[] { prop.getFriendlyName(), true });
 					} else {
 						model.addRow(new Object[] { prop.getFriendlyName(), false });
 					}
 				} else {
-					model.addRow(new Object[] { prop.getFriendlyName(), propertyValues.get(filteredProperties[i]) });
+					model.addRow(new Object[] { prop.getFriendlyName(), acqPropertyValues.get(filteredProperties[i]) });
 				}
-			} else { // if not, set by default value
-				if (prop instanceof TwoStateUIProperty) {
-					model.addRow(new Object[] { prop.getFriendlyName(), twostatedefault_ });
-				} else if (prop instanceof SingleStateUIProperty) {
-					model.addRow(
-							new Object[] { prop.getFriendlyName(), ((SingleStateUIProperty) prop).getStateValue() });
-				} else if (prop instanceof MultiStateUIProperty) {
-					model.addRow(new Object[] { prop.getFriendlyName(),
-							((MultiStateUIProperty) prop).getStateNameFromValue(prop.getPropertyValue()) });
-				} else if (prop instanceof ImmutableMultiStateUIProperty) {
-					model.addRow(new Object[] { prop.getFriendlyName(),
-							((ImmutableMultiStateUIProperty) prop).getStateName(prop.getPropertyValue()) });
+			} else { // if not, set by cached value
+				if (prop.getType().equals(UIPropertyType.TWOSTATE)) {
+					if(cachedPropertyValues_.containsKey(filteredProperties[i])) { // take it from the cached value
+						model.addRow(new Object[] { prop.getFriendlyName(), ((TwoStateUIProperty) prop).isOnState(cachedPropertyValues_.get(filteredProperties[i])) });
+					} else {
+						model.addRow(new Object[] { prop.getFriendlyName(), twostatedefault_ });
+					}
+				} else if (prop.getType().equals(UIPropertyType.SINGLESTATE)) {
+					model.addRow(new Object[] { prop.getFriendlyName(), ((SingleStateUIProperty) prop).getStateValue() });
+				} else if (prop.getType().equals(UIPropertyType.MULTISTATE)) {
+					if(cachedPropertyValues_.containsKey(filteredProperties[i])) { // take it from the cached value
+						model.addRow(new Object[] { prop.getFriendlyName(),
+							((MultiStateUIProperty) prop).getStateNameFromValue(cachedPropertyValues_.get(filteredProperties[i])) });
+					} else {
+						model.addRow(new Object[] { prop.getFriendlyName(),
+								((MultiStateUIProperty) prop).getStateNameFromValue(prop.getPropertyValue()) });
+					}
+				} else if (prop.getType().equals(UIPropertyType.IMMUTMULTISTATE)) {
+					if(cachedPropertyValues_.containsKey(filteredProperties[i])) { // take it from the cached value
+						model.addRow(new Object[] { prop.getFriendlyName(),
+							((ImmutableMultiStateUIProperty) prop).getStateName(cachedPropertyValues_.get(filteredProperties[i])) });
+					} else {
+						model.addRow(new Object[] { prop.getFriendlyName(),
+								((ImmutableMultiStateUIProperty) prop).getStateName(prop.getPropertyValue()) });
+					}
 				} else {
-					model.addRow(new Object[] { prop.getFriendlyName(), prop.getPropertyValue() });
+					if(cachedPropertyValues_.containsKey(filteredProperties[i])) { // take it from the cached value
+						model.addRow(new Object[] { prop.getFriendlyName(), cachedPropertyValues_.get(filteredProperties[i]) });
+					} else {
+						model.addRow(new Object[] { prop.getFriendlyName(), prop.getPropertyValue() });
+
+					}
 				}
 			}
 		}
@@ -637,7 +672,14 @@ public class AcquisitionTab extends JPanel {
 		return pane;
 	}
 
-	private HashMap<String, String> registerProperties(Component c, HashMap<String, String> properties) {
+	/**
+	 * Extract the properties.
+	 * 
+	 * @param c
+	 * @param properties
+	 * @return
+	 */
+	private HashMap<String, String> extractPropertyValues(Component c, HashMap<String, String> properties) {
 		if (c instanceof JTable && (c.getName() == null || !c.getName().equals(KEY_MMCONF))) {
 			if (((JTable) c).isEditing()) {
 				((JTable) c).getCellEditor().stopCellEditing();
@@ -659,13 +701,20 @@ public class AcquisitionTab extends JPanel {
 		} else if (c instanceof JPanel) {
 			Component[] subcomps = ((JPanel) c).getComponents();
 			for (int l = 0; l < subcomps.length; l++) {
-				registerProperties(subcomps[l], properties);
+				extractPropertyValues(subcomps[l], properties);
 			}
 		}
 		return properties;
 	}
 
-	private HashMap<String, String> registerMMConfGroups(Component c, HashMap<String, String> confgroups) {
+	/**
+	 * Extract the MMConfGroups values.
+	 * 
+	 * @param c
+	 * @param confgroups
+	 * @return
+	 */
+	private HashMap<String, String> extractMMConfigurationGroupValues(Component c, HashMap<String, String> confgroups) {
 		if (c instanceof JTable && c.getName() != null && c.getName().equals(KEY_MMCONF)) {
 			if (((JTable) c).isEditing()) {
 				((JTable) c).getCellEditor().stopCellEditing();
@@ -681,7 +730,7 @@ public class AcquisitionTab extends JPanel {
 		} else if (c instanceof JPanel) {
 			Component[] subcomps = ((JPanel) c).getComponents();
 			for (int l = 0; l < subcomps.length; l++) {
-				registerMMConfGroups(subcomps[l], confgroups);
+				extractMMConfigurationGroupValues(subcomps[l], confgroups);
 			}
 		}
 		return confgroups;
@@ -691,6 +740,11 @@ public class AcquisitionTab extends JPanel {
 		return acqTypesArray_[currind];
 	}
 
+	/**
+	 * Change to the card panel corresponding to the newly selected Acquisition.
+	 * 
+	 * @param type
+	 */
 	private void changeAcquisition(String type) {
 		int temp = currind;
 		for (int i = 0; i < acqTypesArray_.length; i++) {
@@ -711,17 +765,22 @@ public class AcquisitionTab extends JPanel {
 		cl.show(acqcard_, type);
 	}
 
+	/**
+	 * Retrieves the selected Acquisition from the AcquisitionTab.
+	 * 
+	 * @return
+	 */
 	public Acquisition getAcquisition() {
 		// get acquisition from factory with the right type
 		Acquisition acq = factory_.getAcquisition(acqTypesArray_[currind]);
 
 		// set mm configuration groups
 		acq.getAcquisitionParameters()
-				.setMMConfigurationGroupValues(registerMMConfGroups(acqTab_[currind], new HashMap<String, String>()));
+				.setMMConfigurationGroupValues(extractMMConfigurationGroupValues(acqTab_[currind], new HashMap<String, String>()));
 
 		// set properties value in the acquisition
 		acq.getAcquisitionParameters()
-				.setPropertyValues(registerProperties(acqTab_[currind], new HashMap<String, String>()));
+				.setPropertyValues(extractPropertyValues(acqTab_[currind], new HashMap<String, String>()));
 
 		// read out the JPanel related to the acquisition
 		acq.readOutAcquisitionParameters(acqSettingsPanels_[currind]);

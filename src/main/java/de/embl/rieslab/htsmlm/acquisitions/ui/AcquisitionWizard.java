@@ -35,31 +35,33 @@ public class AcquisitionWizard {
 	private JTextField waitfield;
 	private JTextField numposfield;
 	private SystemController controller_;
+	private HashMap<String, String> propertyValues_;
 	
-	public AcquisitionWizard(SystemController controller, AcquisitionController owner){
+	public AcquisitionWizard(SystemController controller, AcquisitionController owner, HashMap<String, String> propertyValues){
 		owner_ = owner;
 		controller_ = controller;
+		propertyValues_ = propertyValues;
 		tabs_ = new ArrayList<AcquisitionTab>();
 		
-		setUpFrame(0, 0);
+		setUpFrame(0, 0, new ArrayList<Acquisition>());
 	}
 	
-	public AcquisitionWizard(SystemController controller, AcquisitionController owner, Experiment exp) {
+	public AcquisitionWizard(SystemController controller, AcquisitionController owner, HashMap<String, String> propertyValues, Experiment exp) {
 		owner_ = owner;
 		controller_ = controller;
+		propertyValues_ = propertyValues;
 		tabs_ = new ArrayList<AcquisitionTab>();
 
-		setUpFrame(exp.getPauseTime(),exp.getNumberPositions());
-		setAcquisitions(exp.getAcquisitionList());
+		setUpFrame(exp.getPauseTime(),exp.getNumberPositions(), exp.getAcquisitionList());
 	}
 	
-	private void setUpFrame(int waitingtime, int numpos) {
+	private void setUpFrame(int waitingtime, int numpos, ArrayList<Acquisition> acqlist) {
 		frame_ = new JFrame("Acquisition wizard");
 		JPanel contentpane = new JPanel();
 		contentpane.setLayout(new BoxLayout(contentpane,BoxLayout.LINE_AXIS));
 
 		contentpane.add(setUpLeftPanel(waitingtime, numpos));
-		contentpane.add(setUpRightPanel());
+		contentpane.add(setUpRightPanel(acqlist));
 		
 		frame_.add(contentpane);
 		
@@ -177,12 +179,20 @@ public class AcquisitionWizard {
 		return leftpane;
 	}
 
-	private JTabbedPane setUpRightPanel() {
+	private JTabbedPane setUpRightPanel(ArrayList<Acquisition> acqlist) {
 		tabbedpane_ = new JTabbedPane();
 		
-		AcquisitionTab acqtab = new AcquisitionTab(this, new AcquisitionFactory(owner_, controller_));
-		tabbedpane_.add(acqtab.getTypeName(), acqtab);
-		tabs_.add(acqtab);
+		if(acqlist.size() == 0) {
+			AcquisitionTab acqtab = new AcquisitionTab(this, new AcquisitionFactory(owner_, controller_), propertyValues_);
+			tabbedpane_.add(acqtab.getTypeName(), acqtab);
+			tabs_.add(acqtab);
+		} else {
+			for(int i=0;i<acqlist.size();i++){
+				tabs_.add(new AcquisitionTab(this, new AcquisitionFactory(owner_, controller_), propertyValues_, acqlist.get(i)));
+		        tabbedpane_.add(tabs_.get(i), i);
+			}
+			tabbedpane_.setSelectedIndex(0);		
+		}
 		
 		return tabbedpane_;
 	}
@@ -231,22 +241,11 @@ public class AcquisitionWizard {
 	}
 
 	protected void createNewTab() {
-       	tabs_.add(new AcquisitionTab(this, new AcquisitionFactory(owner_, controller_)));
+       	tabs_.add(new AcquisitionTab(this, new AcquisitionFactory(owner_, controller_), propertyValues_));
         tabbedpane_.add(tabs_.get(tabs_.size()-1), tabs_.size()-1);
         tabbedpane_.setSelectedIndex(tabs_.size()-1);	
 	}
-	
-	public void setAcquisitions(ArrayList<Acquisition> acqlist) {
-		tabbedpane_.removeAll();
-		tabs_.clear();
-		
-		for(int i=0;i<acqlist.size();i++){
-			tabs_.add(new AcquisitionTab(this, new AcquisitionFactory(owner_, controller_), acqlist.get(i)));
-	        tabbedpane_.add(tabs_.get(i), i);
-		}
-		tabbedpane_.setSelectedIndex(0);	
-	}
-	
+
 	public void changeName(AcquisitionTab acquisitionTab) {
 		setNameTab(acquisitionTab.getTypeName());
 	}
