@@ -37,6 +37,8 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 	public final static String DEVICE_2 = "Two-state device 2";
 	public final static String DEVICE_3 = "Two-state device 3";
 	public final static String DEVICE_4 = "Two-state device 4";
+	public final static String DEVICE_5 = "Two-state device 5";
+	public final static String DEVICE_6 = "Two-state device 6";
 	
 	//////// Parameters
 	public final static String PARAM_TITLE = "Title";
@@ -44,11 +46,15 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 	public final static String PARAM_NAME2 = "Two-state device 2 name";
 	public final static String PARAM_NAME3 = "Two-state device 3 name";
 	public final static String PARAM_NAME4 = "Two-state device 4 name";
+	public final static String PARAM_NAME5 = "Two-state device 5 name";
+	public final static String PARAM_NAME6 = "Two-state device 6 name";
 	public final static String PARAM_ENABLE1 = "Enable two-state device 1";
 	public final static String PARAM_ENABLE2 = "Enable two-state device 2";
 	public final static String PARAM_ENABLE3 = "Enable two-state device 3";
 	public final static String PARAM_ENABLE4 = "Enable two-state device 4";
-	public final static int PARAM_NPOS = 4;
+	public final static String PARAM_ENABLE5 = "Enable two-state device 5";
+	public final static String PARAM_ENABLE6 = "Enable two-state device 6";
+	public final static int PARAM_NPOS = 6;
 	
 	public AdditionalControlsPanel(String label) {
 		super(label);
@@ -71,7 +77,7 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 		c.ipady = 10;
 		c.weightx = 0.2;
 		
-		String[] devices = {DEVICE_1, DEVICE_2, DEVICE_3, DEVICE_4};
+		String[] devices = {DEVICE_1, DEVICE_2, DEVICE_3, DEVICE_4, DEVICE_5, DEVICE_6};
 		for(int i=0;i<togglebuttons_.length;i++){
 			togglebuttons_[i] = new JToggleButton();
 			
@@ -96,6 +102,8 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 		addUIProperty(new TwoStateUIProperty(this, DEVICE_2,"Position property of the second two-state device.", new TwoStateFlag()));
 		addUIProperty(new TwoStateUIProperty(this, DEVICE_3,"Position property of the third two-state device.", new TwoStateFlag()));
 		addUIProperty(new TwoStateUIProperty(this, DEVICE_4,"Position property of the fourth two-state device.", new TwoStateFlag()));
+		addUIProperty(new TwoStateUIProperty(this, DEVICE_5,"Position property of the fifth two-state device.", new TwoStateFlag()));
+		addUIProperty(new TwoStateUIProperty(this, DEVICE_6,"Position property of the sixth two-state device.", new TwoStateFlag()));
 	}
 
 	@Override
@@ -105,10 +113,14 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 		addUIParameter(new StringUIParameter(this, PARAM_NAME2,"Two-state device 2 name, as dislayed in the UI.","3DA"));
 		addUIParameter(new StringUIParameter(this, PARAM_NAME3,"Two-state device 3 name, as dislayed in the UI.","Servo 3"));
 		addUIParameter(new StringUIParameter(this, PARAM_NAME4,"Two-state device 4 name, as dislayed in the UI.","Servo 4"));
+		addUIParameter(new StringUIParameter(this, PARAM_NAME5,"Two-state device 5 name, as dislayed in the UI.","Servo 5"));
+		addUIParameter(new StringUIParameter(this, PARAM_NAME6,"Two-state device 6 name, as dislayed in the UI.","Servo 6"));
 		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE1,"Enable the button corresponding to the first two-state device.", true));
 		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE2,"Enable the button corresponding to the second two-state device.",true));
 		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE3,"Enable the button corresponding to the third two-state device.",false));
 		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE4,"Enable the button corresponding to the fourth two-state device.",false));
+		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE5,"Enable the button corresponding to the fifth two-state device.",false));
+		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE6,"Enable the button corresponding to the sixth two-state device.",false));
 	}
 
 	@Override
@@ -153,6 +165,26 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 			} catch (UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
+		} else if(name.equals(DEVICE_5)){
+			try {
+				if(newvalue.equals(((TwoStateUIProperty) getUIProperty(DEVICE_5)).getOnStateValue())){
+					togglebuttons_[4].setSelected(true);
+				} else {
+					togglebuttons_[4].setSelected(false);
+				}
+			} catch (UnknownUIPropertyException e) {
+				e.printStackTrace();
+			}
+		} else if(name.equals(DEVICE_6)){
+			try {
+				if(newvalue.equals(((TwoStateUIProperty) getUIProperty(DEVICE_6)).getOnStateValue())){
+					togglebuttons_[5].setSelected(true);
+				} else {
+					togglebuttons_[5].setSelected(false);
+				}
+			} catch (UnknownUIPropertyException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -190,6 +222,22 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException | UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
+		} else if(label.equals(PARAM_NAME5)){
+			try {
+				String s = getStringUIParameterValue(PARAM_NAME5);
+				togglebuttons_[4].setText(s);
+				getUIProperty(PARAM_NAME5).setFriendlyName(s);
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException | UnknownUIPropertyException e) {
+				e.printStackTrace();
+			}
+		} else if(label.equals(PARAM_NAME6)){
+			try {
+				String s = getStringUIParameterValue(PARAM_NAME6);
+				togglebuttons_[5].setText(s);
+				getUIProperty(PARAM_NAME6).setFriendlyName(s);
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException | UnknownUIPropertyException e) {
+				e.printStackTrace();
+			}
 		} else if(label.equals(PARAM_ENABLE1)){
 			try {
 				boolean b = getBoolUIParameterValue(PARAM_ENABLE1);
@@ -218,6 +266,20 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
+		} else if(label.equals(PARAM_ENABLE5)){
+			try {
+				boolean b = getBoolUIParameterValue(PARAM_ENABLE5);
+				togglebuttons_[4].setEnabled(b);
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
+				e.printStackTrace();
+			}
+		} else if(label.equals(PARAM_ENABLE6)){
+			try {
+				boolean b = getBoolUIParameterValue(PARAM_ENABLE6);
+				togglebuttons_[5].setEnabled(b);
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
+				e.printStackTrace();
+			}
 		} else if(label.equals(PARAM_TITLE)){
 			try {
 				border_.setTitle(getStringUIParameterValue(PARAM_TITLE));
@@ -235,7 +297,7 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 
 	@Override
 	public String getDescription() {
-		return "The "+getPanelLabel()+" panel makes use of two-state buttons to control servos.";
+		return "The "+getPanelLabel()+" panel makes use of two-state buttons to control servos or flip-mirrors.";
 	}
 
 	@Override
