@@ -435,12 +435,16 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		params[ActivationTask.PARAM_MAXPULSE] = (double) maxpulse_;
 		params[ActivationTask.PARAM_N0] = N0_; 
 		
-		try {
-			if(utils.isNumeric(getUIProperty(LASER_PULSE).getPropertyValue())){
-				params[ActivationTask.PARAM_PULSE] = Double.parseDouble(getUIProperty(LASER_PULSE).getPropertyValue()); 
+		if(activate_) {
+			try {
+				if(utils.isNumeric(getUIProperty(LASER_PULSE).getPropertyValue())){
+					params[ActivationTask.PARAM_PULSE] = Double.parseDouble(getUIProperty(LASER_PULSE).getPropertyValue()); 
+				}
+			} catch (NumberFormatException | UnknownUIPropertyException e) {
+				e.printStackTrace();
+				params[ActivationTask.PARAM_PULSE] = 0.;
 			}
-		} catch (NumberFormatException | UnknownUIPropertyException e) {
-			e.printStackTrace();
+		} else {
 			params[ActivationTask.PARAM_PULSE] = 0.;
 		}
 		
