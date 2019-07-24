@@ -226,7 +226,7 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 			try {
 				String s = getStringUIParameterValue(PARAM_NAME5);
 				togglebuttons_[4].setText(s);
-				getUIProperty(PARAM_NAME5).setFriendlyName(s);
+				getUIProperty(DEVICE_5).setFriendlyName(s);
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException | UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
@@ -234,7 +234,7 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 			try {
 				String s = getStringUIParameterValue(PARAM_NAME6);
 				togglebuttons_[5].setText(s);
-				getUIProperty(PARAM_NAME6).setFriendlyName(s);
+				getUIProperty(DEVICE_6).setFriendlyName(s);
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException | UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
