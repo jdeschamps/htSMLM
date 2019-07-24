@@ -72,7 +72,6 @@ public class ActivationTask implements Task<Double> {
 
 	@Override
 	public void stopTask() {
-		System.out.println("Stop requested in ActivationTask");
 		running_ = false;
 	}
 

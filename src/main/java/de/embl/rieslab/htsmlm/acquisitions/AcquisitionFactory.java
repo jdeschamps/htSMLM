@@ -143,7 +143,7 @@ public class AcquisitionFactory {
 	}
 	
 	private String incrementAcquisitionFileName(String name) {
-		String newname = name.substring(0, name.length()-HTSMLMConstants.ACQ_EXT.length());
+		String newname = name.substring(0, name.length()-HTSMLMConstants.ACQ_EXT.length()-1);
 		int ind = 0;
 		for(int i=0;i<newname.length();i++){
 			if(newname.charAt(i) == '_'){

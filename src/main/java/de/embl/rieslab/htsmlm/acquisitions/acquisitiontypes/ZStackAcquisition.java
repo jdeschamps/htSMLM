@@ -88,18 +88,25 @@ public class ZStackAcquisition implements Acquisition {
 	public ArrayList<Double> getSlices(double zstart, double zend, double zstep){
 		ArrayList<Double> slices = new ArrayList<Double>();
 		
-		int f;
+		boolean invert;
 		if(zstart < zend) {
-			f = 1;
+			invert = false;
 		} else {
-			f = -1;
+			invert = true;
 		}
 		slices.add(zstart);
 
 		double z = zstart;
-		while (z<=utils.round(zend-f*zstep,2)){
-			z += f*zstep;
-			slices.add(utils.round(z,2));
+		if(invert) {
+			while (z>=utils.round(zend+zstep,2)){
+				z -= zstep;
+				slices.add(utils.round(z,2));
+			}
+		} else {
+			while (z<=utils.round(zend-zstep,2)){
+				z += zstep;
+				slices.add(utils.round(z,2));
+			}
 		}
 
 		return slices;
