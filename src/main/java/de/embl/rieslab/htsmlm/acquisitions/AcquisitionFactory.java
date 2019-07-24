@@ -107,9 +107,9 @@ public class AcquisitionFactory {
 		if(filepath.endsWith("."+HTSMLMConstants.ACQ_EXT)){
 			filename = filepath;
 		} else if(!filepath.endsWith("/")){
-			filename = filepath+"/"+name+"."+HTSMLMConstants.ACQ_EXT;
+			filename = filepath+"/"+name+"/"+name+"."+HTSMLMConstants.ACQ_EXT;
 		} else {
-			filename = filepath+name+"."+HTSMLMConstants.ACQ_EXT;
+			filename = filepath+name+"/"+name+"."+HTSMLMConstants.ACQ_EXT;
 		}
 		
 		boolean fileExists = true;

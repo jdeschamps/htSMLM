@@ -411,7 +411,7 @@ public class AcquisitionTab extends JPanel {
 	private JPanel createMMConfigTable(MMConfigurationGroupsRegistry mmconfigurationRegistry,
 			HashMap<String, String> mmconfigGroupValues) {
 		
-		// mmconfigGroupValues are the values to set in the table, if there
+		// mmconfigGroupValues are the values to set in the table, if there are any
 		// mmconfigurationRegistry holds the reference to all configuration groups
 		
 		JPanel pane = new JPanel();
@@ -427,7 +427,7 @@ public class AcquisitionTab extends JPanel {
 
 		// For each configuration group
 		for (int i = 0; i < keys.length; i++) {
-			if (map.get(keys[i]) != null && map.get(keys[i]).length > 0) { // if the String[] is not null and not empty
+			if (map.get(keys[i]) != null && map.get(keys[i]).length > 0 && !keys[i].equals("System")) { // if the String[] is not null and not empty, ignore the special System configuration
 				
 				String currentValue = mmconfigurationRegistry.getCurrentMMConfigurationChannel(keys[i]);
 				if (currentValue != null && currentValue.length() > 0 && !mmconfigGroupValues.containsKey(keys[i])) { // this is when a value is set in MM but not in the acquisition
@@ -776,10 +776,10 @@ public class AcquisitionTab extends JPanel {
 			Component comp;
 
 			SliderPanel slider = new SliderPanel();
-
+			
 			if (prop.getType().equals(MMProperty.TYPE_INTEGER)) {
 				slider.setLimits((int) prop.getMin(), (int) prop.getMax());
-			} if (prop.getType().equals(MMProperty.TYPE_FLOAT)) {
+			} else if (prop.getType().equals(MMProperty.TYPE_FLOAT)) {
 				slider.setLimits((float) prop.getMin(), (float) prop.getMax());
 			} else {
 				slider.setLimits(Double.parseDouble((String) prop.getMin()), Double.parseDouble((String) prop.getMin()));
@@ -842,7 +842,7 @@ public class AcquisitionTab extends JPanel {
 
 	    	if (prop.getType().equals(MMProperty.TYPE_INTEGER)) {
 	    		slider_.setLimits((int) prop.getMin(), (int) prop.getMax());
-			} if (prop.getType().equals(MMProperty.TYPE_FLOAT)) {
+			} else if (prop.getType().equals(MMProperty.TYPE_FLOAT)) {
 				slider_.setLimits((float) prop.getMin(), (float) prop.getMax());
 			} else {
 				slider_.setLimits(Double.parseDouble((String) prop.getMin()), Double.parseDouble((String) prop.getMin()));

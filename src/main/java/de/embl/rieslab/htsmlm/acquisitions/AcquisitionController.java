@@ -202,8 +202,8 @@ public class AcquisitionController implements TaskHolder<Integer>{
     	return (new AcquisitionFactory(this, controller_)).readAcquisitionList(path);
 	}
 
-	private boolean saveAcquisitionList(Experiment exp, String exppath, String path) {
-		return (new AcquisitionFactory(this, controller_)).writeAcquisitionList(exp, exppath, path);
+	private boolean saveAcquisitionList(Experiment exp, String expname, String path) {
+		return (new AcquisitionFactory(this, controller_)).writeAcquisitionList(exp, expname, path);
 	}
 	
 	public void saveExperiment(String path) {
