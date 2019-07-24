@@ -13,7 +13,9 @@ import javax.swing.ButtonGroup;
 import javax.swing.JToggleButton;
 import javax.swing.border.TitledBorder;
 
-import de.embl.rieslab.emu.exceptions.IncorrectParameterTypeException;
+import de.embl.rieslab.emu.exceptions.IncorrectUIParameterTypeException;
+import de.embl.rieslab.emu.exceptions.UnknownUIParameterException;
+import de.embl.rieslab.emu.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
 import de.embl.rieslab.emu.ui.uiproperties.MultiStateUIProperty;
@@ -56,7 +58,7 @@ public class DualFWPanel extends ConfigurablePanel {
 	
 	private void setupPanel() {
 		this.setLayout(new GridBagLayout());
-		this.setBorder(BorderFactory.createTitledBorder(null, getLabel(), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, null, new Color(0,0,0)));
+		this.setBorder(BorderFactory.createTitledBorder(null, getPanelLabel(), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, null, new Color(0,0,0)));
 		((TitledBorder) this.getBorder()).setTitleFont(((TitledBorder) this.getBorder()).getTitleFont().deriveFont(Font.BOLD, 12));
 
 		
@@ -83,7 +85,7 @@ public class DualFWPanel extends ConfigurablePanel {
 					if(e.getStateChange()==ItemEvent.SELECTED){
 						int pos = getSelectedButtonNumber(0);
 						if(pos>=0 && pos<togglebuttons1_.length){
-							setUIPropertyValue(FW_POSITION1,getValueFromPosition(0, pos));
+							setUIPropertyValue(FW_POSITION1,String.valueOf(pos));
 						}				
 					} 
 				}
@@ -108,7 +110,7 @@ public class DualFWPanel extends ConfigurablePanel {
 					if(e.getStateChange()==ItemEvent.SELECTED){
 						int pos = getSelectedButtonNumber(1);
 						if(pos>=0 && pos<togglebuttons2_.length){
-							setUIPropertyValue(FW_POSITION2,getValueFromPosition(1, pos));
+							setUIPropertyValue(FW_POSITION2,String.valueOf(pos));
 						}				
 					} 
 				}
@@ -146,14 +148,22 @@ public class DualFWPanel extends ConfigurablePanel {
 			for(int i=0;i<maxind;i++){
 				togglebuttons1_[i].setText(astr[i]);
 			}
-			((MultiStateUIProperty) getUIProperty(FW_POSITION1)).setStateNames(astr);
+			try {
+				((MultiStateUIProperty) getUIProperty(FW_POSITION1)).setStateNames(astr);
+			} catch (UnknownUIPropertyException e) {
+				e.printStackTrace();
+			}
 		} else {
 			String[] astr = names2_.split(",");
 			int maxind = togglebuttons2_.length > astr.length ? astr.length : togglebuttons2_.length; 
 			for(int i=0;i<maxind;i++){
 				togglebuttons2_[i].setText(astr[i]);
 			}
-			((MultiStateUIProperty) getUIProperty(FW_POSITION2)).setStateNames(astr);
+			try {
+				((MultiStateUIProperty) getUIProperty(FW_POSITION2)).setStateNames(astr);
+			} catch (UnknownUIPropertyException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -170,15 +180,6 @@ public class DualFWPanel extends ConfigurablePanel {
 			for(int i=0;i<maxind;i++){
 				togglebuttons2_[i].setForeground(ColorRepository.getColor(astr[i]));
 			}
-		}
-	}
-	
-	
-	protected String getValueFromPosition(int fw, int pos){
-		if(fw == 0) {
-			return ((MultiStateUIProperty) getUIProperty(FW_POSITION1)).getStateValue(pos);
-		} else {
-			return ((MultiStateUIProperty) getUIProperty(FW_POSITION2)).getStateValue(pos);
 		}
 	}
 	
@@ -214,14 +215,24 @@ public class DualFWPanel extends ConfigurablePanel {
 	@Override
 	public void propertyhasChanged(String name, String newvalue) {
 		if(name.equals(FW_POSITION1)){
-			int pos = ((MultiStateUIProperty) getUIProperty(FW_POSITION1)).getStatePositionNumber(newvalue);
-			if(pos<togglebuttons1_.length){
-				togglebuttons1_[pos].setSelected(true);
+			int pos;
+			try {
+				pos = ((MultiStateUIProperty) getUIProperty(FW_POSITION1)).getStatePositionNumber(newvalue);
+				if(pos<togglebuttons1_.length){
+					togglebuttons1_[pos].setSelected(true);
+				}
+			} catch (UnknownUIPropertyException e) {
+				e.printStackTrace();
 			}
 		} else if(name.equals(FW_POSITION2)){
-			int pos = ((MultiStateUIProperty) getUIProperty(FW_POSITION2)).getStatePositionNumber(newvalue);
-			if(pos<togglebuttons2_.length){
-				togglebuttons2_[pos].setSelected(true);
+			int pos;
+			try {
+				pos = ((MultiStateUIProperty) getUIProperty(FW_POSITION2)).getStatePositionNumber(newvalue);
+				if(pos<togglebuttons2_.length){
+					togglebuttons2_[pos].setSelected(true);
+				}
+			} catch (UnknownUIPropertyException e) {
+				e.printStackTrace();
 			}
 		}
 	}
@@ -232,28 +243,28 @@ public class DualFWPanel extends ConfigurablePanel {
 			try {
 				names1_ = getStringUIParameterValue(PARAM_NAMES1);
 				setNames(0);
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		} else if(label.equals(PARAM_COLORS1)){
 			try {
 				colors1_ = getStringUIParameterValue(PARAM_COLORS1);
 				setColors(0);
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		} else if(label.equals(PARAM_NAMES2)){
 			try {
 				names2_ = getStringUIParameterValue(PARAM_NAMES2);
 				setNames(1);
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		} else if(label.equals(PARAM_COLORS2)){
 			try {
 				colors2_ = getStringUIParameterValue(PARAM_COLORS2);
 				setColors(1);
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		}
@@ -266,7 +277,7 @@ public class DualFWPanel extends ConfigurablePanel {
 
 	@Override
 	public String getDescription() {
-		return "The "+getLabel()+" panel should be liked to te filterwheel and allows the contol of up to "+NUM_POS+" filters. The colors and names can bu customized from the configuration menu.";
+		return "The "+getPanelLabel()+" panel should be liked to te filterwheel and allows the contol of up to "+NUM_POS+" filters. The colors and names can bu customized from the configuration menu.";
 	}
 
 	@Override

@@ -18,7 +18,10 @@ import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
-import de.embl.rieslab.emu.exceptions.IncorrectParameterTypeException;
+import de.embl.rieslab.emu.exceptions.IncorrectInternalPropertyTypeException;
+import de.embl.rieslab.emu.exceptions.IncorrectUIParameterTypeException;
+import de.embl.rieslab.emu.exceptions.UnknownInternalPropertyException;
+import de.embl.rieslab.emu.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.internalproperties.IntegerInternalProperty;
 import de.embl.rieslab.emu.ui.uiparameters.ColorUIParameter;
@@ -210,7 +213,7 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 				title_ = getStringUIParameterValue(PARAM_TITLE);
 				border_.setTitle(title_);
 				this.repaint();
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		} else if(label.equals(PARAM_COLOR)){
@@ -218,7 +221,7 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 				color_ = getColorUIParameterValue(PARAM_COLOR);
 				border_.setTitleColor(color_);	
 				this.repaint();
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		} else if(label.equals(PARAM_DEFAULT_MAX)){
@@ -232,7 +235,7 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 				}
 				textfieldmax_.setText(String.valueOf(maxpulse_));
 				changeMaxPulseProperty(maxpulse_);
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		}
@@ -245,7 +248,7 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 
 	@Override
 	public String getDescription() {
-		return "The "+getLabel()+" panel is meant to control the pulse length of the activation laser. "
+		return "The "+getPanelLabel()+" panel is meant to control the pulse length of the activation laser. "
 				+ "The user can set a maximum to the slider by entering a value in the second text area. The pulse length can be set by entering a value in the first text area or by moving the slider.";
 	}
 
@@ -269,7 +272,11 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 	}
 
 	private void changeMaxPulseProperty(int val){
-		setInternalPropertyValue(INTERNAL_MAXPULSE,val);
+		try {
+			setInternalPropertyValue(INTERNAL_MAXPULSE,val);
+		} catch (IncorrectInternalPropertyTypeException | UnknownInternalPropertyException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override

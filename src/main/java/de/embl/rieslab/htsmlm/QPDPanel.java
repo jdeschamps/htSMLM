@@ -9,7 +9,9 @@ import javax.swing.JProgressBar;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 
-import de.embl.rieslab.emu.exceptions.IncorrectParameterTypeException;
+import de.embl.rieslab.emu.exceptions.IncorrectUIParameterTypeException;
+import de.embl.rieslab.emu.exceptions.UnknownUIParameterException;
+import de.embl.rieslab.emu.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.emu.swinglisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.uiparameters.IntegerUIParameter;
@@ -55,7 +57,12 @@ public class QPDPanel extends ConfigurablePanel {
 		this.setLayout(new GridBagLayout());
 		
 		graph_ = newGraph();
-		chartupdater_ = new ChartUpdater(graph_,getUIProperty(QPD_X),getUIProperty(QPD_Y),idle_);
+		try {
+			chartupdater_ = new ChartUpdater(graph_,getUIProperty(QPD_X),getUIProperty(QPD_Y),idle_);
+		} catch (UnknownUIPropertyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		graphpanel_ = new JPanel();
 		graphpanel_.add(graph_.getChart());
 
@@ -80,7 +87,13 @@ public class QPDPanel extends ConfigurablePanel {
 		progressBar_.setOrientation(SwingConstants.VERTICAL);
 		progressBar_.setMaximum(zmax_);
 		progressBar_.setMinimum(0);
-		progressbarupdater_ = new JProgressBarUpdater(progressBar_, getUIProperty(QPD_Z), idle_);
+		
+		try {
+			progressbarupdater_ = new JProgressBarUpdater(progressBar_, getUIProperty(QPD_Z), idle_);
+		} catch (UnknownUIPropertyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		this.add(progressBar_,c);
 		
 		c.gridx = 3;
@@ -145,7 +158,7 @@ public class QPDPanel extends ConfigurablePanel {
 					graphpanel_.updateUI();
 					chartupdater_.changeChart(graph_);
 				}
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		} else if(label.equals(PARAM_ZMAX)){
@@ -155,7 +168,7 @@ public class QPDPanel extends ConfigurablePanel {
 					zmax_ = newval;
 					progressBar_.setMaximum(zmax_);
 				}
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		}else if(label.equals(PARAM_IDLE)){
@@ -166,7 +179,7 @@ public class QPDPanel extends ConfigurablePanel {
 					chartupdater_.changeIdleTime(idle_);
 					progressbarupdater_.changeIdleTime(idle_);
 				}
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		}
@@ -180,7 +193,7 @@ public class QPDPanel extends ConfigurablePanel {
 
 	@Override
 	public String getDescription() {
-		return "The "+getLabel()+" panel follows the values of a QPD. Three signals are displayed: X and Y in a 2D chart and Z in a progress bar. The maximum values of each component can be set in the parameters.";
+		return "The "+getPanelLabel()+" panel follows the values of a QPD. Three signals are displayed: X and Y in a 2D chart and Z in a progress bar. The maximum values of each component can be set in the parameters.";
 	}
 
 	@Override

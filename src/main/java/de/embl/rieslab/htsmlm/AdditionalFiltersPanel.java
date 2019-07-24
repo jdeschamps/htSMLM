@@ -14,7 +14,9 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.border.TitledBorder;
 
-import de.embl.rieslab.emu.exceptions.IncorrectParameterTypeException;
+import de.embl.rieslab.emu.exceptions.IncorrectUIParameterTypeException;
+import de.embl.rieslab.emu.exceptions.UnknownUIParameterException;
+import de.embl.rieslab.emu.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
 import de.embl.rieslab.emu.ui.uiproperties.MultiStateUIProperty;
@@ -102,7 +104,7 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 					if(e.getStateChange()==ItemEvent.SELECTED){
 						int pos = getSelectedButtonNumber(togglebuttons1_);
 						if(pos>=0 && pos<togglebuttons1_.length){
-							setUIPropertyValue(SLIDER1_POSITION,getSlider1ValueFromPosition(pos));
+							setUIPropertyValue(SLIDER1_POSITION,String.valueOf(pos));
 						}				
 					} 
 				}
@@ -125,7 +127,7 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 					if(e.getStateChange()==ItemEvent.SELECTED){
 						int pos = getSelectedButtonNumber(togglebuttons2_);
 						if(pos>=0 && pos<togglebuttons2_.length){
-							setUIPropertyValue(SLIDER2_POSITION,getSlider2ValueFromPosition(pos));
+							setUIPropertyValue(SLIDER2_POSITION,String.valueOf(pos));
 						}				
 					} 
 				}
@@ -180,14 +182,22 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 			for(int i=0;i<maxind;i++){
 				togglebuttons1_[i].setText(astr[i]);
 			}
-			((MultiStateUIProperty) getUIProperty(SLIDER1_POSITION)).setStateNames(astr);
+			try {
+				((MultiStateUIProperty) getUIProperty(SLIDER1_POSITION)).setStateNames(astr);
+			} catch (UnknownUIPropertyException e) {
+				e.printStackTrace();
+			}
 		} else if(j==1){	
 			String[] astr = names2_.split(",");
 			int maxind = togglebuttons2_.length > astr.length ? astr.length : togglebuttons2_.length;
 			for(int i=0;i<maxind;i++){
 				togglebuttons2_[i].setText(astr[i]);
 			}
-			((MultiStateUIProperty) getUIProperty(SLIDER2_POSITION)).setStateNames(astr);
+			try {
+				((MultiStateUIProperty) getUIProperty(SLIDER2_POSITION)).setStateNames(astr);
+			} catch (UnknownUIPropertyException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -205,15 +215,6 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 				togglebuttons2_[i].setForeground(ColorRepository.getColor(astr[i]));
 			}
 		}
-	}
-	
-
-	protected String getSlider1ValueFromPosition(int pos){
-		return ((MultiStateUIProperty) getUIProperty(SLIDER1_POSITION)).getStateValue(pos);
-	}
-
-	protected String getSlider2ValueFromPosition(int pos){
-		return ((MultiStateUIProperty) getUIProperty(SLIDER2_POSITION)).getStateValue(pos);
 	}
 	
 	@Override
@@ -252,15 +253,28 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 	@Override
 	public void propertyhasChanged(String name, String newvalue) {
 		if(name.equals(SLIDER1_POSITION)){
-			int pos = ((MultiStateUIProperty) getUIProperty(SLIDER1_POSITION)).getStatePositionNumber(newvalue);
-			if(pos<togglebuttons1_.length){
-				togglebuttons1_[pos].setSelected(true);
+			int pos;
+			try {
+				pos = ((MultiStateUIProperty) getUIProperty(SLIDER1_POSITION)).getStatePositionNumber(newvalue);
+				if(pos<togglebuttons1_.length){
+					togglebuttons1_[pos].setSelected(true);
+				}
+			} catch (UnknownUIPropertyException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		} else if(name.equals(SLIDER1_POSITION)){
-			int pos = ((MultiStateUIProperty) getUIProperty(SLIDER1_POSITION)).getStatePositionNumber(newvalue);
-			if(pos<togglebuttons2_.length){
-				togglebuttons2_[pos].setSelected(true);
+			int pos;
+			try {
+				pos = ((MultiStateUIProperty) getUIProperty(SLIDER1_POSITION)).getStatePositionNumber(newvalue);			
+				if(pos<togglebuttons2_.length){
+					togglebuttons2_[pos].setSelected(true);
+				}
+			} catch (UnknownUIPropertyException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
+
 		}
 	}
 
@@ -270,28 +284,28 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 			try {
 				names1_ = getStringUIParameterValue(PARAM1_NAMES);
 				setNames(0);
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		} else if(label.equals(PARAM1_COLORS)){
 			try {
 				colors1_ = getStringUIParameterValue(PARAM1_COLORS);
 				setColors(0);
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		} else if(label.equals(PARAM2_NAMES)){
 			try {
 				names2_ = getStringUIParameterValue(PARAM2_NAMES);
 				setNames(1);
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		} else if(label.equals(PARAM2_COLORS)){
 			try {
 				colors2_ = getStringUIParameterValue(PARAM2_COLORS);
 				setColors(1);
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		} else if(label.equals(PARAM1_TITLE)){
@@ -299,7 +313,7 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 				title1_ = getStringUIParameterValue(PARAM1_TITLE);
 				border1_.setTitle(title1_);
 				this.repaint();
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		} else if(label.equals(PARAM2_TITLE)){
@@ -307,7 +321,7 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 				title2_ = getStringUIParameterValue(PARAM2_TITLE);
 				border2_.setTitle(title2_);
 				this.repaint();
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		}
@@ -320,7 +334,7 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 
 	@Override
 	public String getDescription() {
-		return "The "+getLabel()+" panel should be liked to the sliders and allows the control of up to "+NUM_POS+" filters. The colors and names can bu customized from the configuration menu.";
+		return "The "+getPanelLabel()+" panel should be liked to the sliders and allows the control of up to "+NUM_POS+" filters. The colors and names can bu customized from the configuration menu.";
 	}
 
 	@Override

@@ -10,8 +10,10 @@ import javax.swing.BorderFactory;
 import javax.swing.JToggleButton;
 import javax.swing.border.TitledBorder;
 
-import de.embl.rieslab.emu.exceptions.IncorrectParameterTypeException;
-import de.embl.rieslab.emu.exceptions.IncorrectPropertyTypeException;
+import de.embl.rieslab.emu.exceptions.IncorrectUIParameterTypeException;
+import de.embl.rieslab.emu.exceptions.IncorrectUIPropertyTypeException;
+import de.embl.rieslab.emu.exceptions.UnknownUIParameterException;
+import de.embl.rieslab.emu.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.emu.swinglisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.uiparameters.BoolUIParameter;
@@ -56,7 +58,7 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 	
 	private void setupPanel() {
 		this.setLayout(new GridBagLayout());
-		border_ = BorderFactory.createTitledBorder(null, getLabel(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, new Color(0,0,0));
+		border_ = BorderFactory.createTitledBorder(null, getPanelLabel(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, new Color(0,0,0));
 		this.setBorder(border_);
 		border_.setTitleFont(((TitledBorder) this.getBorder()).getTitleFont().deriveFont(Font.BOLD, 12));
 	
@@ -82,7 +84,7 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 			
 			try {
 				SwingUIListeners.addActionListenerToTwoState(this, devices[i], togglebuttons_[i]);
-			} catch (IncorrectPropertyTypeException e) {
+			} catch (IncorrectUIPropertyTypeException e) {
 				e.printStackTrace();
 			}
 		}  
@@ -112,28 +114,44 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 	@Override
 	public void propertyhasChanged(String name, String newvalue) {
 		if(name.equals(DEVICE_1)){
-			if(newvalue.equals(((TwoStateUIProperty) getUIProperty(DEVICE_1)).getOnStateValue())){
-				togglebuttons_[0].setSelected(true);
-			} else {
-				togglebuttons_[0].setSelected(false);
+			try {
+				if(newvalue.equals(((TwoStateUIProperty) getUIProperty(DEVICE_1)).getOnStateValue())){
+					togglebuttons_[0].setSelected(true);
+				} else {
+					togglebuttons_[0].setSelected(false);
+				}
+			} catch (UnknownUIPropertyException e) {
+				e.printStackTrace();
 			}
 		} else if(name.equals(DEVICE_2)){
-			if(newvalue.equals(((TwoStateUIProperty) getUIProperty(DEVICE_2)).getOnStateValue())){
-				togglebuttons_[1].setSelected(true);
-			} else {
-				togglebuttons_[1].setSelected(false);
+			try {
+				if(newvalue.equals(((TwoStateUIProperty) getUIProperty(DEVICE_2)).getOnStateValue())){
+					togglebuttons_[1].setSelected(true);
+				} else {
+					togglebuttons_[1].setSelected(false);
+				}
+			} catch (UnknownUIPropertyException e) {
+				e.printStackTrace();
 			}
 		} else if(name.equals(DEVICE_3)){
-			if(newvalue.equals(((TwoStateUIProperty) getUIProperty(DEVICE_3)).getOnStateValue())){
-				togglebuttons_[2].setSelected(true);
-			} else {
-				togglebuttons_[2].setSelected(false);
+			try {
+				if(newvalue.equals(((TwoStateUIProperty) getUIProperty(DEVICE_3)).getOnStateValue())){
+					togglebuttons_[2].setSelected(true);
+				} else {
+					togglebuttons_[2].setSelected(false);
+				}
+			} catch (UnknownUIPropertyException e) {
+				e.printStackTrace();
 			}
 		} else if(name.equals(DEVICE_4)){
-			if(newvalue.equals(((TwoStateUIProperty) getUIProperty(DEVICE_4)).getOnStateValue())){
-				togglebuttons_[3].setSelected(true);
-			} else {
-				togglebuttons_[3].setSelected(false);
+			try {
+				if(newvalue.equals(((TwoStateUIProperty) getUIProperty(DEVICE_4)).getOnStateValue())){
+					togglebuttons_[3].setSelected(true);
+				} else {
+					togglebuttons_[3].setSelected(false);
+				}
+			} catch (UnknownUIPropertyException e) {
+				e.printStackTrace();
 			}
 		}
 	}
@@ -145,7 +163,7 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 				String s = getStringUIParameterValue(PARAM_NAME1);
 				togglebuttons_[0].setText(s);
 				getUIProperty(DEVICE_1).setFriendlyName(s);
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException | UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
 		} else if(label.equals(PARAM_NAME2)){
@@ -153,7 +171,7 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 				String s = getStringUIParameterValue(PARAM_NAME2);
 				togglebuttons_[1].setText(s);
 				getUIProperty(DEVICE_2).setFriendlyName(s);
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException | UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
 		} else if(label.equals(PARAM_NAME3)){
@@ -161,7 +179,7 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 				String s = getStringUIParameterValue(PARAM_NAME3);
 				togglebuttons_[2].setText(s);
 				getUIProperty(DEVICE_3).setFriendlyName(s);
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException | UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
 		} else if(label.equals(PARAM_NAME4)){
@@ -169,42 +187,42 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 				String s = getStringUIParameterValue(PARAM_NAME4);
 				togglebuttons_[3].setText(s);
 				getUIProperty(DEVICE_4).setFriendlyName(s);
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException | UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
 		} else if(label.equals(PARAM_ENABLE1)){
 			try {
 				boolean b = getBoolUIParameterValue(PARAM_ENABLE1);
 				togglebuttons_[0].setEnabled(b);
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		} else if(label.equals(PARAM_ENABLE2)){
 			try {
 				boolean b = getBoolUIParameterValue(PARAM_ENABLE2);
 				togglebuttons_[1].setEnabled(b);
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		} else if(label.equals(PARAM_ENABLE3)){
 			try {
 				boolean b = getBoolUIParameterValue(PARAM_ENABLE3);
 				togglebuttons_[2].setEnabled(b);
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		} else if(label.equals(PARAM_ENABLE4)){
 			try {
 				boolean b = getBoolUIParameterValue(PARAM_ENABLE4);
 				togglebuttons_[3].setEnabled(b);
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		} else if(label.equals(PARAM_TITLE)){
 			try {
 				border_.setTitle(getStringUIParameterValue(PARAM_TITLE));
 				this.repaint();
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		}
@@ -217,7 +235,7 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 
 	@Override
 	public String getDescription() {
-		return "The "+getLabel()+" panel makes use of two-state buttons to control servos.";
+		return "The "+getPanelLabel()+" panel makes use of two-state buttons to control servos.";
 	}
 
 	@Override

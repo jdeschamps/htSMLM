@@ -18,7 +18,9 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 
-import de.embl.rieslab.emu.exceptions.IncorrectParameterTypeException;
+import de.embl.rieslab.emu.exceptions.IncorrectUIParameterTypeException;
+import de.embl.rieslab.emu.exceptions.UnknownUIParameterException;
+import de.embl.rieslab.emu.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.emu.swinglisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.internalproperties.IntegerInternalProperty;
@@ -34,10 +36,7 @@ import mmcorej.CMMCore;
 
 public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Double> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -517213311514918870L;
+	private static final long serialVersionUID = 1L;
 
 	//////// Task
 	public final static String TASK_NAME = "Activation task";
@@ -286,11 +285,15 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 	}
 	
 	public boolean isActivationAtMax(){
-		String val = getUIPropertyValue(LASER_PULSE);
-		if(utils.isNumeric(val)){
-			if(Double.parseDouble(val)>=maxpulse_){
-				return true;
+		try {
+			String val = getUIPropertyValue(LASER_PULSE);
+			if(utils.isNumeric(val)){
+				if(Double.parseDouble(val)>=maxpulse_){
+					return true;
+				}
 			}
+		} catch (UnknownUIPropertyException e) {
+			e.printStackTrace();
 		}
 		return false;
 	}
@@ -329,14 +332,14 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 			try {
 				sdcoeff_ = getDoubleUIParameterValue(PARAM_DEF_SD);
 				textfieldsdcoeff_.setText(String.valueOf(sdcoeff_));
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		} else if(label.equals(PARAM_DEF_FB)){
 			try {
 				feedback_ = getDoubleUIParameterValue(PARAM_DEF_FB);
 				textfieldfeedback_.setText(String.valueOf(feedback_));
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		}else if(label.equals(PARAM_IDLE)){
@@ -346,7 +349,7 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 					idletime_ = val;
 					task_.setIdleTime(idletime_);
 					}
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		}else if(label.equals(PARAM_NPOS)){
@@ -359,7 +362,7 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 					graphpane_.add(graph_.getChart());
 					graphpane_.updateUI();
 				}
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		}
@@ -432,9 +435,12 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		params[ActivationTask.PARAM_MAXPULSE] = (double) maxpulse_;
 		params[ActivationTask.PARAM_N0] = N0_; 
 		
-		if(utils.isNumeric(getUIProperty(LASER_PULSE).getPropertyValue())){
-			params[ActivationTask.PARAM_PULSE] = Double.parseDouble(getUIProperty(LASER_PULSE).getPropertyValue()); 
-		} else {
+		try {
+			if(utils.isNumeric(getUIProperty(LASER_PULSE).getPropertyValue())){
+				params[ActivationTask.PARAM_PULSE] = Double.parseDouble(getUIProperty(LASER_PULSE).getPropertyValue()); 
+			}
+		} catch (NumberFormatException | UnknownUIPropertyException e) {
+			e.printStackTrace();
 			params[ActivationTask.PARAM_PULSE] = 0.;
 		}
 		

@@ -19,7 +19,8 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.border.TitledBorder;
 
-import de.embl.rieslab.emu.exceptions.IncorrectPropertyTypeException;
+import de.embl.rieslab.emu.exceptions.IncorrectUIPropertyTypeException;
+import de.embl.rieslab.emu.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.emu.swinglisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
@@ -75,21 +76,19 @@ public class FocusLockPanel extends ConfigurablePanel {
 			public void focusGained(FocusEvent arg0) {}
 			@Override
 			public void focusLost(FocusEvent arg0) {
-				if(isComponentTriggeringEnabled()){
-					String typed = textfieldUserPower_.getText();
-					if(!utils.isNumeric(typed)){
-						return;
+				String typed = textfieldUserPower_.getText();
+				if (!utils.isNumeric(typed)) {
+					return;
+				}
+
+				try {
+					double val = Double.parseDouble(typed);
+					if (Double.compare(val, max_power) <= 0 && Double.compare(val, 0.) >= 0) {
+						setUIPropertyValue(getPanelLabel() + " " + LASER_POWER, typed);
+						sliderPower_.setValue((int) val);
 					}
-	
-					try {
-						double val = Double.parseDouble(typed);
-						if (Double.compare(val, max_power) <= 0 && Double.compare(val, 0.) >= 0) {
-							setUIPropertyValue(getLabel()+" "+LASER_POWER,typed);
-							sliderPower_.setValue((int) val);
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
         	}
         });
@@ -97,35 +96,33 @@ public class FocusLockPanel extends ConfigurablePanel {
 		textfieldUserPower_.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent ev) {
-				if(isComponentTriggeringEnabled()){
-					String typed = textfieldUserPower_.getText();
-					if(!utils.isNumeric(typed)){
-						return;
+				String typed = textfieldUserPower_.getText();
+				if (!utils.isNumeric(typed)) {
+					return;
+				}
+
+				try {
+					double val = Double.parseDouble(typed);
+					if (Double.compare(val, max_power) <= 0 && Double.compare(val, 0.) >= 0) {
+						setUIPropertyValue(getPanelLabel() + " " + LASER_POWER, typed);
+						sliderPower_.setValue((int) val);
 					}
-	
-					try {
-						double val = Double.parseDouble(typed);
-						if (Double.compare(val, max_power) <= 0 && Double.compare(val, 0.) >= 0) {
-							setUIPropertyValue(getLabel()+" "+LASER_POWER,typed);
-							sliderPower_.setValue((int) val);
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
         	}
         });
 		
 		// slider channel 1
 		sliderPower_ = new JSlider(JSlider.HORIZONTAL, 0, (int) max_power, 0);
-		SwingUIListeners.addActionListenerOnIntegerValue(this, getLabel()+" "+LASER_POWER, sliderPower_, textfieldUserPower_);
+		SwingUIListeners.addActionListenerOnIntegerValue(this, getPanelLabel()+" "+LASER_POWER, sliderPower_, textfieldUserPower_);
 		
 		// slider fine a
 		sliderFinea_ = new JSlider(JSlider.HORIZONTAL, 0, 100, 0);
 		sliderFinea_.addMouseListener(new MouseAdapter() {
 			public void mouseReleased(MouseEvent e) {
 				fineaperc_.setText(String.valueOf(sliderFinea_.getValue())+" %");		
-				setUIPropertyValue(getLabel()+" "+LASER_PERCFINEA,String.valueOf(sliderFinea_.getValue()));
+				setUIPropertyValue(getPanelLabel()+" "+LASER_PERCFINEA,String.valueOf(sliderFinea_.getValue()));
 			}});
 
 		// slider fine b
@@ -133,21 +130,21 @@ public class FocusLockPanel extends ConfigurablePanel {
 		sliderFineb_.addMouseListener(new MouseAdapter() {
 			public void mouseReleased(MouseEvent e) {	
 				finebperc_.setText(String.valueOf(sliderFineb_.getValue())+" %");						
-				setUIPropertyValue(getLabel()+" "+LASER_PERCFINEB,String.valueOf(sliderFineb_.getValue()));
+				setUIPropertyValue(getPanelLabel()+" "+LASER_PERCFINEB,String.valueOf(sliderFineb_.getValue()));
 			}});
 		
 		togglebuttonLaser_ = new TogglePower();
 		try {
-			SwingUIListeners.addActionListenerToTwoState(this, getLabel()+" "+LASER_OPERATION, togglebuttonLaser_);
-		} catch (IncorrectPropertyTypeException e1) {
+			SwingUIListeners.addActionListenerToTwoState(this, getPanelLabel()+" "+LASER_OPERATION, togglebuttonLaser_);
+		} catch (IncorrectUIPropertyTypeException e1) {
 			e1.printStackTrace();
 		}
 		
 		// Fine enable
 		togglesliderenableFine_ = new ToggleSlider();
 		try {
-			SwingUIListeners.addActionListenerToTwoState(this, getLabel()+" "+LASER_ENABLEFINE, togglesliderenableFine_);
-		} catch (IncorrectPropertyTypeException e1) {
+			SwingUIListeners.addActionListenerToTwoState(this, getPanelLabel()+" "+LASER_ENABLEFINE, togglesliderenableFine_);
+		} catch (IncorrectUIPropertyTypeException e1) {
 			e1.printStackTrace();
 		}
 
@@ -266,19 +263,18 @@ public class FocusLockPanel extends ConfigurablePanel {
 	protected void initializeProperties() {
 		max_power = 200;
 		
-		addUIProperty(new UIProperty(this, getLabel()+" "+LASER_POWER,"iBeamSmart Power (mW).", new FocusLockFlag()));
-		addUIProperty(new UIProperty(this, getLabel()+" "+LASER_PERCFINEA,"iBeamSmart Power percentage of fine a.", new FocusLockFlag()));
-		addUIProperty(new UIProperty(this, getLabel()+" "+LASER_PERCFINEB,"iBeamSmart Power percentage of fine b.", new FocusLockFlag()));
-		addUIProperty(new UIProperty(this, getLabel()+" "+LASER_MAXPOWER,"iBeamSmart Maximum power (mW).", new FocusLockFlag()));
+		addUIProperty(new UIProperty(this, getPanelLabel()+" "+LASER_POWER,"iBeamSmart Power (mW).", new FocusLockFlag()));
+		addUIProperty(new UIProperty(this, getPanelLabel()+" "+LASER_PERCFINEA,"iBeamSmart Power percentage of fine a.", new FocusLockFlag()));
+		addUIProperty(new UIProperty(this, getPanelLabel()+" "+LASER_PERCFINEB,"iBeamSmart Power percentage of fine b.", new FocusLockFlag()));
+		addUIProperty(new UIProperty(this, getPanelLabel()+" "+LASER_MAXPOWER,"iBeamSmart Maximum power (mW).", new FocusLockFlag()));
 
-		addUIProperty(new TwoStateUIProperty(this,getLabel()+" "+LASER_OPERATION,"iBeamSmart On/Off operation property.", new FocusLockFlag()));
-		addUIProperty(new TwoStateUIProperty(this,getLabel()+" "+LASER_ENABLEFINE,"iBeamSmart Enable property of fine.", new FocusLockFlag()));
+		addUIProperty(new TwoStateUIProperty(this,getPanelLabel()+" "+LASER_OPERATION,"iBeamSmart On/Off operation property.", new FocusLockFlag()));
+		addUIProperty(new TwoStateUIProperty(this,getPanelLabel()+" "+LASER_ENABLEFINE,"iBeamSmart Enable property of fine.", new FocusLockFlag()));
 	}
 
 	@Override
 	public void propertyhasChanged(String name, String newvalue) {
-		turnOffComponentTriggering();
-		if(name.equals(getLabel()+" "+LASER_POWER)){
+		if(name.equals(getPanelLabel()+" "+LASER_POWER)){
 			if(utils.isNumeric(newvalue)){
 				double val = Double.parseDouble(newvalue);
 				if(val>=0 && val<=max_power){
@@ -286,7 +282,7 @@ public class FocusLockPanel extends ConfigurablePanel {
 					sliderPower_.setValue((int) val);	
 				}
 			}
-		} else if(name.equals(getLabel()+" "+LASER_PERCFINEA)){
+		} else if(name.equals(getPanelLabel()+" "+LASER_PERCFINEA)){
 			if(utils.isNumeric(newvalue)){
 				double val = Double.parseDouble(newvalue);
 				if(val>=0 && val<=100){
@@ -298,7 +294,7 @@ public class FocusLockPanel extends ConfigurablePanel {
 					sliderFinea_.setValue((int) val);	
 				}
 			}
-		} else if(name.equals(getLabel()+" "+LASER_PERCFINEB)){
+		} else if(name.equals(getPanelLabel()+" "+LASER_PERCFINEB)){
 			if(utils.isNumeric(newvalue)){
 				double val = Double.parseDouble(newvalue);
 				if(val>=0 && val<=100){	
@@ -310,19 +306,27 @@ public class FocusLockPanel extends ConfigurablePanel {
 					sliderFineb_.setValue((int) val);	
 				}
 			}
-		} else if(name.equals(getLabel()+" "+LASER_OPERATION)){
-			if(newvalue.equals(((TwoStateUIProperty) getUIProperty(getLabel()+" "+LASER_ENABLEFINE)).getOnStateValue())){
-				togglebuttonLaser_.setSelected(true);
-			} else {  
-				togglebuttonLaser_.setSelected(false);
+		} else if(name.equals(getPanelLabel()+" "+LASER_OPERATION)){
+			try {
+				if(newvalue.equals(((TwoStateUIProperty) getUIProperty(getPanelLabel()+" "+LASER_ENABLEFINE)).getOnStateValue())){
+					togglebuttonLaser_.setSelected(true);
+				} else {  
+					togglebuttonLaser_.setSelected(false);
+				}
+			} catch (UnknownUIPropertyException e) {
+				e.printStackTrace();
 			}
-		} else if(name.equals(getLabel()+" "+LASER_ENABLEFINE)){
-			if(newvalue.equals(((TwoStateUIProperty) getUIProperty(getLabel()+" "+LASER_ENABLEFINE)).getOnStateValue())){
-				togglesliderenableFine_.setSelected(true);
-			} else {  
-				togglesliderenableFine_.setSelected(false);
+		} else if(name.equals(getPanelLabel()+" "+LASER_ENABLEFINE)){
+			try {
+				if(newvalue.equals(((TwoStateUIProperty) getUIProperty(getPanelLabel()+" "+LASER_ENABLEFINE)).getOnStateValue())){
+					togglesliderenableFine_.setSelected(true);
+				} else {  
+					togglesliderenableFine_.setSelected(false);
+				}
+			} catch (UnknownUIPropertyException e) {
+				e.printStackTrace();
 			}
-		} else if(name.equals(getLabel()+" "+LASER_MAXPOWER)){
+		} else if(name.equals(getPanelLabel()+" "+LASER_MAXPOWER)){
 			if(utils.isNumeric(newvalue)){
 				double val = Double.parseDouble(newvalue);
 				max_power = (int) val;
@@ -331,7 +335,6 @@ public class FocusLockPanel extends ConfigurablePanel {
 				}
 			}
 		}
-		turnOnComponentTriggering();
 	}
 
 	@Override

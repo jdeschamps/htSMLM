@@ -16,7 +16,9 @@ import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
-import de.embl.rieslab.emu.exceptions.IncorrectParameterTypeException;
+import de.embl.rieslab.emu.exceptions.IncorrectUIParameterTypeException;
+import de.embl.rieslab.emu.exceptions.UnknownUIParameterException;
+import de.embl.rieslab.emu.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.emu.swinglisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.uiparameters.ColorUIParameter;
@@ -183,24 +185,24 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 				title_ = getStringUIParameterValue(PARAM_TITLE);
 				border_.setTitle(title_);
 				this.repaint();
-				getUIProperty(getLabel()+" "+TRIGGER_BEHAVIOUR).setFriendlyName(title_+" "+TRIGGER_BEHAVIOUR);
-				getUIProperty(getLabel()+" "+TRIGGER_SEQUENCE).setFriendlyName(title_+" "+TRIGGER_SEQUENCE);
-				getUIProperty(getLabel()+" "+PULSE_LENGTH).setFriendlyName(title_+" "+PULSE_LENGTH);
-			} catch (IncorrectParameterTypeException e) {
+				getUIProperty(getPanelLabel()+" "+TRIGGER_BEHAVIOUR).setFriendlyName(title_+" "+TRIGGER_BEHAVIOUR);
+				getUIProperty(getPanelLabel()+" "+TRIGGER_SEQUENCE).setFriendlyName(title_+" "+TRIGGER_SEQUENCE);
+				getUIProperty(getPanelLabel()+" "+PULSE_LENGTH).setFriendlyName(title_+" "+PULSE_LENGTH);
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException | UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
 		} else if(label.equals(PARAM_COLOR)){
 			try {
 				color_ = getColorUIParameterValue(PARAM_COLOR);
 				border_.setTitleColor(color_);
-				this.repaint();			} catch (IncorrectParameterTypeException e) {
+				this.repaint();			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 					e.printStackTrace();
 				}
 		} else if(label.equals(PARAM_DEF_BEHAVIOUR)){
 			try {
 				behaviour_ = getComboUIParameterValue(PARAM_DEF_BEHAVIOUR);
 				combobehaviour_.setSelectedItem(behaviour_); // this triggers the action listener			
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		} else if(label.equals(PARAM_DEF_SEQUENCE)){
@@ -211,7 +213,7 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 					textfieldsequence_.setText(sequence_); // setting text on JTextField does not trigger the action listeners in this case
 					setUIPropertyValue(getPropertyLabel(TRIGGER_SEQUENCE),String.valueOf(BinaryConverter.getDecimal16bits(sequence_)));
 				}
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		}
@@ -224,7 +226,7 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 
 	@Override
 	public String getDescription() {
-		return "The "+getLabel()+" panel controls the triggering of laser thanks to the MicroMojo FPGA system. The triggering behaviour are either on/off, "
+		return "The "+getPanelLabel()+" panel controls the triggering of laser thanks to the MicroMojo FPGA system. The triggering behaviour are either on/off, "
 				+ "or pulsing on rising/falling edge or simply by following the camera trigger. The pulse length can be set through a text area or a slider. "
 				+ "Finally, the laser can be triggered following a sequence of 0 (off) and 1 (triggered). The sequence is 16 bits long. If the sequence set"
 				+ "in the text area is made of 0 and 1, albeit with the wrong size, the text is colored in blue. When wrong characters are entered, the text"
@@ -242,7 +244,7 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 	}
 	
 	private String getPropertyLabel(String propName) {
-		return getLabel()+" "+propName;
+		return getPanelLabel()+" "+propName;
 	}
 
 	@Override

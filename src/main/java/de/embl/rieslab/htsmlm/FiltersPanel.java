@@ -13,7 +13,9 @@ import javax.swing.ButtonGroup;
 import javax.swing.JToggleButton;
 import javax.swing.border.TitledBorder;
 
-import de.embl.rieslab.emu.exceptions.IncorrectParameterTypeException;
+import de.embl.rieslab.emu.exceptions.IncorrectUIParameterTypeException;
+import de.embl.rieslab.emu.exceptions.UnknownUIParameterException;
+import de.embl.rieslab.emu.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
 import de.embl.rieslab.emu.ui.uiproperties.MultiStateUIProperty;
@@ -52,7 +54,7 @@ public class FiltersPanel extends ConfigurablePanel {
 	
 	private void setupPanel() {
 		this.setLayout(new GridBagLayout());
-		this.setBorder(BorderFactory.createTitledBorder(null, getLabel(), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, null, new Color(0,0,0)));
+		this.setBorder(BorderFactory.createTitledBorder(null, getPanelLabel(), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, null, new Color(0,0,0)));
 		((TitledBorder) this.getBorder()).setTitleFont(((TitledBorder) this.getBorder()).getTitleFont().deriveFont(Font.BOLD, 12));
 
 		
@@ -80,7 +82,7 @@ public class FiltersPanel extends ConfigurablePanel {
 					if(e.getStateChange()==ItemEvent.SELECTED){
 						int pos = getSelectedButtonNumber();
 						if(pos>=0 && pos<togglebuttons_.length){
-							setUIPropertyValue(FW_POSITION,getValueFromPosition(pos));
+							setUIPropertyValue(FW_POSITION,String.valueOf(pos));
 						}				
 					} 
 				}
@@ -107,7 +109,11 @@ public class FiltersPanel extends ConfigurablePanel {
 		for(int i=0;i<maxind;i++){
 			togglebuttons_[i].setText(astr[i]);
 		}
-		((MultiStateUIProperty) getUIProperty(FW_POSITION)).setStateNames(astr);
+		try {
+			((MultiStateUIProperty) getUIProperty(FW_POSITION)).setStateNames(astr);
+		} catch (UnknownUIPropertyException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private void setColors(){
@@ -116,11 +122,6 @@ public class FiltersPanel extends ConfigurablePanel {
 		for(int i=0;i<maxind;i++){
 			togglebuttons_[i].setForeground(ColorRepository.getColor(astr[i]));
 		}
-	}
-	
-	
-	protected String getValueFromPosition(int pos){
-		return ((MultiStateUIProperty) getUIProperty(FW_POSITION)).getStateValue(pos);
 	}
 	
 	@Override
@@ -146,9 +147,13 @@ public class FiltersPanel extends ConfigurablePanel {
 	@Override
 	public void propertyhasChanged(String name, String newvalue) {
 		if(name.equals(FW_POSITION)){
-			int pos = ((MultiStateUIProperty) getUIProperty(FW_POSITION)).getStatePositionNumber(newvalue);
-			if(pos<togglebuttons_.length){
-				togglebuttons_[pos].setSelected(true);
+			try {
+				int pos = ((MultiStateUIProperty) getUIProperty(FW_POSITION)).getStatePositionNumber(newvalue);
+				if(pos<togglebuttons_.length){
+					togglebuttons_[pos].setSelected(true);
+				}
+			} catch (UnknownUIPropertyException e) {
+				e.printStackTrace();
 			}
 		}
 	}
@@ -159,14 +164,14 @@ public class FiltersPanel extends ConfigurablePanel {
 			try {
 				names_ = getStringUIParameterValue(PARAM_NAMES);
 				setNames();
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		} else if(label.equals(PARAM_COLORS)){
 			try {
 				colors_ = getStringUIParameterValue(PARAM_COLORS);
 				setColors();
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		}
@@ -179,7 +184,7 @@ public class FiltersPanel extends ConfigurablePanel {
 
 	@Override
 	public String getDescription() {
-		return "The "+getLabel()+" panel should be liked to te filterwheel and allows the contol of up to "+NUM_POS+" filters. The colors and names can bu customized from the configuration menu.";
+		return "The "+getPanelLabel()+" panel should be liked to te filterwheel and allows the contol of up to "+NUM_POS+" filters. The colors and names can bu customized from the configuration menu.";
 	}
 
 	@Override

@@ -19,8 +19,10 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.border.TitledBorder;
 
-import de.embl.rieslab.emu.exceptions.IncorrectParameterTypeException;
-import de.embl.rieslab.emu.exceptions.IncorrectPropertyTypeException;
+import de.embl.rieslab.emu.exceptions.IncorrectUIParameterTypeException;
+import de.embl.rieslab.emu.exceptions.IncorrectUIPropertyTypeException;
+import de.embl.rieslab.emu.exceptions.UnknownUIParameterException;
+import de.embl.rieslab.emu.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.emu.swinglisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.uiparameters.DoubleUIParameter;
@@ -87,10 +89,13 @@ public class FocusPanel extends ConfigurablePanel {
 	
 	private void setupPanel() {
 		graph_ = newGraph();
-		updater_ = new TimeChartUpdater(graph_,getUIProperty(FOCUS_POSITION),idle_);
+		try {
+			updater_ = new TimeChartUpdater(graph_,getUIProperty(FOCUS_POSITION),idle_);
+		} catch (UnknownUIPropertyException e) {
+		}
 		
 		this.setLayout(new BoxLayout(this,BoxLayout.X_AXIS));
-		this.setBorder(BorderFactory.createTitledBorder(null, getLabel(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, new Color(0,0,0)));
+		this.setBorder(BorderFactory.createTitledBorder(null, getPanelLabel(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, new Color(0,0,0)));
 		((TitledBorder) this.getBorder()).setTitleFont(((TitledBorder) this.getBorder()).getTitleFont().deriveFont(Font.BOLD, 12));
 		
 		panelLeftControl_ = new JPanel();
@@ -161,7 +166,7 @@ public class FocusPanel extends ConfigurablePanel {
 		togglebuttonLock_ = new JToggleButton("Lock");
 		try {
 			SwingUIListeners.addActionListenerToTwoState(this, FOCUS_STABILIZATION, togglebuttonLock_);
-		} catch (IncorrectPropertyTypeException e1) {
+		} catch (IncorrectUIPropertyTypeException e1) {
 			e1.printStackTrace();
 		}
 		
@@ -280,12 +285,16 @@ public class FocusPanel extends ConfigurablePanel {
 	}
 	
 	protected void moveRelativePosition(double step) {
-    	String s = getUIPropertyValue(FOCUS_POSITION);
+		try {
+			String s = getUIPropertyValue(FOCUS_POSITION);
     	
-    	if (utils.isNumeric(s)) {
-    		double val = Double.parseDouble(s)+step;
-    		setUIPropertyValue(FOCUS_POSITION,String.valueOf(val));
-    	}		
+	    	if (utils.isNumeric(s)) {
+	    		double val = Double.parseDouble(s)+step;
+	    		setUIPropertyValue(FOCUS_POSITION,String.valueOf(val));
+	    	}	
+		} catch (UnknownUIPropertyException e) {
+			e.printStackTrace();
+		}	
 	}
 
 	protected void monitorPosition(boolean b) {
@@ -341,10 +350,14 @@ public class FocusPanel extends ConfigurablePanel {
 				}
 			}
 		} else if(name.equals(FOCUS_STABILIZATION)){
-			if(newvalue.equals(((TwoStateUIProperty) getUIProperty(FOCUS_STABILIZATION)).getOnStateValue())){
-				togglebuttonLock_.setSelected(true);
-			} else {
-				togglebuttonLock_.setSelected(false);
+			try {
+				if(newvalue.equals(((TwoStateUIProperty) getUIProperty(FOCUS_STABILIZATION)).getOnStateValue())){
+					togglebuttonLock_.setSelected(true);
+				} else {
+					togglebuttonLock_.setSelected(false);
+				}
+			} catch (UnknownUIPropertyException e) {
+				e.printStackTrace();
 			}
 		}
 	}
@@ -357,14 +370,14 @@ public class FocusPanel extends ConfigurablePanel {
 			try {
 				largestep_ = getDoubleUIParameterValue(PARAM_LARGESTEP);
 				textfieldLargeStep_.setText(String.valueOf(largestep_));
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		} else if(label.equals(PARAM_SMALLSTEP)){
 			try {
 				smallstep_ = getDoubleUIParameterValue(PARAM_SMALLSTEP);
 				textfieldSmallStep_.setText(String.valueOf(smallstep_));
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		}else if(label.equals(PARAM_IDLE)){
@@ -374,7 +387,7 @@ public class FocusPanel extends ConfigurablePanel {
 					idle_ = val;
 					updater_.changeIdleTime(idle_);
 				}
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		}else if(label.equals(PARAM_NPOS)){
@@ -388,7 +401,7 @@ public class FocusPanel extends ConfigurablePanel {
 					panelGraph_.updateUI();
 					updater_.changeChart(graph_);
 				}
-			} catch (IncorrectParameterTypeException e) {
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		}
@@ -402,7 +415,7 @@ public class FocusPanel extends ConfigurablePanel {
 
 	@Override
 	public String getDescription() {
-		return "The "+getLabel()+" panel controls the Z stage of the microscope. It allows monitoring of the stage position. In addition, small and large steps buttons can move the stage up and down. "
+		return "The "+getPanelLabel()+" panel controls the Z stage of the microscope. It allows monitoring of the stage position. In addition, small and large steps buttons can move the stage up and down. "
 				+ "The locking property corresponds to focus stabilization and is very specific to certain stages.";
 	}
 

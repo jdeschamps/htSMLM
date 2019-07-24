@@ -106,7 +106,7 @@ public class BrightFieldAcquisition implements Acquisition{
 
 	@Override
 	public PropertyFilter getPropertyFilter() {
-		return new SinglePropertyFilter(bfprop_.getLabel());
+		return new SinglePropertyFilter(bfprop_.getPropertyLabel());
 	}
 
 	@Override
