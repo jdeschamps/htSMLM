@@ -237,7 +237,7 @@ public class AcquisitionTask implements Task<Integer>{
 		}
 
 		private void interruptAcquistion() {
-			while (currAcq != null && currAcq.isRunning()) {
+			if (currAcq != null && currAcq.isRunning()) {
 				currAcq.stopAcquisition();
 				try {
 					Thread.sleep(500);

@@ -263,9 +263,7 @@ public class LocalizationAcquisition implements Acquisition {
 				interruptAcquisition(studio);
 				interruptionRequested_ = true;
 			}
-			
-			System.out.println("Acquisition is running");
-			
+					
 			// checks if exit
 			if(stopAcq_){
 				interruptAcquisition(studio);
@@ -280,18 +278,14 @@ public class LocalizationAcquisition implements Acquisition {
 			}
 		}
 
-		// this used to work, but now it never returns, no idea why.
-		//studio.displays().closeDisplaysFor(store);
-
-		// this seems to also be stuck: 
-	/*	
+		studio.displays().closeDisplaysFor(store);
+	
 		try {
 			store.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 			return false;
 		}
-	*/
 
 		if(useactivation_){			
 			activationTask_.pauseTask();

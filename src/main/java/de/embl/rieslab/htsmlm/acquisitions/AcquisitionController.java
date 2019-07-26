@@ -113,7 +113,6 @@ public class AcquisitionController implements TaskHolder<Integer>{
 		if(task_ != null){
 			task_.stopTask();
 		}
-		infopanel_.setStopText();
 	}
 
 	@Override
