@@ -11,7 +11,7 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
 import de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
-import de.embl.rieslab.htsmlm.acquisitions.AcquisitionFactory.AcquisitionType;
+import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory.AcquisitionType;
 import de.embl.rieslab.htsmlm.filters.PropertyFilter;
 import de.embl.rieslab.htsmlm.filters.SinglePropertyFilter;
 

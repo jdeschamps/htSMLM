@@ -16,7 +16,7 @@ import org.micromanager.acquisition.SequenceSettings;
 import org.micromanager.acquisition.internal.DefaultAcquisitionManager;
 import org.micromanager.data.Datastore;
 
-import de.embl.rieslab.htsmlm.acquisitions.AcquisitionFactory.AcquisitionType;
+import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory.AcquisitionType;
 import de.embl.rieslab.htsmlm.filters.NoPropertyFilter;
 import de.embl.rieslab.htsmlm.filters.PropertyFilter;
 import de.embl.rieslab.htsmlm.tasks.TaskHolder;
@@ -43,6 +43,7 @@ public class LocalizationAcquisition implements Acquisition {
 	private boolean useactivation_, stoponmax_, nullActivation_;
 	private volatile boolean stopAcq_, running_;
 	private int stoponmaxdelay_;
+	private boolean interruptionRequested_;
 	
 	@SuppressWarnings("rawtypes")
 	public LocalizationAcquisition(TaskHolder activationtask, double exposure) {
@@ -58,6 +59,7 @@ public class LocalizationAcquisition implements Acquisition {
 		
 		stopAcq_ = false;
 		running_ = false;
+		interruptionRequested_ = false;
 		stoponmax_ = true;
 		stoponmaxdelay_ = 5;
 
@@ -230,6 +232,7 @@ public class LocalizationAcquisition implements Acquisition {
 		}
 		
 		stopAcq_ = false;
+		interruptionRequested_ = false;
 		running_ = true;
 		
 		SequenceSettings settings = new SequenceSettings();
@@ -258,31 +261,38 @@ public class LocalizationAcquisition implements Acquisition {
 				}
 								
 				interruptAcquisition(studio);
+				interruptionRequested_ = true;
 			}
 			
-			// check if exit
+			System.out.println("Acquisition is running");
+			
+			// checks if exit
 			if(stopAcq_){
 				interruptAcquisition(studio);
+				interruptionRequested_ = true;
 			}
 			
 			try {
-				Thread.sleep(500);
+				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 				return false;
 			}
 		}
-		
-		System.out.println("Going to close display");
-		studio.displays().closeDisplaysFor(store);
-		
+
+		// this used to work, but now it never returns, no idea why.
+		//studio.displays().closeDisplaysFor(store);
+
+		// this seems to also be stuck: 
+	/*	
 		try {
 			store.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 			return false;
 		}
-		
+	*/
+
 		if(useactivation_){			
 			activationTask_.pauseTask();
 		}
@@ -293,12 +303,16 @@ public class LocalizationAcquisition implements Acquisition {
 	}
 
 	private void interruptAcquisition(Studio studio) {
-		try {
-			// not pretty but I could not find any other way to stop the acquisition without getting a JDialog popping up and requesting user input
-			((DefaultAcquisitionManager) studio.acquisitions()).getAcquisitionEngine().stop(true);;
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if(interruptionRequested_ == false) {
+			try {
+				// not pretty but I could not find any other way to stop the acquisition without getting a JDialog popping up and requesting user input
+				((DefaultAcquisitionManager) studio.acquisitions()).getAcquisitionEngine().stop(true);
+				
+	
+				//((DefaultAcquisitionManager) studio.acquisitions()).getAcquisitionEngine().abortRequested();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	

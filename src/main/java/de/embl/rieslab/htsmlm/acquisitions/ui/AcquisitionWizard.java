@@ -22,8 +22,8 @@ import de.embl.rieslab.emu.micromanager.configgroups.MMConfigurationGroupsRegist
 import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 import de.embl.rieslab.emu.utils.utils;
 import de.embl.rieslab.htsmlm.acquisitions.AcquisitionController;
-import de.embl.rieslab.htsmlm.acquisitions.AcquisitionFactory;
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
+import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory;
 import de.embl.rieslab.htsmlm.acquisitions.wrappers.Experiment;
 
 public class AcquisitionWizard {

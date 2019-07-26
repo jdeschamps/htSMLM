@@ -16,7 +16,7 @@ import org.micromanager.data.Datastore;
 import org.micromanager.data.Image;
 import org.micromanager.data.internal.DefaultCoords;
 
-import de.embl.rieslab.htsmlm.acquisitions.AcquisitionFactory.AcquisitionType;
+import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory.AcquisitionType;
 import de.embl.rieslab.htsmlm.filters.NoPropertyFilter;
 import de.embl.rieslab.htsmlm.filters.PropertyFilter;
 

@@ -340,9 +340,9 @@ public class AcquisitionPanel extends ConfigurablePanel{
 			int result = fileChooser.showSaveDialog(new JFrame());
 			if (result == JFileChooser.APPROVE_OPTION) {
 				File selectedFile = fileChooser.getSelectedFile();
-				String path = selectedFile.getAbsolutePath();
-	
-				acqcontroller_.saveExperiment(path);
+				String parentFolder = selectedFile.getParent();
+				String fileName = selectedFile.getName();
+				acqcontroller_.saveExperiment(parentFolder, fileName);
 			}
 		}
 	}

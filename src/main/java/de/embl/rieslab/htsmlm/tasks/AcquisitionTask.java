@@ -104,11 +104,13 @@ public class AcquisitionTask implements Task<Integer>{
 		}
 
 		@Override
-		protected Integer doInBackground() throws Exception {
+		protected Integer doInBackground() throws Exception {	
+			Thread.currentThread().setName("Acquisition task");
 			return runExperiment();
 		}
 
 		private Integer runExperiment() {
+			
 			Integer[] param = holder_.retrieveAllParameters();
 		
 			PositionList poslist = posmanager_.getPositionList();
@@ -171,7 +173,7 @@ public class AcquisitionTask implements Task<Integer>{
 			
 			// create acq names
 			String[] acqShortName = createAcqShortNameSet(exp_.getAcquisitionList()).toArray(new String[0]);
-
+			System.out.println();
 			// perform each acquisition sequentially
 			for (int k = 0; k < exp_.getAcquisitionList().size(); k++) {
 				currAcq = exp_.getAcquisitionList().get(k);
@@ -208,7 +210,6 @@ public class AcquisitionTask implements Task<Integer>{
 				currAcq.performAcquisition(studio_, name, exppath_); // should check if returns false here, so that we can tell the user an experiment went wrong
 								
 				if (stop_) {
-					System.out.println("Stop is true in acquisition");
 					break;
 				}
 			}
@@ -226,22 +227,9 @@ public class AcquisitionTask implements Task<Integer>{
 
 		private void addToSetWithIncrementalName(LinkedHashSet<String> set, String element, int increment) {
 			if(!set.add(element+"_"+increment)) {
-				addToSetWithIncrementalName(set, element, increment++);
+				addToSetWithIncrementalName(set, element, increment+1);
 			}
 		}
-		
-		/*
-		private String createAcqName(Acquisition acq, int i){
-			String acqname;
-			if (i < 10) {
-				acqname = "00" + i + "_" + expname_ + "_"+ acq.getType();
-			} else if (i < 100) {
-				acqname = "0" + i + "_" + expname_ + "_"+ acq.getType();
-			} else {
-				acqname = i + "_" + expname_ + "_"+ acq.getType();
-			}
-			return acqname;
-		}*/
 		
 		public void stop() {
 			stop_ = true;

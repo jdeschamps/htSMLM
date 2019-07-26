@@ -3,7 +3,7 @@ package de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import de.embl.rieslab.htsmlm.acquisitions.AcquisitionFactory.AcquisitionType;
+import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory.AcquisitionType;
 
 public class GenericAcquisitionParameters {
 

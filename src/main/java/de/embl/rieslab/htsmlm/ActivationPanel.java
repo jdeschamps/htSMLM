@@ -556,7 +556,6 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		setUIPropertyValue(LASER_PULSE,"0");
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	public Task getTask() {
 		return task_;

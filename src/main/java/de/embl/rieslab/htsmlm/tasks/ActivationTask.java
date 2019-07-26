@@ -227,6 +227,8 @@ public class ActivationTask implements Task<Double> {
 		
 		@Override
 		protected Integer doInBackground() throws Exception {
+			Thread.currentThread().setName("Activation task");
+			
 			Double[] params;
 			
 			while(running_){

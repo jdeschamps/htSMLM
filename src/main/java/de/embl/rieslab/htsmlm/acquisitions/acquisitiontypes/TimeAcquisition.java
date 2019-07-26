@@ -15,7 +15,7 @@ import org.micromanager.acquisition.SequenceSettings;
 import org.micromanager.acquisition.internal.DefaultAcquisitionManager;
 import org.micromanager.data.Datastore;
 
-import de.embl.rieslab.htsmlm.acquisitions.AcquisitionFactory.AcquisitionType;
+import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory.AcquisitionType;
 import de.embl.rieslab.htsmlm.filters.NoPropertyFilter;
 import de.embl.rieslab.htsmlm.filters.PropertyFilter;
 

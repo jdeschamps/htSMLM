@@ -10,8 +10,9 @@ import de.embl.rieslab.emu.controller.SystemController;
 import de.embl.rieslab.emu.ui.uiparameters.UIPropertyParameter;
 import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 import de.embl.rieslab.htsmlm.AcquisitionPanel;
-import de.embl.rieslab.htsmlm.acquisitions.AcquisitionFactory.AcquisitionType;
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
+import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory;
+import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory.AcquisitionType;
 import de.embl.rieslab.htsmlm.acquisitions.ui.AcquisitionWizard;
 import de.embl.rieslab.htsmlm.acquisitions.utils.AcquisitionInformationPanel;
 import de.embl.rieslab.htsmlm.acquisitions.wrappers.Experiment;
@@ -45,6 +46,9 @@ public class AcquisitionController implements TaskHolder<Integer>{
 		exp_ = new Experiment(0, 0, new ArrayList<Acquisition>());
 	}
 	
+	////////////////////////////////////////////////////////////////////
+	///// Taskholder methods
+	
 	@Override
 	public void update(Integer[] output) {
 		if (SwingUtilities.isEventDispatchThread()) {
@@ -72,30 +76,24 @@ public class AcquisitionController implements TaskHolder<Integer>{
 		// this is running on the EDT
 		
 		// set path and experiment name in acquisition
-		final String name = owner_.getExperimentName();
-		final String path = owner_.getExperimentPath();
+		final String experimentName = owner_.getExperimentName();
+		final String folderPath = owner_.getExperimentPath();
 		
-		if(!isAcquisitionListEmpty() && path != null && name != null && !path.equals("")){	
+		if(!isAcquisitionListEmpty() && folderPath != null && experimentName != null && !folderPath.equals("")){	
 			final AcquisitionFactory factory = new AcquisitionFactory(this,controller_);
-			task_ = new AcquisitionTask(this, controller_, exp_, name, path);
+			task_ = new AcquisitionTask(this, controller_, exp_, experimentName, folderPath);
 	
 			Thread t = new Thread("Set-up acquisition") {
 				public void run() {
 
 					// save the acquisition list to the destination folder
-					boolean b = true;
-					if (wizard_ != null) {
-						b = saveAcquisitionList(exp_, name, path + "/");
-					} else {
-						b = factory.writeAcquisitionList(exp_, name, path + "/");
-					}
+					boolean b = factory.writeAcquisitionList(exp_, folderPath, experimentName);
 	
 					if (!b) {
 						// report problem saving
 						System.out.println("Error writting acquisition list");
 					}
 	
-					System.out.println("Start task acq engine");
 					task_.startTask();
 				}
 	
@@ -196,7 +194,6 @@ public class AcquisitionController implements TaskHolder<Integer>{
 		}
 		
 		if(!isAcquisitionListEmpty()){
-			System.out.println("is not empty");
 			wizard_ = new AcquisitionWizard(controller_, this, propValues, exp_);
 		} else {
 			wizard_ = new AcquisitionWizard(controller_, this, propValues);	
@@ -219,15 +216,12 @@ public class AcquisitionController implements TaskHolder<Integer>{
     	return (new AcquisitionFactory(this, controller_)).readAcquisitionList(path);
 	}
 
-	private boolean saveAcquisitionList(Experiment exp, String expname, String path) {
-		return (new AcquisitionFactory(this, controller_)).writeAcquisitionList(exp, expname, path);
-	}
-	
-	public void saveExperiment(String path) {
-		if (!path.endsWith("." + HTSMLMConstants.ACQ_EXT)) {
-			path = path + "." + HTSMLMConstants.ACQ_EXT;
+	public void saveExperiment(String parentPath, String fileName) {
+		String name = fileName;
+		if (!fileName.endsWith("." + HTSMLMConstants.ACQ_EXT)) {
+			name = fileName + "." + HTSMLMConstants.ACQ_EXT;
 		}
-		saveAcquisitionList(exp_, owner_.getExperimentName()+"/"+owner_.getExperimentPath(), path);
+		(new AcquisitionFactory(this, controller_)).writeAcquisitionList(exp_, parentPath, name);
 	}
 
 	public Experiment getExperiment() {

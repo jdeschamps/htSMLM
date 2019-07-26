@@ -1,4 +1,4 @@
-package de.embl.rieslab.htsmlm.acquisitions;
+package de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,13 +19,7 @@ import de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
 import de.embl.rieslab.emu.utils.utils;
 import de.embl.rieslab.htsmlm.AcquisitionPanel;
 import de.embl.rieslab.htsmlm.ActivationPanel;
-import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
-import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.BFPAcquisition;
-import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.BrightFieldAcquisition;
-import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.LocalizationAcquisition;
-import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.SnapAcquisition;
-import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.TimeAcquisition;
-import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.ZStackAcquisition;
+import de.embl.rieslab.htsmlm.acquisitions.AcquisitionController;
 import de.embl.rieslab.htsmlm.acquisitions.wrappers.AcquisitionWrapper;
 import de.embl.rieslab.htsmlm.acquisitions.wrappers.Experiment;
 import de.embl.rieslab.htsmlm.acquisitions.wrappers.ExperimentWrapper;
@@ -96,47 +90,65 @@ public class AcquisitionFactory {
 		return new LocalizationAcquisition(acqcontroller_.getTaskHolder(ActivationPanel.TASK_NAME),controller_.getExposure());
 	}
 
-	public boolean writeAcquisitionList(Experiment exp, String name, String filepath){
+	/**
+	 * Write the acquisition list to the disk.
+	 * 
+	 * @param experiment
+	 * @param fileName
+	 * @param parentFolder
+	 * @return
+	 */
+	public boolean writeAcquisitionList(Experiment experiment, String parentFolder, String fileName){
 		
-		ExperimentWrapper expw = new ExperimentWrapper(name, filepath, exp);
-		
-		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-		
-		String filename;
-		if(filepath.endsWith("."+HTSMLMConstants.ACQ_EXT)){
-			filename = filepath;
-		} else if(!filepath.endsWith("/")){
-			filename = filepath+"/"+name+"/"+name+"."+HTSMLMConstants.ACQ_EXT;
+		String fullpath, shortname;
+		if(fileName.endsWith("."+HTSMLMConstants.ACQ_EXT)){
+			if(parentFolder.endsWith("\\")) {
+				fullpath = parentFolder+fileName;	
+				shortname = fileName.substring(fileName.length()-2-HTSMLMConstants.ACQ_EXT.length());
+			} else {
+				fullpath = parentFolder+"\\"+fileName;	
+				shortname = fileName.substring(fileName.length()-2-HTSMLMConstants.ACQ_EXT.length());		
+			}
 		} else {
-			filename = filepath+name+"/"+name+"."+HTSMLMConstants.ACQ_EXT;
+			if(parentFolder.endsWith("\\")) {
+				fullpath = parentFolder+fileName+"."+HTSMLMConstants.ACQ_EXT;	
+				shortname = fileName;
+			} else {
+				fullpath = parentFolder+"\\"+fileName+"."+HTSMLMConstants.ACQ_EXT;	
+				shortname = fileName;		
+			}
 		}
 		
 		boolean fileExists = true;
 		while(fileExists){
-			File f = new File(filename);
+			File f = new File(fullpath);
 			if(f.exists()) { 
-			    filename = incrementAcquisitionFileName(filename);
+			    fullpath = incrementAcquisitionFileName(fullpath);
 			} else {
 				fileExists = false;
 			}
 		}
 		
+		File f = new File(parentFolder);
+		if(!f.exists()) {
+			f.mkdirs();
+		}
+		
+		ExperimentWrapper expw = new ExperimentWrapper(shortname, parentFolder, experiment);
+		
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 		try {
-			objectMapper.writeValue(new FileOutputStream(filename), expw);
+			objectMapper.writeValue(new FileOutputStream(fullpath), expw);
 			
 			return true;
 		} catch (JsonGenerationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return false;
@@ -164,7 +176,6 @@ public class AcquisitionFactory {
 		
 		return newname;
 	}
-
 
 	public Experiment readAcquisitionList(String path){	
 		ArrayList<Acquisition> acqlist = new ArrayList<Acquisition>();

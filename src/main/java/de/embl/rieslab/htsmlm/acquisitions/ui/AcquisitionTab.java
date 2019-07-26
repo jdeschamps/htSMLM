@@ -33,7 +33,6 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
-import org.micromanager.internal.utils.DaytimeNighttime;
 import org.micromanager.internal.utils.ReportingUtils;
 import org.micromanager.internal.utils.SliderPanel;
 
@@ -46,8 +45,8 @@ import de.embl.rieslab.emu.ui.uiproperties.SingleStateUIProperty;
 import de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
 import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 import de.embl.rieslab.emu.ui.uiproperties.UIPropertyType;
-import de.embl.rieslab.htsmlm.acquisitions.AcquisitionFactory;
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
+import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory;
 import de.embl.rieslab.htsmlm.filters.AllocatedPropertyFilter;
 import de.embl.rieslab.htsmlm.filters.AntiFlagPropertyFilter;
 import de.embl.rieslab.htsmlm.filters.FlagPropertyFilter;
@@ -851,8 +850,6 @@ public class AcquisitionTab extends JPanel {
 			slider.setToolTipText(String.valueOf(value));
 			comp = slider;
 
-			comp.setBackground(DaytimeNighttime.getInstance().getBackgroundColor());
-			comp.setForeground(DaytimeNighttime.getInstance().getEnabledTextColor());
 			comp.setEnabled(true);
 
 			return comp;
