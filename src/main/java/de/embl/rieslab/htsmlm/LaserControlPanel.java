@@ -24,6 +24,7 @@ import de.embl.rieslab.emu.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.emu.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.emu.swinglisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
+import de.embl.rieslab.emu.ui.uiparameters.BoolUIParameter;
 import de.embl.rieslab.emu.ui.uiparameters.ColorUIParameter;
 import de.embl.rieslab.emu.ui.uiparameters.IntegerUIParameter;
 import de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
@@ -54,9 +55,11 @@ public class LaserControlPanel extends ConfigurablePanel {
 	public final static String PARAM_TITLE = "Name";
 	public final static String PARAM_COLOR = "Color";	
 	public final static String PARAM_SCALING = "Scaling max";	
+	public final static String PARAM_ONOFF = "Use on/off";	
 	private String title_;	
 	private Color color_;
 	private int scaling_;
+	private boolean useOnOff_;
 	
 	/////// Convenience variables
 	
@@ -243,10 +246,12 @@ public class LaserControlPanel extends ConfigurablePanel {
 		title_ = "Laser";	
 		color_ = Color.black;
 		scaling_ = 100;
+		useOnOff_ = true;
 		
 		addUIParameter(new StringUIParameter(this, PARAM_TITLE,"Panel title.",title_));
 		addUIParameter(new ColorUIParameter(this, PARAM_COLOR,"Laser color.",color_));
 		addUIParameter(new IntegerUIParameter(this, PARAM_SCALING,"Maximum value of the laser percentage after scaling.",scaling_));
+		addUIParameter(new BoolUIParameter(this, PARAM_ONOFF,"Use On/Off button.",useOnOff_));
 	}
 
 	@Override
@@ -307,9 +312,16 @@ public class LaserControlPanel extends ConfigurablePanel {
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
-		}else if(label.equals(PARAM_SCALING)){
+		} else if(label.equals(PARAM_SCALING)){
 			try {
 				scaling_ = getIntegerUIParameterValue(PARAM_SCALING);
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
+				e.printStackTrace();
+			}
+		} else if(label.equals(PARAM_ONOFF)){
+			try {
+				useOnOff_ = getBoolUIParameterValue(PARAM_ONOFF);
+				togglebuttonOnOff_.setEnabled(useOnOff_);
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
