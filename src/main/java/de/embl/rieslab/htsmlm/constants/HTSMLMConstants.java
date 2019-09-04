@@ -1,6 +1,8 @@
 package de.embl.rieslab.htsmlm.constants;
 
 public class HTSMLMConstants {
+
+	// all this should disappear
 	
 	// Mojo FPGA
 	public final static int FPGA_MAX_PULSE = 65535;

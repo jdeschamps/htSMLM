@@ -17,6 +17,12 @@ import mmcorej.TaggedImage;
 
 public class ActivationTask implements Task<Double> {
 
+	/**
+	 * 
+	 * Now this is super messy as most of the code turned into a hack to work with MM2gamma
+	 * 
+	 * 
+	 */
 	public static int PARAM_SDCOEFF = 0;
 	public static int PARAM_FEEDBACK = 1;
 	public static int PARAM_CUTOFF = 2;
@@ -31,6 +37,7 @@ public class ActivationTask implements Task<Double> {
 	public static int OUTPUT_NEWPULSE = 2;
 	public static int NUM_PARAMETERS = 9;
 	public static int NUM_OUTPUTS = 3;
+	private static int MAX_COUNTER = 200;
 	
 	private CMMCore core_;
 	private TaskHolder<Double> holder_;
@@ -47,7 +54,7 @@ public class ActivationTask implements Task<Double> {
 		
 		core_ = core;
 		idletime_ = idle;
-		
+
 		registerHolder(holder);
 		
 		previous_pulse_ = 0.4;
@@ -89,6 +96,8 @@ public class ActivationTask implements Task<Double> {
 		if (core_.isSequenceRunning() && core_.getBytesPerPixel() == 2) {
 			int width, height;
 			double tempcutoff;
+			boolean abort = false;
+			int counter1 = 0, counter2 = 0;
 
 			TaggedImage tagged1 = null, tagged2 = null;
 			ShortProcessor ip, ip2;
@@ -100,39 +109,79 @@ public class ActivationTask implements Task<Double> {
 
 			width = (int) core_.getImageWidth();
 			height = (int) core_.getImageHeight();
-
-			// the buffer is not circular and is emptied as soon as it is full, therefore we check the number
-			// of images before pooling images.
-			if ((core_.getBufferTotalCapacity() - core_.getBufferFreeCapacity()) > HTSMLMConstants.FPGA_SEQUENCE_LENGTH) {
+			
+			long st = System.currentTimeMillis();
+			
+			// try to extract two images
+			while(tagged1 == null && abort == false) {
+				//System.out.println("Try tagged 1");
+				
 				try {
+					Thread.sleep(2);
 					tagged1 = core_.getLastTaggedImage();
-					tagged2 = core_.getNBeforeLastTaggedImage(HTSMLMConstants.FPGA_SEQUENCE_LENGTH);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} catch (Exception e) {
+					counter1++;
+				}
+				
+				if(counter1 > MAX_COUNTER) {
+					abort = true;
+				}
+			}
+			
+			while(tagged2 == null && abort == false) {
+				//System.out.println("Try tagged 2");
+				
+				try {
+					Thread.sleep(2);
+					
+					TaggedImage temp = core_.getLastTaggedImage();
+					if(temp.tags.getInt("ImageNumber") != tagged1.tags.getInt("ImageNumber")) {
+						tagged2 = temp;
+					} else {
+						counter2++;
+					}
+				} catch (InterruptedException e) {
+					//e.printStackTrace();
+				} catch (Exception e) { // buffer empty
+					counter2++;
+					//e.printStackTrace();
+				}
+				
+				if(counter2 > MAX_COUNTER) {
+					abort = true;
+				}
+			}
+
+			if (!abort) {
+				try {
 					
 					ip = new ShortProcessor(width, height);
 					ip2 = new ShortProcessor(width, height);
-
+	
 					ip.setPixels(tagged1.pix);
 					ip2.setPixels(tagged2.pix);
-
+	
 					imp = new ImagePlus("", ip);
 					imp2 = new ImagePlus("", ip2);
-
+	
 					// Subtraction
 					imp3 = calcul.run("Substract create", imp, imp2);
-
+	
 					// Gaussian filter
 					gau.blurGaussian(imp3.getProcessor(),
 							HTSMLMConstants.gaussianMaskSize,
 							HTSMLMConstants.gaussianMaskSize,
 							HTSMLMConstants.gaussianMaskPrecision);
-
+	
 					try {
 						tempcutoff = imp3.getStatistics().mean + sdcoeff
 								* imp3.getStatistics().stdDev;
 					} catch (Exception e) {
 						tempcutoff = cutoff;
 					}
-
+	
 					double newcutoff;
 					if (autocutoff) {
 						newcutoff = (1 - 1 / dT) * cutoff + tempcutoff / dT;
