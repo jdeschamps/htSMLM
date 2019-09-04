@@ -156,7 +156,7 @@ public class ActivationTask implements Task<Double> {
 
 			if (!abort) {
 				try {
-					
+					System.out.println("got frames");
 					ip = new ShortProcessor(width, height);
 					ip2 = new ShortProcessor(width, height);
 	
