@@ -308,21 +308,14 @@ public class FocusLockPanel extends ConfigurablePanel {
 			}
 		} else if(name.equals(getPanelLabel()+" "+LASER_OPERATION)){
 			try {
-				if(newvalue.equals(((TwoStateUIProperty) getUIProperty(getPanelLabel()+" "+LASER_ENABLEFINE)).getOnStateValue())){
-					togglebuttonLaser_.setSelected(true);
-				} else {  
-					togglebuttonLaser_.setSelected(false);
-				}
+				togglebuttonLaser_.setSelected(((TwoStateUIProperty) getUIProperty(getPanelLabel()+" "+LASER_ENABLEFINE)).isOnState(newvalue));
 			} catch (UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
+
 		} else if(name.equals(getPanelLabel()+" "+LASER_ENABLEFINE)){
 			try {
-				if(newvalue.equals(((TwoStateUIProperty) getUIProperty(getPanelLabel()+" "+LASER_ENABLEFINE)).getOnStateValue())){
-					togglesliderenableFine_.setSelected(true);
-				} else {  
-					togglesliderenableFine_.setSelected(false);
-				}
+				togglesliderenableFine_.setSelected(((TwoStateUIProperty) getUIProperty(getPanelLabel()+" "+LASER_ENABLEFINE)).isOnState(newvalue));
 			} catch (UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}

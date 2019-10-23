@@ -260,7 +260,6 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 					togglebuttons1_[pos].setSelected(true);
 				}
 			} catch (UnknownUIPropertyException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		} else if(name.equals(SLIDER1_POSITION)){
@@ -271,7 +270,6 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 					togglebuttons2_[pos].setSelected(true);
 				}
 			} catch (UnknownUIPropertyException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 

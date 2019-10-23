@@ -200,7 +200,6 @@ public class FiltersPanel extends ConfigurablePanel {
 	@Override
 	protected void addComponentListeners() {
 		// TODO Auto-generated method stub
-		
 	}
 
 }

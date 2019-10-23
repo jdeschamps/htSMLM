@@ -127,61 +127,37 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 	public void propertyhasChanged(String name, String newvalue) {
 		if(name.equals(DEVICE_1)){
 			try {
-				if(newvalue.equals(((TwoStateUIProperty) getUIProperty(DEVICE_1)).getOnStateValue())){
-					togglebuttons_[0].setSelected(true);
-				} else {
-					togglebuttons_[0].setSelected(false);
-				}
+				togglebuttons_[0].setSelected(((TwoStateUIProperty) getUIProperty(DEVICE_1)).isOnState(newvalue));
 			} catch (UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
 		} else if(name.equals(DEVICE_2)){
 			try {
-				if(newvalue.equals(((TwoStateUIProperty) getUIProperty(DEVICE_2)).getOnStateValue())){
-					togglebuttons_[1].setSelected(true);
-				} else {
-					togglebuttons_[1].setSelected(false);
-				}
+				togglebuttons_[1].setSelected(((TwoStateUIProperty) getUIProperty(DEVICE_2)).isOnState(newvalue));
 			} catch (UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
 		} else if(name.equals(DEVICE_3)){
 			try {
-				if(newvalue.equals(((TwoStateUIProperty) getUIProperty(DEVICE_3)).getOnStateValue())){
-					togglebuttons_[2].setSelected(true);
-				} else {
-					togglebuttons_[2].setSelected(false);
-				}
+				togglebuttons_[2].setSelected(((TwoStateUIProperty) getUIProperty(DEVICE_3)).isOnState(newvalue));
 			} catch (UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
 		} else if(name.equals(DEVICE_4)){
 			try {
-				if(newvalue.equals(((TwoStateUIProperty) getUIProperty(DEVICE_4)).getOnStateValue())){
-					togglebuttons_[3].setSelected(true);
-				} else {
-					togglebuttons_[3].setSelected(false);
-				}
+				togglebuttons_[3].setSelected(((TwoStateUIProperty) getUIProperty(DEVICE_4)).isOnState(newvalue));
 			} catch (UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
 		} else if(name.equals(DEVICE_5)){
 			try {
-				if(newvalue.equals(((TwoStateUIProperty) getUIProperty(DEVICE_5)).getOnStateValue())){
-					togglebuttons_[4].setSelected(true);
-				} else {
-					togglebuttons_[4].setSelected(false);
-				}
+				togglebuttons_[4].setSelected(((TwoStateUIProperty) getUIProperty(DEVICE_5)).isOnState(newvalue));
 			} catch (UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
 		} else if(name.equals(DEVICE_6)){
 			try {
-				if(newvalue.equals(((TwoStateUIProperty) getUIProperty(DEVICE_6)).getOnStateValue())){
-					togglebuttons_[5].setSelected(true);
-				} else {
-					togglebuttons_[5].setSelected(false);
-				}
+				togglebuttons_[5].setSelected(((TwoStateUIProperty) getUIProperty(DEVICE_6)).isOnState(newvalue));
 			} catch (UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}

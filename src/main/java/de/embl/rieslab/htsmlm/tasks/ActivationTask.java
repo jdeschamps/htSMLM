@@ -19,8 +19,10 @@ public class ActivationTask implements Task<Double> {
 
 	/**
 	 * 
-	 * Now this is super messy as most of the code turned into a hack to work with MM2gamma
+	 * Now this is super messy as most of the code turned into a hack to work with MM2gamma. Maybe in the future:
 	 * 
+	 * have a separate thread poll frames and place them in a queue, then this thread can (without while loop) poll
+	 * them by checking the size of the queue and taking two frames directly.
 	 * 
 	 */
 	public static int PARAM_SDCOEFF = 0;

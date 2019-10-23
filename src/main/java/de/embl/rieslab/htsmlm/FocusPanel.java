@@ -351,11 +351,7 @@ public class FocusPanel extends ConfigurablePanel {
 			}
 		} else if(name.equals(FOCUS_STABILIZATION)){
 			try {
-				if(newvalue.equals(((TwoStateUIProperty) getUIProperty(FOCUS_STABILIZATION)).getOnStateValue())){
-					togglebuttonLock_.setSelected(true);
-				} else {
-					togglebuttonLock_.setSelected(false);
-				}
+				togglebuttonLock_.setSelected(((TwoStateUIProperty) getUIProperty(FOCUS_STABILIZATION)).isOnState(newvalue));
 			} catch (UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
