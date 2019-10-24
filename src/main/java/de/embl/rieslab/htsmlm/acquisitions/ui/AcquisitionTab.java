@@ -835,9 +835,9 @@ public class AcquisitionTab extends JPanel {
 
 			SliderPanel slider = new SliderPanel();
 			
-			if (prop.getType().equals(MMProperty.TYPE_INTEGER)) {
+			if (prop.getType() == MMProperty.MMPropertyType.INTEGER) {
 				slider.setLimits((int) prop.getMin(), (int) prop.getMax());
-			} else if (prop.getType().equals(MMProperty.TYPE_FLOAT)) {
+			} else if (prop.getType() == MMProperty.MMPropertyType.FLOAT) {
 				slider.setLimits((float) prop.getMin(), (float) prop.getMax());
 			} else {
 				slider.setLimits(Double.parseDouble((String) prop.getMin()), Double.parseDouble((String) prop.getMin()));
@@ -896,9 +896,9 @@ public class AcquisitionTab extends JPanel {
 	    public Component getTableCellEditorComponent(JTable table, Object value,
 	            boolean isSelected, int rowIndex, int colIndex) {
 
-	    	if (prop.getType().equals(MMProperty.TYPE_INTEGER)) {
+	    	if (prop.getType() == MMProperty.MMPropertyType.INTEGER) {
 	    		slider_.setLimits((int) prop.getMin(), (int) prop.getMax());
-			} else if (prop.getType().equals(MMProperty.TYPE_FLOAT)) {
+			} else if (prop.getType() == MMProperty.MMPropertyType.FLOAT) {
 				slider_.setLimits((float) prop.getMin(), (float) prop.getMax());
 			} else {
 				slider_.setLimits(Double.parseDouble((String) prop.getMin()), Double.parseDouble((String) prop.getMin()));

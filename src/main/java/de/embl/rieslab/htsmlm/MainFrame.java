@@ -6,26 +6,38 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Point;
 import java.util.HashMap;
+import java.util.TreeMap;
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
+import de.embl.rieslab.emu.configuration.settings.BoolSetting;
+import de.embl.rieslab.emu.configuration.settings.Setting;
+import de.embl.rieslab.emu.configuration.settings.StringSetting;
 import de.embl.rieslab.emu.controller.SystemController;
 import de.embl.rieslab.emu.ui.ConfigurableMainFrame;
 import de.embl.rieslab.htsmlm.tasks.TaskHolder;
 
 public class MainFrame extends ConfigurableMainFrame{
-		/**
+
+	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -7647811940748674013L;
+	private static final long serialVersionUID = 1L;
 
+	private static final String SETTING_USE_TRIGGER = "Trigger tab";
+	private static final String SETTING_USE_BOOSTER = "Booster tab";
+	private static final String SETTING_USE_ADDFW = "Additional FW tab";
+	private static final String SETTING_USE_SINGLEFW = "Single FW panel";
+	private static final String SETTING_USE_QPD = "QPD tab";
+	private static final String SETTING_USE_FL = "Focus-lock tab";
+	
 	private AdditionalFiltersPanel addFiltersPanel;
 	private FocusPanel focusPanel;
 	private QPDPanel qpdPanel;
 	private FocusLockPanel focuslockpanel;
-	private FiltersPanel filterPanel;
+	private AbstractFiltersPanel filterPanel;
 	private LaserControlPanel[] controlPanels;
 	private LaserPulsingPanel pulsePanel;
 	private LaserTriggerPanel[] triggerPanels;
@@ -38,8 +50,8 @@ public class MainFrame extends ConfigurableMainFrame{
 	private HashMap<String,TaskHolder> taskholders_;
 
 	
-	public MainFrame(String title, SystemController controller) {
-		super(title, controller);
+	public MainFrame(String title, SystemController controller, TreeMap<String, String> pluginSettings) {
+		super(title, controller, pluginSettings);
 	}
 
 	@Override
@@ -70,6 +82,8 @@ public class MainFrame extends ConfigurableMainFrame{
 
     @SuppressWarnings("rawtypes")
 	private void setupPanels(){
+    	HashMap<String, Setting> settings = this.getCurrentPluginSettings();
+    	
 		JPanel lasers = new JPanel(); 
 		controlPanels = new LaserControlPanel[4];
 		lasers.setLayout(new GridBagLayout());
@@ -107,18 +121,20 @@ public class MainFrame extends ConfigurableMainFrame{
 		c2.weighty = 0.6;
 		c2.fill = GridBagConstraints.VERTICAL;
 		upperpane.add(lasers,c2);
-		
-		filterPanel = new FiltersPanel("Filters");
+				
 		c2.gridx = 1;
 		c2.gridy = 2;
 		c2.gridwidth = 3;
 		c2.gridheight = 1;
 		c2.weightx = 0.8;
 		c2.weighty = 0.2;
-		//c2.weighty = 0.1;
 		c2.fill = GridBagConstraints.HORIZONTAL;
+		if(((BoolSetting) settings.get(SETTING_USE_SINGLEFW)).getValue()) {
+			filterPanel = new FiltersPanel("Filters");
+		} else {
+			filterPanel = new DualFWPanel("Filters");
+		}
 		upperpane.add(filterPanel,c2);
-		
 		this.add(upperpane);
 		
 		focusPanel = new FocusPanel("Focus");
@@ -141,30 +157,38 @@ public class MainFrame extends ConfigurableMainFrame{
 		/////////// tab
 		
 		/// QPD tab
-		qpdPanel = new QPDPanel("QPD");
-		tab.add("QPD", qpdPanel);
-
+		if(((BoolSetting) settings.get(SETTING_USE_QPD)).getValue()) {
+			qpdPanel = new QPDPanel("QPD");
+			tab.add("QPD", qpdPanel);
+		}
+		
 		/// Focus-lock panel
-		focuslockpanel = new FocusLockPanel("Focus-lock");
-		tab.add("Focus-lock", focuslockpanel);
+		if(((BoolSetting) settings.get(SETTING_USE_FL)).getValue()) {
+			focuslockpanel = new FocusLockPanel("Focus-lock");
+			tab.add("Focus-lock", focuslockpanel);
+		}
 		
 		// Activation
 		activationPanel = new ActivationPanel("Activation", getCore());
 		tab.add("Activation", activationPanel);
 		
 		/// laser trigger tab
-		JPanel lasertrigg = new JPanel();
-		lasertrigg.setLayout(new GridLayout(2,2));
-		triggerPanels = new LaserTriggerPanel[4];
-		for(int i=0;i<triggerPanels.length;i++){
-			triggerPanels[i] = new LaserTriggerPanel("Laser "+i); // The "Laser #" is used in the AcquisitionPanel to discriminate lasers
-			lasertrigg.add(triggerPanels[i]);
+		if(((BoolSetting) settings.get(SETTING_USE_TRIGGER)).getValue()) {
+			JPanel lasertrigg = new JPanel();
+			lasertrigg.setLayout(new GridLayout(2,2));
+			triggerPanels = new LaserTriggerPanel[4];
+			for(int i=0;i<triggerPanels.length;i++){
+				triggerPanels[i] = new LaserTriggerPanel("Laser "+i); // The "Laser #" is used in the AcquisitionPanel to discriminate lasers
+				lasertrigg.add(triggerPanels[i]);
+			}
+			tab.add("Trigger", lasertrigg);
 		}
-		tab.add("Trigger", lasertrigg);
 		
 		/// Additional filters tab
-		addFiltersPanel = new AdditionalFiltersPanel("Additional filters");
-		tab.add("Additional filters", addFiltersPanel);
+		if(((BoolSetting) settings.get(SETTING_USE_ADDFW)).getValue()) {
+			addFiltersPanel = new AdditionalFiltersPanel("Additional filters");
+			tab.add("Additional filters", addFiltersPanel);
+		}
 		
 		/// Acquisition tab
 		acqPanel = new AcquisitionPanel(getController(), this);
@@ -215,4 +239,18 @@ public class MainFrame extends ConfigurableMainFrame{
 	public HashMap<String,TaskHolder> getTaskHolders(){
     	return taskholders_;
     }
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	public HashMap<String, Setting> getDefaultPluginSettings() {
+		HashMap<String, Setting> defaultSettings = new HashMap<String, Setting>();
+		defaultSettings.put(SETTING_USE_TRIGGER, new BoolSetting(SETTING_USE_TRIGGER, "Check to use the trigger tab in the plugin.", true));
+		defaultSettings.put(SETTING_USE_BOOSTER, new BoolSetting(SETTING_USE_BOOSTER, "Check to use the booster tab in the plugin.", true));
+		defaultSettings.put(SETTING_USE_ADDFW, new BoolSetting(SETTING_USE_ADDFW, "Check to use the additional filters tab in the plugin.", true));
+		defaultSettings.put(SETTING_USE_SINGLEFW, new BoolSetting(SETTING_USE_SINGLEFW, "Check to use a single FW panel, uncheck for a double FW panel.", true));
+		defaultSettings.put(SETTING_USE_QPD, new BoolSetting(SETTING_USE_QPD, "Check to use the QPD tab in the plugin.", true));
+		defaultSettings.put(SETTING_USE_FL, new BoolSetting(SETTING_USE_FL, "Check to use the Focus-lock tab in the plugin.", true));
+		
+		return defaultSettings;
+	}
 }

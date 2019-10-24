@@ -16,13 +16,12 @@ import javax.swing.border.TitledBorder;
 import de.embl.rieslab.emu.exceptions.IncorrectUIParameterTypeException;
 import de.embl.rieslab.emu.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.emu.exceptions.UnknownUIPropertyException;
-import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
 import de.embl.rieslab.emu.ui.uiproperties.MultiStateUIProperty;
 import de.embl.rieslab.emu.utils.ColorRepository;
 import de.embl.rieslab.htsmlm.flags.FilterWheelFlag;
 
-public class DualFWPanel extends ConfigurablePanel {
+public class DualFWPanel extends AbstractFiltersPanel {
 
 	/**
 	 * 
@@ -32,22 +31,25 @@ public class DualFWPanel extends ConfigurablePanel {
 	//////// Components
 	private JToggleButton[] togglebuttons1_;
 	private JToggleButton[] togglebuttons2_;
+	private TitledBorder border_;
 	
 	//////// Properties
 	public static String FW_POSITION1 = "FW1 pos";
 	public static String FW_POSITION2 = "FW2 pos";
 	
 	//////// Parameters
+	public final static String TITLE = "Filters";
 	public final static String PARAM_NAMES1 = "Filters name 1";
 	public final static String PARAM_COLORS1 = "Filters color 1";
 	public final static String PARAM_NAMES2 = "Filters name 2";
 	public final static String PARAM_COLORS2 = "Filters color 2";
+	public final static String PARAM_TITLE = "Panel title";
 	
 	//////// Initial parameters
 	public final static int NUM_POS = 6;
 	public final static String NAME_EMPTY = "None";
 	public final static String COLOR_EMPTY = ColorRepository.strgray;
-	String names1_, colors1_, names2_, colors2_; 
+	String names1_, colors1_, names2_, colors2_, title_; 
 
 
 	public DualFWPanel(String label) {
@@ -58,8 +60,9 @@ public class DualFWPanel extends ConfigurablePanel {
 	
 	private void setupPanel() {
 		this.setLayout(new GridBagLayout());
-		this.setBorder(BorderFactory.createTitledBorder(null, getPanelLabel(), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, null, new Color(0,0,0)));
-		((TitledBorder) this.getBorder()).setTitleFont(((TitledBorder) this.getBorder()).getTitleFont().deriveFont(Font.BOLD, 12));
+		border_ = BorderFactory.createTitledBorder(null, title_, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, new Color(0,0,0));
+		border_.getTitleFont().deriveFont(Font.BOLD, 12);
+		this.setBorder(border_);
 
 		
 		GridBagConstraints c = new GridBagConstraints();
@@ -191,6 +194,7 @@ public class DualFWPanel extends ConfigurablePanel {
 
 	@Override
 	protected void initializeParameters() {
+		title_ = TITLE;
 		names1_ = NAME_EMPTY;
 		colors1_ = COLOR_EMPTY;
 		for(int i=0;i<NUM_POS-1;i++){
@@ -199,7 +203,8 @@ public class DualFWPanel extends ConfigurablePanel {
 		}
 		names2_ = names1_;
 		colors2_ = colors1_;
-		
+
+		addUIParameter(new StringUIParameter(this, PARAM_TITLE,"Title of the dual FW panel",title_));
 		addUIParameter(new StringUIParameter(this, PARAM_NAMES1,"Filter names displayed by the UI. The entry should be written as \"name1,name2,name3,None,None,None\". The names should be separated by a comma. "
 				+ "The maximum number of filters name is "+NUM_POS+", beyond that the names will be ignored. If the comma are not present, then the entry will be set as the name of the first filter.",names1_));
 		addUIParameter(new StringUIParameter(this, PARAM_COLORS1,"Filter colors displayed by the UI. The entry should be written as \"color1,color2,color3,grey,grey,grey\". The names should be separated by a comma. "
@@ -264,6 +269,14 @@ public class DualFWPanel extends ConfigurablePanel {
 			try {
 				colors2_ = getStringUIParameterValue(PARAM_COLORS2);
 				setColors(1);
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
+				e.printStackTrace();
+			}
+		} else if(label.equals(PARAM_TITLE)){
+			try {
+				title_ = getStringUIParameterValue(PARAM_TITLE);
+				border_.setTitle(title_);
+				this.repaint();
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}

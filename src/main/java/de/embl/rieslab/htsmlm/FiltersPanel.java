@@ -16,13 +16,12 @@ import javax.swing.border.TitledBorder;
 import de.embl.rieslab.emu.exceptions.IncorrectUIParameterTypeException;
 import de.embl.rieslab.emu.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.emu.exceptions.UnknownUIPropertyException;
-import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
 import de.embl.rieslab.emu.ui.uiproperties.MultiStateUIProperty;
 import de.embl.rieslab.emu.utils.ColorRepository;
 import de.embl.rieslab.htsmlm.flags.FilterWheelFlag;
 
-public class FiltersPanel extends ConfigurablePanel {
+public class FiltersPanel extends AbstractFiltersPanel {
 
 	/**
 	 * 
@@ -31,19 +30,22 @@ public class FiltersPanel extends ConfigurablePanel {
 
 	//////// Components
 	private JToggleButton[] togglebuttons_;
+	private TitledBorder border_;
 	
 	//////// Properties
 	public static String FW_POSITION = "Filter wheel position";
 	
 	//////// Parameters
+	public final static String PARAM_TITLE = "Panel title";
 	public final static String PARAM_NAMES = "Filters name";
 	public final static String PARAM_COLORS = "Filters color";
 	
 	//////// Initial parameters
 	public final static int NUM_POS = 6;
+	public final static String TITLE = "Filters";
 	public final static String NAME_EMPTY = "None";
 	public final static String COLOR_EMPTY = ColorRepository.strgray;
-	String names_, colors_; 
+	String names_, colors_, title_; 
 
 
 	public FiltersPanel(String label) {
@@ -54,9 +56,9 @@ public class FiltersPanel extends ConfigurablePanel {
 	
 	private void setupPanel() {
 		this.setLayout(new GridBagLayout());
-		this.setBorder(BorderFactory.createTitledBorder(null, getPanelLabel(), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, null, new Color(0,0,0)));
-		((TitledBorder) this.getBorder()).setTitleFont(((TitledBorder) this.getBorder()).getTitleFont().deriveFont(Font.BOLD, 12));
-
+		border_ = BorderFactory.createTitledBorder(null, title_, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, new Color(0,0,0));
+		border_.getTitleFont().deriveFont(Font.BOLD, 12);
+		this.setBorder(border_);
 		
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
@@ -131,6 +133,7 @@ public class FiltersPanel extends ConfigurablePanel {
 
 	@Override
 	protected void initializeParameters() {
+		title_ = TITLE;
 		names_ = NAME_EMPTY;
 		colors_ = COLOR_EMPTY;
 		for(int i=0;i<NUM_POS-1;i++){
@@ -138,6 +141,7 @@ public class FiltersPanel extends ConfigurablePanel {
 			colors_ += ","+COLOR_EMPTY; 
 		}
 		
+		addUIParameter(new StringUIParameter(this, PARAM_TITLE,"Title of the FW panel",title_));
 		addUIParameter(new StringUIParameter(this, PARAM_NAMES,"Filter names displayed by the UI. The entry should be written as \"name1,name2,name3,None,None,None\". The names should be separated by a comma. "
 				+ "The maximum number of filters name is "+NUM_POS+", beyond that the names will be ignored. If the comma are not present, then the entry will be set as the name of the first filter.",names_));
 		addUIParameter(new StringUIParameter(this, PARAM_COLORS,"Filter colors displayed by the UI. The entry should be written as \"color1,color2,color3,grey,grey,grey\". The names should be separated by a comma. "
@@ -171,6 +175,14 @@ public class FiltersPanel extends ConfigurablePanel {
 			try {
 				colors_ = getStringUIParameterValue(PARAM_COLORS);
 				setColors();
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
+				e.printStackTrace();
+			}
+		} else if(label.equals(PARAM_TITLE)){
+			try {
+				title_ = getStringUIParameterValue(PARAM_TITLE);
+				border_.setTitle(title_);
+				this.repaint();
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
