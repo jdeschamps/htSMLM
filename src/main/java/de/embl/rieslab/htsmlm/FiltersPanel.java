@@ -1,7 +1,6 @@
 package de.embl.rieslab.htsmlm;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -57,7 +56,6 @@ public class FiltersPanel extends AbstractFiltersPanel {
 	private void setupPanel() {
 		this.setLayout(new GridBagLayout());
 		border_ = BorderFactory.createTitledBorder(null, title_, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, new Color(0,0,0));
-		border_.getTitleFont().deriveFont(Font.BOLD, 12);
 		this.setBorder(border_);
 		
 		GridBagConstraints c = new GridBagConstraints();
