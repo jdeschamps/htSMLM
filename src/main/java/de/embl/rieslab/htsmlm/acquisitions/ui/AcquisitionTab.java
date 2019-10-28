@@ -296,9 +296,10 @@ public class AcquisitionTab extends JPanel {
 		props = filt.filteredProperties(props);
 
 		/////////This works on the assumption that all lasers are called "Laser #" to mark a border between them
+		// and I guess that it is ordered alphabetically
 		if (temp.length > 0) {
 
-			// fine laser number of the first file
+			// find laser number of the first String
 			int ind = 0;
 			for (int i = 0; i < temp[0].length() - 1; i++) {
 				if (Character.isDigit(temp[0].charAt(i)) && Character.isDigit(temp[0].charAt(i + 1))) {
@@ -309,7 +310,7 @@ public class AcquisitionTab extends JPanel {
 					break;
 				}
 			}
-
+			
 			JPanel lasertab = new JPanel();
 			lasertab.setBorder(BorderFactory.createTitledBorder(null, "Lasers", TitledBorder.DEFAULT_JUSTIFICATION,
 					TitledBorder.DEFAULT_POSITION, null, new Color(0, 0, 0)));
@@ -320,45 +321,54 @@ public class AcquisitionTab extends JPanel {
 			ArrayList<String> templaser = new ArrayList<String>();
 			templaser.add(temp[0]);
 
-			for (int j = 1; j < temp.length; j++) {
-				int ind2 = 0;
-
-				for (int i = 0; i < temp[j].length() - 1; i++) {
-					if (Character.isDigit(temp[j].charAt(i)) && Character.isDigit(temp[j].charAt(i + 1))) {
-						ind2 = Integer.valueOf(temp[j].substring(i, i + 1));
-						break;
-					} else if (Character.isDigit(temp[j].charAt(i))) {
-						ind2 = Integer.valueOf(temp[j].substring(i, i + 1));
-						break;
+			if(temp.length  == 1) {
+				JPanel subpanel = createPropertyTable(templaser.toArray(new String[0]), false, uipropertyValues);
+				lasertab.add(subpanel);
+			} else {			
+				for (int j = 1; j < temp.length; j++) {
+					int ind2 = 0;
+	
+					// extract the laser number of the jth entry in temp
+					for (int i = 0; i < temp[j].length() - 1; i++) {
+						if (Character.isDigit(temp[j].charAt(i)) && Character.isDigit(temp[j].charAt(i + 1))) {
+							ind2 = Integer.valueOf(temp[j].substring(i, i + 1));
+							break;
+						} else if (Character.isDigit(temp[j].charAt(i))) {
+							ind2 = Integer.valueOf(temp[j].substring(i, i + 1));
+							break;
+						}
 					}
-				}
-
-				if (ind2 == ind && j < temp.length - 1) {
-					templaser.add(temp[j]);
-				} else if (ind2 == ind && j == temp.length - 1) {
-					// create a jpanel
-					templaser.add(temp[j]);
-					JPanel subpanel = createPropertyTable(templaser.toArray(new String[0]), false, uipropertyValues);
-					lasertab.add(subpanel);
-				} else if (ind2 != ind && j == temp.length - 1) {
-					// create a jpanel
-					JPanel subpanel = createPropertyTable(templaser.toArray(new String[0]), false, uipropertyValues);
-					lasertab.add(subpanel);
-
-					templaser = new ArrayList<String>();
-					templaser.add(temp[j]);
-
-					subpanel = createPropertyTable(templaser.toArray(new String[0]), false, uipropertyValues);
-					lasertab.add(subpanel);
-				} else {
-					ind = ind2;
-
-					// create a jpanel
-					JPanel subpanel = createPropertyTable(templaser.toArray(new String[0]), false, uipropertyValues);
-					lasertab.add(subpanel);
-
-					templaser = new ArrayList<String>();
-					templaser.add(temp[j]);
+	
+					if (ind2 == ind && j < temp.length - 1) { // if the jth entry relates to the same laser as ind
+						templaser.add(temp[j]); // just add it to templaser
+					} else if (ind2 == ind && j == temp.length - 1) { // if it relates to the indth laser but is the last entry, create a subpanel with a table
+						// create a jpanel
+						templaser.add(temp[j]);
+						JPanel subpanel = createPropertyTable(templaser.toArray(new String[0]), false, uipropertyValues);
+						lasertab.add(subpanel);
+					} else if (ind2 != ind && j == temp.length - 1) { //it relates to another laser and it the last entry
+						// create a jpanel with templaser
+						JPanel subpanel = createPropertyTable(templaser.toArray(new String[0]), false, uipropertyValues);
+						lasertab.add(subpanel);
+	
+						// empty templaser and add the new entry
+						templaser.clear();
+						templaser.add(temp[j]);
+	
+						// then create a subpanel for this new entry
+						subpanel = createPropertyTable(templaser.toArray(new String[0]), false, uipropertyValues);
+						lasertab.add(subpanel);
+					} else { // it is from a different laser but is not the last entry
+						// then set ind to this new laser
+						ind = ind2;
+	
+						// create a jpanel for the previous laser and empty templaser
+						JPanel subpanel = createPropertyTable(templaser.toArray(new String[0]), false, uipropertyValues);
+						lasertab.add(subpanel);
+	
+						templaser.clear();
+						templaser.add(temp[j]);
+					}
 				}
 			}
 
