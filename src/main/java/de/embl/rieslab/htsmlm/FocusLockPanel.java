@@ -19,14 +19,14 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.border.TitledBorder;
 
-import de.embl.rieslab.emu.exceptions.IncorrectUIPropertyTypeException;
-import de.embl.rieslab.emu.exceptions.UnknownUIPropertyException;
-import de.embl.rieslab.emu.swinglisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
+import de.embl.rieslab.emu.ui.swingslisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
 import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 import de.embl.rieslab.emu.utils.ColorRepository;
-import de.embl.rieslab.emu.utils.utils;
+import de.embl.rieslab.emu.utils.EmuUtils;
+import de.embl.rieslab.emu.utils.exceptions.IncorrectUIPropertyTypeException;
+import de.embl.rieslab.emu.utils.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.htsmlm.components.TogglePower;
 import de.embl.rieslab.htsmlm.components.ToggleSlider;
 import de.embl.rieslab.htsmlm.flags.FocusLockFlag;
@@ -77,7 +77,7 @@ public class FocusLockPanel extends ConfigurablePanel {
 			@Override
 			public void focusLost(FocusEvent arg0) {
 				String typed = textfieldUserPower_.getText();
-				if (!utils.isNumeric(typed)) {
+				if (!EmuUtils.isNumeric(typed)) {
 					return;
 				}
 
@@ -97,7 +97,7 @@ public class FocusLockPanel extends ConfigurablePanel {
 			@Override
 			public void actionPerformed(ActionEvent ev) {
 				String typed = textfieldUserPower_.getText();
-				if (!utils.isNumeric(typed)) {
+				if (!EmuUtils.isNumeric(typed)) {
 					return;
 				}
 
@@ -275,7 +275,7 @@ public class FocusLockPanel extends ConfigurablePanel {
 	@Override
 	public void propertyhasChanged(String name, String newvalue) {
 		if(name.equals(getPanelLabel()+" "+LASER_POWER)){
-			if(utils.isNumeric(newvalue)){
+			if(EmuUtils.isNumeric(newvalue)){
 				double val = Double.parseDouble(newvalue);
 				if(val>=0 && val<=max_power){
 					textfieldUserPower_.setText(String.valueOf(val));
@@ -283,7 +283,7 @@ public class FocusLockPanel extends ConfigurablePanel {
 				}
 			}
 		} else if(name.equals(getPanelLabel()+" "+LASER_PERCFINEA)){
-			if(utils.isNumeric(newvalue)){
+			if(EmuUtils.isNumeric(newvalue)){
 				double val = Double.parseDouble(newvalue);
 				if(val>=0 && val<=100){
 					if(val < 100){
@@ -295,7 +295,7 @@ public class FocusLockPanel extends ConfigurablePanel {
 				}
 			}
 		} else if(name.equals(getPanelLabel()+" "+LASER_PERCFINEB)){
-			if(utils.isNumeric(newvalue)){
+			if(EmuUtils.isNumeric(newvalue)){
 				double val = Double.parseDouble(newvalue);
 				if(val>=0 && val<=100){	
 					if(val < 100){
@@ -320,7 +320,7 @@ public class FocusLockPanel extends ConfigurablePanel {
 				e.printStackTrace();
 			}
 		} else if(name.equals(getPanelLabel()+" "+LASER_MAXPOWER)){
-			if(utils.isNumeric(newvalue)){
+			if(EmuUtils.isNumeric(newvalue)){
 				double val = Double.parseDouble(newvalue);
 				max_power = (int) val;
 				if(sliderPower_ != null){

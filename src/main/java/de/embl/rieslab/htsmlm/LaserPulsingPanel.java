@@ -18,17 +18,17 @@ import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
-import de.embl.rieslab.emu.exceptions.IncorrectInternalPropertyTypeException;
-import de.embl.rieslab.emu.exceptions.IncorrectUIParameterTypeException;
-import de.embl.rieslab.emu.exceptions.UnknownInternalPropertyException;
-import de.embl.rieslab.emu.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.internalproperties.IntegerInternalProperty;
 import de.embl.rieslab.emu.ui.uiparameters.ColorUIParameter;
 import de.embl.rieslab.emu.ui.uiparameters.IntegerUIParameter;
 import de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
 import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
-import de.embl.rieslab.emu.utils.utils;
+import de.embl.rieslab.emu.utils.EmuUtils;
+import de.embl.rieslab.emu.utils.exceptions.IncorrectInternalPropertyTypeException;
+import de.embl.rieslab.emu.utils.exceptions.IncorrectUIParameterTypeException;
+import de.embl.rieslab.emu.utils.exceptions.UnknownInternalPropertyException;
+import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.htsmlm.components.LogarithmicJSlider;
 import de.embl.rieslab.htsmlm.flags.CameraExpFlag;
 
@@ -102,7 +102,7 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 			@Override
 			public void focusLost(FocusEvent arg0) {
 	       	    String typed = textfieldvalue_.getText();
-        	    if(!utils.isInteger(typed)) {
+        	    if(!EmuUtils.isInteger(typed)) {
         	        return;
         	    }  
         	    int val = Integer.parseInt(typed);
@@ -119,7 +119,7 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 	       	    String typed = textfieldvalue_.getText();
-        	    if(!utils.isInteger(typed)) {
+        	    if(!EmuUtils.isInteger(typed)) {
         	        return;
         	    }  
         	    int val = Integer.parseInt(typed);
@@ -180,7 +180,7 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 	@Override
 	public void propertyhasChanged(String name, String newvalue) {
 		if(name.equals(LASER_PULSE)){
-			if(utils.isInteger(newvalue)){
+			if(EmuUtils.isInteger(newvalue)){
 				int val = Integer.parseInt(newvalue);
 				
 				if(val>logslider_.getMaxWithin()){
@@ -191,7 +191,7 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 					logslider_.setValueWithin(val);
 					textfieldvalue_.setText(newvalue);
 				}
-			} else if(utils.isFloat(newvalue)){
+			} else if(EmuUtils.isFloat(newvalue)){
 				int val = Math.round(Float.parseFloat(newvalue));
 				
 				if(val>logslider_.getMaxWithin()){

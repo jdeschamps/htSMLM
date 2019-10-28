@@ -20,7 +20,7 @@ import javax.swing.JTextField;
 import de.embl.rieslab.emu.controller.SystemController;
 import de.embl.rieslab.emu.micromanager.configgroups.MMConfigurationGroupsRegistry;
 import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
-import de.embl.rieslab.emu.utils.utils;
+import de.embl.rieslab.emu.utils.EmuUtils;
 import de.embl.rieslab.htsmlm.acquisitions.AcquisitionController;
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory;
@@ -264,7 +264,7 @@ public class AcquisitionWizard {
     
 	private int getWaitingTime() {
 		String s = waitfield.getText();
-		if(utils.isInteger(s)){
+		if(EmuUtils.isInteger(s)){
 			return Integer.parseInt(s); 
 		}
 		return 3000;
@@ -272,7 +272,7 @@ public class AcquisitionWizard {
 	
 	private int getNumberPositions() {
 		String s = numposfield.getText();
-		if(utils.isInteger(s)){
+		if(EmuUtils.isInteger(s)){
 			return Integer.parseInt(s); 
 		}
 		return 0;

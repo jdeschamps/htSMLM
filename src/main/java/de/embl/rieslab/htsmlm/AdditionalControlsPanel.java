@@ -10,15 +10,15 @@ import javax.swing.BorderFactory;
 import javax.swing.JToggleButton;
 import javax.swing.border.TitledBorder;
 
-import de.embl.rieslab.emu.exceptions.IncorrectUIParameterTypeException;
-import de.embl.rieslab.emu.exceptions.IncorrectUIPropertyTypeException;
-import de.embl.rieslab.emu.exceptions.UnknownUIParameterException;
-import de.embl.rieslab.emu.exceptions.UnknownUIPropertyException;
-import de.embl.rieslab.emu.swinglisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
+import de.embl.rieslab.emu.ui.swingslisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.uiparameters.BoolUIParameter;
 import de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
 import de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
+import de.embl.rieslab.emu.utils.exceptions.IncorrectUIParameterTypeException;
+import de.embl.rieslab.emu.utils.exceptions.IncorrectUIPropertyTypeException;
+import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
+import de.embl.rieslab.emu.utils.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.htsmlm.flags.TwoStateFlag;
 
 public class AdditionalControlsPanel extends ConfigurablePanel{

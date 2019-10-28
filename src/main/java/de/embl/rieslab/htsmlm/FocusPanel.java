@@ -19,17 +19,17 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.border.TitledBorder;
 
-import de.embl.rieslab.emu.exceptions.IncorrectUIParameterTypeException;
-import de.embl.rieslab.emu.exceptions.IncorrectUIPropertyTypeException;
-import de.embl.rieslab.emu.exceptions.UnknownUIParameterException;
-import de.embl.rieslab.emu.exceptions.UnknownUIPropertyException;
-import de.embl.rieslab.emu.swinglisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
+import de.embl.rieslab.emu.ui.swingslisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.uiparameters.DoubleUIParameter;
 import de.embl.rieslab.emu.ui.uiparameters.IntegerUIParameter;
 import de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
 import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
-import de.embl.rieslab.emu.utils.utils;
+import de.embl.rieslab.emu.utils.EmuUtils;
+import de.embl.rieslab.emu.utils.exceptions.IncorrectUIParameterTypeException;
+import de.embl.rieslab.emu.utils.exceptions.IncorrectUIPropertyTypeException;
+import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
+import de.embl.rieslab.emu.utils.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.htsmlm.flags.FocusStabFlag;
 import de.embl.rieslab.htsmlm.graph.TimeChart;
 import de.embl.rieslab.htsmlm.updaters.TimeChartUpdater;
@@ -288,7 +288,7 @@ public class FocusPanel extends ConfigurablePanel {
 		try {
 			String s = getUIPropertyValue(FOCUS_POSITION);
     	
-	    	if (utils.isNumeric(s)) {
+	    	if (EmuUtils.isNumeric(s)) {
 	    		double val = Double.parseDouble(s)+step;
 	    		setUIPropertyValue(FOCUS_POSITION,String.valueOf(val));
 	    	}	
@@ -311,7 +311,7 @@ public class FocusPanel extends ConfigurablePanel {
 	
 	private String getUserInput(){
 		String s = textfieldPosition_.getText();
-		if(utils.isNumeric(s)){
+		if(EmuUtils.isNumeric(s)){
 			return s;
 		}
 		return null;
@@ -343,7 +343,7 @@ public class FocusPanel extends ConfigurablePanel {
 	@Override
 	public void propertyhasChanged(String name, String newvalue) {
 		if(name.equals(FOCUS_POSITION)){
-			if(utils.isNumeric(newvalue)){
+			if(EmuUtils.isNumeric(newvalue)){
 				if(!initialised){
 					initialised = true;
 					textfieldPosition_.setText(newvalue);

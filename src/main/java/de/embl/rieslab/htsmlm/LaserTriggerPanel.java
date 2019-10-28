@@ -16,18 +16,18 @@ import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
-import de.embl.rieslab.emu.exceptions.IncorrectUIParameterTypeException;
-import de.embl.rieslab.emu.exceptions.UnknownUIParameterException;
-import de.embl.rieslab.emu.exceptions.UnknownUIPropertyException;
-import de.embl.rieslab.emu.swinglisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
+import de.embl.rieslab.emu.ui.swingslisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.uiparameters.ColorUIParameter;
 import de.embl.rieslab.emu.ui.uiparameters.ComboUIParameter;
 import de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
 import de.embl.rieslab.emu.ui.uiproperties.ImmutableMultiStateUIProperty;
 import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 import de.embl.rieslab.emu.utils.ColorRepository;
-import de.embl.rieslab.emu.utils.utils;
+import de.embl.rieslab.emu.utils.EmuUtils;
+import de.embl.rieslab.emu.utils.exceptions.IncorrectUIParameterTypeException;
+import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
+import de.embl.rieslab.emu.utils.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.htsmlm.constants.HTSMLMConstants;
 import de.embl.rieslab.htsmlm.flags.LaserFlag;
 import de.embl.rieslab.htsmlm.utils.BinaryConverter;
@@ -165,14 +165,14 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 		if(name.equals(getPropertyLabel(TRIGGER_BEHAVIOUR))){
 			combobehaviour_.setSelectedItem(newvalue);
 		} else if(name.equals(getPropertyLabel(TRIGGER_SEQUENCE))){
-			if(utils.isInteger(newvalue)){
+			if(EmuUtils.isInteger(newvalue)){
 				textfieldsequence_.setText(BinaryConverter.getBinary16bits(Integer.parseInt(newvalue)));
 			} else {
 				textfieldsequence_.setText(BinaryConverter.getBinary16bits(HTSMLMConstants.FPGA_MAX_SEQUENCE));
 			}
 		} else if(name.equals(getPropertyLabel(PULSE_LENGTH))){
 			textfieldpulselength_.setText(newvalue);
-			if(utils.isInteger(newvalue)){
+			if(EmuUtils.isInteger(newvalue)){
 				sliderpulse_.setValue(Integer.parseInt(newvalue));
 			}
 		}
@@ -257,7 +257,7 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 		textfieldpulselength_.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {	
 				String s = textfieldpulselength_.getText();
-				if (utils.isInteger(s)) {
+				if (EmuUtils.isInteger(s)) {
 					if(Integer.parseInt(s)<=HTSMLMConstants.FPGA_MAX_PULSE){
 						sliderpulse_.setValue(Integer.parseInt(s));
 						setUIPropertyValue(getPropertyLabel(PULSE_LENGTH),s);
@@ -276,7 +276,7 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 			@Override
 			public void focusLost(FocusEvent ex) {
 				String s = textfieldpulselength_.getText();
-				if (utils.isInteger(s)) {
+				if (EmuUtils.isInteger(s)) {
 					if (Integer.parseInt(s) <= HTSMLMConstants.FPGA_MAX_PULSE) {
 						sliderpulse_.setValue(Integer.parseInt(s));
 						setUIPropertyValue(getPropertyLabel(PULSE_LENGTH), s);

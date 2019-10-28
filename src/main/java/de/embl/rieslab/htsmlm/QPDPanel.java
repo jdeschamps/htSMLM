@@ -9,13 +9,13 @@ import javax.swing.JProgressBar;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 
-import de.embl.rieslab.emu.exceptions.IncorrectUIParameterTypeException;
-import de.embl.rieslab.emu.exceptions.UnknownUIParameterException;
-import de.embl.rieslab.emu.exceptions.UnknownUIPropertyException;
-import de.embl.rieslab.emu.swinglisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
+import de.embl.rieslab.emu.ui.swingslisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.uiparameters.IntegerUIParameter;
 import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
+import de.embl.rieslab.emu.utils.exceptions.IncorrectUIParameterTypeException;
+import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
+import de.embl.rieslab.emu.utils.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.htsmlm.graph.Chart;
 import de.embl.rieslab.htsmlm.updaters.ChartUpdater;
 import de.embl.rieslab.htsmlm.updaters.JProgressBarUpdater;

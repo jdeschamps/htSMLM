@@ -6,7 +6,7 @@ import java.util.List;
 import javax.swing.SwingWorker;
 
 import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
-import de.embl.rieslab.emu.utils.utils;
+import de.embl.rieslab.emu.utils.EmuUtils;
 import de.embl.rieslab.htsmlm.graph.TimeChart;
 
 public class TimeChartUpdater {
@@ -40,7 +40,7 @@ public class TimeChartUpdater {
 	public void startUpdater(){
 		// performs sanity check
 		if(!initialised_ && property_ != null) {
-			if(property_.isAssigned() && utils.isNumeric(property_.getPropertyValue())) {
+			if(property_.isAssigned() && EmuUtils.isNumeric(property_.getPropertyValue())) {
 				initialised_ = true;
 			}
 		}

@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import de.embl.rieslab.emu.controller.SystemController;
 import de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
-import de.embl.rieslab.emu.utils.utils;
+import de.embl.rieslab.emu.utils.EmuUtils;
 import de.embl.rieslab.htsmlm.AcquisitionPanel;
 import de.embl.rieslab.htsmlm.ActivationPanel;
 import de.embl.rieslab.htsmlm.acquisitions.AcquisitionController;
@@ -166,7 +166,7 @@ public class AcquisitionFactory {
 		if(ind == 0){
 			newname = newname+"_1."+HTSMLMConstants.ACQ_EXT;
 		} else {
-			if(utils.isInteger(newname.substring(ind+1))){
+			if(EmuUtils.isInteger(newname.substring(ind+1))){
 				int num = Integer.valueOf(newname.substring(ind+1))+1;
 				newname = newname.substring(0, ind+1)+String.valueOf(num)+"."+HTSMLMConstants.ACQ_EXT;
 			} else {

@@ -31,10 +31,10 @@ import javax.swing.JToggleButton;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import de.embl.rieslab.emu.controller.SystemController;
-import de.embl.rieslab.emu.exceptions.IncorrectUIParameterTypeException;
-import de.embl.rieslab.emu.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.uiparameters.UIPropertyParameter;
+import de.embl.rieslab.emu.utils.exceptions.IncorrectUIParameterTypeException;
+import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.htsmlm.acquisitions.AcquisitionController;
 import de.embl.rieslab.htsmlm.acquisitions.utils.AcquisitionDialogs;
 import de.embl.rieslab.htsmlm.acquisitions.utils.AcquisitionInformationPanel;

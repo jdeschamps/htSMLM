@@ -18,16 +18,16 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 
-import de.embl.rieslab.emu.exceptions.IncorrectUIParameterTypeException;
-import de.embl.rieslab.emu.exceptions.UnknownUIParameterException;
-import de.embl.rieslab.emu.exceptions.UnknownUIPropertyException;
-import de.embl.rieslab.emu.swinglisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.internalproperties.IntegerInternalProperty;
+import de.embl.rieslab.emu.ui.swingslisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.uiparameters.DoubleUIParameter;
 import de.embl.rieslab.emu.ui.uiparameters.IntegerUIParameter;
 import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
-import de.embl.rieslab.emu.utils.utils;
+import de.embl.rieslab.emu.utils.EmuUtils;
+import de.embl.rieslab.emu.utils.exceptions.IncorrectUIParameterTypeException;
+import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
+import de.embl.rieslab.emu.utils.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.htsmlm.graph.TimeChart;
 import de.embl.rieslab.htsmlm.tasks.ActivationTask;
 import de.embl.rieslab.htsmlm.tasks.Task;
@@ -287,7 +287,7 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 	public boolean isActivationAtMax(){
 		try {
 			String val = getUIPropertyValue(LASER_PULSE);
-			if(utils.isNumeric(val)){
+			if(EmuUtils.isNumeric(val)){
 				if(Double.parseDouble(val)>=maxpulse_){
 					return true;
 				}
@@ -437,7 +437,7 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		
 		if(activate_) {
 			try {
-				if(utils.isNumeric(getUIProperty(LASER_PULSE).getPropertyValue())){
+				if(EmuUtils.isNumeric(getUIProperty(LASER_PULSE).getPropertyValue())){
 					params[ActivationTask.PARAM_PULSE] = Double.parseDouble(getUIProperty(LASER_PULSE).getPropertyValue()); 
 				}
 			} catch (NumberFormatException | UnknownUIPropertyException e) {

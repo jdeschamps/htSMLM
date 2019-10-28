@@ -14,7 +14,7 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
 import de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
-import de.embl.rieslab.emu.utils.utils;
+import de.embl.rieslab.emu.utils.EmuUtils;
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory.AcquisitionType;
 import de.embl.rieslab.htsmlm.filters.NoPropertyFilter;
 import de.embl.rieslab.htsmlm.filters.PropertyFilter;
@@ -98,14 +98,14 @@ public class ZStackAcquisition implements Acquisition {
 
 		double z = zstart;
 		if(invert) {
-			while (z>=utils.round(zend+zstep,2)){
+			while (z>=EmuUtils.round(zend+zstep,2)){
 				z -= zstep;
-				slices.add(utils.round(z,2));
+				slices.add(EmuUtils.round(z,2));
 			}
 		} else {
-			while (z<=utils.round(zend-zstep,2)){
+			while (z<=EmuUtils.round(zend-zstep,2)){
 				z += zstep;
-				slices.add(utils.round(z,2));
+				slices.add(EmuUtils.round(z,2));
 			}
 		}
 

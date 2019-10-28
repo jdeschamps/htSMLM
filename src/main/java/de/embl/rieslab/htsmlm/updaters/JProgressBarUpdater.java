@@ -6,7 +6,7 @@ import java.math.RoundingMode;
 import javax.swing.JProgressBar;
 
 import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
-import de.embl.rieslab.emu.utils.utils;
+import de.embl.rieslab.emu.utils.EmuUtils;
 
 public class JProgressBarUpdater extends ComponentUpdater<JProgressBar>{
 
@@ -19,7 +19,7 @@ public class JProgressBarUpdater extends ComponentUpdater<JProgressBar>{
 	@Override
 	public boolean sanityCheck(UIProperty prop) {
 		// performs sanity check
-		if(prop.isAssigned() && utils.isNumeric(prop.getPropertyValue())) {
+		if(prop.isAssigned() && EmuUtils.isNumeric(prop.getPropertyValue())) {
 			return true;
 		}
 
@@ -28,7 +28,7 @@ public class JProgressBarUpdater extends ComponentUpdater<JProgressBar>{
 
 	@Override
 	public void updateComponent(String val) {
-		if(utils.isNumeric(val)){
+		if(EmuUtils.isNumeric(val)){
 			int value = (int) Double.parseDouble(val);
 			component_.setValue(value);
 		}

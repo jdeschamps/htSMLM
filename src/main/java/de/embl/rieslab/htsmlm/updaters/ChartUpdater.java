@@ -5,7 +5,7 @@ import java.util.List;
 import javax.swing.SwingWorker;
 
 import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
-import de.embl.rieslab.emu.utils.utils;
+import de.embl.rieslab.emu.utils.EmuUtils;
 import de.embl.rieslab.htsmlm.graph.Chart;
 
 public class ChartUpdater {
@@ -41,8 +41,8 @@ public class ChartUpdater {
 	public void startUpdater(){
 		// performs sanity check
 		if(!initialised_ && propertyX_ != null && propertyY_ != null) {
-			if(propertyX_.isAssigned() && utils.isNumeric(propertyX_.getPropertyValue()) 
-					&& propertyY_.isAssigned() && utils.isNumeric(propertyY_.getPropertyValue())) {
+			if(propertyX_.isAssigned() && EmuUtils.isNumeric(propertyX_.getPropertyValue()) 
+					&& propertyY_.isAssigned() && EmuUtils.isNumeric(propertyY_.getPropertyValue())) {
 				initialised_ = true;
 			}
 		}

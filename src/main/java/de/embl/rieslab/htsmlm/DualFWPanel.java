@@ -13,12 +13,12 @@ import javax.swing.ButtonGroup;
 import javax.swing.JToggleButton;
 import javax.swing.border.TitledBorder;
 
-import de.embl.rieslab.emu.exceptions.IncorrectUIParameterTypeException;
-import de.embl.rieslab.emu.exceptions.UnknownUIParameterException;
-import de.embl.rieslab.emu.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
 import de.embl.rieslab.emu.ui.uiproperties.MultiStateUIProperty;
 import de.embl.rieslab.emu.utils.ColorRepository;
+import de.embl.rieslab.emu.utils.exceptions.IncorrectUIParameterTypeException;
+import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
+import de.embl.rieslab.emu.utils.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.htsmlm.flags.FilterWheelFlag;
 
 public class DualFWPanel extends AbstractFiltersPanel {

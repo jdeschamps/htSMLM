@@ -18,19 +18,19 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.border.TitledBorder;
 
-import de.embl.rieslab.emu.exceptions.IncorrectUIParameterTypeException;
-import de.embl.rieslab.emu.exceptions.IncorrectUIPropertyTypeException;
-import de.embl.rieslab.emu.exceptions.UnknownUIParameterException;
-import de.embl.rieslab.emu.exceptions.UnknownUIPropertyException;
-import de.embl.rieslab.emu.swinglisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
+import de.embl.rieslab.emu.ui.swingslisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.uiparameters.BoolUIParameter;
 import de.embl.rieslab.emu.ui.uiparameters.ColorUIParameter;
 import de.embl.rieslab.emu.ui.uiparameters.IntegerUIParameter;
 import de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
+import de.embl.rieslab.emu.ui.uiproperties.RescaledUIProperty;
 import de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
-import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
-import de.embl.rieslab.emu.utils.utils;
+import de.embl.rieslab.emu.utils.EmuUtils;
+import de.embl.rieslab.emu.utils.exceptions.IncorrectUIParameterTypeException;
+import de.embl.rieslab.emu.utils.exceptions.IncorrectUIPropertyTypeException;
+import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
+import de.embl.rieslab.emu.utils.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.htsmlm.components.TogglePower;
 import de.embl.rieslab.htsmlm.flags.LaserFlag;
 
@@ -54,7 +54,7 @@ public class LaserControlPanel extends ConfigurablePanel {
 	//////// Parameters
 	public final static String PARAM_TITLE = "Name";
 	public final static String PARAM_COLOR = "Color";	
-	public final static String PARAM_SCALING = "Scaling max";	
+	public final static String PARAM_SCALING = "Max value";	
 	public final static String PARAM_ONOFF = "Use on/off";	
 	private String title_;	
 	private Color color_;
@@ -94,8 +94,7 @@ public class LaserControlPanel extends ConfigurablePanel {
 					if (val <= 100 && val >= 0) {
 						togglebuttonUser_.setText(typed + "%");
 						if (togglebuttonUser_.isSelected()) {
-							int value = (int) (val * scaling_ / 100);
-							setUIPropertyValue(getPanelLabel() + " " + LASER_PERCENTAGE, String.valueOf(value));
+							setUIPropertyValue(getPanelLabel() + " " + LASER_PERCENTAGE, String.valueOf(val));
 						}
 					}
 				} catch (Exception e) {
@@ -115,8 +114,7 @@ public class LaserControlPanel extends ConfigurablePanel {
 					if (val <= 100 && val >= 0) {
 						togglebuttonUser_.setText(typed + "%");
 						if (togglebuttonUser_.isSelected()) {
-							int value = (int) (val * scaling_ / 100);
-							setUIPropertyValue(getPanelLabel() + " " + LASER_PERCENTAGE, String.valueOf(value));
+							setUIPropertyValue(getPanelLabel() + " " + LASER_PERCENTAGE, String.valueOf(val));
 						}
 					}
 				} catch (Exception exc) {
@@ -131,7 +129,7 @@ public class LaserControlPanel extends ConfigurablePanel {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if(e.getStateChange()==ItemEvent.SELECTED){
-					setUIPropertyValue(getPanelLabel()+" "+LASER_PERCENTAGE,String.valueOf(scaling_));
+					setUIPropertyValue(getPanelLabel()+" "+LASER_PERCENTAGE,String.valueOf(100));
 				}
 			}
         });		
@@ -145,8 +143,7 @@ public class LaserControlPanel extends ConfigurablePanel {
 					if (typed == null) {
 						return;
 					}
-					int val = (int) (Double.valueOf(typed) * scaling_ / 100);
-					setUIPropertyValue(getPanelLabel() + " " + LASER_PERCENTAGE, String.valueOf(val));
+					setUIPropertyValue(getPanelLabel() + " " + LASER_PERCENTAGE, String.valueOf(typed));
 				}
 			}
         });
@@ -156,8 +153,7 @@ public class LaserControlPanel extends ConfigurablePanel {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if(e.getStateChange()==ItemEvent.SELECTED){
-					int val = (int) (scaling_*0.2);
-					setUIPropertyValue(getPanelLabel()+" "+LASER_PERCENTAGE,String.valueOf(val));
+					setUIPropertyValue(getPanelLabel()+" "+LASER_PERCENTAGE,String.valueOf(20));
 				}
 			}
         });
@@ -167,8 +163,7 @@ public class LaserControlPanel extends ConfigurablePanel {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if(e.getStateChange()==ItemEvent.SELECTED){
-					int val = (int) (scaling_*0.01);
-					setUIPropertyValue(getPanelLabel()+" "+LASER_PERCENTAGE,String.valueOf(val));
+					setUIPropertyValue(getPanelLabel()+" "+LASER_PERCENTAGE,String.valueOf(1));
 				}
 			}
         });
@@ -227,7 +222,7 @@ public class LaserControlPanel extends ConfigurablePanel {
 	
 	private String getUserInput(){
 		String s = textfieldUser_.getText();
-		if(utils.isInteger(s)){
+		if(EmuUtils.isInteger(s)){
 			return s;
 		}
 		return null;
@@ -237,7 +232,7 @@ public class LaserControlPanel extends ConfigurablePanel {
 	protected void initializeProperties() {
 		String text = "Power percentage of the laser. If the laser only has a power set point (mW) property, select this property and use the scaling parameter in the parameters tab.";
 		
-		addUIProperty(new UIProperty(this, getPanelLabel()+" "+LASER_PERCENTAGE,text, new LaserFlag()));
+		addUIProperty(new RescaledUIProperty(this, getPanelLabel()+" "+LASER_PERCENTAGE,text, new LaserFlag()));
 		addUIProperty(new TwoStateUIProperty(this,getPanelLabel()+" "+LASER_OPERATION,"Laser On/Off property. Enter the values for the on and off states (e.g. 1/0 or On/Off).", new LaserFlag()));
 	}
 
@@ -250,20 +245,20 @@ public class LaserControlPanel extends ConfigurablePanel {
 		
 		addUIParameter(new StringUIParameter(this, PARAM_TITLE,"Panel title.",title_));
 		addUIParameter(new ColorUIParameter(this, PARAM_COLOR,"Laser color.",color_));
-		addUIParameter(new IntegerUIParameter(this, PARAM_SCALING,"Maximum value of the laser percentage after scaling.",scaling_));
+		addUIParameter(new IntegerUIParameter(this, PARAM_SCALING,"Value of the laser power property at 100% power.",scaling_));
 		addUIParameter(new BoolUIParameter(this, PARAM_ONOFF,"Use On/Off button.",useOnOff_));
 	}
 
 	@Override
 	public void propertyhasChanged(String name, String newvalue) {
 		if(name.equals(getPanelLabel()+" "+LASER_PERCENTAGE)){
-			if(utils.isNumeric(newvalue)){
+			if(EmuUtils.isNumeric(newvalue)){
 				int val = (int) Double.parseDouble(newvalue);
 				
 				// scale if necessary
-				if(scaling_ != 100){
-					val = (int) (val*scaling_/100);
-				}
+				//if(scaling_ != 100){
+				//	val = (int) (val*scaling_/100);
+				//}
 				
 				if(val == 100){
 					togglebutton100_.setSelected(true);
@@ -311,7 +306,9 @@ public class LaserControlPanel extends ConfigurablePanel {
 		} else if(label.equals(PARAM_SCALING)){
 			try {
 				scaling_ = getIntegerUIParameterValue(PARAM_SCALING);
-			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
+				double rescaleFactor = scaling_/100.;
+				((RescaledUIProperty) this.getUIProperty(getPanelLabel()+" "+LASER_PERCENTAGE)).setScalingFactors(rescaleFactor, 0.);
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException | UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
 		} else if(label.equals(PARAM_ONOFF)){

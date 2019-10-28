@@ -12,11 +12,10 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
-import de.embl.rieslab.emu.configuration.settings.BoolSetting;
-import de.embl.rieslab.emu.configuration.settings.Setting;
-import de.embl.rieslab.emu.configuration.settings.StringSetting;
 import de.embl.rieslab.emu.controller.SystemController;
 import de.embl.rieslab.emu.ui.ConfigurableMainFrame;
+import de.embl.rieslab.emu.utils.settings.BoolSetting;
+import de.embl.rieslab.emu.utils.settings.Setting;
 import de.embl.rieslab.htsmlm.tasks.TaskHolder;
 
 public class MainFrame extends ConfigurableMainFrame{
