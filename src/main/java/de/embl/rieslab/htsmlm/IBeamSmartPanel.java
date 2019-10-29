@@ -433,7 +433,6 @@ public class IBeamSmartPanel extends ConfigurablePanel {
 
 	@Override
 	protected void addComponentListeners() {
-		// TODO Auto-generated method stub
-		
+		// do nothing
 	}
 }

@@ -254,12 +254,7 @@ public class LaserControlPanel extends ConfigurablePanel {
 		if(name.equals(getPanelLabel()+" "+LASER_PERCENTAGE)){
 			if(EmuUtils.isNumeric(newvalue)){
 				int val = (int) Double.parseDouble(newvalue);
-				
-				// scale if necessary
-				//if(scaling_ != 100){
-				//	val = (int) (val*scaling_/100);
-				//}
-				
+							
 				if(val == 100){
 					togglebutton100_.setSelected(true);
 				} else if(val == 20){
