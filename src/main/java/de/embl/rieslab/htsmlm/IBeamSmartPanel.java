@@ -1,5 +1,6 @@
 package de.embl.rieslab.htsmlm;
 
+import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -21,29 +22,30 @@ import javax.swing.border.TitledBorder;
 
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.swingslisteners.SwingUIListeners;
+import de.embl.rieslab.emu.ui.uiparameters.BoolUIParameter;
 import de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
 import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 import de.embl.rieslab.emu.utils.ColorRepository;
 import de.embl.rieslab.emu.utils.EmuUtils;
+import de.embl.rieslab.emu.utils.exceptions.IncorrectUIParameterTypeException;
 import de.embl.rieslab.emu.utils.exceptions.IncorrectUIPropertyTypeException;
+import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.htsmlm.components.TogglePower;
 import de.embl.rieslab.htsmlm.components.ToggleSlider;
 import de.embl.rieslab.htsmlm.flags.FocusLockFlag;
 
-public class FocusLockPanel extends ConfigurablePanel {
+public class IBeamSmartPanel extends ConfigurablePanel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 6136665461633874956L;
+	private static final long serialVersionUID = 1L;
 
 	//////// Components
 	private JTextField textfieldUserPower_;
 	private JSlider sliderPower_;
 	private JSlider sliderFinea_;
 	private JSlider sliderFineb_;
-	private JToggleButton togglebuttonLaser_;
+	private JToggleButton togglebuttonLaserOnOff_;
+	private ToggleSlider togglebuttonExternalTrigger_;
 	private ToggleSlider togglesliderenableFine_;
 	private JLabel fineaperc_;
 	private JLabel finebperc_;
@@ -55,11 +57,19 @@ public class FocusLockPanel extends ConfigurablePanel {
 	public final static String LASER_PERCFINEA = "fine a (%)";	
 	public final static String LASER_PERCFINEB = "fine b (%)";	
 	public final static String LASER_MAXPOWER = "max power";	
+	public final static String LASER_EXTERNALTRIGGER = "enable external trigger";	
+	
+	// parameters
+	public final static String PARAM_ENABLE_FINE = "fine available";
+	public final static String PARAM_ENABLE_EXT_TRIGGER = "external trigger available";
 	
 	/////// Convenience variables
 	private int max_power;
+	private JPanel cardTrigger, cardFine;
+	private final static String ENABLED = "enabled";
+	private final static String DISABLED = "disabled";
 	
-	public FocusLockPanel(String label) {
+	public IBeamSmartPanel(String label) {
 		super(label);
 		
 		setupPanel();
@@ -125,7 +135,7 @@ public class FocusLockPanel extends ConfigurablePanel {
 				setUIPropertyValue(getPanelLabel()+" "+LASER_PERCFINEA,String.valueOf(sliderFinea_.getValue()));
 			}});
 
-		// slider fine b
+		// Slider fine b
 		sliderFineb_ = new JSlider(JSlider.HORIZONTAL, 0, 100, 0);
 		sliderFineb_.addMouseListener(new MouseAdapter() {
 			public void mouseReleased(MouseEvent e) {	
@@ -133,9 +143,17 @@ public class FocusLockPanel extends ConfigurablePanel {
 				setUIPropertyValue(getPanelLabel()+" "+LASER_PERCFINEB,String.valueOf(sliderFineb_.getValue()));
 			}});
 		
-		togglebuttonLaser_ = new TogglePower();
+		togglebuttonLaserOnOff_ = new TogglePower();
 		try {
-			SwingUIListeners.addActionListenerToTwoState(this, getPanelLabel()+" "+LASER_OPERATION, togglebuttonLaser_);
+			SwingUIListeners.addActionListenerToTwoState(this, getPanelLabel()+" "+LASER_OPERATION, togglebuttonLaserOnOff_);
+		} catch (IncorrectUIPropertyTypeException e1) {
+			e1.printStackTrace();
+		}
+		
+		// ext trigger
+		togglebuttonExternalTrigger_ = new ToggleSlider();
+		try {
+			SwingUIListeners.addActionListenerToTwoState(this, getPanelLabel()+" "+LASER_EXTERNALTRIGGER, togglebuttonExternalTrigger_);
 		} catch (IncorrectUIPropertyTypeException e1) {
 			e1.printStackTrace();
 		}
@@ -158,11 +176,11 @@ public class FocusLockPanel extends ConfigurablePanel {
 		
 		///////////////////////////////////////////////////////////////////////////// Channel 1
 		
-		JPanel panel2 = new JPanel();
-		panel2.setLayout(new GridBagLayout());
+		JPanel panelOperation = new JPanel();
+		panelOperation.setLayout(new GridBagLayout());
 		TitledBorder border2 = BorderFactory.createTitledBorder(null, "Power", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, 
 				null, ColorRepository.getColor(ColorRepository.strblack));
-		panel2.setBorder(border2);
+		panelOperation.setBorder(border2);
 
 		GridBagConstraints c2 = new GridBagConstraints();
 		c2.gridx = 1;
@@ -172,29 +190,46 @@ public class FocusLockPanel extends ConfigurablePanel {
 		c2.weightx = 0.2;
 		c2.weighty = 0.3;
 		c2.fill = GridBagConstraints.BOTH;
-		panel2.add(power, c2);
+		panelOperation.add(power, c2);
 
 		c2.gridx = 2;
-		panel2.add(textfieldUserPower_, c2);
+		panelOperation.add(textfieldUserPower_, c2);
 		
 
 		c2.gridx = 3;
-		panel2.add(togglebuttonLaser_, c2);
+		panelOperation.add(togglebuttonLaserOnOff_, c2);
 
 		c2.gridx = 0;
 		c2.gridy = 4;
 		c2.gridwidth = 4;
 		c2.weightx = 0.9;
 		c2.weighty = 0.5;
-		panel2.add(sliderPower_, c2);
-
+		panelOperation.add(sliderPower_, c2);
+		
+		///////////////////////////////////////////////////////////////////////////// trigger
+		cardTrigger = new JPanel(new CardLayout());
+		JPanel panelTrigger = new JPanel();
+		panelTrigger.setLayout(new GridBagLayout());
+		TitledBorder borderTrigger = BorderFactory.createTitledBorder(null, "External trigger", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, 
+				null, ColorRepository.getColor(ColorRepository.strblack));
+		panelTrigger.setBorder(borderTrigger);
+	
+		// gridbad layout
+		GridBagConstraints cTrig = new GridBagConstraints();
+		cTrig.fill = GridBagConstraints.HORIZONTAL;
+		cTrig.gridx = 0;
+		cTrig.gridy = 0;
+		panelTrigger.add(togglebuttonExternalTrigger_, cTrig);
+		cardTrigger.add(panelTrigger, ENABLED);
+		cardTrigger.add(new JPanel(), DISABLED);
 
 		///////////////////////////////////////////////////////////////////////////// fine
-		JPanel panelfine = new JPanel();
-		panelfine.setLayout(new GridBagLayout());
+		cardFine = new JPanel(new CardLayout());
+		JPanel panelFine = new JPanel();
+		panelFine.setLayout(new GridBagLayout());
 		TitledBorder borderfine = BorderFactory.createTitledBorder(null, "Fine", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, 
 				null, ColorRepository.getColor(ColorRepository.strblack));
-		panelfine.setBorder(borderfine);
+		panelFine.setBorder(borderfine);
 		
 		// gridbad layout
 		GridBagConstraints cfine = new GridBagConstraints();
@@ -203,35 +238,38 @@ public class FocusLockPanel extends ConfigurablePanel {
 		cfine.ipady = 2;
 		cfine.gridx = 0;
 		cfine.gridy = 0;
-		panelfine.add(togglesliderenableFine_, cfine);
+		panelFine.add(togglesliderenableFine_, cfine);
 
 		cfine.gridx = 1;
 		cfine.gridy = 1;
 		cfine.ipadx = 5;
-		panelfine.add(fineAperc, cfine);
+		panelFine.add(fineAperc, cfine);
 		
 		cfine.gridy = 2;
-		panelfine.add(finebperc, cfine);
+		panelFine.add(finebperc, cfine);
 		
 		cfine.gridx = 2;
 		cfine.gridy = 1;
 		cfine.ipadx = 4;
 		cfine.gridwidth = 3;
-		panelfine.add(sliderFinea_, cfine);
+		panelFine.add(sliderFinea_, cfine);
 		
 		cfine.gridy = 2;
-		panelfine.add(sliderFineb_, cfine);
+		panelFine.add(sliderFineb_, cfine);
 		
 		cfine.gridx = 5;
 		cfine.gridy = 1;
 		cfine.ipadx = 5;
 		cfine.gridwidth = 1;
 		cfine.insets = new Insets(2,35,2,2);
-		panelfine.add(fineaperc_, cfine);
+		panelFine.add(fineaperc_, cfine);
 		
 		cfine.gridy = 2;
 		cfine.insets = new Insets(2,35,2,2);
-		panelfine.add(finebperc_, cfine);
+		panelFine.add(finebperc_, cfine);
+		
+		cardFine.add(panelFine, ENABLED);
+		cardFine.add(new JPanel(), DISABLED);
 
 		
 		//////////////////////////////////////////////////////////////////////////// Main panel
@@ -244,16 +282,19 @@ public class FocusLockPanel extends ConfigurablePanel {
 		c.gridy = 0;
 		c.gridwidth = 2;
 		c.gridheight = 1;
-		this.add(panel2,c);
+		this.add(panelOperation,c);
 		
 		c.gridx = 0;
 		c.gridy = 1;
 		c.gridheight = 1;
 		c.fill = GridBagConstraints.HORIZONTAL;
-		this.add(panelfine,c);
+		this.add(cardFine,c);
+
+		c.gridy = 2;
+		this.add(cardTrigger,c);
 		
 		c.gridx = 0;
-		c.gridy = 2;
+		c.gridy = 3;
 		c.weighty = 0.8;
 		c.fill = GridBagConstraints.BOTH;
 		this.add(new JPanel(),c);
@@ -270,6 +311,7 @@ public class FocusLockPanel extends ConfigurablePanel {
 
 		addUIProperty(new TwoStateUIProperty(this,getPanelLabel()+" "+LASER_OPERATION,"iBeamSmart On/Off operation property.", new FocusLockFlag()));
 		addUIProperty(new TwoStateUIProperty(this,getPanelLabel()+" "+LASER_ENABLEFINE,"iBeamSmart Enable property of fine.", new FocusLockFlag()));
+		addUIProperty(new TwoStateUIProperty(this,getPanelLabel()+" "+LASER_EXTERNALTRIGGER,"iBeamSmart digital trigger on/off.", new FocusLockFlag()));
 	}
 
 	@Override
@@ -308,7 +350,14 @@ public class FocusLockPanel extends ConfigurablePanel {
 			}
 		} else if(name.equals(getPanelLabel()+" "+LASER_OPERATION)){
 			try {
-				togglebuttonLaser_.setSelected(((TwoStateUIProperty) getUIProperty(getPanelLabel()+" "+LASER_ENABLEFINE)).isOnState(newvalue));
+				togglebuttonLaserOnOff_.setSelected(((TwoStateUIProperty) getUIProperty(getPanelLabel()+" "+LASER_OPERATION)).isOnState(newvalue));
+			} catch (UnknownUIPropertyException e) {
+				e.printStackTrace();
+			}
+
+		} else if(name.equals(getPanelLabel()+" "+LASER_EXTERNALTRIGGER)){
+			try {
+				togglebuttonExternalTrigger_.setSelected(((TwoStateUIProperty) getUIProperty(getPanelLabel()+" "+LASER_EXTERNALTRIGGER)).isOnState(newvalue));
 			} catch (UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
@@ -353,12 +402,33 @@ public class FocusLockPanel extends ConfigurablePanel {
 	
 	@Override
 	protected void initializeParameters() {		
-		// Do nothing
+		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE_FINE,"Fine settings available in the iBeamSmart laser.", true));
+		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE_EXT_TRIGGER,"External trigger available in the iBeamSmart laser.", true));
 	}
 
 	@Override
 	public void parameterhasChanged(String label) {
-		// Do nothing		
+		if(label.equals(PARAM_ENABLE_FINE)){
+			try {
+				if(getBoolUIParameterValue(PARAM_ENABLE_FINE)) {
+					((CardLayout) cardFine.getLayout()).show(cardFine, ENABLED);
+				} else {
+					((CardLayout) cardFine.getLayout()).show(cardFine, DISABLED);
+				}
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
+				e.printStackTrace();
+			}
+		} else if(label.equals(PARAM_ENABLE_EXT_TRIGGER)){
+			try {
+				if(getBoolUIParameterValue(PARAM_ENABLE_EXT_TRIGGER)) {
+					((CardLayout) cardTrigger.getLayout()).show(cardTrigger, ENABLED);
+				} else {
+					((CardLayout) cardTrigger.getLayout()).show(cardTrigger, DISABLED);
+				}
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
+				e.printStackTrace();
+			}
+		} 	
 	}
 
 	@Override

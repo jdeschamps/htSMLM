@@ -26,16 +26,16 @@ public class MainFrame extends ConfigurableMainFrame{
 	private static final long serialVersionUID = 1L;
 
 	private static final String SETTING_USE_TRIGGER = "Trigger tab";
-	private static final String SETTING_USE_BOOSTER = "Booster tab";
+	private static final String SETTING_USE_BOOSTER = "iBeamSmart with trigger tab";
 	private static final String SETTING_USE_ADDFW = "Additional FW tab";
 	private static final String SETTING_USE_SINGLEFW = "Single FW panel";
 	private static final String SETTING_USE_QPD = "QPD tab";
-	private static final String SETTING_USE_FL = "Focus-lock tab";
+	private static final String SETTING_USE_FL = "iBeamSmart with fine tab";
 	
 	private AdditionalFiltersPanel addFiltersPanel;
 	private FocusPanel focusPanel;
 	private QPDPanel qpdPanel;
-	private FocusLockPanel focuslockpanel;
+	private IBeamSmartPanel focuslockpanel;
 	private AbstractFiltersPanel filterPanel;
 	private LaserControlPanel[] controlPanels;
 	private LaserPulsingPanel pulsePanel;
@@ -160,11 +160,17 @@ public class MainFrame extends ConfigurableMainFrame{
 			qpdPanel = new QPDPanel("QPD");
 			tab.add("QPD", qpdPanel);
 		}
-		
-		/// Focus-lock panel
+
+		/// iBeamSmart for focus-lock
 		if(((BoolSetting) settings.get(SETTING_USE_FL)).getValue()) {
-			focuslockpanel = new FocusLockPanel("Focus-lock");
+			focuslockpanel = new IBeamSmartPanel("Focus-lock");
 			tab.add("Focus-lock", focuslockpanel);
+		}
+		
+		/// iBeamSmart for booster
+		if(((BoolSetting) settings.get(SETTING_USE_FL)).getValue()) {
+			focuslockpanel = new IBeamSmartPanel("Booster");
+			tab.add("Booster", focuslockpanel);
 		}
 		
 		// Activation
@@ -244,11 +250,11 @@ public class MainFrame extends ConfigurableMainFrame{
 	public HashMap<String, Setting> getDefaultPluginSettings() {
 		HashMap<String, Setting> defaultSettings = new HashMap<String, Setting>();
 		defaultSettings.put(SETTING_USE_TRIGGER, new BoolSetting(SETTING_USE_TRIGGER, "Check to use the trigger tab in the plugin.", true));
-		defaultSettings.put(SETTING_USE_BOOSTER, new BoolSetting(SETTING_USE_BOOSTER, "Check to use the booster tab in the plugin.", true));
+		defaultSettings.put(SETTING_USE_BOOSTER, new BoolSetting(SETTING_USE_BOOSTER, "Check to use the iBeamSmart with trigger tab in the plugin.", true));
 		defaultSettings.put(SETTING_USE_ADDFW, new BoolSetting(SETTING_USE_ADDFW, "Check to use the additional filters tab in the plugin.", true));
 		defaultSettings.put(SETTING_USE_SINGLEFW, new BoolSetting(SETTING_USE_SINGLEFW, "Check to use a single FW panel, uncheck for a double FW panel.", true));
 		defaultSettings.put(SETTING_USE_QPD, new BoolSetting(SETTING_USE_QPD, "Check to use the QPD tab in the plugin.", true));
-		defaultSettings.put(SETTING_USE_FL, new BoolSetting(SETTING_USE_FL, "Check to use the Focus-lock tab in the plugin.", true));
+		defaultSettings.put(SETTING_USE_FL, new BoolSetting(SETTING_USE_FL, "Check to use the iBeamSmart with fine tab in the plugin.", true));
 		
 		return defaultSettings;
 	}
