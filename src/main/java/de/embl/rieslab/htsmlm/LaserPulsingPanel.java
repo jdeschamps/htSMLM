@@ -260,14 +260,18 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 	@Override
 	public void internalpropertyhasChanged(String label) {
 		if(label.equals(INTERNAL_MAXPULSE)){
-			maxpulse_ = getIntegerInternalPropertyValue(label);
-			logslider_.setMaxWithin(maxpulse_);
-			if (logslider_.getValue() > logslider_.getMaxWithin()) {
-				logslider_.setValueWithin(logslider_.getMaxWithin());
-				textfieldvalue_.setText(String.valueOf(logslider_.getValue()));
-				setUIPropertyValue(LASER_PULSE,String.valueOf(logslider_.getValue()));
+			try {
+				maxpulse_ = getIntegerInternalPropertyValue(label);
+				logslider_.setMaxWithin(maxpulse_);
+				if (logslider_.getValue() > logslider_.getMaxWithin()) {
+					logslider_.setValueWithin(logslider_.getMaxWithin());
+					textfieldvalue_.setText(String.valueOf(logslider_.getValue()));
+					setUIPropertyValue(LASER_PULSE,String.valueOf(logslider_.getValue()));
+				}
+				textfieldmax_.setText(String.valueOf(maxpulse_));
+			} catch (IncorrectInternalPropertyTypeException | UnknownInternalPropertyException e) {
+				e.printStackTrace();
 			}
-			textfieldmax_.setText(String.valueOf(maxpulse_));
 		}
 	}
 

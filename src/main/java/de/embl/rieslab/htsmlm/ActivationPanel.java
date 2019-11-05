@@ -25,7 +25,9 @@ import de.embl.rieslab.emu.ui.uiparameters.DoubleUIParameter;
 import de.embl.rieslab.emu.ui.uiparameters.IntegerUIParameter;
 import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 import de.embl.rieslab.emu.utils.EmuUtils;
+import de.embl.rieslab.emu.utils.exceptions.IncorrectInternalPropertyTypeException;
 import de.embl.rieslab.emu.utils.exceptions.IncorrectUIParameterTypeException;
+import de.embl.rieslab.emu.utils.exceptions.UnknownInternalPropertyException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.htsmlm.graph.TimeChart;
@@ -144,7 +146,7 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		pane.add(labelsdcoeff_,c);
 		
 		textfieldsdcoeff_ = new JTextField(String.valueOf(sdcoeff_));
-		SwingUIListeners.addActionListenerToDoubleTrigger(val -> sdcoeff_ = val, textfieldsdcoeff_, 0, Double.POSITIVE_INFINITY);
+		SwingUIListeners.addActionListenerToDoubleAction(val -> sdcoeff_ = val, textfieldsdcoeff_, 0, Double.POSITIVE_INFINITY);
 
 		c.gridy = 1;
 		pane.add(textfieldsdcoeff_,c);	
@@ -154,7 +156,7 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		pane.add(labelfeeback_,c);
 		
 		textfieldfeedback_ = new JTextField(String.valueOf(feedback_));
-		SwingUIListeners.addActionListenerToDoubleTrigger(val -> feedback_ = val, textfieldfeedback_, 0, Double.POSITIVE_INFINITY);
+		SwingUIListeners.addActionListenerToDoubleAction(val -> feedback_ = val, textfieldfeedback_, 0, Double.POSITIVE_INFINITY);
 
 		c.gridy = 3;
 		pane.add(textfieldfeedback_,c);	
@@ -165,7 +167,7 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 
 		dT_ = 1.;
 		textfielddT_ = new JTextField(String.valueOf(dT_));
-		SwingUIListeners.addActionListenerToDoubleTrigger(val -> dT_ = val, textfielddT_, 1, Double.POSITIVE_INFINITY);
+		SwingUIListeners.addActionListenerToDoubleAction(val -> dT_ = val, textfielddT_, 1, Double.POSITIVE_INFINITY);
 
 		c.gridy = 5;
 		pane.add(textfielddT_,c);	
@@ -184,21 +186,21 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		
 		N0_ = 1;
 		textfieldN0_ = new JTextField(String.valueOf(N0_));
-		SwingUIListeners.addActionListenerToDoubleTrigger(val -> N0_ = val, textfieldN0_, 1, Double.POSITIVE_INFINITY);
+		SwingUIListeners.addActionListenerToDoubleAction(val -> N0_ = val, textfieldN0_, 1, Double.POSITIVE_INFINITY);
 
 		c.gridy = 7;
 		c.insets = new Insets(2,6,2,6);
 		pane.add(textfieldN0_,c);
 		
 		checkboxactivate_ = new JCheckBox("Activate");
-		SwingUIListeners.addActionListenerToBooleanTrigger(b -> activate_ = b, checkboxactivate_);
+		SwingUIListeners.addActionListenerToBooleanAction(b -> activate_ = b, checkboxactivate_);
 
 		c.gridy = 8;
 		c.insets = new Insets(40,6,2,6);
 		pane.add(checkboxactivate_,c);	
 		
 		togglebuttonrun_ = new JToggleButton("Run");
-		SwingUIListeners.addActionListenerToBooleanTrigger(b -> runActivation(b), togglebuttonrun_);
+		SwingUIListeners.addActionListenerToBooleanAction(b -> runActivation(b), togglebuttonrun_);
 
 		togglebuttonrun_.setPreferredSize(new Dimension(40,40));
 		c.gridy = 9;
@@ -221,10 +223,10 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		pane.setLayout(new GridBagLayout());
 				
 		textfieldcutoff_ = new JTextField(String.valueOf(cutoff_));
-		SwingUIListeners.addActionListenerToDoubleTrigger(val -> cutoff_ = val, textfieldcutoff_, 0., Double.POSITIVE_INFINITY);
+		SwingUIListeners.addActionListenerToDoubleAction(val -> cutoff_ = val, textfieldcutoff_, 0., Double.POSITIVE_INFINITY);
 		
 		togglebuttonautocutoff_ = new JToggleButton("Auto");
-		SwingUIListeners.addActionListenerToBooleanTrigger(b -> autocutoff_ = b, togglebuttonautocutoff_);
+		SwingUIListeners.addActionListenerToBooleanAction(b -> autocutoff_ = b, togglebuttonautocutoff_);
 		
 		buttonclear_ = new JButton("Clear");
 		buttonclear_.addActionListener(new java.awt.event.ActionListener() {
@@ -234,7 +236,7 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
         });	
 		
 		checkboxnms_ = new JCheckBox("NMS");
-		SwingUIListeners.addActionListenerToBooleanTrigger(b -> showNMS(b), checkboxnms_);
+		SwingUIListeners.addActionListenerToBooleanAction(b -> showNMS(b), checkboxnms_);
 		
 		//////////////////////////////// grid bag setup
 		GridBagConstraints c = new GridBagConstraints();
@@ -389,7 +391,11 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 	@Override
 	public void internalpropertyhasChanged(String label) {
 		if(label.equals(INTERNAL_MAXPULSE)){
-			maxpulse_ = getIntegerInternalPropertyValue(label);
+			try {
+				maxpulse_ = getIntegerInternalPropertyValue(label);
+			} catch (IncorrectInternalPropertyTypeException | UnknownInternalPropertyException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -556,6 +562,7 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		setUIPropertyValue(LASER_PULSE,"0");
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Task getTask() {
 		return task_;

@@ -161,7 +161,7 @@ public class FocusPanel extends ConfigurablePanel {
         });
 
 		togglebuttonMonitor_ = new JToggleButton("Monitor");
-		SwingUIListeners.addActionListenerToBooleanTrigger(b -> monitorPosition(b), togglebuttonMonitor_);
+		SwingUIListeners.addActionListenerToBooleanAction(b -> monitorPosition(b), togglebuttonMonitor_);
 
 		togglebuttonLock_ = new JToggleButton("Lock");
 		try {
@@ -216,11 +216,11 @@ public class FocusPanel extends ConfigurablePanel {
 
 		largesteplabel_ = new JLabel(">>");
 		textfieldLargeStep_ = new JTextField(String.valueOf(largestep_));
-		SwingUIListeners.addActionListenerToDoubleTrigger(d -> largestep_ = d, textfieldLargeStep_);
+		SwingUIListeners.addActionListenerToDoubleAction(d -> largestep_ = d, textfieldLargeStep_);
 
 		smallsteplabel_ = new JLabel(">");
 		textfieldSmallStep_ = new JTextField(String.valueOf(smallstep_));
-		SwingUIListeners.addActionListenerToDoubleTrigger(d -> smallstep_ = d, textfieldSmallStep_);
+		SwingUIListeners.addActionListenerToDoubleAction(d -> smallstep_ = d, textfieldSmallStep_);
 				
 		buttonSmallStepsDown_ = new JButton("v");
 		buttonSmallStepsDown_.addActionListener(new java.awt.event.ActionListener() {
