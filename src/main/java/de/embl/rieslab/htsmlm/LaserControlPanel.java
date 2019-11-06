@@ -19,7 +19,7 @@ import javax.swing.JToggleButton;
 import javax.swing.border.TitledBorder;
 
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
-import de.embl.rieslab.emu.ui.swingslisteners.SwingUIListeners;
+import de.embl.rieslab.emu.ui.swinglisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.uiparameters.BoolUIParameter;
 import de.embl.rieslab.emu.ui.uiparameters.ColorUIParameter;
 import de.embl.rieslab.emu.ui.uiparameters.IntegerUIParameter;

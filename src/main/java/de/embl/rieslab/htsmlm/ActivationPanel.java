@@ -20,7 +20,7 @@ import javax.swing.SwingUtilities;
 
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.internalproperties.IntegerInternalProperty;
-import de.embl.rieslab.emu.ui.swingslisteners.SwingUIListeners;
+import de.embl.rieslab.emu.ui.swinglisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.uiparameters.DoubleUIParameter;
 import de.embl.rieslab.emu.ui.uiparameters.IntegerUIParameter;
 import de.embl.rieslab.emu.ui.uiproperties.UIProperty;

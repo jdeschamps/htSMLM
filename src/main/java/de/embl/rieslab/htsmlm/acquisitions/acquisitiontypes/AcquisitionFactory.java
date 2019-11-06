@@ -67,27 +67,38 @@ public class AcquisitionFactory {
 	 
 	public Acquisition getAcquisition(String type){
 		if(type.equals(AcquisitionType.LOCALIZATION.getTypeValue())){
-			return new LocalizationAcquisition(acqcontroller_.getTaskHolder(ActivationPanel.TASK_NAME),controller_.getExposure());
+			return new LocalizationAcquisition(acqcontroller_.getTaskHolder(ActivationPanel.TASK_NAME), getExposure());
 		} else if(type.equals(AcquisitionType.TIME.getTypeValue())){
-			return new TimeAcquisition(controller_.getExposure());
+			return new TimeAcquisition(getExposure());
 		} else if(type.equals(AcquisitionType.SNAP.getTypeValue())){
-			return new SnapAcquisition(controller_.getExposure());
+			return new SnapAcquisition(getExposure());
 		} else if(type.equals(AcquisitionType.ZSTACK.getTypeValue())){
-			return new ZStackAcquisition(controller_.getExposure(), zdevices_, controller_.getCore().getFocusDevice(),
+			return new ZStackAcquisition(getExposure(), zdevices_, controller_.getCore().getFocusDevice(),
 					(TwoStateUIProperty) controller_.getProperty(acqcontroller_.getAcquisitionParameterValue(AcquisitionPanel.PARAM_LOCKING)));
 		} else if(type.equals(AcquisitionType.BFP.getTypeValue())){
-			return new BFPAcquisition(controller_.getExposure(),
+			return new BFPAcquisition(getExposure(),
 					(TwoStateUIProperty) controller_.getProperty(acqcontroller_.getAcquisitionParameterValue(AcquisitionPanel.PARAM_BFP)));
 		} else if(type.equals(AcquisitionType.BF.getTypeValue())){
-			return new BrightFieldAcquisition(controller_.getExposure(),
+			return new BrightFieldAcquisition(getExposure(),
 					(TwoStateUIProperty) controller_.getProperty(acqcontroller_.getAcquisitionParameterValue(AcquisitionPanel.PARAM_BRIGHTFIELD)));
 		}
 			
 		return getDefaultAcquisition();
 	}
 	
+
+	private double getExposure(){
+		double i = 0;
+		try {
+			i = controller_.getCore().getExposure();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return i;
+	}
+	
 	private Acquisition getDefaultAcquisition() {
-		return new LocalizationAcquisition(acqcontroller_.getTaskHolder(ActivationPanel.TASK_NAME),controller_.getExposure());
+		return new LocalizationAcquisition(acqcontroller_.getTaskHolder(ActivationPanel.TASK_NAME), getExposure());
 	}
 
 	/**
