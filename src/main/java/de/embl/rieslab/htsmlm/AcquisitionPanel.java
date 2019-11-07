@@ -45,12 +45,8 @@ import de.embl.rieslab.htsmlm.flags.TwoStateFlag;
 import de.embl.rieslab.htsmlm.tasks.TaskHolder;
 
 public class AcquisitionPanel extends ConfigurablePanel{
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 8529929695246469740L;
 		
+	private static final long serialVersionUID = 1L;
 	private SystemController controller_;
 	private AcquisitionController acqcontroller_;
     private MainFrame owner_;
@@ -410,19 +406,19 @@ public class AcquisitionPanel extends ConfigurablePanel{
 
 	@Override
 	public void parameterhasChanged(String label) {
-		if(label.equals(PARAM_BFP)){
+		if(PARAM_BFP.equals(label)){
 			try {
 				paramBFP_ = getUIPropertyParameterValue(PARAM_BFP);
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
-		} else if(label.equals(PARAM_LOCKING)){
+		} else if(PARAM_LOCKING.equals(label)){
 			try {
 				paramLocking_ = getUIPropertyParameterValue(PARAM_LOCKING);
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
-		} else if(label.equals(PARAM_BRIGHTFIELD)){
+		} else if(PARAM_BRIGHTFIELD.equals(label)){
 			try {
 				paramBrightField_ = getUIPropertyParameterValue(PARAM_BRIGHTFIELD);
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
@@ -450,11 +446,11 @@ public class AcquisitionPanel extends ConfigurablePanel{
 	}
 	
 	public String getParameterValues(String param) {
-		if(param.equals(PARAM_BFP)){
+		if(PARAM_BFP.equals(param)){
 			return paramBFP_;
-		} else if(param.equals(PARAM_LOCKING)){
+		} else if(PARAM_LOCKING.equals(param)){
 			return paramLocking_;
-		} else if(param.equals(PARAM_BRIGHTFIELD)){
+		} else if(PARAM_BRIGHTFIELD.equals(param)){
 			return paramBrightField_;
 		}
 		return null;

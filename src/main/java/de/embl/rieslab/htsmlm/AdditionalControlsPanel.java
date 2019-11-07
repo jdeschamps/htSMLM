@@ -22,12 +22,9 @@ import de.embl.rieslab.emu.utils.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.htsmlm.flags.TwoStateFlag;
 
 public class AdditionalControlsPanel extends ConfigurablePanel{
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 6559849050710175913L;
 	
+
+	private static final long serialVersionUID = 1L;
 	//////// Components
 	private JToggleButton[] togglebuttons_;
 	private TitledBorder border_;
@@ -125,37 +122,37 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 
 	@Override
 	public void propertyhasChanged(String name, String newvalue) {
-		if(name.equals(DEVICE_1)){
+		if(DEVICE_1.equals(name)){
 			try {
 				togglebuttons_[0].setSelected(((TwoStateUIProperty) getUIProperty(DEVICE_1)).isOnState(newvalue));
 			} catch (UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
-		} else if(name.equals(DEVICE_2)){
+		} else if(DEVICE_2.equals(name)){
 			try {
 				togglebuttons_[1].setSelected(((TwoStateUIProperty) getUIProperty(DEVICE_2)).isOnState(newvalue));
 			} catch (UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
-		} else if(name.equals(DEVICE_3)){
+		} else if(DEVICE_3.equals(name)){
 			try {
 				togglebuttons_[2].setSelected(((TwoStateUIProperty) getUIProperty(DEVICE_3)).isOnState(newvalue));
 			} catch (UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
-		} else if(name.equals(DEVICE_4)){
+		} else if(DEVICE_4.equals(name)){
 			try {
 				togglebuttons_[3].setSelected(((TwoStateUIProperty) getUIProperty(DEVICE_4)).isOnState(newvalue));
 			} catch (UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
-		} else if(name.equals(DEVICE_5)){
+		} else if(DEVICE_5.equals(name)){
 			try {
 				togglebuttons_[4].setSelected(((TwoStateUIProperty) getUIProperty(DEVICE_5)).isOnState(newvalue));
 			} catch (UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
-		} else if(name.equals(DEVICE_6)){
+		} else if(DEVICE_6.equals(name)){
 			try {
 				togglebuttons_[5].setSelected(((TwoStateUIProperty) getUIProperty(DEVICE_6)).isOnState(newvalue));
 			} catch (UnknownUIPropertyException e) {
@@ -166,7 +163,7 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 
 	@Override
 	public void parameterhasChanged(String label) {
-		if(label.equals(PARAM_NAME1)){
+		if(PARAM_NAME1.equals(label)){
 			try {
 				String s = getStringUIParameterValue(PARAM_NAME1);
 				togglebuttons_[0].setText(s);
@@ -174,7 +171,7 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException | UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
-		} else if(label.equals(PARAM_NAME2)){
+		} else if(PARAM_NAME2.equals(label)){
 			try {
 				String s = getStringUIParameterValue(PARAM_NAME2);
 				togglebuttons_[1].setText(s);
@@ -182,7 +179,7 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException | UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
-		} else if(label.equals(PARAM_NAME3)){
+		} else if(PARAM_NAME3.equals(label)){
 			try {
 				String s = getStringUIParameterValue(PARAM_NAME3);
 				togglebuttons_[2].setText(s);
@@ -190,7 +187,7 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException | UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
-		} else if(label.equals(PARAM_NAME4)){
+		} else if(PARAM_NAME4.equals(label)){
 			try {
 				String s = getStringUIParameterValue(PARAM_NAME4);
 				togglebuttons_[3].setText(s);
@@ -198,7 +195,7 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException | UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
-		} else if(label.equals(PARAM_NAME5)){
+		} else if(PARAM_NAME5.equals(label)){
 			try {
 				String s = getStringUIParameterValue(PARAM_NAME5);
 				togglebuttons_[4].setText(s);
@@ -206,7 +203,7 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException | UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
-		} else if(label.equals(PARAM_NAME6)){
+		} else if(PARAM_NAME6.equals(label)){
 			try {
 				String s = getStringUIParameterValue(PARAM_NAME6);
 				togglebuttons_[5].setText(s);
@@ -214,49 +211,49 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException | UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
-		} else if(label.equals(PARAM_ENABLE1)){
+		} else if(PARAM_ENABLE1.equals(label)){
 			try {
 				boolean b = getBoolUIParameterValue(PARAM_ENABLE1);
 				togglebuttons_[0].setEnabled(b);
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
-		} else if(label.equals(PARAM_ENABLE2)){
+		} else if(PARAM_ENABLE2.equals(label)){
 			try {
 				boolean b = getBoolUIParameterValue(PARAM_ENABLE2);
 				togglebuttons_[1].setEnabled(b);
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
-		} else if(label.equals(PARAM_ENABLE3)){
+		} else if(PARAM_ENABLE3.equals(label)){
 			try {
 				boolean b = getBoolUIParameterValue(PARAM_ENABLE3);
 				togglebuttons_[2].setEnabled(b);
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
-		} else if(label.equals(PARAM_ENABLE4)){
+		} else if(PARAM_ENABLE4.equals(label)){
 			try {
 				boolean b = getBoolUIParameterValue(PARAM_ENABLE4);
 				togglebuttons_[3].setEnabled(b);
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
-		} else if(label.equals(PARAM_ENABLE5)){
+		} else if(PARAM_ENABLE5.equals(label)){
 			try {
 				boolean b = getBoolUIParameterValue(PARAM_ENABLE5);
 				togglebuttons_[4].setEnabled(b);
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
-		} else if(label.equals(PARAM_ENABLE6)){
+		} else if(PARAM_ENABLE6.equals(label)){
 			try {
 				boolean b = getBoolUIParameterValue(PARAM_ENABLE6);
 				togglebuttons_[5].setEnabled(b);
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
-		} else if(label.equals(PARAM_TITLE)){
+		} else if(PARAM_TITLE.equals(label)){
 			try {
 				border_.setTitle(getStringUIParameterValue(PARAM_TITLE));
 				this.repaint();

@@ -37,8 +37,8 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 	private TitledBorder border2_;
 	
 	//////// Properties
-	public static String SLIDER1_POSITION = "Slider 1 position";
-	public static String SLIDER2_POSITION = "Slider 2 position";
+	public final static String SLIDER1_POSITION = "Slider 1 position";
+	public final static String SLIDER2_POSITION = "Slider 2 position";
 	
 	//////// Parameters
 	public final static String PARAM1_NAMES = "Slider 1 names";
@@ -252,7 +252,7 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 
 	@Override
 	public void propertyhasChanged(String name, String newvalue) {
-		if(name.equals(SLIDER1_POSITION)){
+		if(SLIDER1_POSITION.equals(name)){
 			int pos;
 			try {
 				pos = ((MultiStateUIProperty) getUIProperty(SLIDER1_POSITION)).getStatePositionNumber(newvalue);
@@ -262,10 +262,10 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 			} catch (UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
-		} else if(name.equals(SLIDER1_POSITION)){
+		} else if(SLIDER2_POSITION.equals(name)){
 			int pos;
 			try {
-				pos = ((MultiStateUIProperty) getUIProperty(SLIDER1_POSITION)).getStatePositionNumber(newvalue);			
+				pos = ((MultiStateUIProperty) getUIProperty(SLIDER2_POSITION)).getStatePositionNumber(newvalue);			
 				if(pos<togglebuttons2_.length){
 					togglebuttons2_[pos].setSelected(true);
 				}
@@ -278,35 +278,35 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 
 	@Override
 	public void parameterhasChanged(String label) {
-		if(label.equals(PARAM1_NAMES)){
+		if(PARAM1_NAMES.equals(label)){
 			try {
 				names1_ = getStringUIParameterValue(PARAM1_NAMES);
 				setNames(0);
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
-		} else if(label.equals(PARAM1_COLORS)){
+		} else if(PARAM1_COLORS.equals(label)){
 			try {
 				colors1_ = getStringUIParameterValue(PARAM1_COLORS);
 				setColors(0);
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
-		} else if(label.equals(PARAM2_NAMES)){
+		} else if(PARAM2_NAMES.equals(label)){
 			try {
 				names2_ = getStringUIParameterValue(PARAM2_NAMES);
 				setNames(1);
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
-		} else if(label.equals(PARAM2_COLORS)){
+		} else if(PARAM2_COLORS.equals(label)){
 			try {
 				colors2_ = getStringUIParameterValue(PARAM2_COLORS);
 				setColors(1);
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
-		} else if(label.equals(PARAM1_TITLE)){
+		} else if(PARAM1_TITLE.equals(label)){
 			try {
 				title1_ = getStringUIParameterValue(PARAM1_TITLE);
 				border1_.setTitle(title1_);
@@ -314,7 +314,7 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
-		} else if(label.equals(PARAM2_TITLE)){
+		} else if(PARAM2_TITLE.equals(label)){
 			try {
 				title2_ = getStringUIParameterValue(PARAM2_TITLE);
 				border2_.setTitle(title2_);

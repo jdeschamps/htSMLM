@@ -179,7 +179,7 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 
 	@Override
 	public void propertyhasChanged(String name, String newvalue) {
-		if(name.equals(LASER_PULSE)){
+		if(LASER_PULSE.equals(name)){
 			if(EmuUtils.isInteger(newvalue)){
 				int val = Integer.parseInt(newvalue);
 				
@@ -208,7 +208,7 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 
 	@Override
 	public void parameterhasChanged(String label) {
-		if(label.equals(PARAM_TITLE)){
+		if(PARAM_TITLE.equals(label)){
 			try { 
 				title_ = getStringUIParameterValue(PARAM_TITLE);
 				border_.setTitle(title_);
@@ -216,7 +216,7 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
-		} else if(label.equals(PARAM_COLOR)){
+		} else if(PARAM_COLOR.equals(label)){
 			try {
 				color_ = getColorUIParameterValue(PARAM_COLOR);
 				border_.setTitleColor(color_);	
@@ -224,7 +224,7 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
-		} else if(label.equals(PARAM_DEFAULT_MAX)){
+		} else if(PARAM_DEFAULT_MAX.equals(label)){
 			try {
 				maxpulse_ = getIntegerUIParameterValue(PARAM_DEFAULT_MAX);
 				logslider_.setMaxWithin(maxpulse_);
@@ -259,7 +259,7 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 
 	@Override
 	public void internalpropertyhasChanged(String label) {
-		if(label.equals(INTERNAL_MAXPULSE)){
+		if(INTERNAL_MAXPULSE.equals(label)){
 			try {
 				maxpulse_ = getIntegerInternalPropertyValue(label);
 				logslider_.setMaxWithin(maxpulse_);

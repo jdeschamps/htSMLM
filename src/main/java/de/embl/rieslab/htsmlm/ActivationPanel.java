@@ -330,21 +330,21 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 
 	@Override
 	public void parameterhasChanged(String label) {
-		if(label.equals(PARAM_DEF_SD)){
+		if(PARAM_DEF_SD.equals(label)){
 			try {
 				sdcoeff_ = getDoubleUIParameterValue(PARAM_DEF_SD);
 				textfieldsdcoeff_.setText(String.valueOf(sdcoeff_));
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
-		} else if(label.equals(PARAM_DEF_FB)){
+		} else if(PARAM_DEF_FB.equals(label)){
 			try {
 				feedback_ = getDoubleUIParameterValue(PARAM_DEF_FB);
 				textfieldfeedback_.setText(String.valueOf(feedback_));
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
-		}else if(label.equals(PARAM_IDLE)){
+		}else if(PARAM_IDLE.equals(label)){
 			try {
 				int val = getIntegerUIParameterValue(PARAM_IDLE);
 				if(val != idletime_){
@@ -354,7 +354,7 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
-		}else if(label.equals(PARAM_NPOS)){
+		}else if(PARAM_NPOS.equals(label)){
 			try {
 				int val = getIntegerUIParameterValue(PARAM_NPOS);
 				if(val != npos_){

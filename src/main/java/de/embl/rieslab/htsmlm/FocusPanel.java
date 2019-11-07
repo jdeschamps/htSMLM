@@ -342,14 +342,14 @@ public class FocusPanel extends ConfigurablePanel {
 
 	@Override
 	public void propertyhasChanged(String name, String newvalue) {
-		if(name.equals(FOCUS_POSITION)){
+		if(FOCUS_POSITION.equals(name)){
 			if(EmuUtils.isNumeric(newvalue)){
 				if(!initialised){
 					initialised = true;
 					textfieldPosition_.setText(newvalue);
 				}
 			}
-		} else if(name.equals(FOCUS_STABILIZATION)){
+		} else if(FOCUS_STABILIZATION.equals(name)){
 			try {
 				togglebuttonLock_.setSelected(((TwoStateUIProperty) getUIProperty(FOCUS_STABILIZATION)).isOnState(newvalue));
 			} catch (UnknownUIPropertyException e) {
@@ -362,21 +362,21 @@ public class FocusPanel extends ConfigurablePanel {
 
 	@Override
 	public void parameterhasChanged(String label) {
-		if(label.equals(PARAM_LARGESTEP)){
+		if(PARAM_LARGESTEP.equals(label)){
 			try {
 				largestep_ = getDoubleUIParameterValue(PARAM_LARGESTEP);
 				textfieldLargeStep_.setText(String.valueOf(largestep_));
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
-		} else if(label.equals(PARAM_SMALLSTEP)){
+		} else if(PARAM_SMALLSTEP.equals(label)){
 			try {
 				smallstep_ = getDoubleUIParameterValue(PARAM_SMALLSTEP);
 				textfieldSmallStep_.setText(String.valueOf(smallstep_));
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
-		}else if(label.equals(PARAM_IDLE)){
+		}else if(PARAM_IDLE.equals(label)){
 			try {
 				int val = getIntegerUIParameterValue(PARAM_IDLE);
 				if(val != idle_){
@@ -386,7 +386,7 @@ public class FocusPanel extends ConfigurablePanel {
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
-		}else if(label.equals(PARAM_NPOS)){
+		}else if(PARAM_NPOS.equals(label)){
 			try {
 				int val = getIntegerUIParameterValue(PARAM_NPOS);
 				if(val != npos_){

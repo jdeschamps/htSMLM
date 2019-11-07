@@ -162,15 +162,15 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 
 	@Override
 	public void propertyhasChanged(String name, String newvalue) {
-		if(name.equals(getPropertyLabel(TRIGGER_BEHAVIOUR))){
+		if(TRIGGER_BEHAVIOUR.equals(getPropertyLabel(name))){
 			combobehaviour_.setSelectedItem(newvalue);
-		} else if(name.equals(getPropertyLabel(TRIGGER_SEQUENCE))){
+		} else if(TRIGGER_SEQUENCE.equals(getPropertyLabel(name))){
 			if(EmuUtils.isInteger(newvalue)){
 				textfieldsequence_.setText(BinaryConverter.getBinary16bits(Integer.parseInt(newvalue)));
 			} else {
 				textfieldsequence_.setText(BinaryConverter.getBinary16bits(HTSMLMConstants.FPGA_MAX_SEQUENCE));
 			}
-		} else if(name.equals(getPropertyLabel(PULSE_LENGTH))){
+		} else if(PULSE_LENGTH.equals(getPropertyLabel(name))){
 			textfieldpulselength_.setText(newvalue);
 			if(EmuUtils.isInteger(newvalue)){
 				sliderpulse_.setValue(Integer.parseInt(newvalue));
@@ -180,32 +180,32 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 
 	@Override
 	public void parameterhasChanged(String label) {
-		if(label.equals(PARAM_TITLE)){
+		if(PARAM_TITLE.equals(label)){
 			try {
 				title_ = getStringUIParameterValue(PARAM_TITLE);
 				border_.setTitle(title_);
 				this.repaint();
-				getUIProperty(getPanelLabel()+" "+TRIGGER_BEHAVIOUR).setFriendlyName(title_+" "+TRIGGER_BEHAVIOUR);
-				getUIProperty(getPanelLabel()+" "+TRIGGER_SEQUENCE).setFriendlyName(title_+" "+TRIGGER_SEQUENCE);
-				getUIProperty(getPanelLabel()+" "+PULSE_LENGTH).setFriendlyName(title_+" "+PULSE_LENGTH);
+				getUIProperty(getPropertyLabel(TRIGGER_BEHAVIOUR)).setFriendlyName(title_+" "+TRIGGER_BEHAVIOUR);
+				getUIProperty(getPropertyLabel(TRIGGER_SEQUENCE)).setFriendlyName(title_+" "+TRIGGER_SEQUENCE);
+				getUIProperty(getPropertyLabel(PULSE_LENGTH)).setFriendlyName(title_+" "+PULSE_LENGTH);
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException | UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
-		} else if(label.equals(PARAM_COLOR)){
+		} else if(PARAM_COLOR.equals(label)){
 			try {
 				color_ = getColorUIParameterValue(PARAM_COLOR);
 				border_.setTitleColor(color_);
 				this.repaint();			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 					e.printStackTrace();
 				}
-		} else if(label.equals(PARAM_DEF_BEHAVIOUR)){
+		} else if(PARAM_DEF_BEHAVIOUR.equals(label)){
 			try {
 				behaviour_ = getComboUIParameterValue(PARAM_DEF_BEHAVIOUR);
 				combobehaviour_.setSelectedItem(behaviour_); // this triggers the action listener			
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
-		} else if(label.equals(PARAM_DEF_SEQUENCE)){
+		} else if(PARAM_DEF_SEQUENCE.equals(label)){
 			try {
 				String newval = getStringUIParameterValue(PARAM_DEF_SEQUENCE);
 				if(BinaryConverter.is16bits(newval)){

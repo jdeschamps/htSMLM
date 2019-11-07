@@ -5,12 +5,6 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -81,47 +75,7 @@ public class IBeamSmartPanel extends ConfigurablePanel {
 		// Power text field
 		textfieldUserPower_ = new JTextField(String.valueOf(max_power));
 		textfieldUserPower_.setPreferredSize(new Dimension(35,20));
-		textfieldUserPower_.addFocusListener(new FocusListener() {
-			@Override
-			public void focusGained(FocusEvent arg0) {}
-			@Override
-			public void focusLost(FocusEvent arg0) {
-				String typed = textfieldUserPower_.getText();
-				if (!EmuUtils.isNumeric(typed)) {
-					return;
-				}
 
-				try {
-					double val = Double.parseDouble(typed);
-					if (Double.compare(val, max_power) <= 0 && Double.compare(val, 0.) >= 0) {
-						setUIPropertyValue(getPanelLabel() + " " + LASER_POWER, typed);
-						sliderPower_.setValue((int) val);
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-        	}
-        });
-		
-		textfieldUserPower_.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent ev) {
-				String typed = textfieldUserPower_.getText();
-				if (!EmuUtils.isNumeric(typed)) {
-					return;
-				}
-
-				try {
-					double val = Double.parseDouble(typed);
-					if (Double.compare(val, max_power) <= 0 && Double.compare(val, 0.) >= 0) {
-						setUIPropertyValue(getPanelLabel() + " " + LASER_POWER, typed);
-						sliderPower_.setValue((int) val);
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-        	}
-        });
 		
 		// slider channel 1
 		sliderPower_ = new JSlider(JSlider.HORIZONTAL, 0, (int) max_power, 0);
@@ -129,43 +83,20 @@ public class IBeamSmartPanel extends ConfigurablePanel {
 		
 		// slider fine a
 		sliderFinea_ = new JSlider(JSlider.HORIZONTAL, 0, 100, 0);
-		sliderFinea_.addMouseListener(new MouseAdapter() {
-			public void mouseReleased(MouseEvent e) {
-				fineaperc_.setText(String.valueOf(sliderFinea_.getValue())+" %");		
-				setUIPropertyValue(getPanelLabel()+" "+LASER_PERCFINEA,String.valueOf(sliderFinea_.getValue()));
-			}});
-
+	
 		// Slider fine b
 		sliderFineb_ = new JSlider(JSlider.HORIZONTAL, 0, 100, 0);
-		sliderFineb_.addMouseListener(new MouseAdapter() {
-			public void mouseReleased(MouseEvent e) {	
-				finebperc_.setText(String.valueOf(sliderFineb_.getValue())+" %");						
-				setUIPropertyValue(getPanelLabel()+" "+LASER_PERCFINEB,String.valueOf(sliderFineb_.getValue()));
-			}});
+
 		
 		togglebuttonLaserOnOff_ = new TogglePower();
-		try {
-			SwingUIListeners.addActionListenerToTwoState(this, getPanelLabel()+" "+LASER_OPERATION, togglebuttonLaserOnOff_);
-		} catch (IncorrectUIPropertyTypeException e1) {
-			e1.printStackTrace();
-		}
+		
 		
 		// ext trigger
 		togglebuttonExternalTrigger_ = new ToggleSlider();
-		try {
-			SwingUIListeners.addActionListenerToTwoState(this, getPanelLabel()+" "+LASER_EXTERNALTRIGGER, togglebuttonExternalTrigger_);
-		} catch (IncorrectUIPropertyTypeException e1) {
-			e1.printStackTrace();
-		}
-		
-		// Fine enable
-		togglesliderenableFine_ = new ToggleSlider();
-		try {
-			SwingUIListeners.addActionListenerToTwoState(this, getPanelLabel()+" "+LASER_ENABLEFINE, togglesliderenableFine_);
-		} catch (IncorrectUIPropertyTypeException e1) {
-			e1.printStackTrace();
-		}
 
+		// Fine enable
+		togglesliderenableFine_ = new ToggleSlider();	
+		
 		fineaperc_ = new JLabel("100 %");
 		finebperc_ = new JLabel("100 %");
 
@@ -304,19 +235,19 @@ public class IBeamSmartPanel extends ConfigurablePanel {
 	protected void initializeProperties() {
 		max_power = 200;
 		
-		addUIProperty(new UIProperty(this, getPanelLabel()+" "+LASER_POWER,"iBeamSmart Power (mW).", new FocusLockFlag()));
-		addUIProperty(new UIProperty(this, getPanelLabel()+" "+LASER_PERCFINEA,"iBeamSmart Power percentage of fine a.", new FocusLockFlag()));
-		addUIProperty(new UIProperty(this, getPanelLabel()+" "+LASER_PERCFINEB,"iBeamSmart Power percentage of fine b.", new FocusLockFlag()));
-		addUIProperty(new UIProperty(this, getPanelLabel()+" "+LASER_MAXPOWER,"iBeamSmart Maximum power (mW).", new FocusLockFlag()));
+		addUIProperty(new UIProperty(this, getPropertyName(LASER_POWER),"iBeamSmart Power (mW).", new FocusLockFlag()));
+		addUIProperty(new UIProperty(this, getPropertyName(LASER_PERCFINEA),"iBeamSmart Power percentage of fine a.", new FocusLockFlag()));
+		addUIProperty(new UIProperty(this, getPropertyName(LASER_PERCFINEB),"iBeamSmart Power percentage of fine b.", new FocusLockFlag()));
+		addUIProperty(new UIProperty(this, getPropertyName(LASER_MAXPOWER),"iBeamSmart Maximum power (mW).", new FocusLockFlag()));
 
-		addUIProperty(new TwoStateUIProperty(this,getPanelLabel()+" "+LASER_OPERATION,"iBeamSmart On/Off operation property.", new FocusLockFlag()));
-		addUIProperty(new TwoStateUIProperty(this,getPanelLabel()+" "+LASER_ENABLEFINE,"iBeamSmart Enable property of fine.", new FocusLockFlag()));
-		addUIProperty(new TwoStateUIProperty(this,getPanelLabel()+" "+LASER_EXTERNALTRIGGER,"iBeamSmart digital trigger on/off.", new FocusLockFlag()));
+		addUIProperty(new TwoStateUIProperty(this,getPropertyName(LASER_OPERATION),"iBeamSmart On/Off operation property.", new FocusLockFlag()));
+		addUIProperty(new TwoStateUIProperty(this,getPropertyName(LASER_ENABLEFINE),"iBeamSmart Enable property of fine.", new FocusLockFlag()));
+		addUIProperty(new TwoStateUIProperty(this,getPropertyName(LASER_EXTERNALTRIGGER),"iBeamSmart digital trigger on/off.", new FocusLockFlag()));
 	}
 
 	@Override
 	public void propertyhasChanged(String name, String newvalue) {
-		if(name.equals(getPanelLabel()+" "+LASER_POWER)){
+		if(getPropertyName(LASER_POWER).equals(name)){
 			if(EmuUtils.isNumeric(newvalue)){
 				double val = Double.parseDouble(newvalue);
 				if(val>=0 && val<=max_power){
@@ -324,7 +255,7 @@ public class IBeamSmartPanel extends ConfigurablePanel {
 					sliderPower_.setValue((int) val);	
 				}
 			}
-		} else if(name.equals(getPanelLabel()+" "+LASER_PERCFINEA)){
+		} else if(getPropertyName(LASER_PERCFINEA).equals(name)){
 			if(EmuUtils.isNumeric(newvalue)){
 				double val = Double.parseDouble(newvalue);
 				if(val>=0 && val<=100){
@@ -336,7 +267,7 @@ public class IBeamSmartPanel extends ConfigurablePanel {
 					sliderFinea_.setValue((int) val);	
 				}
 			}
-		} else if(name.equals(getPanelLabel()+" "+LASER_PERCFINEB)){
+		} else if(getPropertyName(LASER_PERCFINEB).equals(name)){
 			if(EmuUtils.isNumeric(newvalue)){
 				double val = Double.parseDouble(newvalue);
 				if(val>=0 && val<=100){	
@@ -348,27 +279,27 @@ public class IBeamSmartPanel extends ConfigurablePanel {
 					sliderFineb_.setValue((int) val);	
 				}
 			}
-		} else if(name.equals(getPanelLabel()+" "+LASER_OPERATION)){
+		} else if(getPropertyName(LASER_OPERATION).equals(name)){
 			try {
-				togglebuttonLaserOnOff_.setSelected(((TwoStateUIProperty) getUIProperty(getPanelLabel()+" "+LASER_OPERATION)).isOnState(newvalue));
+				togglebuttonLaserOnOff_.setSelected(((TwoStateUIProperty) getUIProperty(getPropertyName(LASER_OPERATION))).isOnState(newvalue));
 			} catch (UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
 
-		} else if(name.equals(getPanelLabel()+" "+LASER_EXTERNALTRIGGER)){
+		} else if(getPropertyName(LASER_EXTERNALTRIGGER).equals(name)){
 			try {
-				togglebuttonExternalTrigger_.setSelected(((TwoStateUIProperty) getUIProperty(getPanelLabel()+" "+LASER_EXTERNALTRIGGER)).isOnState(newvalue));
+				togglebuttonExternalTrigger_.setSelected(((TwoStateUIProperty) getUIProperty(getPropertyName(LASER_EXTERNALTRIGGER))).isOnState(newvalue));
 			} catch (UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
 
-		} else if(name.equals(getPanelLabel()+" "+LASER_ENABLEFINE)){
+		} else if(getPropertyName(LASER_ENABLEFINE).equals(name)){
 			try {
-				togglesliderenableFine_.setSelected(((TwoStateUIProperty) getUIProperty(getPanelLabel()+" "+LASER_ENABLEFINE)).isOnState(newvalue));
+				togglesliderenableFine_.setSelected(((TwoStateUIProperty) getUIProperty(getPropertyName(LASER_ENABLEFINE))).isOnState(newvalue));
 			} catch (UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
-		} else if(name.equals(getPanelLabel()+" "+LASER_MAXPOWER)){
+		} else if(getPropertyName(LASER_MAXPOWER).equals(name)){
 			if(EmuUtils.isNumeric(newvalue)){
 				double val = Double.parseDouble(newvalue);
 				max_power = (int) val;
@@ -408,7 +339,7 @@ public class IBeamSmartPanel extends ConfigurablePanel {
 
 	@Override
 	public void parameterhasChanged(String label) {
-		if(label.equals(PARAM_ENABLE_FINE)){
+		if(PARAM_ENABLE_FINE.equals(PARAM_ENABLE_FINE)){
 			try {
 				if(getBoolUIParameterValue(PARAM_ENABLE_FINE)) {
 					((CardLayout) cardFine.getLayout()).show(cardFine, ENABLED);
@@ -418,7 +349,7 @@ public class IBeamSmartPanel extends ConfigurablePanel {
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
-		} else if(label.equals(PARAM_ENABLE_EXT_TRIGGER)){
+		} else if(PARAM_ENABLE_EXT_TRIGGER.equals(label)){
 			try {
 				if(getBoolUIParameterValue(PARAM_ENABLE_EXT_TRIGGER)) {
 					((CardLayout) cardTrigger.getLayout()).show(cardTrigger, ENABLED);
@@ -431,8 +362,43 @@ public class IBeamSmartPanel extends ConfigurablePanel {
 		} 	
 	}
 
+	private String getPropertyName(String propertyLabel) {
+		return getPanelLabel()+" "+propertyLabel;
+	}
+	
 	@Override
 	protected void addComponentListeners() {
-		// do nothing
+		// power textfield
+		SwingUIListeners.addActionListenerOnIntegerValue(this, getPropertyName(LASER_POWER), textfieldUserPower_,
+				sliderPower_);
+
+		// slider power
+		SwingUIListeners.addActionListenerOnIntegerValue(this, getPropertyName(LASER_POWER), sliderPower_,
+				textfieldUserPower_);
+
+		// slider fine a
+		SwingUIListeners.addActionListenerOnIntegerValue(this, getPropertyName(LASER_PERCFINEA), sliderFinea_,
+				fineaperc_, "", " %");
+
+		// slider fine b
+		SwingUIListeners.addActionListenerOnIntegerValue(this, getPropertyName(LASER_PERCFINEA), sliderFineb_,
+				finebperc_, "", " %");
+		
+		try {
+			SwingUIListeners.addActionListenerToTwoState(this, getPropertyName(LASER_OPERATION), togglebuttonLaserOnOff_);
+		} catch (IncorrectUIPropertyTypeException e1) {
+			e1.printStackTrace();
+		}
+		try {
+			SwingUIListeners.addActionListenerToTwoState(this, getPropertyName(LASER_EXTERNALTRIGGER), togglebuttonExternalTrigger_);
+		} catch (IncorrectUIPropertyTypeException e1) {
+			e1.printStackTrace();
+		}
+		
+		try {
+			SwingUIListeners.addActionListenerToTwoState(this, getPropertyName(LASER_ENABLEFINE), togglesliderenableFine_);
+		} catch (IncorrectUIPropertyTypeException e1) {
+			e1.printStackTrace();
+		}
 	}
 }

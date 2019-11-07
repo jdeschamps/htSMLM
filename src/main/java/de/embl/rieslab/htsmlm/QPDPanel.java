@@ -60,7 +60,6 @@ public class QPDPanel extends ConfigurablePanel {
 		try {
 			chartupdater_ = new ChartUpdater(graph_,getUIProperty(QPD_X),getUIProperty(QPD_Y),idle_);
 		} catch (UnknownUIPropertyException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		graphpanel_ = new JPanel();
@@ -91,7 +90,6 @@ public class QPDPanel extends ConfigurablePanel {
 		try {
 			progressbarupdater_ = new JProgressBarUpdater(progressBar_, getUIProperty(QPD_Z), idle_);
 		} catch (UnknownUIPropertyException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		this.add(progressBar_,c);

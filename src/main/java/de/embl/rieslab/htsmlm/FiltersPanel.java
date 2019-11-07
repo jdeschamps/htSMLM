@@ -23,17 +23,15 @@ import de.embl.rieslab.htsmlm.flags.FilterWheelFlag;
 
 public class FiltersPanel extends AbstractFiltersPanel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -8562433353787092702L;
+
+	private static final long serialVersionUID = 1L;
 
 	//////// Components
 	private JToggleButton[] togglebuttons_;
 	private TitledBorder border_;
 	
 	//////// Properties
-	public static String FW_POSITION = "Filter wheel position";
+	public final static String FW_POSITION = "Filter wheel position";
 	
 	//////// Parameters
 	public final static String PARAM_TITLE = "Panel title";
@@ -150,7 +148,7 @@ public class FiltersPanel extends AbstractFiltersPanel {
 
 	@Override
 	public void propertyhasChanged(String name, String newvalue) {
-		if(name.equals(FW_POSITION)){
+		if(FW_POSITION.equals(name)){
 			try {
 				int pos = ((MultiStateUIProperty) getUIProperty(FW_POSITION)).getStatePositionNumber(newvalue);
 				if(pos<togglebuttons_.length){
@@ -164,21 +162,21 @@ public class FiltersPanel extends AbstractFiltersPanel {
 
 	@Override
 	public void parameterhasChanged(String label) {
-		if(label.equals(PARAM_NAMES)){
+		if(PARAM_NAMES.equals(label)){
 			try {
 				names_ = getStringUIParameterValue(PARAM_NAMES);
 				setNames();
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
-		} else if(label.equals(PARAM_COLORS)){
+		} else if(PARAM_COLORS.equals(label)){
 			try {
 				colors_ = getStringUIParameterValue(PARAM_COLORS);
 				setColors();
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
-		} else if(label.equals(PARAM_TITLE)){
+		} else if(PARAM_TITLE.equals(label)){
 			try {
 				title_ = getStringUIParameterValue(PARAM_TITLE);
 				border_.setTitle(title_);

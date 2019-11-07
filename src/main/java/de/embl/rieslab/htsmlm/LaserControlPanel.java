@@ -94,7 +94,7 @@ public class LaserControlPanel extends ConfigurablePanel {
 					if (val <= 100 && val >= 0) {
 						togglebuttonUser_.setText(typed + "%");
 						if (togglebuttonUser_.isSelected()) {
-							setUIPropertyValue(getPanelLabel() + " " + LASER_PERCENTAGE, String.valueOf(val));
+							setUIPropertyValue(getPropertylabel(LASER_PERCENTAGE), String.valueOf(val));
 						}
 					}
 				} catch (Exception e) {
@@ -114,7 +114,7 @@ public class LaserControlPanel extends ConfigurablePanel {
 					if (val <= 100 && val >= 0) {
 						togglebuttonUser_.setText(typed + "%");
 						if (togglebuttonUser_.isSelected()) {
-							setUIPropertyValue(getPanelLabel() + " " + LASER_PERCENTAGE, String.valueOf(val));
+							setUIPropertyValue(getPropertylabel(LASER_PERCENTAGE), String.valueOf(val));
 						}
 					}
 				} catch (Exception exc) {
@@ -129,7 +129,7 @@ public class LaserControlPanel extends ConfigurablePanel {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if(e.getStateChange()==ItemEvent.SELECTED){
-					setUIPropertyValue(getPanelLabel()+" "+LASER_PERCENTAGE,String.valueOf(100));
+					setUIPropertyValue(getPropertylabel(LASER_PERCENTAGE),String.valueOf(100));
 				}
 			}
         });		
@@ -143,7 +143,7 @@ public class LaserControlPanel extends ConfigurablePanel {
 					if (typed == null) {
 						return;
 					}
-					setUIPropertyValue(getPanelLabel() + " " + LASER_PERCENTAGE, String.valueOf(typed));
+					setUIPropertyValue(getPropertylabel(LASER_PERCENTAGE), String.valueOf(typed));
 				}
 			}
         });
@@ -153,7 +153,7 @@ public class LaserControlPanel extends ConfigurablePanel {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if(e.getStateChange()==ItemEvent.SELECTED){
-					setUIPropertyValue(getPanelLabel()+" "+LASER_PERCENTAGE,String.valueOf(20));
+					setUIPropertyValue(getPropertylabel(LASER_PERCENTAGE),String.valueOf(20));
 				}
 			}
         });
@@ -163,7 +163,7 @@ public class LaserControlPanel extends ConfigurablePanel {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if(e.getStateChange()==ItemEvent.SELECTED){
-					setUIPropertyValue(getPanelLabel()+" "+LASER_PERCENTAGE,String.valueOf(1));
+					setUIPropertyValue(getPropertylabel(LASER_PERCENTAGE),String.valueOf(1));
 				}
 			}
         });
@@ -190,7 +190,7 @@ public class LaserControlPanel extends ConfigurablePanel {
        
         togglebuttonOnOff_ = new TogglePower();
         try {
-			SwingUIListeners.addActionListenerToTwoState(this, getPanelLabel()+" "+LASER_OPERATION, togglebuttonOnOff_);
+			SwingUIListeners.addActionListenerToTwoState(this, getPropertylabel(LASER_OPERATION), togglebuttonOnOff_);
 		} catch (IncorrectUIPropertyTypeException e1) {
 			e1.printStackTrace();
 		}
@@ -232,8 +232,8 @@ public class LaserControlPanel extends ConfigurablePanel {
 	protected void initializeProperties() {
 		String text = "Power percentage of the laser. If the laser only has a power set point (mW) property, select this property and use the scaling parameter in the parameters tab.";
 		
-		addUIProperty(new RescaledUIProperty(this, getPanelLabel()+" "+LASER_PERCENTAGE,text, new LaserFlag()));
-		addUIProperty(new TwoStateUIProperty(this,getPanelLabel()+" "+LASER_OPERATION,"Laser On/Off property. Enter the values for the on and off states (e.g. 1/0 or On/Off).", new LaserFlag()));
+		addUIProperty(new RescaledUIProperty(this, getPropertylabel(LASER_PERCENTAGE),text, new LaserFlag()));
+		addUIProperty(new TwoStateUIProperty(this,getPropertylabel(LASER_OPERATION),"Laser On/Off property. Enter the values for the on and off states (e.g. 1/0 or On/Off).", new LaserFlag()));
 	}
 
 	@Override
@@ -251,7 +251,7 @@ public class LaserControlPanel extends ConfigurablePanel {
 
 	@Override
 	public void propertyhasChanged(String name, String newvalue) {
-		if(name.equals(getPanelLabel()+" "+LASER_PERCENTAGE)){
+		if(getPropertylabel(LASER_PERCENTAGE).equals(name)){
 			if(EmuUtils.isNumeric(newvalue)){
 				int val = (int) Double.parseDouble(newvalue);
 							
@@ -269,9 +269,9 @@ public class LaserControlPanel extends ConfigurablePanel {
 					} 
 				}
 			}
-		} else if(name.equals(getPanelLabel()+" "+LASER_OPERATION)){
+		} else if(getPropertylabel(LASER_OPERATION).equals(name)){
 			try {
-				togglebuttonOnOff_.setSelected(((TwoStateUIProperty) getUIProperty(getPanelLabel()+" "+LASER_OPERATION)).isOnState(newvalue));
+				togglebuttonOnOff_.setSelected(((TwoStateUIProperty) getUIProperty(getPropertylabel(LASER_OPERATION))).isOnState(newvalue));
 			} catch (UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
@@ -280,17 +280,17 @@ public class LaserControlPanel extends ConfigurablePanel {
 
 	@Override
 	public void parameterhasChanged(String label) {
-		if(label.equals(PARAM_TITLE)){
+		if(PARAM_TITLE.equals(label)){
 			try {
 				title_ = getStringUIParameterValue(PARAM_TITLE);
 				border_.setTitle(title_);
 				this.repaint();
-				getUIProperty(getPanelLabel()+" "+LASER_PERCENTAGE).setFriendlyName(title_+" "+LASER_PERCENTAGE);
-				getUIProperty(getPanelLabel()+" "+LASER_OPERATION).setFriendlyName(title_+" "+LASER_OPERATION);
+				getUIProperty(getPropertylabel(LASER_PERCENTAGE)).setFriendlyName(title_+" "+LASER_PERCENTAGE);
+				getUIProperty(getPropertylabel(LASER_OPERATION)).setFriendlyName(title_+" "+LASER_OPERATION);
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException | UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
-		} else if(label.equals(PARAM_COLOR)){
+		} else if(PARAM_COLOR.equals(label)){
 			try {
 				color_ = getColorUIParameterValue(PARAM_COLOR);
 				border_.setTitleColor(color_);
@@ -298,15 +298,15 @@ public class LaserControlPanel extends ConfigurablePanel {
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
-		} else if(label.equals(PARAM_SCALING)){
+		} else if(PARAM_SCALING.equals(label)){
 			try {
 				scaling_ = getIntegerUIParameterValue(PARAM_SCALING);
 				double rescaleFactor = scaling_/100.;
-				((RescaledUIProperty) this.getUIProperty(getPanelLabel()+" "+LASER_PERCENTAGE)).setScalingFactors(rescaleFactor, 0.);
+				((RescaledUIProperty) this.getUIProperty(getPropertylabel(LASER_PERCENTAGE))).setScalingFactors(rescaleFactor, 0.);
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException | UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
-		} else if(label.equals(PARAM_ONOFF)){
+		} else if(PARAM_ONOFF.equals(label)){
 			try {
 				useOnOff_ = getBoolUIParameterValue(PARAM_ONOFF);
 				togglebuttonOnOff_.setEnabled(useOnOff_);
@@ -314,6 +314,10 @@ public class LaserControlPanel extends ConfigurablePanel {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	private String getPropertylabel(String label) {
+		return getPanelLabel()+" "+label;
 	}
 
 	@Override

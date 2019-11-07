@@ -23,19 +23,16 @@ import de.embl.rieslab.htsmlm.flags.FilterWheelFlag;
 
 public class DualFWPanel extends AbstractFiltersPanel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -8562433353787092702L;
-
+	private static final long serialVersionUID = 1L;
+	
 	//////// Components
 	private JToggleButton[] togglebuttons1_;
 	private JToggleButton[] togglebuttons2_;
 	private TitledBorder border_;
 	
 	//////// Properties
-	public static String FW_POSITION1 = "FW1 pos";
-	public static String FW_POSITION2 = "FW2 pos";
+	public final static String FW_POSITION1 = "FW1 pos";
+	public final static String FW_POSITION2 = "FW2 pos";
 	
 	//////// Parameters
 	public final static String TITLE = "Filters";
@@ -218,7 +215,7 @@ public class DualFWPanel extends AbstractFiltersPanel {
 
 	@Override
 	public void propertyhasChanged(String name, String newvalue) {
-		if(name.equals(FW_POSITION1)){
+		if(FW_POSITION1.equals(name)){
 			int pos;
 			try {
 				pos = ((MultiStateUIProperty) getUIProperty(FW_POSITION1)).getStatePositionNumber(newvalue);
@@ -228,7 +225,7 @@ public class DualFWPanel extends AbstractFiltersPanel {
 			} catch (UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
-		} else if(name.equals(FW_POSITION2)){
+		} else if(FW_POSITION2.equals(name)){
 			int pos;
 			try {
 				pos = ((MultiStateUIProperty) getUIProperty(FW_POSITION2)).getStatePositionNumber(newvalue);
@@ -243,35 +240,35 @@ public class DualFWPanel extends AbstractFiltersPanel {
 
 	@Override
 	public void parameterhasChanged(String label) {
-		if(label.equals(PARAM_NAMES1)){
+		if(PARAM_NAMES1.equals(label)){
 			try {
 				names1_ = getStringUIParameterValue(PARAM_NAMES1);
 				setNames(0);
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
-		} else if(label.equals(PARAM_COLORS1)){
+		} else if(PARAM_COLORS1.equals(label)){
 			try {
 				colors1_ = getStringUIParameterValue(PARAM_COLORS1);
 				setColors(0);
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
-		} else if(label.equals(PARAM_NAMES2)){
+		} else if(PARAM_NAMES2.equals(label)){
 			try {
 				names2_ = getStringUIParameterValue(PARAM_NAMES2);
 				setNames(1);
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
-		} else if(label.equals(PARAM_COLORS2)){
+		} else if(PARAM_COLORS2.equals(label)){
 			try {
 				colors2_ = getStringUIParameterValue(PARAM_COLORS2);
 				setColors(1);
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
-		} else if(label.equals(PARAM_TITLE)){
+		} else if(PARAM_TITLE.equals(label)){
 			try {
 				title_ = getStringUIParameterValue(PARAM_TITLE);
 				border_.setTitle(title_);
