@@ -36,9 +36,9 @@ import javax.swing.table.TableModel;
 import org.micromanager.internal.utils.ReportingUtils;
 import org.micromanager.internal.utils.SliderPanel;
 
-import de.embl.rieslab.emu.micromanager.configgroups.MMConfigurationGroup;
-import de.embl.rieslab.emu.micromanager.configgroups.MMConfigurationGroupsRegistry;
 import de.embl.rieslab.emu.micromanager.mmproperties.MMProperty;
+import de.embl.rieslab.emu.micromanager.presetgroups.MMPresetGroup;
+import de.embl.rieslab.emu.micromanager.presetgroups.MMPresetGroupRegistry;
 import de.embl.rieslab.emu.ui.uiproperties.ImmutableMultiStateUIProperty;
 import de.embl.rieslab.emu.ui.uiproperties.MultiStateUIProperty;
 import de.embl.rieslab.emu.ui.uiproperties.SingleStateUIProperty;
@@ -435,7 +435,7 @@ public class AcquisitionTab extends JPanel {
 	 * @param mmconfigGroupValues
 	 * @return
 	 */
-	private JPanel createMMConfigTable(MMConfigurationGroupsRegistry mmconfigurationRegistry,
+	private JPanel createMMConfigTable(MMPresetGroupRegistry mmconfigurationRegistry,
 			HashMap<String, String> mmconfigGroupValues) {
 		
 		// mmconfigGroupValues are the values to set in the table, if there are any
@@ -446,8 +446,8 @@ public class AcquisitionTab extends JPanel {
 		// Defines table model
 		DefaultTableModel model = new DefaultTableModel(new Object[] { "Property", "Value" }, 0);
 
-		final HashMap<String, String[]> map = mmconfigurationRegistry.getMMConfigurationChannels();// keys = configuration group's name, object = list of configurations
-		final HashMap<String, MMConfigurationGroup> groups = mmconfigurationRegistry.getMMConfigurationGroups(); // hashmap of the configuration group objects
+		final HashMap<String, String[]> map = mmconfigurationRegistry.getMMPresetGroupChannels();// keys = configuration group's name, object = list of configurations
+		final HashMap<String, MMPresetGroup> groups = mmconfigurationRegistry.getMMPresetGroups(); // hashmap of the configuration group objects
 
 		String[] keys = map.keySet().toArray(new String[0]);
 		Arrays.sort(keys);
@@ -456,7 +456,7 @@ public class AcquisitionTab extends JPanel {
 		for (int i = 0; i < keys.length; i++) {
 			if (map.get(keys[i]) != null && map.get(keys[i]).length > 0 && !keys[i].equals("System")) { // if the String[] is not null and not empty, ignore the special System configuration
 				
-				String currentValue = mmconfigurationRegistry.getCurrentMMConfigurationChannel(keys[i]);
+				String currentValue = mmconfigurationRegistry.getCurrentMMPresetGroupChannel(keys[i]);
 				if (currentValue != null && currentValue.length() > 0 && !mmconfigGroupValues.containsKey(keys[i])) { // this is when a value is set in MM but not in the acquisition
 					if(map.get(keys[i]).length == 1 && groups.get(keys[i]).getAffectedProperties().size() == 1) { // if the presets has only one preset value and one property then we show the value 
 						model.addRow(new Object[] { keys[i], groups.get(keys[i]).getAffectedProperties().get(0).getValue() }); 
@@ -465,8 +465,8 @@ public class AcquisitionTab extends JPanel {
 					}
 				} else if(currentValue != null) { // no value currently set 
 		
-					if (mmconfigGroupValues.containsKey(keys[i]) && mmconfigurationRegistry.getMMConfigurationGroups().get(keys[i])
-							.hasConfiguration(mmconfigGroupValues.get(keys[i]))) { // if acquisition has a value set for this configuration and the configuration exists 
+					if (mmconfigGroupValues.containsKey(keys[i]) && mmconfigurationRegistry.getMMPresetGroups().get(keys[i])
+							.hasPreset(mmconfigGroupValues.get(keys[i]))) { // if acquisition has a value set for this configuration and the configuration exists 
 						
 						model.addRow(new Object[] { keys[i], mmconfigGroupValues.get( keys[i]) }); // sets the value
 					} else if (mmconfigGroupValues.containsKey(keys[i]) && map.get(keys[i]).length == 1 && groups.get(keys[i]).getAffectedProperties().size() == 1){

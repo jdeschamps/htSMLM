@@ -14,7 +14,7 @@ import org.micromanager.PositionListManager;
 import org.micromanager.Studio;
 
 import de.embl.rieslab.emu.controller.SystemController;
-import de.embl.rieslab.emu.micromanager.configgroups.MMConfigurationGroup;
+import de.embl.rieslab.emu.micromanager.presetgroups.MMPresetGroup;
 import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
 import de.embl.rieslab.htsmlm.acquisitions.ui.AcquisitionTab;
@@ -188,8 +188,8 @@ public class AcquisitionTask implements Task<Integer>{
 					while (it.hasNext()) {
 						String group = it.next();
 
-						MMConfigurationGroup configgroup = system_.getMMConfigGroupRegistry().getMMConfigurationGroups().get(group);
-						if(configgroup.hasConfiguration(configs.get(group))) {	// if the configuration is known
+						MMPresetGroup configgroup = system_.getMMConfigGroupRegistry().getMMPresetGroups().get(group);
+						if(configgroup.hasPreset(configs.get(group))) {	// if the configuration is known
 							try {
 								core_.setConfig(group, configs.get(group));
 							} catch (Exception e) {

@@ -18,7 +18,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
 import de.embl.rieslab.emu.controller.SystemController;
-import de.embl.rieslab.emu.micromanager.configgroups.MMConfigurationGroupsRegistry;
+import de.embl.rieslab.emu.micromanager.presetgroups.MMPresetGroupRegistry;
 import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 import de.embl.rieslab.emu.utils.EmuUtils;
 import de.embl.rieslab.htsmlm.acquisitions.AcquisitionController;
@@ -296,7 +296,7 @@ public class AcquisitionWizard {
 		return controller_.getPropertiesMap();
 	}
 	
-	public MMConfigurationGroupsRegistry getMMConfigurationRegistry(){
+	public MMPresetGroupRegistry getMMConfigurationRegistry(){
 		return controller_.getMMConfigGroupRegistry();
 	}
 	
