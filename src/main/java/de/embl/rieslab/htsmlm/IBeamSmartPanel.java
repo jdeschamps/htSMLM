@@ -339,7 +339,7 @@ public class IBeamSmartPanel extends ConfigurablePanel {
 
 	@Override
 	public void parameterhasChanged(String label) {
-		if(PARAM_ENABLE_FINE.equals(PARAM_ENABLE_FINE)){
+		if(PARAM_ENABLE_FINE.equals(label)){
 			try {
 				if(getBoolUIParameterValue(PARAM_ENABLE_FINE)) {
 					((CardLayout) cardFine.getLayout()).show(cardFine, ENABLED);
