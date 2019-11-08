@@ -173,7 +173,7 @@ public class AcquisitionTask implements Task<Integer>{
 			
 			// create acq names
 			String[] acqShortName = createAcqShortNameSet(exp_.getAcquisitionList()).toArray(new String[0]);
-			System.out.println();
+
 			// perform each acquisition sequentially
 			for (int k = 0; k < exp_.getAcquisitionList().size(); k++) {
 				currAcq = exp_.getAcquisitionList().get(k);
@@ -181,7 +181,7 @@ public class AcquisitionTask implements Task<Integer>{
 				// set-up system
 				setUpSystem(currAcq.getAcquisitionParameters().getPropertyValues());
 
-				// set configuration settings
+				// set preset group settings
 				if (!currAcq.getAcquisitionParameters().getMMConfigurationGroupValues().isEmpty()) {
 					HashMap<String, String> configs = currAcq.getAcquisitionParameters().getMMConfigurationGroupValues();
 					Iterator<String> it = configs.keySet().iterator();
@@ -189,7 +189,7 @@ public class AcquisitionTask implements Task<Integer>{
 						String group = it.next();
 
 						MMPresetGroup configgroup = system_.getMMConfigGroupRegistry().getMMPresetGroups().get(group);
-						if(configgroup.hasPreset(configs.get(group))) {	// if the configuration is known
+						if(configgroup.hasPreset(configs.get(group))) {	// if the preset is known
 							try {
 								core_.setConfig(group, configs.get(group));
 							} catch (Exception e) {
@@ -201,6 +201,13 @@ public class AcquisitionTask implements Task<Integer>{
 							}
 						}
 					}
+				}
+				
+				// pause time in ms
+				try {
+					Thread.sleep(1000*currAcq.getAcquisitionParameters().getWaitingTime());
+				} catch (InterruptedException e) {
+					e.printStackTrace();
 				}
 				
 				// build name
