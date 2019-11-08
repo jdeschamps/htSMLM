@@ -20,9 +20,6 @@ import de.embl.rieslab.htsmlm.tasks.TaskHolder;
 
 public class MainFrame extends ConfigurableMainFrame{
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	private static final String SETTING_USE_TRIGGER = "Trigger tab";
@@ -257,5 +254,12 @@ public class MainFrame extends ConfigurableMainFrame{
 		defaultSettings.put(SETTING_USE_FL, new BoolSetting(SETTING_USE_FL, "Check to use the iBeamSmart with fine tab in the plugin.", true));
 		
 		return defaultSettings;
+	}
+
+	@Override
+	protected String getPluginInfo() {
+		return "htSMLM was developped by Joran Deschamps, EMBL (2016-2019). It is intended as an intuitive Micro-Manager "
+				+ "interface for a localization microscope, capable of long-term unsupervising imaging and automated localization microscopy."
+				+ "For more details, visit the github repository: https://github.com/jdeschamps/htSMLM.";
 	}
 }
