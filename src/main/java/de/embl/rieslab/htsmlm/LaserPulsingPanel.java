@@ -261,7 +261,7 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 	public void internalpropertyhasChanged(String label) {
 		if(INTERNAL_MAXPULSE.equals(label)){
 			try {
-				maxpulse_ = getIntegerInternalPropertyValue(label);
+				maxpulse_ = getIntegerInternalPropertyValue(INTERNAL_MAXPULSE);
 				logslider_.setMaxWithin(maxpulse_);
 				if (logslider_.getValue() > logslider_.getMaxWithin()) {
 					logslider_.setValueWithin(logslider_.getMaxWithin());
