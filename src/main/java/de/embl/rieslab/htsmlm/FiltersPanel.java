@@ -35,8 +35,8 @@ public class FiltersPanel extends AbstractFiltersPanel {
 	
 	//////// Parameters
 	public final static String PARAM_TITLE = "Panel title";
-	public final static String PARAM_NAMES = "Filters name";
-	public final static String PARAM_COLORS = "Filters color";
+	public final static String PARAM_NAMES = "Filter names";
+	public final static String PARAM_COLORS = "Filter colors";
 	
 	//////// Initial parameters
 	public final static int NUM_POS = 6;
