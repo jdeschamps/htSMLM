@@ -16,6 +16,7 @@ import de.embl.rieslab.emu.controller.SystemController;
 import de.embl.rieslab.emu.ui.ConfigurableMainFrame;
 import de.embl.rieslab.emu.utils.settings.BoolSetting;
 import de.embl.rieslab.emu.utils.settings.Setting;
+import de.embl.rieslab.emu.utils.settings.StringSetting;
 import de.embl.rieslab.htsmlm.tasks.TaskHolder;
 
 public class MainFrame extends ConfigurableMainFrame{
@@ -23,11 +24,13 @@ public class MainFrame extends ConfigurableMainFrame{
 	private static final long serialVersionUID = 1L;
 
 	private static final String SETTING_USE_TRIGGER = "Trigger tab";
-	private static final String SETTING_USE_BOOSTER = "iBeamSmart with trigger tab";
 	private static final String SETTING_USE_ADDFW = "Additional FW tab";
 	private static final String SETTING_USE_SINGLEFW = "Single FW panel";
 	private static final String SETTING_USE_QPD = "QPD tab";
-	private static final String SETTING_USE_FL = "iBeamSmart with fine tab";
+	private static final String SETTING_USE_IBS2 = "iBeamSmart #2";
+	private static final String SETTING_USE_IBS1 = "iBeamSmart #1";
+	private static final String SETTING_NAME_IBS2 = "iBeamSmart #2 name";
+	private static final String SETTING_NAME_IBS1 = "iBeamSmart #1 name";
 	
 	private AdditionalFiltersPanel addFiltersPanel;
 	private FocusPanel focusPanel;
@@ -159,14 +162,16 @@ public class MainFrame extends ConfigurableMainFrame{
 		}
 
 		/// iBeamSmart for focus-lock
-		if(((BoolSetting) settings.get(SETTING_USE_FL)).getValue()) {
-			focuslockpanel = new IBeamSmartPanel("Focus-lock");
+		if(((BoolSetting) settings.get(SETTING_USE_IBS1)).getValue()) {
+			String name = settings.get(SETTING_NAME_IBS1).getStringValue();
+			focuslockpanel = new IBeamSmartPanel(name);
 			tab.add("Focus-lock", focuslockpanel);
 		}
 		
 		/// iBeamSmart for booster
-		if(((BoolSetting) settings.get(SETTING_USE_FL)).getValue()) {
-			focuslockpanel = new IBeamSmartPanel("Booster");
+		if(((BoolSetting) settings.get(SETTING_USE_IBS2)).getValue()) {
+			String name = settings.get(SETTING_NAME_IBS2).getStringValue();
+			focuslockpanel = new IBeamSmartPanel(name);
 			tab.add("Booster", focuslockpanel);
 		}
 		
@@ -247,11 +252,13 @@ public class MainFrame extends ConfigurableMainFrame{
 	public HashMap<String, Setting> getDefaultPluginSettings() {
 		HashMap<String, Setting> defaultSettings = new HashMap<String, Setting>();
 		defaultSettings.put(SETTING_USE_TRIGGER, new BoolSetting(SETTING_USE_TRIGGER, "Check to use the trigger tab in the plugin.", true));
-		defaultSettings.put(SETTING_USE_BOOSTER, new BoolSetting(SETTING_USE_BOOSTER, "Check to use the iBeamSmart with trigger tab in the plugin.", true));
 		defaultSettings.put(SETTING_USE_ADDFW, new BoolSetting(SETTING_USE_ADDFW, "Check to use the additional filters tab in the plugin.", true));
 		defaultSettings.put(SETTING_USE_SINGLEFW, new BoolSetting(SETTING_USE_SINGLEFW, "Check to use a single FW panel, uncheck for a double FW panel.", true));
 		defaultSettings.put(SETTING_USE_QPD, new BoolSetting(SETTING_USE_QPD, "Check to use the QPD tab in the plugin.", true));
-		defaultSettings.put(SETTING_USE_FL, new BoolSetting(SETTING_USE_FL, "Check to use the iBeamSmart with fine tab in the plugin.", true));
+		defaultSettings.put(SETTING_USE_IBS2, new BoolSetting(SETTING_USE_IBS2, "Check to use the iBeamSmart #2.", true));
+		defaultSettings.put(SETTING_USE_IBS1, new BoolSetting(SETTING_USE_IBS1, "Check to use the iBeamSmart #1.", true));
+		defaultSettings.put(SETTING_NAME_IBS2, new StringSetting(SETTING_NAME_IBS2, "Name of iBeamSmart #2.", "iBeamSmart #2"));
+		defaultSettings.put(SETTING_NAME_IBS1, new StringSetting(SETTING_NAME_IBS1, "Name of iBeamSmart #1.", "iBeamSmart #1"));
 		
 		return defaultSettings;
 	}
