@@ -5,7 +5,7 @@ import javax.swing.JPanel;
 import org.micromanager.Studio;
 
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory.AcquisitionType;
-import de.embl.rieslab.htsmlm.filters.PropertyFilter;
+import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.PropertyFilter;
 
 public class ROIEvaluationAcquisition implements Acquisition {
 

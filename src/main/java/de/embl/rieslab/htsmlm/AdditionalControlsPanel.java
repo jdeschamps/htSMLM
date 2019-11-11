@@ -19,7 +19,7 @@ import de.embl.rieslab.emu.utils.exceptions.IncorrectUIParameterTypeException;
 import de.embl.rieslab.emu.utils.exceptions.IncorrectUIPropertyTypeException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIPropertyException;
-import de.embl.rieslab.htsmlm.flags.TwoStateFlag;
+import de.embl.rieslab.htsmlm.uipropertyflags.TwoStateFlag;
 
 public class AdditionalControlsPanel extends ConfigurablePanel{
 	

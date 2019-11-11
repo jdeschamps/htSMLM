@@ -1,4 +1,4 @@
-package de.embl.rieslab.htsmlm.filters;
+package de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters;
 
 import java.util.Arrays;
 import java.util.HashMap;

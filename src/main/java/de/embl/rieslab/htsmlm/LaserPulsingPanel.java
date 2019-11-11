@@ -30,7 +30,7 @@ import de.embl.rieslab.emu.utils.exceptions.IncorrectUIParameterTypeException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownInternalPropertyException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.htsmlm.components.LogarithmicJSlider;
-import de.embl.rieslab.htsmlm.flags.CameraExpFlag;
+import de.embl.rieslab.htsmlm.uipropertyflags.CameraExpFlag;
 
 public class LaserPulsingPanel extends ConfigurablePanel {
 	

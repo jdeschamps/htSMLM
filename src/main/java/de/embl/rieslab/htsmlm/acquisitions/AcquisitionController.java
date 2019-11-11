@@ -14,13 +14,12 @@ import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory;
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory.AcquisitionType;
 import de.embl.rieslab.htsmlm.acquisitions.ui.AcquisitionWizard;
+import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.AllocatedPropertyFilter;
+import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.NonConfigGroupPropertyFilter;
+import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.ReadOnlyPropertyFilter;
 import de.embl.rieslab.htsmlm.acquisitions.utils.AcquisitionInformationPanel;
 import de.embl.rieslab.htsmlm.acquisitions.wrappers.Experiment;
 import de.embl.rieslab.htsmlm.constants.HTSMLMConstants;
-import de.embl.rieslab.htsmlm.filters.AllocatedPropertyFilter;
-import de.embl.rieslab.htsmlm.filters.NonConfigGroupPropertyFilter;
-import de.embl.rieslab.htsmlm.filters.ReadOnlyPropertyFilter;
-import de.embl.rieslab.htsmlm.tasks.AcquisitionTask;
 import de.embl.rieslab.htsmlm.tasks.Task;
 import de.embl.rieslab.htsmlm.tasks.TaskHolder;
 

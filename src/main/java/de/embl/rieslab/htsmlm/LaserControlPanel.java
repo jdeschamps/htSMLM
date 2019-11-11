@@ -32,7 +32,7 @@ import de.embl.rieslab.emu.utils.exceptions.IncorrectUIPropertyTypeException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.htsmlm.components.TogglePower;
-import de.embl.rieslab.htsmlm.flags.LaserFlag;
+import de.embl.rieslab.htsmlm.uipropertyflags.LaserFlag;
 
 public class LaserControlPanel extends ConfigurablePanel {
 

@@ -1,4 +1,4 @@
-package de.embl.rieslab.htsmlm.tasks;
+package de.embl.rieslab.htsmlm.acquisitions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +19,8 @@ import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
 import de.embl.rieslab.htsmlm.acquisitions.ui.AcquisitionTab;
 import de.embl.rieslab.htsmlm.acquisitions.wrappers.Experiment;
+import de.embl.rieslab.htsmlm.tasks.Task;
+import de.embl.rieslab.htsmlm.tasks.TaskHolder;
 import mmcorej.CMMCore;
 
 public class AcquisitionTask implements Task<Integer>{

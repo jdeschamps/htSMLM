@@ -1,4 +1,4 @@
-package de.embl.rieslab.htsmlm.tasks;
+package de.embl.rieslab.htsmlm.activation;
 
 import ij.ImagePlus;
 import ij.plugin.ImageCalculator;
@@ -6,6 +6,8 @@ import ij.plugin.filter.GaussianBlur;
 import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
 import de.embl.rieslab.htsmlm.constants.HTSMLMConstants;
+import de.embl.rieslab.htsmlm.tasks.Task;
+import de.embl.rieslab.htsmlm.tasks.TaskHolder;
 import de.embl.rieslab.htsmlm.utils.NMS;
 
 import java.util.List;

@@ -40,9 +40,9 @@ import de.embl.rieslab.htsmlm.acquisitions.utils.AcquisitionDialogs;
 import de.embl.rieslab.htsmlm.acquisitions.utils.AcquisitionInformationPanel;
 import de.embl.rieslab.htsmlm.acquisitions.utils.ExperimentTreeSummary;
 import de.embl.rieslab.htsmlm.constants.HTSMLMConstants;
-import de.embl.rieslab.htsmlm.flags.FocusStabFlag;
-import de.embl.rieslab.htsmlm.flags.TwoStateFlag;
 import de.embl.rieslab.htsmlm.tasks.TaskHolder;
+import de.embl.rieslab.htsmlm.uipropertyflags.FocusStabFlag;
+import de.embl.rieslab.htsmlm.uipropertyflags.TwoStateFlag;
 
 public class AcquisitionPanel extends ConfigurablePanel{
 		

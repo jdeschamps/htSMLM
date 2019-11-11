@@ -1,4 +1,4 @@
-package de.embl.rieslab.htsmlm.filters;
+package de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters;
 
 import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 

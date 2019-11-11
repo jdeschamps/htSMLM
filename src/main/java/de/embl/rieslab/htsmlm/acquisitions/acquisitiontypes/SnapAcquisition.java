@@ -17,8 +17,8 @@ import org.micromanager.data.Image;
 import org.micromanager.data.internal.DefaultCoords;
 
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory.AcquisitionType;
-import de.embl.rieslab.htsmlm.filters.NoPropertyFilter;
-import de.embl.rieslab.htsmlm.filters.PropertyFilter;
+import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.NoPropertyFilter;
+import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.PropertyFilter;
 
 public class SnapAcquisition implements Acquisition{
 	

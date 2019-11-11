@@ -47,17 +47,17 @@ import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 import de.embl.rieslab.emu.ui.uiproperties.UIPropertyType;
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory;
-import de.embl.rieslab.htsmlm.filters.AllocatedPropertyFilter;
-import de.embl.rieslab.htsmlm.filters.AntiFlagPropertyFilter;
-import de.embl.rieslab.htsmlm.filters.FlagPropertyFilter;
-import de.embl.rieslab.htsmlm.filters.NonConfigGroupPropertyFilter;
-import de.embl.rieslab.htsmlm.filters.PropertyFilter;
-import de.embl.rieslab.htsmlm.filters.ReadOnlyPropertyFilter;
-import de.embl.rieslab.htsmlm.filters.TwoStatePropertyFilter;
-import de.embl.rieslab.htsmlm.flags.FilterWheelFlag;
-import de.embl.rieslab.htsmlm.flags.FocusLockFlag;
-import de.embl.rieslab.htsmlm.flags.FocusStabFlag;
-import de.embl.rieslab.htsmlm.flags.LaserFlag;
+import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.AllocatedPropertyFilter;
+import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.AntiFlagPropertyFilter;
+import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.FlagPropertyFilter;
+import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.NonConfigGroupPropertyFilter;
+import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.PropertyFilter;
+import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.ReadOnlyPropertyFilter;
+import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.TwoStatePropertyFilter;
+import de.embl.rieslab.htsmlm.uipropertyflags.FilterWheelFlag;
+import de.embl.rieslab.htsmlm.uipropertyflags.FocusLockFlag;
+import de.embl.rieslab.htsmlm.uipropertyflags.FocusStabFlag;
+import de.embl.rieslab.htsmlm.uipropertyflags.LaserFlag;
 
 /**
  * This class is super messy and difficult to read... Need to go over it again.

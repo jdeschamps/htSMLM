@@ -29,7 +29,7 @@ import de.embl.rieslab.emu.utils.exceptions.IncorrectUIParameterTypeException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.htsmlm.constants.HTSMLMConstants;
-import de.embl.rieslab.htsmlm.flags.LaserFlag;
+import de.embl.rieslab.htsmlm.uipropertyflags.LaserFlag;
 import de.embl.rieslab.htsmlm.utils.BinaryConverter;
 
 

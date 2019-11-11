@@ -21,7 +21,7 @@ import de.embl.rieslab.emu.utils.ColorRepository;
 import de.embl.rieslab.emu.utils.exceptions.IncorrectUIParameterTypeException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIPropertyException;
-import de.embl.rieslab.htsmlm.flags.FilterWheelFlag;
+import de.embl.rieslab.htsmlm.uipropertyflags.FilterWheelFlag;
 
 public class AdditionalFiltersPanel extends ConfigurablePanel {
 

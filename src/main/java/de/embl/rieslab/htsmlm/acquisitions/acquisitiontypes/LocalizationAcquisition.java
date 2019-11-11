@@ -17,8 +17,8 @@ import org.micromanager.acquisition.internal.DefaultAcquisitionManager;
 import org.micromanager.data.Datastore;
 
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory.AcquisitionType;
-import de.embl.rieslab.htsmlm.filters.NoPropertyFilter;
-import de.embl.rieslab.htsmlm.filters.PropertyFilter;
+import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.NoPropertyFilter;
+import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.PropertyFilter;
 import de.embl.rieslab.htsmlm.tasks.TaskHolder;
 
 public class LocalizationAcquisition implements Acquisition {

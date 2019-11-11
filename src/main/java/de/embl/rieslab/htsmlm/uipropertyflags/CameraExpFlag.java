@@ -1,4 +1,4 @@
-package de.embl.rieslab.htsmlm.flags;
+package de.embl.rieslab.htsmlm.uipropertyflags;
 
 import de.embl.rieslab.emu.ui.uiproperties.flag.PropertyFlag;
 
