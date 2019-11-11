@@ -267,6 +267,6 @@ public class MainFrame extends ConfigurableMainFrame{
 	protected String getPluginInfo() {
 		return "htSMLM was developped by Joran Deschamps, EMBL (2016-2019). It is intended as an intuitive Micro-Manager "
 				+ "interface for a localization microscope, capable of long-term unsupervising imaging and automated localization microscopy."
-				+ "For more details, visit the github repository: https://github.com/jdeschamps/htSMLM.";
+				+ " For more details, visit the github repository: https://github.com/jdeschamps/htSMLM. \n";
 	}
 }
