@@ -69,7 +69,7 @@ public class AcquisitionTab extends JPanel {
 	private static final long serialVersionUID = 7966565586677957738L;
 
 	public final static String KEY_IGNORED = "Ignored";
-	private final static String KEY_MMCONF = "Configuration settings";
+	private final static String KEY_MMCONF = "Preset groups";
 
 	private AcquisitionWizard wizard_;
 	private AcquisitionFactory factory_;
