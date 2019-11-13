@@ -37,11 +37,8 @@ import javax.swing.plaf.basic.BasicSliderUI;
  */
 public class LogarithmicJSlider extends JSlider {
 
+	private static final long serialVersionUID = 1L;
 
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = -1252749148757719750L;
 	private int maxwithin=10000;
 
 	public LogarithmicJSlider(int orientation) {

@@ -34,7 +34,7 @@ import de.embl.rieslab.htsmlm.uipropertyflags.CameraExpFlag;
 
 public class LaserPulsingPanel extends ConfigurablePanel {
 	
-	private static final long serialVersionUID = 1379090644780233443L;
+	private static final long serialVersionUID = 1L;
 
 	//////// Components
 	private JTextField textfieldmax_;

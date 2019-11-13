@@ -25,10 +25,7 @@ import de.embl.rieslab.htsmlm.uipropertyflags.FilterWheelFlag;
 
 public class AdditionalFiltersPanel extends ConfigurablePanel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 2425461439930227137L;
+	private static final long serialVersionUID = 1L;
 	
 	//////// Components
 	private JToggleButton[] togglebuttons1_;

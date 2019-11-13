@@ -35,7 +35,7 @@ import de.embl.rieslab.htsmlm.utils.BinaryConverter;
 
 public class LaserTriggerPanel extends ConfigurablePanel {
 
-	private static final long serialVersionUID = -6553153910855055671L;
+	private static final long serialVersionUID = 1L;
 	
 	//////// Components
 	private JLabel labelbehaviour_;

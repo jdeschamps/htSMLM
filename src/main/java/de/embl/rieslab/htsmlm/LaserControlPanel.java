@@ -36,7 +36,7 @@ import de.embl.rieslab.htsmlm.uipropertyflags.LaserFlag;
 
 public class LaserControlPanel extends ConfigurablePanel {
 
-	private static final long serialVersionUID = -6553153910855055671L;
+	private static final long serialVersionUID = 1L;
 	
 	//////// Components
 	private JTextField textfieldUser_;

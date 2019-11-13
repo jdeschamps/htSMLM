@@ -7,11 +7,7 @@ import javax.swing.JToggleButton;
 
 public class ToggleSlider extends JToggleButton {
 
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -2208822483619747706L;
+	private static final long serialVersionUID = 1L;
 
 	public ToggleSlider(){
 		this.setPreferredSize(new Dimension(65,28));

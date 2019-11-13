@@ -40,10 +40,7 @@ import de.embl.rieslab.htsmlm.updaters.TimeChartUpdater;
  */
 public class FocusPanel extends ConfigurablePanel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 6190484716500047549L;
+	private static final long serialVersionUID = 1L;
 
 	//////// Components
 	private JLabel poslabel_;

@@ -65,8 +65,7 @@ import de.embl.rieslab.htsmlm.uipropertyflags.LaserFlag;
  */
 public class AcquisitionTab extends JPanel {
 
-
-	private static final long serialVersionUID = 7966565586677957738L;
+	private static final long serialVersionUID = 1L;
 
 	public final static String KEY_IGNORED = "Ignored";
 	private final static String KEY_MMCONF = "Preset groups";
