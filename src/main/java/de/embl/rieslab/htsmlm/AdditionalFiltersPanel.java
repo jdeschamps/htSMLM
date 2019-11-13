@@ -252,7 +252,7 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 		if(SLIDER1_POSITION.equals(name)){
 			int pos;
 			try {
-				pos = ((MultiStateUIProperty) getUIProperty(SLIDER1_POSITION)).getStatePositionNumber(newvalue);
+				pos = ((MultiStateUIProperty) getUIProperty(SLIDER1_POSITION)).getStateIndex(newvalue);
 				if(pos<togglebuttons1_.length){
 					togglebuttons1_[pos].setSelected(true);
 				}
@@ -262,7 +262,7 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 		} else if(SLIDER2_POSITION.equals(name)){
 			int pos;
 			try {
-				pos = ((MultiStateUIProperty) getUIProperty(SLIDER2_POSITION)).getStatePositionNumber(newvalue);			
+				pos = ((MultiStateUIProperty) getUIProperty(SLIDER2_POSITION)).getStateIndex(newvalue);			
 				if(pos<togglebuttons2_.length){
 					togglebuttons2_[pos].setSelected(true);
 				}

@@ -218,7 +218,7 @@ public class DualFWPanel extends AbstractFiltersPanel {
 		if(FW_POSITION1.equals(name)){
 			int pos;
 			try {
-				pos = ((MultiStateUIProperty) getUIProperty(FW_POSITION1)).getStatePositionNumber(newvalue);
+				pos = ((MultiStateUIProperty) getUIProperty(FW_POSITION1)).getStateIndex(newvalue);
 				if(pos<togglebuttons1_.length){
 					togglebuttons1_[pos].setSelected(true);
 				}
@@ -228,7 +228,7 @@ public class DualFWPanel extends AbstractFiltersPanel {
 		} else if(FW_POSITION2.equals(name)){
 			int pos;
 			try {
-				pos = ((MultiStateUIProperty) getUIProperty(FW_POSITION2)).getStatePositionNumber(newvalue);
+				pos = ((MultiStateUIProperty) getUIProperty(FW_POSITION2)).getStateIndex(newvalue);
 				if(pos<togglebuttons2_.length){
 					togglebuttons2_[pos].setSelected(true);
 				}

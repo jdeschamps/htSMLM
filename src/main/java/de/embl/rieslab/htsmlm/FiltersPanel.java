@@ -150,7 +150,7 @@ public class FiltersPanel extends AbstractFiltersPanel {
 	public void propertyhasChanged(String name, String newvalue) {
 		if(FW_POSITION.equals(name)){
 			try {
-				int pos = ((MultiStateUIProperty) getUIProperty(FW_POSITION)).getStatePositionNumber(newvalue);
+				int pos = ((MultiStateUIProperty) getUIProperty(FW_POSITION)).getStateIndex(newvalue);
 				if(pos<togglebuttons_.length){
 					togglebuttons_[pos].setSelected(true);
 				}

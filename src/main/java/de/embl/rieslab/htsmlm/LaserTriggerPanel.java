@@ -154,10 +154,10 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 		sequence_ = BinaryConverter.getBinary16bits(HTSMLMConstants.FPGA_MAX_SEQUENCE);
 		color_ = Color.black;		
 		
-		addUIParameter(new StringUIParameter(this, PARAM_TITLE,"Name of the laser.",title_));
+		addUIParameter(new StringUIParameter(this, PARAM_TITLE,"Name of the laser, as displayed in the border title.",title_));
 		addUIParameter(new ComboUIParameter(this, PARAM_DEF_BEHAVIOUR,"Default trigger behaviour of the laser (see Micro-Mojo FPGA).",HTSMLMConstants.FPGA_BEHAVIOURS,4));
 		addUIParameter(new StringUIParameter(this, PARAM_DEF_SEQUENCE,"Default triggering sequence of the laser (see Micro-Mojo FPGA).",sequence_));
-		addUIParameter(new ColorUIParameter(this, PARAM_COLOR,"Display color of the laser.",color_)); 
+		addUIParameter(new ColorUIParameter(this, PARAM_COLOR,"Color of the laser name.",color_)); 
 	}
 
 	@Override
@@ -227,9 +227,9 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 	@Override
 	public String getDescription() {
 		return "The "+getPanelLabel()+" panel controls the triggering of laser thanks to the MicroMojo FPGA system. The triggering behaviour are either on/off, "
-				+ "or pulsing on rising/falling edge or simply by following the camera trigger. The pulse length can be set through a text area or a slider. "
+				+ ",pulsing on rising/falling edge or simply following the camera trigger. The pulse length can be set through a text area or a slider. "
 				+ "Finally, the laser can be triggered following a sequence of 0 (off) and 1 (triggered). The sequence is 16 bits long. If the sequence set"
-				+ "in the text area is made of 0 and 1, albeit with the wrong size, the text is colored in blue. When wrong characters are entered, the text"
+				+ "in the text area is made of 0 and 1, albeit with the wrong size, the text is colored in blue. When wrong characters are entered the text"
 				+ "turns red.";
 	}
 

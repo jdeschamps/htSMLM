@@ -122,20 +122,20 @@ public class QPDPanel extends ConfigurablePanel {
 
 	@Override
 	protected void initializeProperties() {
-		addUIProperty(new UIProperty(this, QPD_X,"Read-out property of the QPD X signal."));
-		addUIProperty(new UIProperty(this, QPD_Y,"Read-out property of the QPD Y signal."));
-		addUIProperty(new UIProperty(this, QPD_Z,"Read-out property of the QPD Z signal."));
+		addUIProperty(new UIProperty(this, QPD_X,"X signal of the QPD."));
+		addUIProperty(new UIProperty(this, QPD_Y,"Y signal of the QPD."));
+		addUIProperty(new UIProperty(this, QPD_Z,"Sum signal of the QPD."));
 	}
 
 	@Override
 	protected void initializeParameters() {
-		xymax_ = 700;
-		zmax_ = 700;
+		xymax_ = 1024;
+		zmax_ = 1024;
 		idle_ = 100;
 		
-		addUIParameter(new IntegerUIParameter(this, PARAM_XYMAX,"Maximum X and Y signals value from the QPD to display.",xymax_));
-		addUIParameter(new IntegerUIParameter(this, PARAM_ZMAX,"Maximum Z signal value from the QPD to display.",zmax_));
-		addUIParameter(new IntegerUIParameter(this, PARAM_IDLE,"Idle time (ms) of the QPD signals monitoring.",idle_)); // thread idle time
+		addUIParameter(new IntegerUIParameter(this, PARAM_XYMAX,"Maximum X and Y signals value from the QPD.",xymax_));
+		addUIParameter(new IntegerUIParameter(this, PARAM_ZMAX,"Maximum Sum signal value from the QPD.",zmax_));
+		addUIParameter(new IntegerUIParameter(this, PARAM_IDLE,"Idle time (ms) in between two measurements of the QPD signals.",idle_)); // thread idle time
 	}
 
 	@Override
@@ -191,7 +191,7 @@ public class QPDPanel extends ConfigurablePanel {
 
 	@Override
 	public String getDescription() {
-		return "The "+getPanelLabel()+" panel follows the values of a QPD. Three signals are displayed: X and Y in a 2D chart and Z in a progress bar. The maximum values of each component can be set in the parameters.";
+		return "The "+getPanelLabel()+" panel plots the values of QPD signals. Three signals are displayed: X and Y in a 2D chart and Sum in a progress bar. The maximum values of each component can be set in the parameters.";
 	}
 
 	@Override
