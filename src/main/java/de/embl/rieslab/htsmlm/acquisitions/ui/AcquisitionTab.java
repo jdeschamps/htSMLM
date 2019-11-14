@@ -39,7 +39,6 @@ import org.micromanager.internal.utils.SliderPanel;
 import de.embl.rieslab.emu.micromanager.mmproperties.MMProperty;
 import de.embl.rieslab.emu.micromanager.presetgroups.MMPresetGroup;
 import de.embl.rieslab.emu.micromanager.presetgroups.MMPresetGroupRegistry;
-import de.embl.rieslab.emu.ui.uiproperties.ImmutableMultiStateUIProperty;
 import de.embl.rieslab.emu.ui.uiproperties.MultiStateUIProperty;
 import de.embl.rieslab.emu.ui.uiproperties.SingleStateUIProperty;
 import de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
@@ -597,14 +596,6 @@ public class AcquisitionTab extends JPanel {
 						model.addRow(new Object[] { prop.getFriendlyName(),
 								((MultiStateUIProperty) prop).getStateNameFromValue(prop.getPropertyValue()) });
 					}
-				} else if (prop.getType().equals(UIPropertyType.IMMUTMULTISTATE)) {
-					if(cachedPropertyValues_.containsKey(filteredProperties[i])) { // take it from the cached value
-						model.addRow(new Object[] { prop.getFriendlyName(),
-							((ImmutableMultiStateUIProperty) prop).getStateName(cachedPropertyValues_.get(filteredProperties[i])) });
-					} else {
-						model.addRow(new Object[] { prop.getFriendlyName(),
-								((ImmutableMultiStateUIProperty) prop).getStateName(prop.getPropertyValue()) });
-					}
 				} else {
 					if(cachedPropertyValues_.containsKey(filteredProperties[i])) { // take it from the cached value
 						model.addRow(new Object[] { prop.getFriendlyName(), cachedPropertyValues_.get(filteredProperties[i]) });
@@ -644,10 +635,6 @@ public class AcquisitionTab extends JPanel {
 					} else if (props_.get(propsfriendlyname_.get(s)) instanceof MultiStateUIProperty) {
 						return new DefaultCellEditor(new JComboBox<String>(
 								((MultiStateUIProperty) props_.get(propsfriendlyname_.get(s))).getStatesName()));
-					} else if (props_.get(propsfriendlyname_.get(s)) instanceof ImmutableMultiStateUIProperty) {
-						return new DefaultCellEditor(new JComboBox<String>(
-								((ImmutableMultiStateUIProperty) props_.get(propsfriendlyname_.get(s)))
-										.getStatesName()));
 					} else if (props_.get(propsfriendlyname_.get(s)).hasMMPropertyAllowedValues()) {
 						return new DefaultCellEditor(
 								new JComboBox<String>(props_.get(propsfriendlyname_.get(s)).getAllowedValues()));

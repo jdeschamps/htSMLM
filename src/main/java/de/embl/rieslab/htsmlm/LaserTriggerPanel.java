@@ -7,7 +7,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.util.LinkedHashMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
@@ -19,16 +18,14 @@ import javax.swing.border.TitledBorder;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.swinglisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.uiparameters.ColorUIParameter;
-import de.embl.rieslab.emu.ui.uiparameters.ComboUIParameter;
 import de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
-import de.embl.rieslab.emu.ui.uiproperties.ImmutableMultiStateUIProperty;
+import de.embl.rieslab.emu.ui.uiproperties.MultiStateUIProperty;
 import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 import de.embl.rieslab.emu.utils.ColorRepository;
 import de.embl.rieslab.emu.utils.EmuUtils;
 import de.embl.rieslab.emu.utils.exceptions.IncorrectUIParameterTypeException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIPropertyException;
-import de.embl.rieslab.htsmlm.constants.HTSMLMConstants;
 import de.embl.rieslab.htsmlm.uipropertyflags.LaserFlag;
 import de.embl.rieslab.htsmlm.utils.BinaryConverter;
 
@@ -41,7 +38,7 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 	private JLabel labelbehaviour_;
 	private JLabel labelpulselength_;
 	private JLabel labelsequence_;
-	private JComboBox<String> combobehaviour_;	
+	private JComboBox<String> comboMode;	
 	//private JCheckBox usesequence_;
 	private JTextField textfieldpulselength_;
 	private JTextField textfieldsequence_;
@@ -49,17 +46,22 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 	private TitledBorder border_;
 
 	//////// Properties
-	private final static String TRIGGER_BEHAVIOUR = "mode";
+	private final static String TRIGGER_MODE = "mode";
 	private final static String TRIGGER_SEQUENCE = "sequence";
 	private final static String PULSE_LENGTH = "pulse duration";
 	
 	//////// Parameters
 	private final static String PARAM_TITLE = "Name";
 	private final static String PARAM_COLOR = "Color";
-	private final static String PARAM_DEF_BEHAVIOUR = "Default mode";
-	private final static String PARAM_DEF_SEQUENCE = "Default sequence";
-	private String title_, behaviour_, sequence_;
+	private String title_;
 	private Color color_;
+	
+	// Mojo FPGA
+	public final static int FPGA_MAX_PULSE = 65535;
+	public final static int FPGA_MAX_SEQUENCE = 65535;
+	public final static int FPGA_SEQUENCE_LENGTH = 16;
+	public final static String[] FPGA_BEHAVIOURS = {"Off","On","Rising","Falling","Camera"};
+	
 	
 	public LaserTriggerPanel(String label) {
 		super(label);
@@ -82,15 +84,15 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 		labelpulselength_ = new JLabel("Pulse length (us):");
 		labelsequence_ = new JLabel("Trigger sequence:");
 
-		/////////////////////////////////////////////////////// behaviour combobox
-		combobehaviour_ = new JComboBox<String>(HTSMLMConstants.FPGA_BEHAVIOURS);
+		/////////////////////////////////////////////////////// mode combobox
+		comboMode = new JComboBox<String>(FPGA_BEHAVIOURS);
 		//combobehaviour_.setMinimumSize(new Dimension(40,10));
 
 		/////////////////////////////////////////////////////// pulse length
 		textfieldpulselength_ = new JTextField();
 		//textfieldpulselength_.setPreferredSize(new Dimension(60,20));
 		
-		sliderpulse_ = new JSlider(JSlider.HORIZONTAL, 0, HTSMLMConstants.FPGA_MAX_PULSE, 0);
+		sliderpulse_ = new JSlider(JSlider.HORIZONTAL, 0, FPGA_MAX_PULSE, 0);
 		
 
 		/////////////////////////////////////////////////////// sequence
@@ -126,7 +128,7 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 		c.gridx = 3;
 		c.gridy = 0;
 		c.weightx = 1;
-		this.add(combobehaviour_,c);
+		this.add(comboMode,c);
 
 		c.gridy = 1;
 		this.add(textfieldpulselength_,c);
@@ -137,38 +139,47 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 	}
 
 	@Override
-	protected void initializeProperties() {	
-		LinkedHashMap<String,String> map = new LinkedHashMap<String,String>();
-		for(int i=0;i<HTSMLMConstants.FPGA_BEHAVIOURS.length;i++){
-			map.put(HTSMLMConstants.FPGA_BEHAVIOURS[i], String.valueOf(i));
+	protected void initializeProperties() {
+		addUIProperty(new MultiStateUIProperty(this, getPropertyLabel(TRIGGER_MODE),
+				"From Micro-Mojo FPGA: property dictating the behaviour of the laser trigger, from camera to pulsing.",
+				new LaserFlag(), FPGA_BEHAVIOURS.length));
+		
+		try {
+			((MultiStateUIProperty) getUIProperty(TRIGGER_MODE)).setStateNames(FPGA_BEHAVIOURS);
+		} catch (UnknownUIPropertyException e) {
+			e.printStackTrace();
 		}
 		
-		addUIProperty(new ImmutableMultiStateUIProperty(this, getPropertyLabel(TRIGGER_BEHAVIOUR),"From Micro-Mojo FPGA: property dictating the behaviour of the laser trigger, from camera to pulsing.", new LaserFlag(),map));
-		addUIProperty(new UIProperty(this, getPropertyLabel(TRIGGER_SEQUENCE),"From Micro-Mojo FPGA: trigger sequence property, following a 16 bits pattern of 0 (not triggered) and 1 (triggered).", new LaserFlag()));
-		addUIProperty(new UIProperty(this, getPropertyLabel(PULSE_LENGTH),"From Micro-Mojo FPGA: duration of the laser pulses.", new LaserFlag()));
+		addUIProperty(new UIProperty(this, getPropertyLabel(TRIGGER_SEQUENCE),
+				"From Micro-Mojo FPGA: trigger sequence property, following a 16 bits pattern of 0 (not triggered) and 1 (triggered).",
+				new LaserFlag()));
+		addUIProperty(new UIProperty(this, getPropertyLabel(PULSE_LENGTH),
+				"From Micro-Mojo FPGA: duration of the laser pulses.", new LaserFlag()));
 	}
 
 	@Override
 	protected void initializeParameters() {
 		title_ = "Laser";
-		sequence_ = BinaryConverter.getBinary16bits(HTSMLMConstants.FPGA_MAX_SEQUENCE);
 		color_ = Color.black;		
 		
+		String modes = FPGA_BEHAVIOURS[0];
+		for(int i=1;i<FPGA_BEHAVIOURS.length;i++) {
+			modes = modes+","+FPGA_BEHAVIOURS[i];
+		}
+		
 		addUIParameter(new StringUIParameter(this, PARAM_TITLE,"Name of the laser, as displayed in the border title.",title_));
-		addUIParameter(new ComboUIParameter(this, PARAM_DEF_BEHAVIOUR,"Default trigger behaviour of the laser (see Micro-Mojo FPGA).",HTSMLMConstants.FPGA_BEHAVIOURS,4));
-		addUIParameter(new StringUIParameter(this, PARAM_DEF_SEQUENCE,"Default triggering sequence of the laser (see Micro-Mojo FPGA).",sequence_));
 		addUIParameter(new ColorUIParameter(this, PARAM_COLOR,"Color of the laser name.",color_)); 
 	}
 
 	@Override
 	public void propertyhasChanged(String name, String newvalue) {
-		if(TRIGGER_BEHAVIOUR.equals(getPropertyLabel(name))){
-			combobehaviour_.setSelectedItem(newvalue);
+		if(TRIGGER_MODE.equals(getPropertyLabel(name))){
+			comboMode.setSelectedItem(newvalue);
 		} else if(TRIGGER_SEQUENCE.equals(getPropertyLabel(name))){
 			if(EmuUtils.isInteger(newvalue)){
 				textfieldsequence_.setText(BinaryConverter.getBinary16bits(Integer.parseInt(newvalue)));
 			} else {
-				textfieldsequence_.setText(BinaryConverter.getBinary16bits(HTSMLMConstants.FPGA_MAX_SEQUENCE));
+				textfieldsequence_.setText(BinaryConverter.getBinary16bits(FPGA_MAX_SEQUENCE));
 			}
 		} else if(PULSE_LENGTH.equals(getPropertyLabel(name))){
 			textfieldpulselength_.setText(newvalue);
@@ -185,7 +196,7 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 				title_ = getStringUIParameterValue(PARAM_TITLE);
 				border_.setTitle(title_);
 				this.repaint();
-				getUIProperty(getPropertyLabel(TRIGGER_BEHAVIOUR)).setFriendlyName(title_+" "+TRIGGER_BEHAVIOUR);
+				getUIProperty(getPropertyLabel(TRIGGER_MODE)).setFriendlyName(title_+" "+TRIGGER_MODE);
 				getUIProperty(getPropertyLabel(TRIGGER_SEQUENCE)).setFriendlyName(title_+" "+TRIGGER_SEQUENCE);
 				getUIProperty(getPropertyLabel(PULSE_LENGTH)).setFriendlyName(title_+" "+PULSE_LENGTH);
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException | UnknownUIPropertyException e) {
@@ -195,24 +206,7 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 			try {
 				color_ = getColorUIParameterValue(PARAM_COLOR);
 				border_.setTitleColor(color_);
-				this.repaint();			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
-					e.printStackTrace();
-				}
-		} else if(PARAM_DEF_BEHAVIOUR.equals(label)){
-			try {
-				behaviour_ = getComboUIParameterValue(PARAM_DEF_BEHAVIOUR);
-				combobehaviour_.setSelectedItem(behaviour_); // this triggers the action listener			
-			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
-				e.printStackTrace();
-			}
-		} else if(PARAM_DEF_SEQUENCE.equals(label)){
-			try {
-				String newval = getStringUIParameterValue(PARAM_DEF_SEQUENCE);
-				if(BinaryConverter.is16bits(newval)){
-					sequence_ = newval;
-					textfieldsequence_.setText(sequence_); // setting text on JTextField does not trigger the action listeners in this case
-					setUIPropertyValue(getPropertyLabel(TRIGGER_SEQUENCE),String.valueOf(BinaryConverter.getDecimal16bits(sequence_)));
-				}
+				this.repaint();			
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
@@ -251,20 +245,20 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 	protected void addComponentListeners() {
 		
 		// updates TRIGGER_BEHAVIOUR based on the index of the JComboBox
-		SwingUIListeners.addActionListenerOnSelectedIndex(this, getPropertyLabel(TRIGGER_BEHAVIOUR), combobehaviour_);
+		SwingUIListeners.addActionListenerOnSelectedIndex(this, getPropertyLabel(TRIGGER_MODE), comboMode);
 		
 		// Updates JSlider when updating PULSE_LENGTH from the JTextField
 		textfieldpulselength_.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {	
 				String s = textfieldpulselength_.getText();
 				if (EmuUtils.isInteger(s)) {
-					if(Integer.parseInt(s)<=HTSMLMConstants.FPGA_MAX_PULSE){
+					if(Integer.parseInt(s)<=FPGA_MAX_PULSE){
 						sliderpulse_.setValue(Integer.parseInt(s));
 						setUIPropertyValue(getPropertyLabel(PULSE_LENGTH),s);
 					} else {
-						sliderpulse_.setValue(HTSMLMConstants.FPGA_MAX_PULSE);
-						textfieldpulselength_.setText(String.valueOf(HTSMLMConstants.FPGA_MAX_PULSE));
-						setUIPropertyValue(getPropertyLabel(PULSE_LENGTH),String.valueOf(HTSMLMConstants.FPGA_MAX_PULSE));
+						sliderpulse_.setValue(FPGA_MAX_PULSE);
+						textfieldpulselength_.setText(String.valueOf(FPGA_MAX_PULSE));
+						setUIPropertyValue(getPropertyLabel(PULSE_LENGTH),String.valueOf(FPGA_MAX_PULSE));
 					}
 				}
 	         }
@@ -277,13 +271,13 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 			public void focusLost(FocusEvent ex) {
 				String s = textfieldpulselength_.getText();
 				if (EmuUtils.isInteger(s)) {
-					if (Integer.parseInt(s) <= HTSMLMConstants.FPGA_MAX_PULSE) {
+					if (Integer.parseInt(s) <= FPGA_MAX_PULSE) {
 						sliderpulse_.setValue(Integer.parseInt(s));
 						setUIPropertyValue(getPropertyLabel(PULSE_LENGTH), s);
 					} else {
-						sliderpulse_.setValue(HTSMLMConstants.FPGA_MAX_PULSE);
-						textfieldpulselength_.setText(String.valueOf(HTSMLMConstants.FPGA_MAX_PULSE));
-						setUIPropertyValue(getPropertyLabel(PULSE_LENGTH),String.valueOf(HTSMLMConstants.FPGA_MAX_PULSE));
+						sliderpulse_.setValue(FPGA_MAX_PULSE);
+						textfieldpulselength_.setText(String.valueOf(FPGA_MAX_PULSE));
+						setUIPropertyValue(getPropertyLabel(PULSE_LENGTH),String.valueOf(FPGA_MAX_PULSE));
 					}
 				}
 			}
