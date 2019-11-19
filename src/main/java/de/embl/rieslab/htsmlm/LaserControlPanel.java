@@ -22,7 +22,6 @@ import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.swinglisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.uiparameters.BoolUIParameter;
 import de.embl.rieslab.emu.ui.uiparameters.ColorUIParameter;
-import de.embl.rieslab.emu.ui.uiparameters.IntegerUIParameter;
 import de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
 import de.embl.rieslab.emu.ui.uiproperties.RescaledUIProperty;
 import de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
@@ -53,12 +52,10 @@ public class LaserControlPanel extends ConfigurablePanel {
 	
 	//////// Parameters
 	public final static String PARAM_TITLE = "Name";
-	public final static String PARAM_COLOR = "Color";	
-	public final static String PARAM_SCALING = "Max value";	
+	public final static String PARAM_COLOR = "Color";
 	public final static String PARAM_ONOFF = "Use on/off";	
 	private String title_;	
 	private Color color_;
-	private int scaling_;
 	private boolean useOnOff_;
 	
 	/////// Convenience variables
@@ -240,12 +237,10 @@ public class LaserControlPanel extends ConfigurablePanel {
 	protected void initializeParameters() {
 		title_ = "Laser";	
 		color_ = Color.black;
-		scaling_ = 100;
 		useOnOff_ = true;
 		
 		addUIParameter(new StringUIParameter(this, PARAM_TITLE,"Panel title.",title_));
 		addUIParameter(new ColorUIParameter(this, PARAM_COLOR,"Laser color.",color_));
-		addUIParameter(new IntegerUIParameter(this, PARAM_SCALING,"Value of the laser power property at 100% power.",scaling_));
 		addUIParameter(new BoolUIParameter(this, PARAM_ONOFF,"Use On/Off button.",useOnOff_));
 	}
 
@@ -296,14 +291,6 @@ public class LaserControlPanel extends ConfigurablePanel {
 				border_.setTitleColor(color_);
 				this.repaint();
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
-				e.printStackTrace();
-			}
-		} else if(PARAM_SCALING.equals(label)){
-			try {
-				scaling_ = getIntegerUIParameterValue(PARAM_SCALING);
-				double rescaleFactor = scaling_/100.;
-				((RescaledUIProperty) this.getUIProperty(getPropertylabel(LASER_PERCENTAGE))).setScalingFactors(rescaleFactor, 0.);
-			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException | UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
 		} else if(PARAM_ONOFF.equals(label)){

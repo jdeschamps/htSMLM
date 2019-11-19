@@ -403,7 +403,7 @@ public class FocusPanel extends ConfigurablePanel {
 	@Override
 	public void shutDown() {
 		updater_.stopUpdater();
-		setUIPropertyValue(FOCUS_STABILIZATION,TwoStateUIProperty.getOffStateName());
+		setUIPropertyValue(FOCUS_STABILIZATION,TwoStateUIProperty.getOffStateLabel());
 	}
 
 	@Override

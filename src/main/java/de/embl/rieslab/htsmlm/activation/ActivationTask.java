@@ -97,6 +97,8 @@ public class ActivationTask implements Task<Double> {
 
 	private void getN(double sdcoeff, double cutoff, double dT, boolean autocutoff) {
 		if (core_.isSequenceRunning() && core_.getBytesPerPixel() == 2) {
+			System.out.println("bytes per pixels: core_.getBytesPerPixel()");
+			
 			int width, height;
 			double tempcutoff;
 			boolean abort = false;
@@ -158,7 +160,6 @@ public class ActivationTask implements Task<Double> {
 
 			if (!abort) {
 				try {
-					System.out.println("got frames");
 					ip = new ShortProcessor(width, height);
 					ip2 = new ShortProcessor(width, height);
 	

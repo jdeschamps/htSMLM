@@ -129,7 +129,7 @@ public class BrightFieldAcquisition implements Acquisition{
 	@Override
 	public boolean performAcquisition(Studio studio, String name, String path) {
 		// turn on BF
-		bfprop_.setPropertyValue(TwoStateUIProperty.getOnStateName());
+		bfprop_.setPropertyValue(TwoStateUIProperty.getOnStateLabel());
 
 		// create datastore and write an image to it
 		try {
@@ -152,7 +152,7 @@ public class BrightFieldAcquisition implements Acquisition{
 		}
 		
 		// turn off BF
-		bfprop_.setPropertyValue(TwoStateUIProperty.getOffStateName());
+		bfprop_.setPropertyValue(TwoStateUIProperty.getOffStateLabel());
 
 		return true;
 	}

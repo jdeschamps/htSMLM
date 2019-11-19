@@ -127,7 +127,7 @@ public class ZStackAcquisition implements Acquisition {
 		running_ = true;
 		
 		if(zstab_ && zstabuse_){
-			stabprop_.setPropertyValue(TwoStateUIProperty.getOffStateName());
+			stabprop_.setPropertyValue(TwoStateUIProperty.getOffStateLabel());
 		}
 		
 			
@@ -180,7 +180,7 @@ public class ZStackAcquisition implements Acquisition {
 		}
 
 		if(zstab_ && zstabuse_){
-			stabprop_.setPropertyValue(TwoStateUIProperty.getOnStateName());
+			stabprop_.setPropertyValue(TwoStateUIProperty.getOnStateLabel());
 		}
 		
 		running_ = false;

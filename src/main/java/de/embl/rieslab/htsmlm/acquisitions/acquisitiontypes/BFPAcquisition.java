@@ -129,7 +129,7 @@ public class BFPAcquisition implements Acquisition{
 	@Override
 	public boolean performAcquisition(Studio studio, String name, String path) {
 		// turn on BF
-		bfpprop_.setPropertyValue(TwoStateUIProperty.getOnStateName());
+		bfpprop_.setPropertyValue(TwoStateUIProperty.getOnStateLabel());
 
 		// create datastore and write an image to it
 		try {
@@ -152,7 +152,7 @@ public class BFPAcquisition implements Acquisition{
 		}
 		
 		// turn off BF
-		bfpprop_.setPropertyValue(TwoStateUIProperty.getOffStateName());
+		bfpprop_.setPropertyValue(TwoStateUIProperty.getOffStateLabel());
 		
 		return true;
 	}

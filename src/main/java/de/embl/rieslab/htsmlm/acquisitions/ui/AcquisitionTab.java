@@ -571,7 +571,7 @@ public class AcquisitionTab extends JPanel {
 			if (acqPropertyValues.containsKey(filteredProperties[i])) { // if the property is found in the acquisition
 																		// properties
 				if (prop instanceof TwoStateUIProperty) {
-					if (acqPropertyValues.get(filteredProperties[i]).equals(TwoStateUIProperty.getOnStateName())) {
+					if (acqPropertyValues.get(filteredProperties[i]).equals(TwoStateUIProperty.getOnStateLabel())) {
 						model.addRow(new Object[] { prop.getFriendlyName(), true });
 					} else {
 						model.addRow(new Object[] { prop.getFriendlyName(), false });
@@ -687,9 +687,9 @@ public class AcquisitionTab extends JPanel {
 					properties.put(propsfriendlyname_.get(s), (String) model.getValueAt(k, 1));
 				} else {
 					if ((Boolean) model.getValueAt(k, 1)) {
-						properties.put(propsfriendlyname_.get(s), TwoStateUIProperty.getOnStateName());
+						properties.put(propsfriendlyname_.get(s), TwoStateUIProperty.getOnStateLabel());
 					} else {
-						properties.put(propsfriendlyname_.get(s), TwoStateUIProperty.getOffStateName());
+						properties.put(propsfriendlyname_.get(s), TwoStateUIProperty.getOffStateLabel());
 					}
 				}
 			}
