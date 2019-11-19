@@ -232,7 +232,7 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		buttonclear_.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
             	graph_.clearChart();
-            }
+            }  
         });	
 		
 		checkboxnms_ = new JCheckBox("NMS");
@@ -264,9 +264,9 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 	
 	
 	protected void runActivation(boolean b){
-		if(b){
+		if(b && !task_.isRunning()){
 			task_.startTask();
-		} else {
+		} else if(task_.isRunning()){
 			task_.stopTask();
 		}
 	}
@@ -495,16 +495,18 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 				 }
 				 activate_ = true;
 			} else {
-				 Runnable checkactivate = new Runnable() {
-					 public void run() {
-						 togglebuttonrun_.setSelected(true);
+				if(!togglebuttonrun_.isSelected()) {
+					 Runnable checkactivate = new Runnable() {
+						 public void run() {
+							 togglebuttonrun_.setSelected(true);
+						 }
+					 };
+					 if (SwingUtilities.isEventDispatchThread()) {
+						 checkactivate.run();
+					 } else {
+						  EventQueue.invokeLater(checkactivate);
 					 }
-				 };
-				 if (SwingUtilities.isEventDispatchThread()) {
-					 checkactivate.run();
-				 } else {
-					  EventQueue.invokeLater(checkactivate);
-				 }
+				}
 			}
 		}
 		return true;

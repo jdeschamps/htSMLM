@@ -96,7 +96,6 @@ public class ActivationTask implements Task<Double> {
 	}
 
 	private void getN(double sdcoeff, double cutoff, double dT, boolean autocutoff) {
-		
 		if (core_.isSequenceRunning() && core_.getBytesPerPixel() == 2) {
 			int width, height;
 			double tempcutoff;
@@ -135,7 +134,6 @@ public class ActivationTask implements Task<Double> {
 			}
 			
 			while(tagged2 == null && abort == false) {
-				//System.out.println("Try tagged 2");
 				
 				try {
 					Thread.sleep(2);
@@ -285,22 +283,25 @@ public class ActivationTask implements Task<Double> {
 			Double[] params;
 			
 			while(running_){
-				params = holder_.retrieveAllParameters();
-								
-				// sanity checks here?
-				if(params[PARAM_AUTOCUTOFF] == 1){
-					getN(params[PARAM_SDCOEFF],params[PARAM_CUTOFF],params[PARAM_dT],true);
-				} else {
-					getN(params[PARAM_SDCOEFF],params[PARAM_CUTOFF],params[PARAM_dT],false);
-				}
 				
-				if(params[PARAM_ACTIVATE] == 1){
-					getPulse(params[PARAM_FEEDBACK],params[PARAM_N0],params[PARAM_PULSE],params[PARAM_MAXPULSE]);
-				} else {
-					output_[OUTPUT_NEWPULSE] = params[PARAM_PULSE];
+				if(core_.isSequenceRunning()) {
+					params = holder_.retrieveAllParameters();
+									
+					// sanity checks here?
+					if(params[PARAM_AUTOCUTOFF] == 1){
+						getN(params[PARAM_SDCOEFF],params[PARAM_CUTOFF],params[PARAM_dT],true);
+					} else {
+						getN(params[PARAM_SDCOEFF],params[PARAM_CUTOFF],params[PARAM_dT],false);
+					}
+					
+					if(params[PARAM_ACTIVATE] == 1){
+						getPulse(params[PARAM_FEEDBACK],params[PARAM_N0],params[PARAM_PULSE],params[PARAM_MAXPULSE]);
+					} else {
+						output_[OUTPUT_NEWPULSE] = params[PARAM_PULSE];
+					}
+					
+					publish(output_);
 				}
-				
-				publish(output_);
 				
 				Thread.sleep(idletime_);
 			}

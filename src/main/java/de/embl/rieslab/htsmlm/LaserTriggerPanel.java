@@ -145,7 +145,7 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 				new LaserFlag(), FPGA_BEHAVIOURS.length));
 		
 		try {
-			((MultiStateUIProperty) getUIProperty(TRIGGER_MODE)).setStateNames(FPGA_BEHAVIOURS);
+			((MultiStateUIProperty) getUIProperty(getPropertyLabel(TRIGGER_MODE))).setStateNames(FPGA_BEHAVIOURS);
 		} catch (UnknownUIPropertyException e) {
 			e.printStackTrace();
 		}
@@ -173,15 +173,15 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 
 	@Override
 	public void propertyhasChanged(String name, String newvalue) {
-		if(TRIGGER_MODE.equals(getPropertyLabel(name))){
+		if(getPropertyLabel(TRIGGER_MODE).equals(name)){
 			comboMode.setSelectedItem(newvalue);
-		} else if(TRIGGER_SEQUENCE.equals(getPropertyLabel(name))){
+		} else if(getPropertyLabel(TRIGGER_SEQUENCE).equals(name)){
 			if(EmuUtils.isInteger(newvalue)){
 				textfieldsequence_.setText(BinaryConverter.getBinary16bits(Integer.parseInt(newvalue)));
 			} else {
 				textfieldsequence_.setText(BinaryConverter.getBinary16bits(FPGA_MAX_SEQUENCE));
 			}
-		} else if(PULSE_LENGTH.equals(getPropertyLabel(name))){
+		} else if(getPropertyLabel(PULSE_LENGTH).equals(name)){
 			textfieldpulselength_.setText(newvalue);
 			if(EmuUtils.isInteger(newvalue)){
 				sliderpulse_.setValue(Integer.parseInt(newvalue));

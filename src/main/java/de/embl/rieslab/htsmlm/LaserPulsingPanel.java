@@ -84,6 +84,52 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 		textfieldmax_.setPreferredSize(new Dimension(30,15));
 		textfieldmax_.setBackground(new Color(220,220,220));
 
+		textfieldmax_.addFocusListener(new FocusListener() {
+			@Override
+			public void focusGained(FocusEvent arg0) {}
+			@Override
+			public void focusLost(FocusEvent arg0) {
+	       	    String typed = textfieldmax_.getText();
+        	    if(!EmuUtils.isInteger(typed)) {
+        	        return;
+        	    }  
+        	    int val = Integer.parseInt(typed);
+        	    if(val > 0) {
+        	    	if(logslider_.getValue() > val) {
+            	    	logslider_.setValueWithin(val);
+            	    	textfieldvalue_.setText(typed);
+            	    	setUIPropertyValue(LASER_PULSE,typed);
+        	    	}
+        	    	logslider_.setMaxWithin(val);
+        	    	
+        	    	// set maximum value
+        	    	changeMaxPulseProperty(val);
+        	    }
+        	}
+         });
+		textfieldmax_.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String typed = textfieldmax_.getText();
+				if (!EmuUtils.isInteger(typed)) {
+					return;
+				}
+				int val = Integer.parseInt(typed);
+				if (val > 0) {
+					if (logslider_.getValue() > val) {
+						logslider_.setValueWithin(val);
+            	    	textfieldvalue_.setText(typed);
+						setUIPropertyValue(LASER_PULSE, typed);
+					}
+					logslider_.setMaxWithin(val);
+					
+        	    	// set maximum value
+        	    	changeMaxPulseProperty(val);
+				}
+			}
+		});
+		
+		
 		c.fill = GridBagConstraints.BOTH;
 		c.gridy = 0;
 		c.ipady = 7;
