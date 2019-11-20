@@ -16,7 +16,6 @@ import javax.swing.border.TitledBorder;
 import de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
 import de.embl.rieslab.emu.ui.uiproperties.MultiStateUIProperty;
 import de.embl.rieslab.emu.utils.ColorRepository;
-import de.embl.rieslab.emu.utils.exceptions.IncorrectUIParameterTypeException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.htsmlm.uipropertyflags.FilterWheelFlag;
@@ -244,28 +243,28 @@ public class DualFWPanel extends AbstractFiltersPanel {
 			try {
 				names1_ = getStringUIParameterValue(PARAM_NAMES1);
 				setNames(0);
-			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
+			} catch (UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		} else if(PARAM_COLORS1.equals(label)){
 			try {
 				colors1_ = getStringUIParameterValue(PARAM_COLORS1);
 				setColors(0);
-			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
+			} catch (UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		} else if(PARAM_NAMES2.equals(label)){
 			try {
 				names2_ = getStringUIParameterValue(PARAM_NAMES2);
 				setNames(1);
-			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
+			} catch (UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		} else if(PARAM_COLORS2.equals(label)){
 			try {
 				colors2_ = getStringUIParameterValue(PARAM_COLORS2);
 				setColors(1);
-			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
+			} catch (UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		} else if(PARAM_TITLE.equals(label)){
@@ -273,7 +272,7 @@ public class DualFWPanel extends AbstractFiltersPanel {
 				title_ = getStringUIParameterValue(PARAM_TITLE);
 				border_.setTitle(title_);
 				this.repaint();
-			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
+			} catch (UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		}

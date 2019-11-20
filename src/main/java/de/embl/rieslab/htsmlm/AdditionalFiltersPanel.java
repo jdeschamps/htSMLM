@@ -18,7 +18,6 @@ import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
 import de.embl.rieslab.emu.ui.uiproperties.MultiStateUIProperty;
 import de.embl.rieslab.emu.utils.ColorRepository;
-import de.embl.rieslab.emu.utils.exceptions.IncorrectUIParameterTypeException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.htsmlm.uipropertyflags.FilterWheelFlag;
@@ -279,28 +278,28 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 			try {
 				names1_ = getStringUIParameterValue(PARAM1_NAMES);
 				setNames(0);
-			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
+			} catch (UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		} else if(PARAM1_COLORS.equals(label)){
 			try {
 				colors1_ = getStringUIParameterValue(PARAM1_COLORS);
 				setColors(0);
-			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
+			} catch (UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		} else if(PARAM2_NAMES.equals(label)){
 			try {
 				names2_ = getStringUIParameterValue(PARAM2_NAMES);
 				setNames(1);
-			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
+			} catch (UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		} else if(PARAM2_COLORS.equals(label)){
 			try {
 				colors2_ = getStringUIParameterValue(PARAM2_COLORS);
 				setColors(1);
-			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
+			} catch (UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		} else if(PARAM1_TITLE.equals(label)){
@@ -308,7 +307,7 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 				title1_ = getStringUIParameterValue(PARAM1_TITLE);
 				border1_.setTitle(title1_);
 				this.repaint();
-			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
+			} catch (UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		} else if(PARAM2_TITLE.equals(label)){
@@ -316,7 +315,7 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 				title2_ = getStringUIParameterValue(PARAM2_TITLE);
 				border2_.setTitle(title2_);
 				this.repaint();
-			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
+			} catch (UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		}
@@ -344,8 +343,7 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 
 	@Override
 	protected void addComponentListeners() {
-		// TODO Auto-generated method stub
-		
+		// Do nothing
 	}
 
 }

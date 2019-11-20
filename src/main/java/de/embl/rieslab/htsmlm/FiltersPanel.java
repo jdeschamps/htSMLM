@@ -16,7 +16,6 @@ import javax.swing.border.TitledBorder;
 import de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
 import de.embl.rieslab.emu.ui.uiproperties.MultiStateUIProperty;
 import de.embl.rieslab.emu.utils.ColorRepository;
-import de.embl.rieslab.emu.utils.exceptions.IncorrectUIParameterTypeException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.htsmlm.uipropertyflags.FilterWheelFlag;
@@ -166,14 +165,14 @@ public class FiltersPanel extends AbstractFiltersPanel {
 			try {
 				names_ = getStringUIParameterValue(PARAM_NAMES);
 				setNames();
-			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
+			} catch (UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		} else if(PARAM_COLORS.equals(label)){
 			try {
 				colors_ = getStringUIParameterValue(PARAM_COLORS);
 				setColors();
-			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
+			} catch (UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		} else if(PARAM_TITLE.equals(label)){
@@ -181,7 +180,7 @@ public class FiltersPanel extends AbstractFiltersPanel {
 				title_ = getStringUIParameterValue(PARAM_TITLE);
 				border_.setTitle(title_);
 				this.repaint();
-			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
+			} catch (UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		}

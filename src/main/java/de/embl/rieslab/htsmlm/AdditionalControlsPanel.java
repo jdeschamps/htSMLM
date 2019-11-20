@@ -168,7 +168,7 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 				String s = getStringUIParameterValue(PARAM_NAME1);
 				togglebuttons_[0].setText(s);
 				getUIProperty(DEVICE_1).setFriendlyName(s);
-			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException | UnknownUIPropertyException e) {
+			} catch (UnknownUIParameterException | UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
 		} else if(PARAM_NAME2.equals(label)){
@@ -176,7 +176,7 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 				String s = getStringUIParameterValue(PARAM_NAME2);
 				togglebuttons_[1].setText(s);
 				getUIProperty(DEVICE_2).setFriendlyName(s);
-			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException | UnknownUIPropertyException e) {
+			} catch (UnknownUIParameterException | UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
 		} else if(PARAM_NAME3.equals(label)){
@@ -184,7 +184,7 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 				String s = getStringUIParameterValue(PARAM_NAME3);
 				togglebuttons_[2].setText(s);
 				getUIProperty(DEVICE_3).setFriendlyName(s);
-			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException | UnknownUIPropertyException e) {
+			} catch ( UnknownUIParameterException | UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
 		} else if(PARAM_NAME4.equals(label)){
@@ -192,7 +192,7 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 				String s = getStringUIParameterValue(PARAM_NAME4);
 				togglebuttons_[3].setText(s);
 				getUIProperty(DEVICE_4).setFriendlyName(s);
-			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException | UnknownUIPropertyException e) {
+			} catch (UnknownUIParameterException | UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
 		} else if(PARAM_NAME5.equals(label)){
@@ -200,7 +200,7 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 				String s = getStringUIParameterValue(PARAM_NAME5);
 				togglebuttons_[4].setText(s);
 				getUIProperty(DEVICE_5).setFriendlyName(s);
-			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException | UnknownUIPropertyException e) {
+			} catch (UnknownUIParameterException | UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
 		} else if(PARAM_NAME6.equals(label)){
@@ -208,7 +208,7 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 				String s = getStringUIParameterValue(PARAM_NAME6);
 				togglebuttons_[5].setText(s);
 				getUIProperty(DEVICE_6).setFriendlyName(s);
-			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException | UnknownUIPropertyException e) {
+			} catch (UnknownUIParameterException | UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
 		} else if(PARAM_ENABLE1.equals(label)){
@@ -257,7 +257,7 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 			try {
 				border_.setTitle(getStringUIParameterValue(PARAM_TITLE));
 				this.repaint();
-			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
+			} catch (UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		}
@@ -285,7 +285,6 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 
 	@Override
 	protected void addComponentListeners() {
-		// TODO Auto-generated method stub
-		
+		// Do nothing
 	}
 }

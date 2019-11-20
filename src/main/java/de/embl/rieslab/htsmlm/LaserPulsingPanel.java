@@ -259,7 +259,7 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 				title_ = getStringUIParameterValue(PARAM_TITLE);
 				border_.setTitle(title_);
 				this.repaint();
-			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
+			} catch (UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		} else if(PARAM_COLOR.equals(label)){

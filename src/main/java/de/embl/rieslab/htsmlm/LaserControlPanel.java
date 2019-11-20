@@ -282,7 +282,7 @@ public class LaserControlPanel extends ConfigurablePanel {
 				this.repaint();
 				getUIProperty(getPropertylabel(LASER_PERCENTAGE)).setFriendlyName(title_+" "+LASER_PERCENTAGE);
 				getUIProperty(getPropertylabel(LASER_OPERATION)).setFriendlyName(title_+" "+LASER_OPERATION);
-			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException | UnknownUIPropertyException e) {
+			} catch (UnknownUIParameterException | UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
 		} else if(PARAM_COLOR.equals(label)){

@@ -33,7 +33,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import de.embl.rieslab.emu.controller.SystemController;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.uiparameters.UIPropertyParameter;
-import de.embl.rieslab.emu.utils.exceptions.IncorrectUIParameterTypeException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.htsmlm.acquisitions.AcquisitionController;
 import de.embl.rieslab.htsmlm.acquisitions.utils.AcquisitionDialogs;
@@ -409,19 +408,19 @@ public class AcquisitionPanel extends ConfigurablePanel{
 		if(PARAM_BFP.equals(label)){
 			try {
 				paramBFP_ = getStringUIParameterValue(PARAM_BFP);
-			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
+			} catch (UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		} else if(PARAM_LOCKING.equals(label)){
 			try {
 				paramLocking_ = getStringUIParameterValue(PARAM_LOCKING);
-			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
+			} catch (UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		} else if(PARAM_BRIGHTFIELD.equals(label)){
 			try {
 				paramBrightField_ = getStringUIParameterValue(PARAM_BRIGHTFIELD);
-			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
+			} catch (UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		}

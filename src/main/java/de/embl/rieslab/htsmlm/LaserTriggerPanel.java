@@ -199,7 +199,7 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 				getUIProperty(getPropertyLabel(TRIGGER_MODE)).setFriendlyName(title_+" "+TRIGGER_MODE);
 				getUIProperty(getPropertyLabel(TRIGGER_SEQUENCE)).setFriendlyName(title_+" "+TRIGGER_SEQUENCE);
 				getUIProperty(getPropertyLabel(PULSE_LENGTH)).setFriendlyName(title_+" "+PULSE_LENGTH);
-			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException | UnknownUIPropertyException e) {
+			} catch (UnknownUIParameterException | UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
 		} else if(PARAM_COLOR.equals(label)){
