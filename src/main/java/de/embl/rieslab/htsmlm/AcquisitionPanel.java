@@ -408,19 +408,19 @@ public class AcquisitionPanel extends ConfigurablePanel{
 	public void parameterhasChanged(String label) {
 		if(PARAM_BFP.equals(label)){
 			try {
-				paramBFP_ = getUIPropertyParameterValue(PARAM_BFP);
+				paramBFP_ = getStringUIParameterValue(PARAM_BFP);
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		} else if(PARAM_LOCKING.equals(label)){
 			try {
-				paramLocking_ = getUIPropertyParameterValue(PARAM_LOCKING);
+				paramLocking_ = getStringUIParameterValue(PARAM_LOCKING);
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
 		} else if(PARAM_BRIGHTFIELD.equals(label)){
 			try {
-				paramBrightField_ = getUIPropertyParameterValue(PARAM_BRIGHTFIELD);
+				paramBrightField_ = getStringUIParameterValue(PARAM_BRIGHTFIELD);
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
