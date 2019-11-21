@@ -27,7 +27,7 @@ import org.micromanager.data.Datastore;
 
 public class ZStackAcquisition implements Acquisition {
 	
-	// Convenience constants		
+	// Convenience constants	
 	private final static String PANE_NAME = "Autofocus panel";
 	private final static String LABEL_EXPOSURE = "Exposure (ms):";
 	private final static String LABEL_PAUSE = "Pause (s):";
@@ -35,40 +35,32 @@ public class ZStackAcquisition implements Acquisition {
 	private final static String LABEL_ZEND = "Z end (um):";
 	private final static String LABEL_ZSTEP = "Z step (um):";
 	private final static String LABEL_ZDEVICE = "Z stage:";
-	private final static String LABEL_CHECK = "Focus-lock";
+	private final static String LABEL_CHECK = "disable focus-lock";
 		
 	public final static String KEY_ZSTART = "Z start";
 	public final static String KEY_ZEND = "Z end";
 	public final static String KEY_ZSTEP = "Z step";
 	public final static String KEY_ZDEVICE = "Z stage";
-	public final static String KEY_USEFL = "Use focus-lock";
+	public final static String KEY_DISABLEFL = "focus-lock";
 	
 	// UI property
-	private TwoStateUIProperty stabprop_;
+	private TwoStateUIProperty zstabProperty_;
 
 	private String zdevice_;
 	private String[] zdevices_;
 	private double zstart, zend, zstep;
-	private boolean zstab_, zstabuse_; 
+	private boolean disableZStab_; 
 	private GenericAcquisitionParameters params_;
 	private volatile boolean stopAcq_, running_;
 	
 	public ZStackAcquisition(double exposure, String[] zdevices, String defaultzdevice, TwoStateUIProperty zStabilizationProperty) {
 
-		if(zStabilizationProperty == null) {
-			stabprop_ = null;
-			zstab_ = false;
-			zstabuse_ = false;
-		} else {		
-			if(zStabilizationProperty.isAssigned()){
-				stabprop_ = zStabilizationProperty;
-				zstab_ = true;
-				zstabuse_ = true;
-			} else {
-				stabprop_ = null;
-				zstab_ = false;
-				zstabuse_ = false;
-			}
+		if(zStabilizationProperty != null && zStabilizationProperty.isAssigned()) {
+			zstabProperty_ = zStabilizationProperty;
+			disableZStab_ = true;
+		} else {
+			zstabProperty_ = null;
+			disableZStab_ = false;
 		}
 		
 		zstart=-2;
@@ -126,8 +118,8 @@ public class ZStackAcquisition implements Acquisition {
 		stopAcq_ = false;
 		running_ = true;
 		
-		if(zstab_ && zstabuse_){
-			stabprop_.setPropertyValue(TwoStateUIProperty.getOffStateLabel());
+		if(zstabProperty_!= null && disableZStab_){ // if there is a stabilization property and 
+			zstabProperty_.setPropertyValue(TwoStateUIProperty.getOffStateLabel()); // turn it off
 		}
 		
 			
@@ -179,8 +171,8 @@ public class ZStackAcquisition implements Acquisition {
 			return false;
 		}
 
-		if(zstab_ && zstabuse_){
-			stabprop_.setPropertyValue(TwoStateUIProperty.getOnStateLabel());
+		if(zstabProperty_!=null && disableZStab_){
+			zstabProperty_.setPropertyValue(TwoStateUIProperty.getOnStateLabel()); // sets on at the end
 		}
 		
 		running_ = false;
@@ -193,7 +185,6 @@ public class ZStackAcquisition implements Acquisition {
 			// not pretty but I could not find any other way to stop the acquisition without getting a JDialog popping up and requesting user input
 			((DefaultAcquisitionManager) studio.acquisitions()).getAcquisitionEngine().stop(true);;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -222,9 +213,12 @@ public class ZStackAcquisition implements Acquisition {
 		JLabel exposurelab, waitinglab, zstartlab, zdevicelabel;
 		JSpinner exposurespin, waitingspin, zstartspin, zendspin, zstepspin;
 		
-		JCheckBox usefocuslocking = new JCheckBox(LABEL_CHECK);
-		usefocuslocking.setName(LABEL_CHECK);
-		usefocuslocking.setEnabled(zstab_);
+		JCheckBox disableFocusLock = new JCheckBox(LABEL_CHECK);
+		disableFocusLock.setName(LABEL_CHECK);
+		if(zstabProperty_ == null) {
+			disableFocusLock.setEnabled(true);
+		}
+		disableFocusLock.setSelected(disableZStab_);
 		
 		exposurelab = new JLabel(LABEL_EXPOSURE);
 		waitinglab = new JLabel(LABEL_PAUSE);
@@ -260,7 +254,7 @@ public class ZStackAcquisition implements Acquisition {
 
 		panelHolder[0][0].add(zdevicelabel);
 		panelHolder[0][1].add(zdevices);
-		panelHolder[0][2].add(usefocuslocking);
+		panelHolder[0][2].add(disableFocusLock);
 		
 		panelHolder[1][0].add(exposurelab);
 		panelHolder[2][0].add(zstartlab);
@@ -300,7 +294,7 @@ public class ZStackAcquisition implements Acquisition {
 							} else if(comp[i].getName().equals(LABEL_ZDEVICE) && comp[i] instanceof JComboBox){
 								zdevice_ = ((String) ((JComboBox) comp[i]).getSelectedItem());
 							}else if(comp[i].getName().equals(LABEL_CHECK) && comp[i] instanceof JCheckBox){
-								zstabuse_ = ((JCheckBox) comp[i]).isSelected();
+								disableZStab_ = ((JCheckBox) comp[i]).isSelected();
 							}
 						}
 					}
@@ -313,10 +307,10 @@ public class ZStackAcquisition implements Acquisition {
 
 	@Override
 	public PropertyFilter getPropertyFilter() {
-		if(stabprop_ == null){
+		if(zstabProperty_ == null){
 			return new NoPropertyFilter();
 		}
-		return new SinglePropertyFilter(stabprop_.getPropertyLabel());
+		return new SinglePropertyFilter(zstabProperty_.getPropertyLabel());
 	}
 
 	@Override
@@ -327,7 +321,7 @@ public class ZStackAcquisition implements Acquisition {
 		s[2] = "Zstart = "+zstart+" um";
 		s[3] = "Zend = "+zend+" um";
 		s[4] = "Zstep = "+zstep+" um";
-		s[5] = "Use focus-lock = "+String.valueOf(zstabuse_);
+		s[5] = "Disable focus-lock = "+String.valueOf(disableZStab_);
 		return s;
 	}
 
@@ -348,8 +342,8 @@ public class ZStackAcquisition implements Acquisition {
 		s[2][1] = String.valueOf(zstep);
 		s[3][0] = KEY_ZDEVICE;
 		s[3][1] = zdevice_;
-		s[4][0] = KEY_USEFL;
-		s[4][1] = String.valueOf(zstabuse_);
+		s[4][0] = KEY_DISABLEFL;
+		s[4][1] = String.valueOf(disableZStab_);
 		
 		return s;
 	}
@@ -366,8 +360,8 @@ public class ZStackAcquisition implements Acquisition {
 		zdevice_ = zdevice;
 	}
 
-	public void setUseFocusLock(boolean zstabuse){
-		zstabuse_ = zstabuse;
+	public void setDisableFocusLock(boolean zstabuse){
+		disableZStab_ = zstabuse;
 	}
 	
 	@Override

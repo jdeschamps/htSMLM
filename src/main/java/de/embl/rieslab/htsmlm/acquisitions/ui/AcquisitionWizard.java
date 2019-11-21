@@ -182,7 +182,7 @@ public class AcquisitionWizard {
 	private JTabbedPane setUpRightPanel(ArrayList<Acquisition> acqlist) {
 		tabbedpane_ = new JTabbedPane();
 		
-		if(acqlist.size() == 0) {
+		if(acqlist.size() == 0) { // if empty acquisition list
 			AcquisitionTab acqtab = new AcquisitionTab(this, new AcquisitionFactory(owner_, controller_), propertyValues_);
 			tabbedpane_.add(acqtab.getTypeName(), acqtab);
 			tabs_.add(acqtab);

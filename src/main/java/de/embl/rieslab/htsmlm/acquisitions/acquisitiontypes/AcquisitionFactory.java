@@ -227,7 +227,7 @@ public class AcquisitionFactory {
 
 						acq.setZRange(Double.parseDouble(acqw.additionalParameters[0][1]), Double.parseDouble(acqw.additionalParameters[1][1]), Double.parseDouble(acqw.additionalParameters[2][1]));
 						acq.setZDevice(acqw.additionalParameters[3][1]);
-						acq.setUseFocusLock(Boolean.parseBoolean(acqw.additionalParameters[4][1]));
+						acq.setDisableFocusLock(Boolean.parseBoolean(acqw.additionalParameters[4][1]));
 						
 						acqlist.add(acq);
 
