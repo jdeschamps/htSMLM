@@ -110,15 +110,20 @@ public class BrightFieldAcquisition implements Acquisition{
 	}
 
 	@Override
-	public String[] getSpecialSettings() {
+	public String[] getHumanReadableSettings() {
 		String[] s = new String[1];
 		s[0] = "Exposure = "+params_.getExposureTime()+" ms";
 		return s;
 	}
 
 	@Override
-	public String[][] getAdditionalJSONParameters() {
-		return null;
+	public String[][] getAdditionalParameters() {
+		return new String[0][0];
+	}
+
+	@Override
+	public void setAdditionalParameters(String[][] parameters) {
+		
 	}
 
 	@Override

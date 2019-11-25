@@ -134,7 +134,7 @@ public class LocalizationAcquisition implements Acquisition {
 		return pane;
 	}
 
-	public void setUseActivation(boolean b){
+	private void setUseActivation(boolean b){
 		if(!nullActivation_){
 			useactivation_  = b;
 		} else {
@@ -142,11 +142,11 @@ public class LocalizationAcquisition implements Acquisition {
 		}
 	}
 
-	public void setUseStopOnMaxUV(boolean b){
+	private void setUseStopOnMaxUV(boolean b){
 		stoponmax_ = b;
 	}
 	
-	public void setUseStopOnMaxUVDelay(int delay){
+	private void setUseStopOnMaxUVDelay(int delay){
 		stoponmaxdelay_ = delay;
 	}
 	
@@ -188,7 +188,7 @@ public class LocalizationAcquisition implements Acquisition {
 	}
 
 	@Override
-	public String[] getSpecialSettings() {
+	public String[] getHumanReadableSettings() {
 		String[] s = new String[6];
 		s[0] = "Exposure = "+params_.getExposureTime()+" ms";
 		s[1] = "Interval = "+params_.getIntervalMs()+" ms";
@@ -205,7 +205,7 @@ public class LocalizationAcquisition implements Acquisition {
 	}
 	
 	@Override
-	public String[][] getAdditionalJSONParameters() {
+	public String[][] getAdditionalParameters() {
 		String[][] s = new String[3][2];
 
 		s[0][0] = KEY_USEACT;
@@ -216,6 +216,18 @@ public class LocalizationAcquisition implements Acquisition {
 		s[2][1] = String.valueOf(stoponmaxdelay_);
 		
 		return s;
+	}
+	
+	@Override
+	public void setAdditionalParameters(String[][] parameters) {
+		if(parameters.length != 3 || parameters[0].length != 2) {
+			throw new IllegalArgumentException("The parameters array has the wrong size: expected (3,2), got ("
+					+ parameters.length + "," + parameters[0].length + ")");
+		}
+		
+		useactivation_ = Boolean.parseBoolean(parameters[0][1]);
+		stoponmax_ = Boolean.parseBoolean(parameters[1][1]);
+		stoponmaxdelay_ = Integer.parseInt(parameters[2][1]);
 	}
 
 	@Override

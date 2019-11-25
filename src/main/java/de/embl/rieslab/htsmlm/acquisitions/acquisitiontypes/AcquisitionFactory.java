@@ -37,10 +37,8 @@ public class AcquisitionFactory {
 	public AcquisitionFactory(AcquisitionController acqcontroller, SystemController controller){
 		acqcontroller_ = acqcontroller;
 		controller_ = controller;
-		
-		acqtypelist_ = getEnabledAcquisitionList();
-		
 		zdevices_ = getZDevices();
+		acqtypelist_ = getEnabledAcquisitionList();		
 	}
 	
 	private String[] getZDevices(){
@@ -58,6 +56,11 @@ public class AcquisitionFactory {
 			list.remove(AcquisitionType.BFP.getTypeValue());
 		}
 		
+		if(zdevices_ == null || zdevices_.length == 0) {
+			list.remove(AcquisitionType.ZSTACK.getTypeValue());
+			list.remove(AcquisitionType.MULTISLICELOC.getTypeValue());
+		}
+		
 		return list.toArray(new String[0]);
 	}
 	
@@ -66,21 +69,38 @@ public class AcquisitionFactory {
 	}
 	 
 	public Acquisition getAcquisition(String type){
-		if(type.equals(AcquisitionType.LOCALIZATION.getTypeValue())){
+		if (type.equals(AcquisitionType.LOCALIZATION.getTypeValue())) {
 			return new LocalizationAcquisition(acqcontroller_.getTaskHolder(ActivationPanel.TASK_NAME), getExposure());
-		} else if(type.equals(AcquisitionType.TIME.getTypeValue())){
+		} else if (type.equals(AcquisitionType.MULTISLICELOC.getTypeValue())) {
+			
+			return new MultiSliceAcquisition(acqcontroller_.getTaskHolder(ActivationPanel.TASK_NAME), getExposure(),
+					zdevices_, controller_.getCore().getFocusDevice(), (TwoStateUIProperty) controller_
+							.getProperty(acqcontroller_.getAcquisitionParameterValue(AcquisitionPanel.PARAM_LOCKING)));
+			
+		} else if (type.equals(AcquisitionType.TIME.getTypeValue())) {
+			
 			return new TimeAcquisition(getExposure());
-		} else if(type.equals(AcquisitionType.SNAP.getTypeValue())){
+			
+		} else if (type.equals(AcquisitionType.SNAP.getTypeValue())) {
+			
 			return new SnapAcquisition(getExposure());
-		} else if(type.equals(AcquisitionType.ZSTACK.getTypeValue())){
+			
+		} else if (type.equals(AcquisitionType.ZSTACK.getTypeValue())) {
+			
 			return new ZStackAcquisition(getExposure(), zdevices_, controller_.getCore().getFocusDevice(),
-					(TwoStateUIProperty) controller_.getProperty(acqcontroller_.getAcquisitionParameterValue(AcquisitionPanel.PARAM_LOCKING)));
-		} else if(type.equals(AcquisitionType.BFP.getTypeValue())){
-			return new BFPAcquisition(getExposure(),
-					(TwoStateUIProperty) controller_.getProperty(acqcontroller_.getAcquisitionParameterValue(AcquisitionPanel.PARAM_BFP)));
-		} else if(type.equals(AcquisitionType.BF.getTypeValue())){
-			return new BrightFieldAcquisition(getExposure(),
-					(TwoStateUIProperty) controller_.getProperty(acqcontroller_.getAcquisitionParameterValue(AcquisitionPanel.PARAM_BRIGHTFIELD)));
+					(TwoStateUIProperty) controller_
+							.getProperty(acqcontroller_.getAcquisitionParameterValue(AcquisitionPanel.PARAM_LOCKING)));
+			
+		} else if (type.equals(AcquisitionType.BFP.getTypeValue())) {
+			
+			return new BFPAcquisition(getExposure(), (TwoStateUIProperty) controller_
+					.getProperty(acqcontroller_.getAcquisitionParameterValue(AcquisitionPanel.PARAM_BFP)));
+			
+		} else if (type.equals(AcquisitionType.BF.getTypeValue())) {
+			
+			return new BrightFieldAcquisition(getExposure(), (TwoStateUIProperty) controller_
+					.getProperty(acqcontroller_.getAcquisitionParameterValue(AcquisitionPanel.PARAM_BRIGHTFIELD)));
+			
 		}
 			
 		return getDefaultAcquisition();
@@ -224,21 +244,22 @@ public class AcquisitionFactory {
 					} else if(acqw.type.equals(AcquisitionType.ZSTACK.getTypeValue())){
 						ZStackAcquisition acq = (ZStackAcquisition) getAcquisition(acqw.type);
 						configureGeneralAcquistion(acq, acqw);
-
-						acq.setZRange(Double.parseDouble(acqw.additionalParameters[0][1]), Double.parseDouble(acqw.additionalParameters[1][1]), Double.parseDouble(acqw.additionalParameters[2][1]));
-						acq.setZDevice(acqw.additionalParameters[3][1]);
-						acq.setDisableFocusLock(Boolean.parseBoolean(acqw.additionalParameters[4][1]));
+						acq.setAdditionalParameters(acqw.additionalParameters);
 						
 						acqlist.add(acq);
 
 					} else if(acqw.type.equals(AcquisitionType.LOCALIZATION.getTypeValue())){
 						LocalizationAcquisition acq = (LocalizationAcquisition) getAcquisition(acqw.type);
 						configureGeneralAcquistion(acq, acqw);
+						acq.setAdditionalParameters(acqw.additionalParameters);
 						
-						acq.setUseActivation(Boolean.parseBoolean(acqw.additionalParameters[0][1]));
-						acq.setUseStopOnMaxUV(Boolean.parseBoolean(acqw.additionalParameters[1][1]));
-						acq.setUseStopOnMaxUVDelay(Integer.parseInt(acqw.additionalParameters[2][1]));
-						
+						acqlist.add(acq);
+
+					} else if(acqw.type.equals(AcquisitionType.MULTISLICELOC.getTypeValue())){
+						MultiSliceAcquisition acq = (MultiSliceAcquisition) getAcquisition(acqw.type);
+						configureGeneralAcquistion(acq, acqw);
+						acq.setAdditionalParameters(acqw.additionalParameters);
+										
 						acqlist.add(acq);
 
 					} else if(acqw.type.equals(AcquisitionType.TIME.getTypeValue())){
@@ -256,16 +277,12 @@ public class AcquisitionFactory {
 			}
 			
 		} catch (JsonGenerationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -297,7 +314,8 @@ public class AcquisitionFactory {
 	}
 	
 	public enum AcquisitionType { 
-		TIME("Time"), BFP("BFP"), BF("Bright-field"), SNAP("Snapshot"), LOCALIZATION("Localization"), ZSTACK("Z-stack"), AUTOFOCUS("Autofocus"), ROISELECT("ROI decision"); 
+		TIME("Time"), BFP("BFP"), BF("Bright-field"), SNAP("Snapshot"), LOCALIZATION("Localization"), ZSTACK("Z-stack"),
+		AUTOFOCUS("Autofocus"), ROISELECT("ROI decision"), MULTISLICELOC("Multislice localization");
 		
 		private String value; 
 		
@@ -309,9 +327,11 @@ public class AcquisitionFactory {
 			return value;
 		} 
 		
-		public static String[] getList(){
-			String[] s = {AcquisitionType.LOCALIZATION.getTypeValue(), AcquisitionType.BFP.getTypeValue(), AcquisitionType.BF.getTypeValue(),
-					AcquisitionType.ZSTACK.getTypeValue(), AcquisitionType.SNAP.getTypeValue(),AcquisitionType.TIME.getTypeValue()};
+		public static String[] getList() {
+			String[] s = { AcquisitionType.LOCALIZATION.getTypeValue(), AcquisitionType.BFP.getTypeValue(),
+					AcquisitionType.BF.getTypeValue(), AcquisitionType.ZSTACK.getTypeValue(),
+					AcquisitionType.SNAP.getTypeValue(), AcquisitionType.TIME.getTypeValue(),
+					AcquisitionType.MULTISLICELOC.getTypeValue() };
 			return s;
 		}
 	}; 

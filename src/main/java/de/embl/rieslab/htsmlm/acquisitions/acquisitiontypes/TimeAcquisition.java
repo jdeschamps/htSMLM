@@ -121,7 +121,7 @@ public class TimeAcquisition implements Acquisition{
 	}
 
 	@Override
-	public String[] getSpecialSettings() {
+	public String[] getHumanReadableSettings() {
 		String[] s = new String[3];
 		s[0] = "Exposure = "+params_.getExposureTime()+" ms";
 		s[1] = "Number of frames = "+params_.getNumberFrames();
@@ -135,10 +135,15 @@ public class TimeAcquisition implements Acquisition{
 	}
 
 	@Override
-	public String[][] getAdditionalJSONParameters() {
-		return null;
+	public String[][] getAdditionalParameters() {
+		String[][] s = new String[0][0];
+		return s;
 	}
 
+	@Override
+	public void setAdditionalParameters(String[][] parameters) {
+		// do nothing
+	}
 
 	@Override
 	public GenericAcquisitionParameters getAcquisitionParameters() {
@@ -226,4 +231,5 @@ public class TimeAcquisition implements Acquisition{
 	public String getShortName() {
 		return "t";
 	}
+
 }

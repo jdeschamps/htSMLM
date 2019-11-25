@@ -33,7 +33,7 @@ public class ZStackAcquisition implements Acquisition {
 	private final static String LABEL_PAUSE = "Pause (s):";
 	private final static String LABEL_ZSTART = "Z start / Z end / Z step:";
 	private final static String LABEL_ZEND = "Z end (um):";
-	private final static String LABEL_ZSTEP = "Z step (um):";
+	private final static String LABEL_ZSTEP = "Z step (um):"; // just pretend it is um but there is no check...
 	private final static String LABEL_ZDEVICE = "Z stage:";
 	private final static String LABEL_CHECK = "disable focus-lock";
 		
@@ -41,7 +41,7 @@ public class ZStackAcquisition implements Acquisition {
 	public final static String KEY_ZEND = "Z end";
 	public final static String KEY_ZSTEP = "Z step";
 	public final static String KEY_ZDEVICE = "Z stage";
-	public final static String KEY_DISABLEFL = "focus-lock";
+	public final static String KEY_DISABLEFL = "Disable focus-lock";
 	
 	// UI property
 	private TwoStateUIProperty zstabProperty_;
@@ -314,7 +314,7 @@ public class ZStackAcquisition implements Acquisition {
 	}
 
 	@Override
-	public String[] getSpecialSettings() {
+	public String[] getHumanReadableSettings() {
 		String[] s = new String[6];
 		s[0] = "Exposure = "+params_.getExposureTime()+" ms";
 		s[1] = "Stage = "+zdevice_;
@@ -331,7 +331,7 @@ public class ZStackAcquisition implements Acquisition {
 	}
 	
 	@Override
-	public String[][] getAdditionalJSONParameters() {
+	public String[][] getAdditionalParameters() {
 		String[][] s = new String[5][2];
 
 		s[0][0] = KEY_ZSTART;
@@ -346,6 +346,19 @@ public class ZStackAcquisition implements Acquisition {
 		s[4][1] = String.valueOf(disableZStab_);
 		
 		return s;
+	}	
+	
+	@Override
+	public void setAdditionalParameters(String[][] parameters) {
+		if(parameters.length != 5 || parameters[0].length != 2) {
+			throw new IllegalArgumentException("The parameters array has the wrong size: expected (5,2), got ("
+					+ parameters.length + "," + parameters[0].length + ")");
+		}		
+		zstart = Double.parseDouble(parameters[0][1]);
+		zend = Double.parseDouble(parameters[1][1]);
+		zstep = Double.parseDouble(parameters[2][1]);
+		zdevice_ = parameters[3][1];
+		disableZStab_ = Boolean.parseBoolean(parameters[4][1]);
 	}
 
 	public void setZRange(double zstart, double zend, double zstep){

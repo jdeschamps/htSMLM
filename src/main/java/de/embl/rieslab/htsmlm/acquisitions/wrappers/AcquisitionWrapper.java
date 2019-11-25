@@ -45,6 +45,6 @@ public class AcquisitionWrapper {
           	properties[j][1] = prop.get(propkeys[j]);
        	}
        	
-       	additionalParameters = acq.getAdditionalJSONParameters();
+       	additionalParameters = acq.getAdditionalParameters();
 	}
 }

@@ -55,13 +55,18 @@ public class ROIEvaluationAcquisition implements Acquisition {
 	}
 
 	@Override
-	public String[] getSpecialSettings() {
+	public String[] getHumanReadableSettings() {
 		return null;
 	}
 
 	@Override
-	public String[][] getAdditionalJSONParameters() {
+	public String[][] getAdditionalParameters() {
 		return null;
+	}
+
+	@Override
+	public void setAdditionalParameters(String[][] parameters) {
+	
 	}
 
 	@Override

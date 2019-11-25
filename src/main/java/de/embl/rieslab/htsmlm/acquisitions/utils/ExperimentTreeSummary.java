@@ -46,7 +46,7 @@ public class ExperimentTreeSummary {
 	            top.add(expnode);
 
 	            ///////// settings specific to each acq
-	            String[] specificsettings = acq.getSpecialSettings();
+	            String[] specificsettings = acq.getHumanReadableSettings();
 	    	    for(int j=0;j<specificsettings.length;j++){
 	   	    		setting = new DefaultMutableTreeNode(specificsettings[j]);
 	   	    		expnode.add(setting);
