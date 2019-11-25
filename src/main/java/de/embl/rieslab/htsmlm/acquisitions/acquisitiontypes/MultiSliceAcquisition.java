@@ -565,7 +565,7 @@ public class MultiSliceAcquisition implements Acquisition {
 	}
 
 	private void interruptAcquisition(Studio studio) {
-		if(interruptionRequested_ == false) {
+		//if(interruptionRequested_ == false) {
 			try {
 				// not pretty but I could not find any other way to stop the acquisition without getting a JDialog popping up and requesting user input
 				((DefaultAcquisitionManager) studio.acquisitions()).getAcquisitionEngine().stop(true);
@@ -574,7 +574,7 @@ public class MultiSliceAcquisition implements Acquisition {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}
+		//}
 	}
 	
 	
