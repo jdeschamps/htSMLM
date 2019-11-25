@@ -24,6 +24,7 @@ import de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory.AcquisitionType;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.NoPropertyFilter;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.PropertyFilter;
+import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.SinglePropertyFilter;
 import de.embl.rieslab.htsmlm.tasks.TaskHolder;
 import mmcorej.CMMCore;
 
@@ -324,7 +325,10 @@ public class MultiSliceAcquisition implements Acquisition {
 
 	@Override
 	public PropertyFilter getPropertyFilter() {
-		return new NoPropertyFilter();
+		if(zstabProperty_ == null){
+			return new NoPropertyFilter();
+		}
+		return new SinglePropertyFilter(zstabProperty_.getPropertyLabel());
 	}
 
 	@Override
@@ -408,11 +412,6 @@ public class MultiSliceAcquisition implements Acquisition {
 		
 		CMMCore core  = studio.core();
 
-		if(useactivation_){			
-			activationTask_.initializeTask();
-			activationTask_.resumeTask();
-		}
-		
 		stopAcq_ = false;
 		interruptionRequested_ = false;
 		running_ = true;
@@ -458,6 +457,12 @@ public class MultiSliceAcquisition implements Acquisition {
 		if(running_) {
 			for(int i=0;i<nLoops;i++) {
 				for(int j=0;j<nSlices;j++) {
+					
+					if(useactivation_){			
+						activationTask_.initializeTask();
+						activationTask_.resumeTask();
+					}					
+					
 					// set z
 					double z;
 					if(targetOtherZStage_) {
@@ -525,7 +530,16 @@ public class MultiSliceAcquisition implements Acquisition {
 					} catch (Exception e) {
 						running_ = false;
 						e.printStackTrace();
+						return false;
 					}
+					
+					if(stopAcq_) {
+						break;
+					}
+				}
+				
+				if(stopAcq_) {
+					break;
 				}
 			}
 		}
