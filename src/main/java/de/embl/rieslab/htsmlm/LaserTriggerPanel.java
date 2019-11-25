@@ -174,7 +174,12 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 	@Override
 	public void propertyhasChanged(String name, String newvalue) {
 		if(getPropertyLabel(TRIGGER_MODE).equals(name)){
-			comboMode.setSelectedItem(newvalue);
+			try {
+				MultiStateUIProperty msprop = ((MultiStateUIProperty) getUIProperty(getPropertyLabel(TRIGGER_MODE)));
+				comboMode.setSelectedIndex(msprop.getStateIndex(newvalue));
+			} catch (UnknownUIPropertyException e) {
+				e.printStackTrace();
+			}
 		} else if(getPropertyLabel(TRIGGER_SEQUENCE).equals(name)){
 			if(EmuUtils.isInteger(newvalue)){
 				textfieldsequence_.setText(BinaryConverter.getBinary16bits(Integer.parseInt(newvalue)));
