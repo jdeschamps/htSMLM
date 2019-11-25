@@ -415,6 +415,10 @@ public class MultiSliceAcquisition implements Acquisition {
 		stopAcq_ = false;
 		interruptionRequested_ = false;
 		running_ = true;
+
+		if(disableFocusLock_) {
+			zstabProperty_.setPropertyValue(TwoStateUIProperty.getOffStateLabel());
+		}
 		
 		SequenceSettings settings = new SequenceSettings();
 		settings.save = true;
@@ -447,6 +451,8 @@ public class MultiSliceAcquisition implements Acquisition {
 				double zt2 = core.getPosition(targetdevice_);
 				slope = (zt2-zt)/dz;
 				
+				// returns to previous
+				core.setPosition(zdevice_, z0);
 			} catch (Exception e) {
 				running_ = false;
 				e.printStackTrace();
@@ -473,19 +479,19 @@ public class MultiSliceAcquisition implements Acquisition {
 					}
 					
 					try {
-						// move the stage
+						// moves the stage
 						core.setPosition(zdevice_, z);
 						
-						// set-up name
+						// sets-up name
 						settings.prefix = "L"+i+"S"+j+"_"+name;
 						
-						// run acquisition
+						// runs acquisition
 						Datastore store = studio.acquisitions().runAcquisitionWithSettings(settings, false);
 
-						// loop to check if needs to be stopped or not
+						// loops to check if needs to be stopped or not
 						while(studio.acquisitions().isAcquisitionRunning()) {
 							
-							// check if reached stop criterion
+							// checks if reached stop criterion
 							if(useactivation_ && stoponmax_ && activationTask_.isCriterionReached()){
 								try {
 									Thread.sleep(1000*stoponmaxdelay_);
@@ -498,7 +504,7 @@ public class MultiSliceAcquisition implements Acquisition {
 								interruptionRequested_ = true;
 							}
 									
-							// checks if exit
+							// checks if exit requested
 							if(stopAcq_){
 								interruptAcquisition(studio);
 								interruptionRequested_ = true;
@@ -544,7 +550,15 @@ public class MultiSliceAcquisition implements Acquisition {
 			}
 		}
 		
-		
+		if(disableFocusLock_) {				
+			try {
+				core.setPosition(zdevice_, z0);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			zstabProperty_.setPropertyValue(TwoStateUIProperty.getOnStateLabel());
+		}
+			
 		running_ = false;
 		
 		return true;
