@@ -393,7 +393,7 @@ public class AcquisitionPanel extends ConfigurablePanel{
 		paramLocking_ = UIPropertyParameter.NO_PROPERTY;
 		paramBrightField_ = UIPropertyParameter.NO_PROPERTY;	
 		
-		addUIParameter(new UIPropertyParameter(this, PARAM_BFP,"UIProperty corresponding to the insertion of the BFP lens.", new TwoStateFlag()));
+		addUIParameter(new UIPropertyParameter(this, PARAM_BFP,"UIProperty corresponding to the insertion of a Bertrand lens.", new TwoStateFlag()));
 		addUIParameter(new UIPropertyParameter(this, PARAM_LOCKING,"UIProperty corresponding to the locking of the focus stabilization.", new FocusStabFlag())); 
 		addUIParameter(new UIPropertyParameter(this, PARAM_BRIGHTFIELD,"UIProperty corresponding to the triggering of the white light illumination.", new TwoStateFlag())); 
 	}
@@ -441,7 +441,12 @@ public class AcquisitionPanel extends ConfigurablePanel{
 
 	@Override
 	public String getDescription() {
-		return "Acquisition tab";
+		return "The acquisition tab gives access to an acquisition tool. By clicking on the \"Configure\" button, you can design a set of experiments "
+				+ "to be performed one after the other on each position of Micro-manager position list. The acquisition wizard includes different "
+				+ "type of acquisitions, depending on which properties have been allocated. Each acquisition type has specific settings. The wizard "
+				+ "also allows the user to set the preset groups and properties to the value of their choice for each acquisition. Note that only the "
+				+ "allocated properties are shown. After designing an experimental set, a summary is accessible via the \">>\" button. Acquisition lists "
+				+ "can be saved and loaded.";
 	}
 	
 	public String getParameterValues(String param) {

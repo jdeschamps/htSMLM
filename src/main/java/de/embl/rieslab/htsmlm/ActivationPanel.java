@@ -319,8 +319,8 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		
 		addUIParameter(new DoubleUIParameter(this, PARAM_DEF_SD,"Default value of the cutoff coefficient.",sdcoeff_));
 		addUIParameter(new DoubleUIParameter(this, PARAM_DEF_FB,"Default value of the activation feedback coefficient.",feedback_));
-		addUIParameter(new IntegerUIParameter(this, PARAM_IDLE,"Idle time (ms) of the stage position monitoring.",idletime_)); // thread idle time
-		addUIParameter(new IntegerUIParameter(this, PARAM_NPOS,"Number of stage positions displayed in the chart.",npos_)); // number of point in the graph
+		addUIParameter(new IntegerUIParameter(this, PARAM_IDLE,"Idle time (ms) between each iteration.",idletime_)); // thread idle time
+		addUIParameter(new IntegerUIParameter(this, PARAM_NPOS,"Number of points on the x axis.",npos_)); // number of point in the graph
 	}
 
 	@Override
@@ -378,7 +378,15 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 
 	@Override
 	public String getDescription() {
-		return "This panel allows automated activation of a SMLM experiment.";
+		return "The activation panel includes a script for automated activation (localization microscopy) using a laser pulsing or power percentage. "
+				+ "Start the script using the \"run\" button. Then set a cutoff or use the auto cutoff feature (\"Auto\" button). The results of the "
+				+ "spot detection algorithm can be displayed by checking the \"NMS\" checkbox. The \"Get N\" extracts the last measured value and sets "
+				+ "it as the target number of molecules. This number can be changed manually in the corresponding text area. The script can then update "
+				+ "the activation laser pulse length or power by checking the \"Activate\" checkbox. The script has three parameters: Sd coeff, Feedback "
+				+ "and Average. The Sd coeff is used in the auto-cutoff feature, the higher the value, the higher the cutoff. The feedback parameter "
+				+ "impacts the strength of the feedback to the activation pulse. The stronger the feedback, the faster the pulse will increase. Note that "
+				+ "the algorithm struggles to go over 1-2, then can increase rapidly. Finally, the average parameter is the number of cycle on which to "
+				+ "average the cutoff, in order to provide more stable sport number estimations.";
 	}
 
 	@Override

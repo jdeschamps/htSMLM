@@ -191,7 +191,8 @@ public class QPDPanel extends ConfigurablePanel {
 
 	@Override
 	public String getDescription() {
-		return "The "+getPanelLabel()+" panel plots the values of QPD signals. Three signals are displayed: X and Y in a 2D chart and Sum in a progress bar. The maximum values of each component can be set in the parameters.";
+		return "The QPD panel plots the values of three QPD signals. Three signals are displayed: X and Y in a 2D chart and Sum in a progress bar. "
+				+ "The monitoring of the plots can be turned on or off using the \"monitor\" button";
 	}
 
 	@Override

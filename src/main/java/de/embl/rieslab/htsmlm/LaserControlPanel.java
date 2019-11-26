@@ -227,10 +227,11 @@ public class LaserControlPanel extends ConfigurablePanel {
 
 	@Override
 	protected void initializeProperties() {
-		String text = "Power percentage of the laser. If the laser only has a power set point (mW) property, select this property and use the scaling parameter in the parameters tab.";
+		String text = "Power percentage of the laser. If the laser only has a power set point (mW) property instead of a percentage property, "
+				+ "then use a slope value equal to (maximum power / 100) to turn the property it into a power percentage.";
 		
 		addUIProperty(new RescaledUIProperty(this, getPropertylabel(LASER_PERCENTAGE),text, new LaserFlag()));
-		addUIProperty(new TwoStateUIProperty(this,getPropertylabel(LASER_OPERATION),"Laser On/Off property. Enter the values for the on and off states (e.g. 1/0 or On/Off).", new LaserFlag()));
+		addUIProperty(new TwoStateUIProperty(this,getPropertylabel(LASER_OPERATION),"Laser On/Off property (e.g. 1/0 or On/Off).", new LaserFlag()));
 	}
 
 	@Override
@@ -240,8 +241,8 @@ public class LaserControlPanel extends ConfigurablePanel {
 		useOnOff_ = true;
 		
 		addUIParameter(new StringUIParameter(this, PARAM_TITLE,"Panel title.",title_));
-		addUIParameter(new ColorUIParameter(this, PARAM_COLOR,"Laser color.",color_));
-		addUIParameter(new BoolUIParameter(this, PARAM_ONOFF,"Use On/Off button.",useOnOff_));
+		addUIParameter(new ColorUIParameter(this, PARAM_COLOR,"Panel title color.",color_));
+		addUIParameter(new BoolUIParameter(this, PARAM_ONOFF,"Enable/disable the On/Off button.",useOnOff_));
 	}
 
 	@Override
@@ -314,7 +315,12 @@ public class LaserControlPanel extends ConfigurablePanel {
 
 	@Override
 	public String getDescription() {
-		return "The "+getPanelLabel()+" panel controls a single laser and allows for rapid on/off and power percentage changes.";
+		return "The " + getPanelLabel()
+				+ " laser panel controls a single laser and allows for on/off and power percentage changes. Several parameters "
+				+ "are available to customize the panel, such as title and title color. "
+				+ "In addition, if the laser should not be turned on/off, then a parameter allows disabling the on/off button. "
+				+ "In case the device has an absolute power device property instead of a laser "
+				+ "power percentage, the slope of the corresponding UI property can be used to rescale linearly the value to a percentage.";
 	}
 
 	@Override

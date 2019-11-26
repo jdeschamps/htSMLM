@@ -333,8 +333,8 @@ public class FocusPanel extends ConfigurablePanel {
 		
 		addUIParameter(new DoubleUIParameter(this, PARAM_LARGESTEP,"Default value for large z stage step.",largestep_));
 		addUIParameter(new DoubleUIParameter(this, PARAM_SMALLSTEP,"Default value for small z stage step.",smallstep_));
-		addUIParameter(new IntegerUIParameter(this, PARAM_IDLE,"Idle time in ms of the stage position monitoring.",idle_)); // thread idle time
-		addUIParameter(new IntegerUIParameter(this, PARAM_NPOS,"Number of stage positions displayed in the chart.",npos_)); // number of point in the graph
+		addUIParameter(new IntegerUIParameter(this, PARAM_IDLE,"Idle time (ms) of the stage position monitoring.",idle_)); // thread idle time
+		addUIParameter(new IntegerUIParameter(this, PARAM_NPOS,"Number of stage positions displayed in the chart (x axis).",npos_)); // number of points in the graph
 	}
 
 	@Override
@@ -408,8 +408,8 @@ public class FocusPanel extends ConfigurablePanel {
 
 	@Override
 	public String getDescription() {
-		return "The "+getPanelLabel()+" panel controls the Z stage of the microscope. It allows monitoring of the stage position. In addition, small and large steps buttons can move the stage up and down. "
-				+ "The locking property corresponds to focus stabilization and is very specific to certain stages.";
+		return "The focus panel controls the Z stage of the microscope. It allows monitoring its position (select/unselect the monitoring button). In addition, small and large steps buttons can move the stage up and down. "
+				+ "The locking property corresponds to focus stabilization.";
 	}
 
 	@Override

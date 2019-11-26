@@ -141,7 +141,7 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 	@Override
 	protected void initializeProperties() {
 		addUIProperty(new MultiStateUIProperty(this, getPropertyLabel(TRIGGER_MODE),
-				"From Micro-Mojo FPGA: property dictating the behaviour of the laser trigger, from camera to pulsing.",
+				"Micro-Mojo FPGA: property dictating the behaviour of the laser trigger, from camera to pulsing.",
 				new LaserFlag(), FPGA_BEHAVIOURS.length));
 		
 		try {
@@ -151,10 +151,10 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 		}
 		
 		addUIProperty(new UIProperty(this, getPropertyLabel(TRIGGER_SEQUENCE),
-				"From Micro-Mojo FPGA: trigger sequence property, following a 16 bits pattern of 0 (not triggered) and 1 (triggered).",
+				"Micro-Mojo FPGA: trigger sequence property, following a 16 bits pattern of 0 (not triggered) and 1 (triggered).",
 				new LaserFlag()));
 		addUIProperty(new UIProperty(this, getPropertyLabel(PULSE_LENGTH),
-				"From Micro-Mojo FPGA: duration of the laser pulses.", new LaserFlag()));
+				"Micro-Mojo FPGA: duration of the laser pulses.", new LaserFlag()));
 	}
 
 	@Override
@@ -226,9 +226,9 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 	@Override
 	public String getDescription() {
 		return "The "+getPanelLabel()+" panel controls the triggering of laser thanks to the MicroMojo FPGA system. The triggering behaviour are either on/off, "
-				+ ",pulsing on rising/falling edge or simply following the camera trigger. The pulse length can be set through a text area or a slider. "
-				+ "Finally, the laser can be triggered following a sequence of 0 (off) and 1 (triggered). The sequence is 16 bits long. If the sequence set"
-				+ "in the text area is made of 0 and 1, albeit with the wrong size, the text is colored in blue. When wrong characters are entered the text"
+				+ ", pulsing on rising/falling edge or simply following the camera trigger. The pulse length can be set through a text area or a slider. "
+				+ "Finally, the laser can be triggered following a sequence of 0 (off) and 1 (triggered). The sequence is 16 bits long. If the sequence set "
+				+ "in the text area is made of 0 and 1, albeit with the wrong size, the text is colored in blue. When wrong characters are entered the text "
 				+ "turns red.";
 	}
 

@@ -112,12 +112,12 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 		addUIParameter(new StringUIParameter(this, PARAM_NAME4,"Two-state device 4 name, as dislayed in the UI.","Servo 4"));
 		addUIParameter(new StringUIParameter(this, PARAM_NAME5,"Two-state device 5 name, as dislayed in the UI.","Servo 5"));
 		addUIParameter(new StringUIParameter(this, PARAM_NAME6,"Two-state device 6 name, as dislayed in the UI.","Servo 6"));
-		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE1,"Enable the button corresponding to the first two-state device.", true));
-		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE2,"Enable the button corresponding to the second two-state device.",true));
-		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE3,"Enable the button corresponding to the third two-state device.",false));
-		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE4,"Enable the button corresponding to the fourth two-state device.",false));
-		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE5,"Enable the button corresponding to the fifth two-state device.",false));
-		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE6,"Enable the button corresponding to the sixth two-state device.",false));
+		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE1,"Enable the first button.", true));
+		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE2,"Enable the second button.",true));
+		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE3,"Enable the third button.",false));
+		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE4,"Enable the fourth button.",false));
+		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE5,"Enable the fifth button.",false));
+		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE6,"Enable the sixth button.",false));
 	}
 
 	@Override
@@ -270,7 +270,7 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 
 	@Override
 	public String getDescription() {
-		return "The "+getPanelLabel()+" panel makes use of two-state buttons to control servos or flip-mirrors.";
+		return "The "+getPanelLabel()+" panel makes use of toggle buttons to control devices with only two states (e.g.: flip mirrors, servos with in/out positions..etc..).";
 	}
 
 	@Override

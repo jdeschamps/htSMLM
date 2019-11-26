@@ -317,7 +317,10 @@ public class IBeamSmartPanel extends ConfigurablePanel {
 
 	@Override
 	public String getDescription() {
-		return "This panel controls the focus-lock laser fron Toptica, iBeam-smart.";
+		return "The "+this.getPanelLabel()+" iBeamSmart panel is specifically meant to control a Toptica iBeamSmart series laser. "
+				+ "The laser power can be entered using a slider or a text field. The panel also includes controls for the Fine and "
+				+ "External trigger options."
+				+ "The parameters allow disabling these options if they are not present.";
 	}
 
 	

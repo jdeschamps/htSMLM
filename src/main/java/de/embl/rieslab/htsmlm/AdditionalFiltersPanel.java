@@ -215,8 +215,8 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 	
 	@Override
 	protected void initializeProperties() {
-		addUIProperty(new MultiStateUIProperty(this, SLIDER1_POSITION, "Slider1 position property.", new FilterWheelFlag(),NUM_POS));		
-		addUIProperty(new MultiStateUIProperty(this, SLIDER2_POSITION, "Slider2 wheel position property.", new FilterWheelFlag(),NUM_POS));		
+		addUIProperty(new MultiStateUIProperty(this, SLIDER1_POSITION, "Slider 1 position.", new FilterWheelFlag(),NUM_POS));		
+		addUIProperty(new MultiStateUIProperty(this, SLIDER2_POSITION, "Slider 2 position.", new FilterWheelFlag(),NUM_POS));		
 	}
 
 	@Override
@@ -328,7 +328,7 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 
 	@Override
 	public String getDescription() {
-		return "The "+getPanelLabel()+" panel should be liked to the sliders and allows the control of up to "+NUM_POS+" filters. The colors and names can bu customized from the configuration menu.";
+		return "The "+getPanelLabel()+" is meant to control a dual filterwheel/slider with at most "+NUM_POS+" filter in each filter wheel. The filter colors and names can be customized from the configuration menu.";
 	}
 
 	@Override

@@ -183,8 +183,8 @@ public class DualFWPanel extends AbstractFiltersPanel {
 	
 	@Override
 	protected void initializeProperties() {
-		addUIProperty(new MultiStateUIProperty(this, FW_POSITION1, "Filter wheel 1 position property.", new FilterWheelFlag(),NUM_POS));
-		addUIProperty(new MultiStateUIProperty(this, FW_POSITION2, "Filter wheel 2 position property.", new FilterWheelFlag(),NUM_POS));		
+		addUIProperty(new MultiStateUIProperty(this, FW_POSITION1, "Filter wheel 1 position.", new FilterWheelFlag(),NUM_POS));
+		addUIProperty(new MultiStateUIProperty(this, FW_POSITION2, "Filter wheel 2 position.", new FilterWheelFlag(),NUM_POS));		
 	}
 
 	@Override
@@ -198,17 +198,18 @@ public class DualFWPanel extends AbstractFiltersPanel {
 		}
 		names2_ = names1_;
 		colors2_ = colors1_;
+		
+		String desc_names = "Filter names displayed by the UI. The entry should be written as \"name1,name2,name3,name4,name5,name6\". The names should be separated by a comma. "
+				+ "The maximum number of filters name is "+NUM_POS+", beyond that the names will be ignored.";
+		String desc_colors= "Filter colors displayed by the UI. The entry should be written as \"color1,color2,color3,color4,color5,color6\". The names should be separated by a comma. "
+				+ "The maximum number of filters color is "+NUM_POS+", beyond that the colors will be ignored. The available colors are:\n"+ColorRepository.getColorsInOneColumn();
 
 		addUIParameter(new StringUIParameter(this, PARAM_TITLE,"Title of the dual FW panel",title_));
-		addUIParameter(new StringUIParameter(this, PARAM_NAMES1,"Filter names displayed by the UI. The entry should be written as \"name1,name2,name3,None,None,None\". The names should be separated by a comma. "
-				+ "The maximum number of filters name is "+NUM_POS+", beyond that the names will be ignored. If the comma are not present, then the entry will be set as the name of the first filter.",names1_));
-		addUIParameter(new StringUIParameter(this, PARAM_COLORS1,"Filter colors displayed by the UI. The entry should be written as \"color1,color2,color3,grey,grey,grey\". The names should be separated by a comma. "
-				+ "The maximum number of filters color is "+NUM_POS+", beyond that the colors will be ignored. If the comma are not present, then no color will be allocated. The available colors are:\n"+ColorRepository.getColorsInOneColumn(),colors1_));
+		addUIParameter(new StringUIParameter(this, PARAM_NAMES1,desc_names,names1_));
+		addUIParameter(new StringUIParameter(this, PARAM_COLORS1,desc_colors,colors1_));
 	
-		addUIParameter(new StringUIParameter(this, PARAM_NAMES2,"Filter names displayed by the UI. The entry should be written as \"name1,name2,name3,None,None,None\". The names should be separated by a comma. "
-				+ "The maximum number of filters name is "+NUM_POS+", beyond that the names will be ignored. If the comma are not present, then the entry will be set as the name of the first filter.",names2_));
-		addUIParameter(new StringUIParameter(this, PARAM_COLORS2,"Filter colors displayed by the UI. The entry should be written as \"color1,color2,color3,grey,grey,grey\". The names should be separated by a comma. "
-				+ "The maximum number of filters color is "+NUM_POS+", beyond that the colors will be ignored. If the comma are not present, then no color will be allocated. The available colors are:\n"+ColorRepository.getColorsInOneColumn(),colors2_));
+		addUIParameter(new StringUIParameter(this, PARAM_NAMES2,desc_names,names2_));
+		addUIParameter(new StringUIParameter(this, PARAM_COLORS2,desc_colors,colors2_));
 	
 	}
 
@@ -285,7 +286,7 @@ public class DualFWPanel extends AbstractFiltersPanel {
 
 	@Override
 	public String getDescription() {
-		return "The "+getPanelLabel()+" panel should be liked to te filterwheel and allows the contol of up to "+NUM_POS+" filters. The colors and names can bu customized from the configuration menu.";
+		return "The "+getPanelLabel()+" panel is meant to control a dual filterwheel with at most "+NUM_POS+" filters in each filterwheel. The filter colors and names can be customized from the configuration menu.";
 	}
 
 	@Override

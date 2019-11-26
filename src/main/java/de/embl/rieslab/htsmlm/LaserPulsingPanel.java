@@ -219,7 +219,7 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 		maxpulse_  = 10000;
 		
 		addUIParameter(new StringUIParameter(this, PARAM_TITLE,"Panel title.",title_));
-		addUIParameter(new ColorUIParameter(this, PARAM_COLOR,"Default value for large z stage step.",color_));
+		addUIParameter(new ColorUIParameter(this, PARAM_COLOR,"Panel title color.",color_));
 		addUIParameter(new IntegerUIParameter(this, PARAM_DEFAULT_MAX,"Default maximum value for the activation laser pulse length.",maxpulse_));
 	}
 
@@ -294,8 +294,9 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 
 	@Override
 	public String getDescription() {
-		return "The "+getPanelLabel()+" panel is meant to control the pulse length of the activation laser. "
-				+ "The user can set a maximum to the slider by entering a value in the second text area. The pulse length can be set by entering a value in the first text area or by moving the slider.";
+		return "The pulsing panel is meant to control the pulse length of the activation laser (localization microscopy). "
+				+ "The user can set a maximum to the slider by entering a value in the gray text area. The pulse length can "
+				+ "be set by entering a value in the white text area or by moving the slider.";
 	}
 
 	@Override
