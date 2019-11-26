@@ -67,7 +67,6 @@ public class MultiSliceAcquisition implements Acquisition {
 	private boolean useactivation_, stoponmax_, nullActivation_;
 	private volatile boolean stopAcq_, running_;
 	private int stoponmaxdelay_;
-	private boolean interruptionRequested_;
 
 	// UI property
 	private TwoStateUIProperty zstabProperty_;
@@ -91,7 +90,6 @@ public class MultiSliceAcquisition implements Acquisition {
 		
 		stopAcq_ = false;
 		running_ = false;
-		interruptionRequested_ = false;
 		stoponmax_ = true;
 		stoponmaxdelay_ = 5;
 
@@ -413,7 +411,6 @@ public class MultiSliceAcquisition implements Acquisition {
 		CMMCore core  = studio.core();
 
 		stopAcq_ = false;
-		interruptionRequested_ = false;
 		running_ = true;
 
 		if(disableFocusLock_) {
@@ -501,13 +498,11 @@ public class MultiSliceAcquisition implements Acquisition {
 								}
 												
 								interruptAcquisition(studio);
-								interruptionRequested_ = true;
 							}
 									
 							// checks if exit requested
 							if(stopAcq_){
 								interruptAcquisition(studio);
-								interruptionRequested_ = true;
 							}
 							
 							try {
