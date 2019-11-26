@@ -45,9 +45,8 @@ public class MultiSliceAcquisition implements Acquisition {
 	private final static String LABEL_DELTAZ = "Z difference (um)";
 	private final static String LABEL_NUMB = "N loops / N slices / \u0394Z (um)";
 	private final static String LABEL_ZDEVICE = "Moving device:";
-	private final static String LABEL_ZTARGET = "Target device";
 	private final static String LABEL_DISABLEFL = "disable focus-lock";
-	private final static String LABEL_USETARGET = "use target";
+	private final static String LABEL_FLATZ0 = "only at Z0";
 	
 	public final static String KEY_USEACT = "Use activation?";
 	public final static String KEY_STOPONMAX = "Stop on max?";
@@ -56,12 +55,9 @@ public class MultiSliceAcquisition implements Acquisition {
 	public final static String KEY_NSLICES = "N slices";
 	public final static String KEY_DELTAZ = "Delta z";
 	public final static String KEY_ZDEVICE = "Z stage";
-	public final static String KEY_ZTARGET = "Z target";
 	public final static String KEY_DISABLEFL = "Disable focus-lock";
-	public final static String KEY_USETARGET = "Use target device";
-	
-	private final static String NONE = "None";
-	
+	public final static String KEY_FLATZ0 = "Use focus-lock at Z0";
+		
 	@SuppressWarnings("rawtypes")
 	private TaskHolder activationTask_;
 	private boolean useactivation_, stoponmax_, nullActivation_;
@@ -70,11 +66,11 @@ public class MultiSliceAcquisition implements Acquisition {
 
 	// UI property
 	private TwoStateUIProperty zstabProperty_;
-	private String zdevice_, targetdevice_;
+	private String zdevice_;
 	private String[] zdevices_;
 	private double deltaZ;
 	private int nSlices, nLoops;
-	private boolean targetOtherZStage_, disableFocusLock_; 	
+	private boolean focusLockAtZ0_, disableFocusLock_; 	
 	
 	@SuppressWarnings("rawtypes")
 	public MultiSliceAcquisition(TaskHolder activationtask, double exposure, String[] zdevices, String defaultzdevice, TwoStateUIProperty zStabilizationProperty) {
@@ -100,8 +96,7 @@ public class MultiSliceAcquisition implements Acquisition {
 			zstabProperty_ = null;
 			disableFocusLock_ = false;
 		}
-		targetOtherZStage_ = false;
-		targetdevice_ = NONE;
+		focusLockAtZ0_ = false;
 		deltaZ=2;
 		nSlices=4;
 		nLoops=5;
@@ -120,10 +115,10 @@ public class MultiSliceAcquisition implements Acquisition {
 		pane.setName(getPanelName());
 		
 		JLabel exposurelab, waitinglab, numframelab, intervallab, waitonmaxlab;
-		JLabel zdevicelabel, ztargetlabel, numbLabel;
+		JLabel zdevicelabel, numbLabel;
 		JSpinner numberslice, deltaz, numberloops;
 		JSpinner exposurespin, waitingspin, numframespin, intervalspin, waitonmaxspin;
-		JCheckBox activatecheck, stoponmaxcheck, disablefocuslock, usetarget;
+		JCheckBox activatecheck, stoponmaxcheck, disablefocuslock, flonlyatz0;
 		
 		exposurelab = new JLabel(LABEL_EXPOSURE);
 		waitinglab = new JLabel(LABEL_PAUSE);
@@ -154,9 +149,7 @@ public class MultiSliceAcquisition implements Acquisition {
 		
 		//// z part
 		zdevicelabel = new JLabel(LABEL_ZDEVICE);
-		ztargetlabel = new JLabel(LABEL_ZTARGET);
 		numbLabel = new JLabel(LABEL_NUMB);
-
 
 		numberloops = new JSpinner(new SpinnerNumberModel(nLoops, 1, 100, 1)); 
 		numberloops.setName(LABEL_NLOOPS);
@@ -168,50 +161,31 @@ public class MultiSliceAcquisition implements Acquisition {
 		JComboBox<String> zdevices = new JComboBox<String>(zdevices_);
 		zdevices.setSelectedItem(zdevice_);
 		zdevices.setName(LABEL_ZDEVICE);
-		
-		String[] ztargets_list = new String[zdevices_.length+1];
-		ztargets_list[0] = NONE;
-		for(int i=0;i<zdevices_.length;i++) {
-			ztargets_list[i+1] = zdevices_[i];
-		}
-		JComboBox<String> ztargets = new JComboBox<String>(ztargets_list);
-		if(zdevices_.length <= 1) {
-			ztargets.setSelectedItem(NONE);
-			ztargets.setName(LABEL_ZTARGET);
-			ztargets.setEnabled(false);
-		} else {
-			ztargets.setSelectedItem(targetdevice_);
-			ztargets.setName(LABEL_ZTARGET);
-			ztargets.setEnabled(targetOtherZStage_);
-		}
-		
+				
 		disablefocuslock = new JCheckBox(LABEL_DISABLEFL);
 		disablefocuslock.setSelected(disableFocusLock_);
 		disablefocuslock.setName(LABEL_DISABLEFL);
 		disablefocuslock.setEnabled(zstabProperty_ != null);
 		
-		usetarget = new JCheckBox(LABEL_USETARGET);
-		usetarget.setName(LABEL_USETARGET);
-		usetarget.setSelected(targetOtherZStage_);
-		if(zdevices_.length <= 1) {
-			usetarget.setEnabled(false);
-		}
+		flonlyatz0 = new JCheckBox(LABEL_FLATZ0);
+		flonlyatz0.setName(LABEL_FLATZ0);
+		flonlyatz0.setSelected(focusLockAtZ0_);
+		flonlyatz0.setEnabled(!disableFocusLock_);
 
-		usetarget.addActionListener(new ActionListener() {
+		disablefocuslock.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
 				AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
 				boolean selected = abstractButton.getModel().isSelected();
 				if (selected) {
-					ztargets.setSelectedItem(NONE);
-					ztargets.setEnabled(true);
+					flonlyatz0.setEnabled(false);
+					flonlyatz0.setSelected(false);
 				} else {
-					ztargets.setSelectedItem(NONE);
-					ztargets.setEnabled(false);
+					flonlyatz0.setEnabled(true);
 				}
 			}
-		});
-
-		int nrow = 6;
+		});		
+		
+		int nrow = 5;
 		int ncol = 4;
 		JPanel[][] panelHolder = new JPanel[nrow][ncol];    
 		pane.setLayout(new GridLayout(nrow,ncol));
@@ -241,15 +215,12 @@ public class MultiSliceAcquisition implements Acquisition {
 		panelHolder[3][0].add(zdevicelabel);
 		panelHolder[3][1].add(zdevices);
 		panelHolder[3][2].add(disablefocuslock);
-
-		panelHolder[4][0].add(ztargetlabel);
-		panelHolder[4][1].add(ztargets);
-		panelHolder[4][2].add(usetarget);
+		panelHolder[3][3].add(flonlyatz0);
 		
-		panelHolder[5][0].add(numbLabel);
-		panelHolder[5][1].add(numberloops);
-		panelHolder[5][2].add(numberslice);
-		panelHolder[5][3].add(deltaz);
+		panelHolder[4][0].add(numbLabel);
+		panelHolder[4][1].add(numberloops);
+		panelHolder[4][2].add(numberslice);
+		panelHolder[4][3].add(deltaz);
 		
 		return pane;
 	}
@@ -296,10 +267,8 @@ public class MultiSliceAcquisition implements Acquisition {
 								this.setUseStopOnMaxUVDelay((Integer) ((JSpinner) comp[i]).getValue());
 							} else if(comp[i].getName().equals(LABEL_ZDEVICE) && comp[i] instanceof JComboBox){
 								zdevice_ = ((String) ((JComboBox) comp[i]).getSelectedItem());
-							} else if(comp[i].getName().equals(LABEL_USETARGET) && comp[i] instanceof JCheckBox){
-								targetOtherZStage_ = ((JCheckBox) comp[i]).isSelected();
-							} else if(comp[i].getName().equals(LABEL_ZTARGET) && comp[i] instanceof JComboBox){
-								targetdevice_ = ((String) ((JComboBox) comp[i]).getSelectedItem());
+							} else if(comp[i].getName().equals(LABEL_FLATZ0) && comp[i] instanceof JCheckBox){
+								focusLockAtZ0_ = ((JCheckBox) comp[i]).isSelected();
 							} else if(comp[i].getName().equals(LABEL_DISABLEFL) && comp[i] instanceof JCheckBox){
 								disableFocusLock_ = ((JCheckBox) comp[i]).isSelected();
 							} else if(comp[i].getName().equals(LABEL_NSLICES) && comp[i] instanceof JSpinner){
@@ -314,11 +283,6 @@ public class MultiSliceAcquisition implements Acquisition {
 				}
 			}	
 		}
-		
-		if(targetdevice_.equals(zdevice_)) {
-			targetdevice_ = NONE;
-			targetOtherZStage_ = false;
-		}
 	}
 
 	@Override
@@ -331,7 +295,7 @@ public class MultiSliceAcquisition implements Acquisition {
 
 	@Override
 	public String[] getHumanReadableSettings() {
-		String[] s = new String[13];
+		String[] s = new String[12];
 		s[0] = "Exposure = "+params_.getExposureTime()+" ms";
 		s[1] = "Interval = "+params_.getIntervalMs()+" ms";
 		s[2] = "Number of frames = "+params_.getNumberFrames();
@@ -339,12 +303,11 @@ public class MultiSliceAcquisition implements Acquisition {
 		s[4] = "Stop on max UV = "+stoponmax_;
 		s[5] = "Stop on max delay = "+stoponmaxdelay_+" s";
 		s[6] = "Focus stage = "+zdevice_;
-		s[7] = "Use target stage = "+targetOtherZStage_;
-		s[8] = "Target stage = "+targetdevice_;
-		s[9] = "Disable focus-lock = "+disableFocusLock_;
-		s[10] = "Number of loops = "+nLoops;
-		s[11] = "Number of slices = "+nSlices;
-		s[12] = "Z difference = "+deltaZ+" um";
+		s[7] = "Use FL at Z0 = "+focusLockAtZ0_;
+		s[8] = "Disable focus-lock = "+disableFocusLock_;
+		s[9] = "Number of loops = "+nLoops;
+		s[10] = "Number of slices = "+nSlices;
+		s[11] = "Z difference = "+deltaZ+" um";
 		return s;
 	}
 
@@ -355,7 +318,7 @@ public class MultiSliceAcquisition implements Acquisition {
 	
 	@Override
 	public String[][] getAdditionalParameters() {
-		String[][] parameters = new String[10][2];
+		String[][] parameters = new String[9][2];
 
 		parameters[0][0] = KEY_USEACT;
 		parameters[0][1] = String.valueOf(useactivation_);
@@ -365,26 +328,24 @@ public class MultiSliceAcquisition implements Acquisition {
 		parameters[2][1] = String.valueOf(stoponmaxdelay_);
 		parameters[3][0] = KEY_ZDEVICE;
 		parameters[3][1] = zdevice_;
-		parameters[4][0] = KEY_USETARGET;
-		parameters[4][1] = String.valueOf(targetOtherZStage_);
-		parameters[5][0] = KEY_ZTARGET;
-		parameters[5][1] = targetdevice_;
-		parameters[6][0] = KEY_DISABLEFL;
-		parameters[6][1] = String.valueOf(disableFocusLock_);
-		parameters[7][0] = KEY_NLOOPS;
-		parameters[7][1] = String.valueOf(nLoops);
-		parameters[8][0] = KEY_NSLICES;
-		parameters[8][1] = String.valueOf(nSlices);
-		parameters[9][0] = KEY_DELTAZ;
-		parameters[9][1] = String.valueOf(deltaZ);
+		parameters[4][0] = KEY_FLATZ0;
+		parameters[4][1] = String.valueOf(focusLockAtZ0_);
+		parameters[5][0] = KEY_DISABLEFL;
+		parameters[5][1] = String.valueOf(disableFocusLock_);
+		parameters[6][0] = KEY_NLOOPS;
+		parameters[6][1] = String.valueOf(nLoops);
+		parameters[7][0] = KEY_NSLICES;
+		parameters[7][1] = String.valueOf(nSlices);
+		parameters[8][0] = KEY_DELTAZ;
+		parameters[8][1] = String.valueOf(deltaZ);
 
 		return parameters;
 	}
 	
 	@Override
 	public void setAdditionalParameters(String[][] parameters) {
-		if(parameters.length != 10 || parameters[0].length != 2) {
-			throw new IllegalArgumentException("The parameters array has the wrong size: expected (10,2), got ("
+		if(parameters.length != 9 || parameters[0].length != 2) {
+			throw new IllegalArgumentException("The parameters array has the wrong size: expected (9,2), got ("
 					+ parameters.length + "," + parameters[0].length + ")");
 		}
 
@@ -392,12 +353,11 @@ public class MultiSliceAcquisition implements Acquisition {
 		stoponmax_ = Boolean.parseBoolean(parameters[1][1]);
 		stoponmaxdelay_ = Integer.parseInt(parameters[2][1]);
 		zdevice_ = parameters[3][1];
-		targetOtherZStage_ = Boolean.parseBoolean(parameters[4][1]);
-		targetdevice_ = parameters[5][1];
-		disableFocusLock_ = Boolean.parseBoolean(parameters[6][1]);
-		nLoops = Integer.parseInt(parameters[7][1]);
-		nSlices = Integer.parseInt(parameters[8][1]);
-		deltaZ = Double.parseDouble(parameters[9][1]);
+		focusLockAtZ0_ = Boolean.parseBoolean(parameters[4][1]);
+		disableFocusLock_ = Boolean.parseBoolean(parameters[5][1]);
+		nLoops = Integer.parseInt(parameters[6][1]);
+		nSlices = Integer.parseInt(parameters[7][1]);
+		deltaZ = Double.parseDouble(parameters[8][1]);
 	}
 
 	@Override
@@ -427,7 +387,7 @@ public class MultiSliceAcquisition implements Acquisition {
 		settings.shouldDisplayImages = true;
 		
 		// retrieve current z
-		double z0 = 0, zt = 0, slope = 1.;
+		double z0 = 0;
 		try {
 			z0 = core.getPosition(zdevice_);
 		} catch (Exception e) {
@@ -435,27 +395,6 @@ public class MultiSliceAcquisition implements Acquisition {
 			e.printStackTrace();
 			return false;
 		} // retrieves main stage position
-		if(targetOtherZStage_) {
-			try {
-				zt = core.getPosition(targetdevice_);
-		
-				// assumes a linear relationship, so we quickly determine the slope
-				double dz = 100; 
-				double z = z0 + dz;
-				
-				// set position
-				core.setPosition(zdevice_, z);
-				double zt2 = core.getPosition(targetdevice_);
-				slope = (zt2-zt)/dz;
-				
-				// returns to previous
-				core.setPosition(zdevice_, z0);
-			} catch (Exception e) {
-				running_ = false;
-				e.printStackTrace();
-				return false;
-			}
-		}
 		
 		if(running_) {
 			for(int i=0;i<nLoops;i++) {
@@ -467,17 +406,17 @@ public class MultiSliceAcquisition implements Acquisition {
 					}					
 					
 					// set z
-					double z;
-					if(targetOtherZStage_) {
-						// we assume a linear relationship between the two stages
-						z = z0 + j*deltaZ / slope;						
-					} else {
-						z  = z0 + j*deltaZ;
-					}
+					double z = z0 + j*deltaZ;
 					
 					try {
 						// moves the stage
 						core.setPosition(zdevice_, z);
+						
+						if(j==0 && !disableFocusLock_ && focusLockAtZ0_) {
+							zstabProperty_.setPropertyValue(TwoStateUIProperty.getOnStateLabel());
+							Thread.sleep(10000); // ten seconds hard coded waiting for focus-lock
+							zstabProperty_.setPropertyValue(TwoStateUIProperty.getOffStateLabel());
+						}
 						
 						// sets-up name
 						settings.prefix = "L"+i+"S"+j+"_"+name;
@@ -545,12 +484,16 @@ public class MultiSliceAcquisition implements Acquisition {
 			}
 		}
 		
+		
+		// go back to position z0
+		try {
+			core.setPosition(zdevice_, z0);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		// if focus locked disabled, set to ON state
 		if(disableFocusLock_) {				
-			try {
-				core.setPosition(zdevice_, z0);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
 			zstabProperty_.setPropertyValue(TwoStateUIProperty.getOnStateLabel());
 		}
 			
