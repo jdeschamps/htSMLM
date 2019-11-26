@@ -96,9 +96,7 @@ public class ActivationTask implements Task<Double> {
 	}
 
 	private void getN(double sdcoeff, double cutoff, double dT, boolean autocutoff) {
-		if (core_.isSequenceRunning() && core_.getBytesPerPixel() == 2) {
-			System.out.println("bytes per pixels: core_.getBytesPerPixel()");
-			
+		if (core_.isSequenceRunning() && core_.getBytesPerPixel() == 2) {			
 			int width, height;
 			double tempcutoff;
 			boolean abort = false;

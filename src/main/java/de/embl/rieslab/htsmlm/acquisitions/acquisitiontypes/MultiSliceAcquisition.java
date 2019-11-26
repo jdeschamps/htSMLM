@@ -443,7 +443,7 @@ public class MultiSliceAcquisition implements Acquisition {
 				zt = core.getPosition(targetdevice_);
 		
 				// assumes a linear relationship, so we quickly determine the slope
-				double dz = Math.abs(0.1*z0) < 100 ? 10 : 100; 
+				double dz = 100; 
 				double z = z0 + dz;
 				
 				// set position
