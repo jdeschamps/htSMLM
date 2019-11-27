@@ -373,7 +373,7 @@ public class MultiSliceAcquisition implements Acquisition {
 		stopAcq_ = false;
 		running_ = true;
 
-		if(disableFocusLock_) {
+		if(disableFocusLock_ || (!disableFocusLock_ && focusLockAtZ0_)) {
 			zstabProperty_.setPropertyValue(TwoStateUIProperty.getOffStateLabel());
 		}
 		
@@ -386,22 +386,20 @@ public class MultiSliceAcquisition implements Acquisition {
 		settings.intervalMs = 0;
 		settings.shouldDisplayImages = true;
 		
-		// retrieve current z
 		double z0 = 0;
 		try {
 			z0 = core.getPosition(zdevice_);
-		} catch (Exception e) {
-			running_ = false;
-			e.printStackTrace();
-			return false;
-		} // retrieves main stage position
+		} catch (Exception e1) {
+			running_=false;
+			e1.printStackTrace();
+		}
 		
 		if(running_) {
 			for(int i=0;i<nLoops;i++) {
 				for(int j=0;j<nSlices;j++) {
 					
 					if(useactivation_){			
-						activationTask_.initializeTask();
+						//activationTask_.initializeTask();
 						activationTask_.resumeTask();
 					}					
 					
@@ -412,10 +410,13 @@ public class MultiSliceAcquisition implements Acquisition {
 						// moves the stage
 						core.setPosition(zdevice_, z);
 						
-						if(j==0 && !disableFocusLock_ && focusLockAtZ0_) {
+						if(i>0 && j==0 && !disableFocusLock_ && focusLockAtZ0_) {
 							zstabProperty_.setPropertyValue(TwoStateUIProperty.getOnStateLabel());
-							Thread.sleep(10000); // ten seconds hard coded waiting for focus-lock
+							Thread.sleep(10000); // ten seconds hard coded waiting time for focus-lock
 							zstabProperty_.setPropertyValue(TwoStateUIProperty.getOffStateLabel());
+							
+							// updates z0 for the next iterations
+							z0 = core.getPosition(zdevice_);
 						}
 						
 						// sets-up name
@@ -493,7 +494,7 @@ public class MultiSliceAcquisition implements Acquisition {
 		}
 		
 		// if focus locked disabled, set to ON state
-		if(disableFocusLock_) {				
+		if(disableFocusLock_ || (!disableFocusLock_ && focusLockAtZ0_)) {				
 			zstabProperty_.setPropertyValue(TwoStateUIProperty.getOnStateLabel());
 		}
 			

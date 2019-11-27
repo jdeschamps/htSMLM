@@ -44,6 +44,7 @@ import de.embl.rieslab.emu.ui.uiproperties.SingleStateUIProperty;
 import de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
 import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 import de.embl.rieslab.emu.ui.uiproperties.UIPropertyType;
+import de.embl.rieslab.emu.utils.EmuUtils;
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.AllocatedPropertyFilter;
@@ -900,11 +901,13 @@ public class AcquisitionTab extends JPanel {
 				slider_.setLimits(Double.parseDouble((String) prop.getMin()), Double.parseDouble((String) prop.getMin()));
 			}
 	    	
-			try {
-				slider_.setText(String.valueOf(value));
-			} catch (ParseException ex) {
-				ReportingUtils.logError(ex);
-			}
+	    	if(EmuUtils.isInteger(String.valueOf(value))) {
+				try {
+					slider_.setText(String.valueOf(value));
+				} catch (ParseException ex) {
+					ReportingUtils.logError(ex);
+				}
+	    	}
 			
 			return slider_;  
 	    }
