@@ -190,7 +190,7 @@ public class AcquisitionTask implements Task<Integer>{
 					while (it.hasNext()) {
 						String group = it.next();
 
-						MMPresetGroup configgroup = system_.getMMConfigGroupRegistry().getMMPresetGroups().get(group);
+						MMPresetGroup configgroup = system_.getMMPresetGroupRegistry().getMMPresetGroups().get(group);
 						if(configgroup.hasPreset(configs.get(group))) {	// if the preset is known
 							try {
 								core_.setConfig(group, configs.get(group));

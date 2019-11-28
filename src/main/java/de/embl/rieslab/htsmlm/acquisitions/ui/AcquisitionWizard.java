@@ -296,8 +296,8 @@ public class AcquisitionWizard {
 		return controller_.getPropertiesMap();
 	}
 	
-	public MMPresetGroupRegistry getMMConfigurationRegistry(){
-		return controller_.getMMConfigGroupRegistry();
+	public MMPresetGroupRegistry getMMPresetRegistry(){
+		return controller_.getMMPresetGroupRegistry();
 	}
 	
 	public void shutDown() {

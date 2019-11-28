@@ -2,9 +2,9 @@ package de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters;
 
 import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 
-public class NonConfigGroupPropertyFilter extends PropertyFilter {
+public class NonPresetGroupPropertyFilter extends PropertyFilter {
 
-	public NonConfigGroupPropertyFilter(PropertyFilter additionalfilter){
+	public NonPresetGroupPropertyFilter(PropertyFilter additionalfilter){
 		super(additionalfilter);
 	}
 	

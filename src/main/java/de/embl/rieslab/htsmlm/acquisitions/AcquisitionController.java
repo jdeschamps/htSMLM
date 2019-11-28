@@ -7,6 +7,8 @@ import java.util.Iterator;
 import javax.swing.SwingUtilities;
 
 import de.embl.rieslab.emu.controller.SystemController;
+import de.embl.rieslab.emu.micromanager.presetgroups.MMPresetGroup;
+import de.embl.rieslab.emu.micromanager.presetgroups.MMPresetGroupRegistry;
 import de.embl.rieslab.emu.ui.uiparameters.UIPropertyParameter;
 import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 import de.embl.rieslab.htsmlm.AcquisitionPanel;
@@ -15,7 +17,7 @@ import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory;
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory.AcquisitionType;
 import de.embl.rieslab.htsmlm.acquisitions.ui.AcquisitionWizard;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.AllocatedPropertyFilter;
-import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.NonConfigGroupPropertyFilter;
+import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.NonPresetGroupPropertyFilter;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.ReadOnlyPropertyFilter;
 import de.embl.rieslab.htsmlm.acquisitions.utils.AcquisitionInformationPanel;
 import de.embl.rieslab.htsmlm.acquisitions.wrappers.Experiment;
@@ -181,7 +183,7 @@ public class AcquisitionController implements TaskHolder<Integer>{
 
 	public void startWizard() {
 		// first, let's grab all the current property values
-		HashMap<String, UIProperty> props = (new NonConfigGroupPropertyFilter(new AllocatedPropertyFilter(new ReadOnlyPropertyFilter())))
+		HashMap<String, UIProperty> props = (new NonPresetGroupPropertyFilter(new AllocatedPropertyFilter(new ReadOnlyPropertyFilter())))
 				.filterProperties(controller_.getPropertiesMap());
 		HashMap<String, String> propValues = new HashMap<String, String>();
 		

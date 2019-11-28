@@ -44,13 +44,12 @@ import de.embl.rieslab.emu.ui.uiproperties.SingleStateUIProperty;
 import de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
 import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 import de.embl.rieslab.emu.ui.uiproperties.UIPropertyType;
-import de.embl.rieslab.emu.utils.EmuUtils;
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.AllocatedPropertyFilter;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.AntiFlagPropertyFilter;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.FlagPropertyFilter;
-import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.NonConfigGroupPropertyFilter;
+import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.NonPresetGroupPropertyFilter;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.PropertyFilter;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.ReadOnlyPropertyFilter;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.TwoStatePropertyFilter;
@@ -108,7 +107,7 @@ public class AcquisitionTab extends JPanel {
 		this.setName(acqTypesArray_[currind]);
 
 		// Filter out read-only properties from the system properties
-		props_ = (new NonConfigGroupPropertyFilter(new AllocatedPropertyFilter(new ReadOnlyPropertyFilter())))
+		props_ = (new NonPresetGroupPropertyFilter(new AllocatedPropertyFilter(new ReadOnlyPropertyFilter())))
 				.filterProperties(wizard_.getPropertiesMap());
 		propsfriendlyname_ = new HashMap<String, String>();
 		Iterator<String> it = props_.keySet().iterator();
@@ -176,7 +175,7 @@ public class AcquisitionTab extends JPanel {
 		acqTypeComboBox_.setSelectedIndex(currind);
 
 		// Filter out read-only properties from the system properties
-		props_ = (new NonConfigGroupPropertyFilter(new AllocatedPropertyFilter(new ReadOnlyPropertyFilter())))
+		props_ = (new NonPresetGroupPropertyFilter(new AllocatedPropertyFilter(new ReadOnlyPropertyFilter())))
 				.filterProperties(wizard_.getPropertiesMap());
 		propsfriendlyname_ = new HashMap<String, String>();
 		Iterator<String> it = props_.keySet().iterator();
@@ -226,11 +225,11 @@ public class AcquisitionTab extends JPanel {
 	 * 
 	 * @param acqpane
 	 * @param filter
-	 * @param mmconfigGroupValues
+	 * @param mmPresetGroupValues
 	 * @param uipropertyValues
 	 * @return
 	 */
-	private JPanel createPanel(JPanel acqpane, PropertyFilter filter, HashMap<String, String> mmconfigGroupValues,
+	private JPanel createPanel(JPanel acqpane, PropertyFilter filter, HashMap<String, String> mmPresetGroupValues,
 			HashMap<String, String> uipropertyValues) {
 		JPanel pane = new JPanel();
 		pane.setLayout(new BoxLayout(pane, BoxLayout.PAGE_AXIS));
@@ -242,8 +241,8 @@ public class AcquisitionTab extends JPanel {
 
 		pane.add(Box.createVerticalStrut(10));
 
-		// MM config groups
-		JPanel mmconfig = createMMConfigTable(wizard_.getMMConfigurationRegistry(), mmconfigGroupValues);
+		// MM preset groups
+		JPanel mmconfig = createMMPresetGroupsTable(wizard_.getMMPresetRegistry(), mmPresetGroupValues);
 		mmconfig.setBorder(BorderFactory.createTitledBorder(null, KEY_MMCONF, TitledBorder.DEFAULT_JUSTIFICATION,
 				TitledBorder.DEFAULT_POSITION, null, new Color(0, 0, 0)));
 		((TitledBorder) mmconfig.getBorder())
@@ -428,60 +427,72 @@ public class AcquisitionTab extends JPanel {
 	}
 
 	/**
-	 * Creates a JTable holding the MMConfigurationGroup values.
+	 * Creates a JTable holding the MMPresetGroup values.
 	 * 
-	 * @param mmconfigurationRegistry
-	 * @param mmconfigGroupValues
+	 * @param mmPresetRegistry Object holding the reference to all configuration groups
+	 * @param mmPresetGroupValues Map of the values to set in the table, if there are any
 	 * @return
 	 */
-	private JPanel createMMConfigTable(MMPresetGroupRegistry mmconfigurationRegistry,
-			HashMap<String, String> mmconfigGroupValues) {
-		
-		// mmconfigGroupValues are the values to set in the table, if there are any
-		// mmconfigurationRegistry holds the reference to all configuration groups
+	private JPanel createMMPresetGroupsTable(MMPresetGroupRegistry mmPresetRegistry,
+			HashMap<String, String> mmPresetGroupValues) {
 		
 		JPanel pane = new JPanel();
 
 		// Defines table model
 		DefaultTableModel model = new DefaultTableModel(new Object[] { "Property", "Value" }, 0);
 
-		final HashMap<String, String[]> map = mmconfigurationRegistry.getMMPresetGroupChannels();// keys = configuration group's name, object = list of configurations
-		final HashMap<String, MMPresetGroup> groups = mmconfigurationRegistry.getMMPresetGroups(); // hashmap of the configuration group objects
+		final HashMap<String, String[]> channels = mmPresetRegistry.getMMPresetGroupChannels();// keys = preset group's name, object = list of presets
+		final HashMap<String, MMPresetGroup> groups = mmPresetRegistry.getMMPresetGroups(); // hashmap of the preset group objects
 
-		String[] keys = map.keySet().toArray(new String[0]);
+		String[] keys = channels.keySet().toArray(new String[0]);
 		Arrays.sort(keys);
 
-		// For each configuration group
-		for (int i = 0; i < keys.length; i++) {
-			if (map.get(keys[i]) != null && map.get(keys[i]).length > 0 && !keys[i].equals("System")) { // if the String[] is not null and not empty, ignore the special System configuration
-				
-				String currentValue = mmconfigurationRegistry.getCurrentMMPresetGroupChannel(keys[i]);
-				if (currentValue != null && currentValue.length() > 0 && !mmconfigGroupValues.containsKey(keys[i])) { // this is when a value is set in MM but not in the acquisition
-					if(map.get(keys[i]).length == 1 && groups.get(keys[i]).getAffectedProperties().size() == 1) { // if the presets has only one preset value and one property then we show the value 
-						model.addRow(new Object[] { keys[i], groups.get(keys[i]).getAffectedProperties().get(0).getValue() }); 
-					} else {
-						model.addRow(new Object[] { keys[i], currentValue }); 
-					}
-				} else if(currentValue != null) { // no value currently set 
+		/*
+		 * Preset groups:
+		 * If one state only and one affected property, then currentvalue is drawn from the property directly
+		 * If more than one state, then currentvalue is drawn from mmPresetRegistry.getCurrentMMPresetGroupChannel()
+		 * If currentvalue is not empty, then if there is a value set in the acquisition settings, use the latter
+		 * If not value is set in the acquisition settings, then use currentvalue
+		 * If currentvalue is an empty String but an acquisition setting exist, then use the latter
+		 * Should currentvalue be an empty String and no acquisition setting set, then value is "Ignored"
+		 */
 		
-					if (mmconfigGroupValues.containsKey(keys[i]) && mmconfigurationRegistry.getMMPresetGroups().get(keys[i])
-							.hasPreset(mmconfigGroupValues.get(keys[i]))) { // if acquisition has a value set for this configuration and the configuration exists 
-						
-						model.addRow(new Object[] { keys[i], mmconfigGroupValues.get( keys[i]) }); // sets the value
-					} else if (mmconfigGroupValues.containsKey(keys[i]) && map.get(keys[i]).length == 1 && groups.get(keys[i]).getAffectedProperties().size() == 1){
-						
-						// if there is a value and the configuration group has only one preset and one property
-						model.addRow(new Object[] { keys[i], mmconfigGroupValues.get( keys[i]) }); // sets the value
-						
-					} else { 
-						model.addRow(new Object[] { keys[i], KEY_IGNORED });
+		// For each preset group
+		for (int i = 0; i < keys.length; i++) {
+	
+			if (channels.get(keys[i]) != null && channels.get(keys[i]).length > 0 && !keys[i].equals("System")) { // if the String[] is not null and not empty, ignore the special System preset
+				
+				String currentValue = "";
+				if(channels.get(keys[i]).length == 1 && groups.get(keys[i]).getAffectedProperties().size() == 1){
+					currentValue = groups.get(keys[i]).getAffectedProperties().get(0).getStringValue();
+				} else { 
+					currentValue = mmPresetRegistry.getCurrentMMPresetGroupChannel(keys[i]);
+				}
+				
+				if(mmPresetGroupValues.containsKey(keys[i])) { // if sets in acq
+					if(groups.get(keys[i]).getAffectedProperties().get(0).isStringAllowed(mmPresetGroupValues.get(keys[i]))){ // acq value allowed ad single prop + single channel
+						model.addRow(new Object[] { keys[i], mmPresetGroupValues.get( keys[i]) }); // sets the acq value
+					} else if(groups.get(keys[i]).hasPreset(mmPresetGroupValues.get(keys[i]))){
+						model.addRow(new Object[] { keys[i], mmPresetGroupValues.get(keys[i]) }); // sets the acq value
+					} else if(mmPresetGroupValues.get(keys[i]).equals(KEY_IGNORED)) {
+						model.addRow(new Object[] { keys[i], KEY_IGNORED }); // use ignored
+					} else {
+						model.addRow(new Object[] { keys[i], currentValue }); // sets the current value
+					}
+				} else { // not set in acq
+					if(!currentValue.equals("")) {
+						model.addRow(new Object[] { keys[i], currentValue }); // sets the current value
+					} else {
+						model.addRow(new Object[] { keys[i], KEY_IGNORED }); // use ignored
 					}
 				}
+				
 			}
 		}
 
 		JTable table = new JTable(model) {
-			private static final long serialVersionUID = -7528102943663023952L;
+
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public TableCellRenderer getCellRenderer(int row, int column) {
@@ -519,7 +530,7 @@ public class AcquisitionTab extends JPanel {
 						return new DefaultCellEditor(new JTextField());
 					}
 				} else {
-					String[] states = map.get(s);
+					String[] states = channels.get(s);
 					String[] states_ig = new String[states.length + 1];
 					states_ig[0] = KEY_IGNORED;
 					for (int i = 0; i < states.length; i++) {
@@ -609,7 +620,8 @@ public class AcquisitionTab extends JPanel {
 		}
 
 		JTable table = new JTable(model) {
-			private static final long serialVersionUID = -7528102943663023952L;
+
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public TableCellRenderer getCellRenderer(int row, int column) {
@@ -839,6 +851,7 @@ public class AcquisitionTab extends JPanel {
 			} else {
 				slider.setLimits(Double.parseDouble((String) prop.getMin()), Double.parseDouble((String) prop.getMin()));
 			}
+			
 			try {
 				slider.setText(String.valueOf(value));
 			} catch (ParseException ex) {
@@ -901,14 +914,12 @@ public class AcquisitionTab extends JPanel {
 				slider_.setLimits(Double.parseDouble((String) prop.getMin()), Double.parseDouble((String) prop.getMin()));
 			}
 	    	
-	    	if(EmuUtils.isInteger(String.valueOf(value))) {
-				try {
-					slider_.setText(String.valueOf(value));
-				} catch (ParseException ex) {
-					ReportingUtils.logError(ex);
-				}
-	    	}
-			
+			try {
+				slider_.setText(String.valueOf(value));
+			} catch (ParseException ex) {
+				ReportingUtils.logError(ex);
+			}
+	    	
 			return slider_;  
 	    }
 
