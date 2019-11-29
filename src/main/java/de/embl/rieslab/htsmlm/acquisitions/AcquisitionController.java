@@ -7,8 +7,6 @@ import java.util.Iterator;
 import javax.swing.SwingUtilities;
 
 import de.embl.rieslab.emu.controller.SystemController;
-import de.embl.rieslab.emu.micromanager.presetgroups.MMPresetGroup;
-import de.embl.rieslab.emu.micromanager.presetgroups.MMPresetGroupRegistry;
 import de.embl.rieslab.emu.ui.uiparameters.UIPropertyParameter;
 import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 import de.embl.rieslab.htsmlm.AcquisitionPanel;
