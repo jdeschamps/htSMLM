@@ -17,13 +17,10 @@ In particular, htSMLM features optional and reconfigurable controls for:
 And in addition:
 
 - A script panel to **automatically adjust the UV** power or pulse length to activate single-molecules.
+
 - An acquisition panel for designing a set of experiments (localization, snapshot, z-stack...etc..) to be performed automatically, **enabling unsupervised localization microscopy**.
 
-
-
-![htSMLM](img/htsmlm.png)
-
-
+  
 
 ## Installation
 
@@ -48,7 +45,7 @@ And in addition:
 
 ## Using htSMLM
 
-link to guide
+(coming soon)
 
 
 
