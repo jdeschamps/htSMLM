@@ -410,6 +410,8 @@ public class MultiSliceAcquisition implements Acquisition {
 						// moves the stage
 						core.setPosition(zdevice_, z);
 						
+						Thread.sleep(1000); 
+						
 						if(i>0 && j==0 && !disableFocusLock_ && focusLockAtZ0_) {
 							zstabProperty_.setPropertyValue(TwoStateUIProperty.getOnStateLabel());
 							Thread.sleep(10000); // ten seconds hard coded waiting time for focus-lock
