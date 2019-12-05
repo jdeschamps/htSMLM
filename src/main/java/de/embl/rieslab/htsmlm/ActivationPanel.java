@@ -261,12 +261,10 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 	//////
 	////// Convenience methods
 	//////
-	
-	
 	protected void runActivation(boolean b){
 		if(b && !task_.isRunning()){
 			task_.startTask();
-		} else if(task_.isRunning()){
+		} else if(!b && task_.isRunning()){
 			task_.stopTask();
 		}
 	}
