@@ -31,6 +31,7 @@ public class MainFrame extends ConfigurableMainFrame{
 	private static final String SETTING_USE_IBS1 = "iBeamSmart #1";
 	private static final String SETTING_NAME_IBS2 = "iBeamSmart #2 name";
 	private static final String SETTING_NAME_IBS1 = "iBeamSmart #1 name";
+	private static final String SETTING_NAME_ADDFILT = "Additional FW tab title";
 	
 	private AdditionalFiltersPanel addFiltersPanel;
 	private FocusPanel focusPanel;
@@ -192,8 +193,9 @@ public class MainFrame extends ConfigurableMainFrame{
 		}
 		
 		/// Additional filters tab
-		if(((BoolSetting) settings.get(SETTING_USE_ADDFW)).getValue()) {
-			addFiltersPanel = new AdditionalFiltersPanel("Additional filters");
+		if(((BoolSetting) settings.get(SETTING_USE_ADDFW)).getValue()) {			
+			String title = settings.get(SETTING_USE_ADDFW).getStringValue();
+			addFiltersPanel = new AdditionalFiltersPanel(title);
 			tab.add("Additional filters", addFiltersPanel);
 		}
 		
@@ -253,6 +255,7 @@ public class MainFrame extends ConfigurableMainFrame{
 		HashMap<String, Setting> defaultSettings = new HashMap<String, Setting>();
 		defaultSettings.put(SETTING_USE_TRIGGER, new BoolSetting(SETTING_USE_TRIGGER, "Check to use the trigger tab in the plugin.", true));
 		defaultSettings.put(SETTING_USE_ADDFW, new BoolSetting(SETTING_USE_ADDFW, "Check to use the additional filters tab in the plugin.", true));
+		defaultSettings.put(SETTING_NAME_ADDFILT, new StringSetting(SETTING_NAME_ADDFILT, "Title of the additional filters tab.", "Additional filters"));
 		defaultSettings.put(SETTING_USE_SINGLEFW, new BoolSetting(SETTING_USE_SINGLEFW, "Check to use a single FW panel, uncheck for a double FW panel.", true));
 		defaultSettings.put(SETTING_USE_QPD, new BoolSetting(SETTING_USE_QPD, "Check to use the QPD tab in the plugin.", true));
 		defaultSettings.put(SETTING_USE_IBS2, new BoolSetting(SETTING_USE_IBS2, "Check to use the iBeamSmart #2.", true));
