@@ -184,12 +184,12 @@ public class AcquisitionTask implements Task<Integer>{
 			// perform each acquisition sequentially
 			for (int k = 0; k < exp_.getAcquisitionList().size(); k++) {
 
-				if (stop_) {
-					break;
-				}
-				
 				currAcq = exp_.getAcquisitionList().get(k);
 
+				if (stop_) {
+					System.out.println("[htSMLM] Acquisition interrupted before carrying "+currAcq.getShortName()+" out and setting config groups.");
+					break;
+				}
 				// set-up system
 				setUpSystem(currAcq.getAcquisitionParameters().getPropertyValues());
 
@@ -225,16 +225,13 @@ public class AcquisitionTask implements Task<Integer>{
 				}
 				
 				if (stop_) {
+					System.out.println("[htSMLM] Acquisition interrupted before carrying "+currAcq.getShortName()+" out.");
 					break;
 				}
 				
 				// build name
 				String name = "Pos"+String.valueOf(pos)+"_"+expname_+"_"+acqShortName[k];
 
-				if (stop_) {
-					System.out.println("[htSMLM] Acquisition interrupted before carrying "+currAcq.getShortName()+" out.");
-					break;
-				}
 				
 				// run acquisition
 				boolean b = currAcq.performAcquisition(studio_, name, exppath_); 

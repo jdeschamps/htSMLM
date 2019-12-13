@@ -480,6 +480,11 @@ public class MultiSliceAcquisition implements Acquisition {
 						// sets-up name
 						settings.prefix = "L"+i+"S"+j+"_"+name;
 						
+						if(stopAcq_){
+							System.out.println("[htSMLM] Multislice interruption before slice "+j+".");
+							interruptAcquisition(studio);
+						}
+						
 						// runs acquisition
 						Datastore store = studio.acquisitions().runAcquisitionWithSettings(settings, false);
 
@@ -500,6 +505,7 @@ public class MultiSliceAcquisition implements Acquisition {
 									
 							// checks if exit requested
 							if(stopAcq_){
+								System.out.println("[htSMLM] Multislice interruption during slice "+j+".");
 								interruptAcquisition(studio);
 							}
 							
@@ -541,11 +547,13 @@ public class MultiSliceAcquisition implements Acquisition {
 					}
 					
 					if(stopAcq_) {
+						System.out.println("[htSMLM] Multislice interruption after slice "+j+".");
 						break;
 					}
 				}
 				
 				if(stopAcq_) {
+					System.out.println("[htSMLM] Multislice interruption after loop "+i+".");
 					break;
 				}
 			}
