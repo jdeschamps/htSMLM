@@ -213,8 +213,10 @@ public class ZStackAcquisition implements Acquisition {
 		JLabel exposurelab, waitinglab, zstartlab, zdevicelabel;
 		JSpinner exposurespin, waitingspin, zstartspin, zendspin, zstepspin;
 		
+		// focus-lock
 		JCheckBox disableFocusLock = new JCheckBox(LABEL_CHECK);
 		disableFocusLock.setName(LABEL_CHECK);
+		disableFocusLock.setToolTipText("Select to disable Z stabilization (if applicable).");
 		if(zstabProperty_ == null) {
 			disableFocusLock.setEnabled(true);
 		}
@@ -225,20 +227,35 @@ public class ZStackAcquisition implements Acquisition {
 		zstartlab = new JLabel(LABEL_ZSTART);
 		zdevicelabel = new JLabel(LABEL_ZDEVICE);
 		
+		// exposure and waiting time
 		exposurespin = new JSpinner(new SpinnerNumberModel(Math.max(params_.getExposureTime(),1), 1, 10000, 1));
 		exposurespin.setName(LABEL_EXPOSURE);
+		exposurespin.setToolTipText("Camera exposure (ms).");
+
 		waitingspin = new JSpinner(new SpinnerNumberModel(params_.getWaitingTime(), 0, 10000, 1)); 
 		waitingspin.setName(LABEL_PAUSE);
+		waitingspin.setToolTipText("Waiting time (s) to allow device state changes before this acquisition.");
+
+		
+		// z related
 		zstartspin = new JSpinner(new SpinnerNumberModel(zstart, -1000, 1000, 0.05)); 
 		zstartspin.setName(LABEL_ZSTART);
+		zstartspin.setToolTipText("Relative position in um of the first slice.");
+		
 		zendspin = new JSpinner(new SpinnerNumberModel(zend, -1000, 1000, 1)); 
 		zendspin.setName(LABEL_ZEND);
+		zendspin.setToolTipText("Relative position in um of the last slice.");
+		
 		zstepspin = new JSpinner(new SpinnerNumberModel(zstep, -1000, 1000, 0.01));
 		zstepspin.setName(LABEL_ZSTEP);
+		zstepspin.setToolTipText("Step size (um) between slices.");
+		
 		
 		JComboBox<String> zdevices = new JComboBox<String>(zdevices_);
 		zdevices.setSelectedItem(zdevice_);
 		zdevices.setName(LABEL_ZDEVICE);
+		zdevices.setToolTipText("Device performing the Z stack.");
+		
 
 		int nrow = 3;
 		int ncol = 4;

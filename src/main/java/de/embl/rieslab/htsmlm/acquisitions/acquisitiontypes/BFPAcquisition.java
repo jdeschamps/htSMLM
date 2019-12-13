@@ -59,8 +59,11 @@ public class BFPAcquisition implements Acquisition{
 
 		exposurespin = new JSpinner(new SpinnerNumberModel(Math.max(params_.getExposureTime(),1), 1, 10000000, 1));
 		exposurespin.setName(LABEL_EXPOSURE);
+		exposurespin.setToolTipText("Camera exposure (ms).");
+		
 		waitingspin = new JSpinner(new SpinnerNumberModel(params_.getWaitingTime(), 0, 10000000, 1)); 
 		waitingspin.setName(LABEL_PAUSE);
+		waitingspin.setToolTipText("Waiting time (s) to allow device state changes before this acquisition.");
 		
 		int nrow = 1;
 		int ncol = 4;

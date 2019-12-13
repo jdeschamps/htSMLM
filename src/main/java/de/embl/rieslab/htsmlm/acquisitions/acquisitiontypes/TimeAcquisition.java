@@ -55,12 +55,20 @@ public class TimeAcquisition implements Acquisition{
 		
 		exposurespin = new JSpinner(new SpinnerNumberModel(Math.max(params_.getExposureTime(),1), 1, 10000000, 1));
 		exposurespin.setName(LABEL_EXPOSURE);
+		exposurespin.setToolTipText("Camera exposure (ms).");
+		
 		waitingspin = new JSpinner(new SpinnerNumberModel(params_.getWaitingTime(), 0, 10000000, 1)); 
 		waitingspin.setName(LABEL_PAUSE);
+		waitingspin.setToolTipText("Waiting time (s) to allow device state changes before this acquisition.");
+		
 		numframespin = new JSpinner(new SpinnerNumberModel(params_.getNumberFrames(), 1, 10000000, 1)); 
 		numframespin.setName(LABEL_NUMFRAME);
+		numframespin.setToolTipText("Number of frames.");
+		
 		intervalspin = new JSpinner(new SpinnerNumberModel(params_.getIntervalMs(), 0, 10000000, 1));
 		intervalspin.setName(LABEL_INTERVAL);
+		intervalspin.setToolTipText("Interval between frames (ms).");
+		
 		
 		int nrow = 2;
 		int ncol = 4;
