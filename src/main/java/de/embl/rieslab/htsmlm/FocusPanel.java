@@ -116,6 +116,7 @@ public class FocusPanel extends ConfigurablePanel {
 
 		
 		textfieldPosition_ = new JTextField();	
+		textfieldPosition_.setToolTipText("Sets the position of the stage.");
 		textfieldPosition_.addFocusListener(new FocusListener() {
 			@Override
 			public void focusGained(FocusEvent arg0) {}
@@ -157,10 +158,13 @@ public class FocusPanel extends ConfigurablePanel {
         	}
         });
 
-		togglebuttonMonitor_ = new JToggleButton("Monitor");
+		togglebuttonMonitor_ = new JToggleButton("Monitor");		
+		togglebuttonMonitor_.setToolTipText("Turn on/off the monitoring of the stage position.");
+
 		SwingUIListeners.addActionListenerToBooleanAction(b -> monitorPosition(b), togglebuttonMonitor_);
 
 		togglebuttonLock_ = new JToggleButton("Lock");
+		togglebuttonLock_.setToolTipText("Turn on/off the Z stabilization.");
 		try {
 			SwingUIListeners.addActionListenerToTwoState(this, FOCUS_STABILIZATION, togglebuttonLock_);
 		} catch (IncorrectUIPropertyTypeException e1) {
@@ -198,6 +202,7 @@ public class FocusPanel extends ConfigurablePanel {
 		panelRightControl_.setLayout(new GridBagLayout());
 		
 		buttonLargeStepsUp_ = new JButton("^^");
+		buttonLargeStepsUp_.setToolTipText("Move the stage up by one large step.");
 		buttonLargeStepsUp_.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
             	moveRelativePosition(largestep_);
@@ -205,6 +210,7 @@ public class FocusPanel extends ConfigurablePanel {
         });
 
 		buttonSmallStepsUp_ = new JButton("^");
+		buttonSmallStepsUp_.setToolTipText("Move the stage up by one small step.");
 		buttonSmallStepsUp_.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
             	moveRelativePosition(smallstep_);
@@ -212,20 +218,25 @@ public class FocusPanel extends ConfigurablePanel {
         });
 
 		largesteplabel_ = new JLabel(">>");
-		textfieldLargeStep_ = new JTextField(String.valueOf(largestep_));
+		textfieldLargeStep_ = new JTextField(String.valueOf(largestep_));	
+		textfieldLargeStep_.setToolTipText("Large step size (um).");
+
 		SwingUIListeners.addActionListenerToDoubleAction(d -> largestep_ = d, textfieldLargeStep_);
 
 		smallsteplabel_ = new JLabel(">");
 		textfieldSmallStep_ = new JTextField(String.valueOf(smallstep_));
+		textfieldSmallStep_.setToolTipText("Small step size (um).");
 		SwingUIListeners.addActionListenerToDoubleAction(d -> smallstep_ = d, textfieldSmallStep_);
 				
 		buttonSmallStepsDown_ = new JButton("v");
+		buttonSmallStepsDown_.setToolTipText("Move the stage down by one small step.");
 		buttonSmallStepsDown_.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
             	moveRelativePosition(-smallstep_);
             }
         });
 		buttonLargeStepsDown_ = new JButton("vv");
+		buttonLargeStepsDown_.setToolTipText("Move the stage down by one large step.");
 		buttonLargeStepsDown_.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
             	moveRelativePosition(-largestep_);

@@ -81,6 +81,7 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 		
 		///////////////////////////////////////////////////////////////////////// User max text field
 		textfieldmax_ = new JTextField("10000");
+		textfieldmax_.setToolTipText("Maximum value allowed for the activation pulse/power.");
 		textfieldmax_.setPreferredSize(new Dimension(30,15));
 		textfieldmax_.setBackground(new Color(220,220,220));
 
@@ -138,6 +139,7 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 		
 		///////////////////////////////////////////////////////////////////////// User value text field
 		textfieldvalue_ = new JTextField();
+		textfieldvalue_.setToolTipText("Current value of the activation pulse/power.");
 		c.fill = GridBagConstraints.BOTH;
 		c.gridy = 1;
 		this.add(textfieldvalue_, c);
@@ -181,6 +183,7 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 		
 		///////////////////////////////////////////////////////////////////////// Log JSlider
 		logslider_ = new LogarithmicJSlider(JSlider.VERTICAL,1, 10000, 10);
+		logslider_.setToolTipText("Current value of the activation pulse/power.");
 		
 		logslider_.setPaintTicks(true);
 		logslider_.setPaintTrack(true);

@@ -69,6 +69,7 @@ public class FiltersPanel extends AbstractFiltersPanel {
 		togglebuttons_ = new JToggleButton[NUM_POS];
 		for(int i=0;i<togglebuttons_.length;i++){
 			togglebuttons_[i] = new JToggleButton();
+			togglebuttons_[i].setToolTipText("Set the filter property to the "+i+"th position (as defined in the wizard).");
 			
 			c.gridx = i;
 			this.add(togglebuttons_[i], c);

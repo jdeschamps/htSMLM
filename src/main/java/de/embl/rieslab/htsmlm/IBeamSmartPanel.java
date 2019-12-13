@@ -75,27 +75,34 @@ public class IBeamSmartPanel extends ConfigurablePanel {
 		// Power text field
 		textfieldUserPower_ = new JTextField(String.valueOf(max_power));
 		textfieldUserPower_.setPreferredSize(new Dimension(35,20));
+		textfieldUserPower_.setToolTipText("Sets the power of the laser.");
 
 		
 		// slider channel 1
 		sliderPower_ = new JSlider(JSlider.HORIZONTAL, 0, (int) max_power, 0);
+		sliderPower_.setToolTipText("Sets the power of the laser.");
 		SwingUIListeners.addActionListenerOnIntegerValue(this, getPanelLabel()+" "+LASER_POWER, sliderPower_, textfieldUserPower_);
 		
 		// slider fine a
 		sliderFinea_ = new JSlider(JSlider.HORIZONTAL, 0, 100, 0);
+		sliderFinea_.setToolTipText("Set the fina a percentage.");
 	
 		// Slider fine b
 		sliderFineb_ = new JSlider(JSlider.HORIZONTAL, 0, 100, 0);
+		sliderFineb_.setToolTipText("Set the fine b percentage.");
 
 		
 		togglebuttonLaserOnOff_ = new TogglePower();
+		togglebuttonLaserOnOff_.setToolTipText("Turn on/off the laser.");
 		
 		
 		// ext trigger
 		togglebuttonExternalTrigger_ = new ToggleSlider();
+		togglebuttonExternalTrigger_.setToolTipText("Turn on/off the external triggering.");
 
 		// Fine enable
-		togglesliderenableFine_ = new ToggleSlider();	
+		togglesliderenableFine_ = new ToggleSlider();
+		togglesliderenableFine_.setToolTipText("Turn fine on/off.");	
 		
 		fineaperc_ = new JLabel("100 %");
 		finebperc_ = new JLabel("100 %");
