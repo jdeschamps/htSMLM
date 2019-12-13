@@ -85,23 +85,35 @@ public class LocalizationAcquisition implements Acquisition {
 		
 		exposurespin = new JSpinner(new SpinnerNumberModel(Math.max(params_.getExposureTime(),1), 1, 10000000, 1));
 		exposurespin.setName(LABEL_EXPOSURE);
+		exposurespin.setToolTipText("Camera exposure (ms).");
+		
 		waitingspin = new JSpinner(new SpinnerNumberModel(params_.getWaitingTime(), 0, 10000000, 1)); 
 		waitingspin.setName(LABEL_PAUSE);
+		waitingspin.setToolTipText("Waiting time (s) to allow device state changes before this acquisition.");
+		
 		numframespin = new JSpinner(new SpinnerNumberModel(params_.getNumberFrames(), 1, 10000000, 1)); 
 		numframespin.setName(LABEL_NUMFRAME);
+		numframespin.setToolTipText("Number of frames.");
+		
 		intervalspin = new JSpinner(new SpinnerNumberModel(params_.getIntervalMs(), 0, 10000000, 1));
 		intervalspin.setName(LABEL_INTERVAL);
+		intervalspin.setToolTipText("Interval between frames (ms).");
+		
 		waitonmaxspin = new JSpinner(new SpinnerNumberModel(stoponmaxdelay_, 0, 10000, 1));
 		waitonmaxspin.setName(LABEL_MAXUVTIME);
+		waitonmaxspin.setToolTipText("Time (s) before stopping the acquisition after reaching the maximum activation value.");
 
 		activatecheck = new JCheckBox(LABEL_USEACTIVATION);
 		activatecheck.setSelected(useactivation_);
 		activatecheck.setEnabled(!nullActivation_);
+		activatecheck.setName(LABEL_USEACTIVATION);
+		activatecheck.setToolTipText("Use activation during the acquisition.");
+		
 		stoponmaxcheck = new JCheckBox(LABEL_USESTOPONMAXUV);
 		stoponmaxcheck.setSelected(stoponmax_);
 		stoponmaxcheck.setEnabled(!nullActivation_);
-		activatecheck.setName(LABEL_USEACTIVATION);
 		stoponmaxcheck.setName(LABEL_USESTOPONMAXUV);
+		stoponmaxcheck.setToolTipText("Stop the acquisition after reaching the maximum activation value.");
 		
 		int nrow = 3;
 		int ncol = 4;

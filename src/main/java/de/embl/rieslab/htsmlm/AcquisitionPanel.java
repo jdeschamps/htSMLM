@@ -127,8 +127,10 @@ public class AcquisitionPanel extends ConfigurablePanel{
             	showSelectPath();
             }
         });
+	    jButton_setpath.setToolTipText("Select the folder to save the experiments to.");
 
 	    jToggle_startstop = new JToggleButton("Start");
+	    jToggle_startstop.setToolTipText("Start/stop the experiments.");
 	    jToggle_startstop.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
 				AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();

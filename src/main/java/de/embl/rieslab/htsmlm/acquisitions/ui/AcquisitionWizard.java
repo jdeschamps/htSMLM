@@ -74,17 +74,28 @@ public class AcquisitionWizard {
 		JPanel leftpane = new JPanel();
 
 		JButton add = new JButton("Add");
+		add.setToolTipText("Add a new acquisition to the list.");
+		
 		JButton remove = new JButton("Remove");
+		remove.setToolTipText("Remove the currently selected acquisition.");
+		
 		JButton left = new JButton("<");
+		left.setToolTipText("Move the currently selected acquisition to the left.");
+		
 		JButton right = new JButton(">");
+		right.setToolTipText("Move the currently selected acquisition to the right.");
+		
 		JButton save = new JButton("Save");
+		save.setToolTipText("Save the acquisition list.");
 		
 		JLabel wait = new JLabel("Waiting (s)");
 		waitfield = new JTextField(String.valueOf(waitingtime));
 		waitfield.setPreferredSize(new Dimension(30,20));
+		waitfield.setToolTipText("Waiting time (s) before starting the experiment (this waiting period occurs only once).");
 		
 		JLabel pos = new JLabel("Pos number");
 		numposfield = new JTextField(String.valueOf(numpos));
+		numposfield.setToolTipText("Number of positions from the position list to use (0 = use all).");
 		
 		add.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

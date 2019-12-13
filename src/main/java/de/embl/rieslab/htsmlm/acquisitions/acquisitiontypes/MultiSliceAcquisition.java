@@ -138,25 +138,39 @@ public class MultiSliceAcquisition implements Acquisition {
 		
 		exposurespin = new JSpinner(new SpinnerNumberModel(Math.max(params_.getExposureTime(),1), 1, 10000000, 1));
 		exposurespin.setName(LABEL_EXPOSURE);
+		exposurespin.setToolTipText("Camera exposure (ms).");
+		
 		waitingspin = new JSpinner(new SpinnerNumberModel(params_.getWaitingTime(), 0, 10000000, 1)); 
 		waitingspin.setName(LABEL_PAUSE);
+		waitingspin.setToolTipText("Waiting time (s) to allow device state changes before this acquisition.");
+		
 		numframespin = new JSpinner(new SpinnerNumberModel(params_.getNumberFrames(), 1, 10000000, 1)); 
 		numframespin.setName(LABEL_NUMFRAME);
+		numframespin.setToolTipText("Number of frames per slice.");
+		
 		intervalspin = new JSpinner(new SpinnerNumberModel(params_.getIntervalMs(), 0, 10000000, 1));
 		intervalspin.setName(LABEL_INTERVAL);
+		intervalspin.setToolTipText("Interval between frames (ms).");
+		
 		waitonmaxspin = new JSpinner(new SpinnerNumberModel(stoponmaxdelay_, 0, 10000, 1));
 		waitonmaxspin.setName(LABEL_MAXUVTIME);
+		waitonmaxspin.setToolTipText("Time (s) before stopping the acquisition after reaching the maximum activation value.");
 
 		
 		//// activation
 		activatecheck = new JCheckBox(LABEL_USEACTIVATION);
 		activatecheck.setSelected(useactivation_);
 		activatecheck.setEnabled(!nullActivation_);
+		activatecheck.setName(LABEL_USEACTIVATION);
+		activatecheck.setToolTipText("Use activation during the acquisition.");
+
+		
 		stoponmaxcheck = new JCheckBox(LABEL_USESTOPONMAXUV);
 		stoponmaxcheck.setSelected(stoponmax_);
 		stoponmaxcheck.setEnabled(!nullActivation_);
-		activatecheck.setName(LABEL_USEACTIVATION);
 		stoponmaxcheck.setName(LABEL_USESTOPONMAXUV);
+		stoponmaxcheck.setToolTipText("Stop the acquisition after reaching the maximum activation value.");
+
 		
 		activateSt = new JCheckBox(LABEL_ACTATST);
 		activateSt.setEnabled(!nullActivation_);
@@ -190,24 +204,32 @@ public class MultiSliceAcquisition implements Acquisition {
 
 		numberloops = new JSpinner(new SpinnerNumberModel(nLoops, 1, 100, 1)); 
 		numberloops.setName(LABEL_NLOOPS);
+		numberloops.setToolTipText("Number of loops through the slices.");
+		
 		numberslice = new JSpinner(new SpinnerNumberModel(nSlices, 2, 100, 1)); 
 		numberslice.setName(LABEL_NSLICES);
+		numberslice.setToolTipText("Number of slices in the stack.");
+		
 		deltaz = new JSpinner(new SpinnerNumberModel(deltaZ, -1000, 1000, 0.5)); 
 		deltaz.setName(LABEL_DELTAZ);
+		deltaz.setToolTipText("Distance (um) between each slice.");
 		
 		JComboBox<String> zdevices = new JComboBox<String>(zdevices_);
 		zdevices.setSelectedItem(zdevice_);
 		zdevices.setName(LABEL_ZDEVICE);
+		zdevices.setToolTipText("Device performing the multi-slice acquisition.");
 				
 		disablefocuslock = new JCheckBox(LABEL_DISABLEFL);
 		disablefocuslock.setSelected(disableFocusLock_);
 		disablefocuslock.setName(LABEL_DISABLEFL);
 		disablefocuslock.setEnabled(zstabProperty_ != null);
+		disablefocuslock.setToolTipText("Check to disable focus stabilization (if applicable).");
 		
 		flonlyatz0 = new JCheckBox(LABEL_FLATZ0);
 		flonlyatz0.setName(LABEL_FLATZ0);
 		flonlyatz0.setSelected(focusLockAtZ0_);
 		flonlyatz0.setEnabled(!disableFocusLock_ && zstabProperty_ != null);
+		disablefocuslock.setToolTipText("Check to use the focus stabilization only during the first slice of every loop.");
 		
 		disablefocuslock.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
