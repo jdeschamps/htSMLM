@@ -456,9 +456,9 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 				e.printStackTrace();
 				params[ActivationTask.PARAM_PULSE] = 0.;
 			}
-		} else {
+		} /*else {
 			params[ActivationTask.PARAM_PULSE] = 0.;
-		}
+		}*/
 		
 		params[ActivationTask.PARAM_SDCOEFF] = sdcoeff_; 
 		

@@ -104,7 +104,9 @@ public class MultiSliceAcquisition implements Acquisition {
 			disableFocusLock_ = false;
 		}
 		focusLockAtZ0_ = false;
-		deltaZ=2;
+		
+		// default values
+		deltaZ=0.3;
 		nSlices=4;
 		nLoops=5;
 		sliceSt = 0;
@@ -113,7 +115,7 @@ public class MultiSliceAcquisition implements Acquisition {
 		zdevices_ = zdevices;
 		
 		params_ = new GenericAcquisitionParameters(AcquisitionType.MULTISLICELOC, 
-				exposure, 0, 3, 5000, new HashMap<String,String>(), new HashMap<String,String>());
+				exposure, 0, 3, 50000, new HashMap<String,String>(), new HashMap<String,String>());
 	}
 
 	@Override
@@ -518,6 +520,14 @@ public class MultiSliceAcquisition implements Acquisition {
 							return false;
 						}
 
+						if(i>0 && j==sliceSt && !disableFocusLock_ && focusLockAtZ0_) {
+							// updates z0 for the next iterations
+							z0 = core.getPosition(zdevice_);
+							
+							zstabProperty_.setPropertyValue(TwoStateUIProperty.getOffStateLabel());
+						}
+						
+						
 						// pause activation
 						if(useactivation_){			
 							activationTask_.pauseTask();
@@ -554,6 +564,10 @@ public class MultiSliceAcquisition implements Acquisition {
 			zstabProperty_.setPropertyValue(TwoStateUIProperty.getOnStateLabel());
 		}
 			
+		if(useactivation_) {
+			activationTask_.initializeTask();
+		}
+		
 		running_ = false;
 		
 		return true;
