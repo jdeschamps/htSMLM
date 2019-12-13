@@ -101,6 +101,7 @@ public class QPDPanel extends ConfigurablePanel {
 		c.gridwidth = 1;
 		c.gridheight = 1;
 		togglebuttonMonitor_ = new JToggleButton("Monitor");
+		togglebuttonMonitor_.setToolTipText("Start/stop monitoring the values of the QPD signals");
 		
 		this.add(togglebuttonMonitor_,c);
 

@@ -146,6 +146,7 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		pane.add(labelsdcoeff_,c);
 		
 		textfieldsdcoeff_ = new JTextField(String.valueOf(sdcoeff_));
+		textfieldsdcoeff_.setToolTipText("The higher the Sd coefficient, the higher the auto cutoff value.");
 		SwingUIListeners.addActionListenerToDoubleAction(val -> sdcoeff_ = val, textfieldsdcoeff_, 0, Double.POSITIVE_INFINITY);
 
 		c.gridy = 1;
@@ -156,6 +157,7 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		pane.add(labelfeeback_,c);
 		
 		textfieldfeedback_ = new JTextField(String.valueOf(feedback_));
+		textfieldfeedback_.setToolTipText("The higher the Feedback coefficient, the faster the activation ramps up.");
 		SwingUIListeners.addActionListenerToDoubleAction(val -> feedback_ = val, textfieldfeedback_, 0, Double.POSITIVE_INFINITY);
 
 		c.gridy = 3;
@@ -167,12 +169,15 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 
 		dT_ = 1.;
 		textfielddT_ = new JTextField(String.valueOf(dT_));
+		textfielddT_.setToolTipText("Averaging time (in number of frames) of the auto cutoff.");
 		SwingUIListeners.addActionListenerToDoubleAction(val -> dT_ = val, textfielddT_, 1, Double.POSITIVE_INFINITY);
 
 		c.gridy = 5;
 		pane.add(textfielddT_,c);	
 		
 		buttongetN_ = new JButton("Get N:");
+		buttongetN_.setToolTipText("Sets N0 to the last measured number of emitters.");
+
 		buttongetN_.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
             	String val = String.valueOf(graph_.getLastPoint());
@@ -186,6 +191,7 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		
 		N0_ = 1;
 		textfieldN0_ = new JTextField(String.valueOf(N0_));
+		textfieldN0_.setToolTipText("Target number of emitters.");
 		SwingUIListeners.addActionListenerToDoubleAction(val -> N0_ = val, textfieldN0_, 1, Double.POSITIVE_INFINITY);
 
 		c.gridy = 7;
@@ -193,6 +199,7 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		pane.add(textfieldN0_,c);
 		
 		checkboxactivate_ = new JCheckBox("Activate");
+		checkboxactivate_.setToolTipText("Turn on activation.");
 		SwingUIListeners.addActionListenerToBooleanAction(b -> activate_ = b, checkboxactivate_);
 
 		c.gridy = 8;
@@ -200,6 +207,7 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		pane.add(checkboxactivate_,c);	
 		
 		togglebuttonrun_ = new JToggleButton("Run");
+		togglebuttonrun_.setToolTipText("Start/stop the emitter estimation script.");
 		SwingUIListeners.addActionListenerToBooleanAction(b -> runActivation(b), togglebuttonrun_);
 
 		togglebuttonrun_.setPreferredSize(new Dimension(40,40));
@@ -223,12 +231,15 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		pane.setLayout(new GridBagLayout());
 				
 		textfieldcutoff_ = new JTextField(String.valueOf(cutoff_));
+		togglebuttonrun_.setToolTipText("Cutoff of the detected peak pixel value.");
 		SwingUIListeners.addActionListenerToDoubleAction(val -> cutoff_ = val, textfieldcutoff_, 0., Double.POSITIVE_INFINITY);
 		
 		togglebuttonautocutoff_ = new JToggleButton("Auto");
+		togglebuttonautocutoff_.setToolTipText("Turn on automated cutoff.");
 		SwingUIListeners.addActionListenerToBooleanAction(b -> autocutoff_ = b, togglebuttonautocutoff_);
 		
 		buttonclear_ = new JButton("Clear");
+		buttonclear_.setToolTipText("Clear the graph.");
 		buttonclear_.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
             	graph_.clearChart();
@@ -236,6 +247,7 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
         });	
 		
 		checkboxnms_ = new JCheckBox("NMS");
+		checkboxnms_.setToolTipText("Show/hide the last image with the detected emitters.");
 		SwingUIListeners.addActionListenerToBooleanAction(b -> showNMS(b), checkboxnms_);
 		
 		//////////////////////////////// grid bag setup

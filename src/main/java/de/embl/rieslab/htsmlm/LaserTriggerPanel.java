@@ -86,17 +86,21 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 
 		/////////////////////////////////////////////////////// mode combobox
 		comboMode = new JComboBox<String>(FPGA_BEHAVIOURS);
+		comboMode.setToolTipText("Set the trigger behaviour of the laser.");
 		//combobehaviour_.setMinimumSize(new Dimension(40,10));
 
 		/////////////////////////////////////////////////////// pulse length
 		textfieldpulselength_ = new JTextField();
+		textfieldpulselength_.setToolTipText("Set the pulse length of the laser.");
 		//textfieldpulselength_.setPreferredSize(new Dimension(60,20));
 		
 		sliderpulse_ = new JSlider(JSlider.HORIZONTAL, 0, FPGA_MAX_PULSE, 0);
+		sliderpulse_.setToolTipText("Set the pulse length of the laser.");
 		
 
 		/////////////////////////////////////////////////////// sequence
 		textfieldsequence_ = new JTextField();
+		textfieldsequence_.setToolTipText("Set the pulse sequence of the laser.");
 		//textfieldsequence_.setPreferredSize(new Dimension(105,20));
 
 		/////////////////////////////////////////////////////// place components
