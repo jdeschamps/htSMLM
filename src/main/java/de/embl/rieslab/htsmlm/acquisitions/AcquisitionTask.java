@@ -144,12 +144,15 @@ public class AcquisitionTask implements Task<Integer>{
 
 						// let time for the stage to move to position
 						Thread.sleep(param[0] * 1000);
+						
+						if (stop_) {
+							break;
+						}
 
 						// perform acquisitions
 						performAcquisitions(i);
 						
 						if (stop_) {
-							System.out.println("Stop before next position");
 							break;
 						}
 
@@ -180,6 +183,11 @@ public class AcquisitionTask implements Task<Integer>{
 
 			// perform each acquisition sequentially
 			for (int k = 0; k < exp_.getAcquisitionList().size(); k++) {
+
+				if (stop_) {
+					break;
+				}
+				
 				currAcq = exp_.getAcquisitionList().get(k);
 
 				// set-up system
@@ -214,6 +222,10 @@ public class AcquisitionTask implements Task<Integer>{
 				} catch (InterruptedException e) {
 					System.out.println("[htSMLM] InterruptedException when sleeping before acquisition.");
 					e.printStackTrace();
+				}
+				
+				if (stop_) {
+					break;
 				}
 				
 				// build name
