@@ -157,8 +157,10 @@ public class AcquisitionTask implements Task<Integer>{
 						publish(i);
 						
 					} catch (InterruptedException e) {
+						System.out.println("[htSMLM] InterruptedException when performing pos "+i+".");
 						e.printStackTrace();
 					} catch (Exception e) {
+						System.out.println("[htSMLM] Exception when performing pos "+i+".");
 						e.printStackTrace();
 					}
 				}
@@ -195,6 +197,7 @@ public class AcquisitionTask implements Task<Integer>{
 							try {
 								core_.setConfig(group, configs.get(group));
 							} catch (Exception e) {
+								System.out.println("[htSMLM] Exception when setting configuration preset group "+group+".");
 								e.printStackTrace();
 							}
 						} else if(!configs.get(group).equals(AcquisitionTab.KEY_IGNORED)) { // else if it is not ignored and a single presets with a single property, try to set it
@@ -209,16 +212,26 @@ public class AcquisitionTask implements Task<Integer>{
 				try {
 					Thread.sleep(1000*currAcq.getAcquisitionParameters().getWaitingTime());
 				} catch (InterruptedException e) {
+					System.out.println("[htSMLM] InterruptedException when sleeping before acquisition.");
 					e.printStackTrace();
 				}
 				
 				// build name
 				String name = "Pos"+String.valueOf(pos)+"_"+expname_+"_"+acqShortName[k];
+
+				if (stop_) {
+					System.out.println("[htSMLM] Acquisition interrupted before carrying "+currAcq.getShortName()+" out.");
+					break;
+				}
 				
 				// run acquisition
-				currAcq.performAcquisition(studio_, name, exppath_); // should check if returns false here, so that we can tell the user an experiment went wrong
-								
+				boolean b = currAcq.performAcquisition(studio_, name, exppath_); 
+				if(b) {
+					System.out.println("[htSMLM] Failed to perform "+currAcq.getShortName()+" acquisition.");
+				}
+				
 				if (stop_) {
+					System.out.println("[htSMLM] Acquisition interrupted after carrying "+currAcq.getShortName()+" out.");
 					break;
 				}
 			}
