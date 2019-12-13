@@ -77,6 +77,7 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 		String[] devices = {DEVICE_1, DEVICE_2, DEVICE_3, DEVICE_4, DEVICE_5, DEVICE_6};
 		for(int i=0;i<togglebuttons_.length;i++){
 			togglebuttons_[i] = new JToggleButton();
+			togglebuttons_[i].setToolTipText("Turn the device on/off.");
 			
 			if(i == togglebuttons_.length-1){
 				c.insets = new Insets(2,2,30,2);	

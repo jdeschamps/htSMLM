@@ -88,6 +88,7 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 		togglebuttons1_ = new JToggleButton[NUM_POS];
 		for(int i=0;i<togglebuttons1_.length;i++){
 			togglebuttons1_[i] = new JToggleButton();
+			togglebuttons1_[i].setToolTipText("Set the first filter property to the "+i+"th position (as defined in the wizard).");
 			
 			c.gridx = i;
 			pane1.add(togglebuttons1_[i], c);
@@ -111,6 +112,7 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 		togglebuttons2_ = new JToggleButton[NUM_POS];
 		for(int i=0;i<togglebuttons2_.length;i++){
 			togglebuttons2_[i] = new JToggleButton();
+			togglebuttons2_[i].setToolTipText("Set the second filter property to the "+i+"th position (as defined in the wizard).");
 			
 			c.gridx = i;
 			pane2.add(togglebuttons2_[i], c);

@@ -165,6 +165,7 @@ public class AcquisitionPanel extends ConfigurablePanel{
 		});
         
         jButton_load = new JButton("Load");
+        jButton_load.setToolTipText("Load an experiment file (.uiacq).");
         jButton_load.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -173,6 +174,7 @@ public class AcquisitionPanel extends ConfigurablePanel{
         });
         
         jButton_configAcq = new JButton("Configure");
+        jButton_configAcq.setToolTipText("Start the acquisition wizard to create a set of acquisitions.");
         jButton_configAcq.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -181,6 +183,7 @@ public class AcquisitionPanel extends ConfigurablePanel{
         });
         
         jButton_saveAcq = new JButton("Save as");
+        jButton_saveAcq.setToolTipText("Save the current acquisition list to a file of your choice.");
         jButton_saveAcq.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -188,7 +191,8 @@ public class AcquisitionPanel extends ConfigurablePanel{
 			}
         });
 
-        jButton_showSummary = new JToggleButton(">>");
+        jButton_showSummary = new JToggleButton(">>");        
+        jButton_showSummary.setToolTipText("Show the acquisition list summary tree.");
         jButton_showSummary.addItemListener(new ItemListener(){
 			@Override
 			public void itemStateChanged(ItemEvent e) {
@@ -211,7 +215,9 @@ public class AcquisitionPanel extends ConfigurablePanel{
         
 
 	    jTextField_expname = new JTextField();
+	    jTextField_expname.setToolTipText("Name of the experiment.");
 	    jTextField_path = new JTextField();
+	    jTextField_path.setToolTipText("Path of the experiment.");
 	    
 		jTextPane_progress = new JTextPane();
 	    jTextPane_progress.setBackground(this.getBackground());

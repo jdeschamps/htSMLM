@@ -76,6 +76,7 @@ public class LaserControlPanel extends ConfigurablePanel {
 				
 		///////////////////////////////////////////////////////////////////////// User input text field
 		textfieldUser_ = new JTextField("50");
+		textfieldUser_.setToolTipText("Sets the power percentage and the value of the user-defined button.");
 
 		textfieldUser_.addFocusListener(new FocusListener() {
 			@Override
@@ -122,6 +123,7 @@ public class LaserControlPanel extends ConfigurablePanel {
         
 		///////////////////////////////////////////////////////////////////////// Percentage buttons
 		togglebutton100_ = new JToggleButton("100%");
+		togglebutton100_.setToolTipText("Sets the power percentage to 100%.");
 		togglebutton100_.addItemListener(new ItemListener(){
 			@Override
 			public void itemStateChanged(ItemEvent e) {
@@ -132,6 +134,7 @@ public class LaserControlPanel extends ConfigurablePanel {
         });		
 
 		togglebuttonUser_ = new JToggleButton("50%");
+		togglebuttonUser_.setToolTipText("Sets the power percentage to value defined in text field above.");
 		togglebuttonUser_.addItemListener(new ItemListener(){
 			@Override
 			public void itemStateChanged(ItemEvent e) {
@@ -146,7 +149,8 @@ public class LaserControlPanel extends ConfigurablePanel {
         });
 		
 		togglebutton20_ = new JToggleButton("20%");
-		togglebutton20_.addItemListener(new ItemListener(){
+		togglebutton100_.setToolTipText("Sets the power percentage to 20%.");
+		togglebutton100_.addItemListener(new ItemListener(){
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if(e.getStateChange()==ItemEvent.SELECTED){
@@ -156,6 +160,7 @@ public class LaserControlPanel extends ConfigurablePanel {
         });
 
 		togglebutton1_ = new JToggleButton("1%");
+		togglebutton1_.setToolTipText("Sets the power percentage to 1%.");
 		togglebutton1_.addItemListener(new ItemListener(){
 			@Override
 			public void itemStateChanged(ItemEvent e) {
@@ -186,6 +191,7 @@ public class LaserControlPanel extends ConfigurablePanel {
 		///////////////////////////////////////////////////////////////////////// On/Off button
        
         togglebuttonOnOff_ = new TogglePower();
+        togglebuttonOnOff_.setToolTipText("Turn on/off the laser.");
         try {
 			SwingUIListeners.addActionListenerToTwoState(this, getPropertylabel(LASER_OPERATION), togglebuttonOnOff_);
 		} catch (IncorrectUIPropertyTypeException e1) {
