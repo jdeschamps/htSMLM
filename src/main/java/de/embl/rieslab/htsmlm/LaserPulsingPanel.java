@@ -43,13 +43,13 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 	private TitledBorder border_;
 
 	//////// Properties
-	public final static String CAMERA_EXPOSURE = "Camera exposure";
-	public final static String LASER_PULSE = "UV pulse duration (main frame)";	
+	public final String CAMERA_EXPOSURE = "Camera exposure";
+	public final String LASER_PULSE = "UV pulse duration (main frame)";	
 	
 	//////// Parameters
-	public final static String PARAM_TITLE = "Name";
-	public final static String PARAM_COLOR = "Color";
-	public final static String PARAM_DEFAULT_MAX = "Default max pulse";	
+	public final String PARAM_TITLE = "Name";
+	public final String PARAM_COLOR = "Color";
+	public final String PARAM_DEFAULT_MAX = "Default max pulse";	
 	private String title_;	
 	private Color color_;
 	

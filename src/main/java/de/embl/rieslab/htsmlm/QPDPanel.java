@@ -22,19 +22,21 @@ import de.embl.rieslab.htsmlm.updaters.JProgressBarUpdater;
 
 public class QPDPanel extends ConfigurablePanel {
 
+	private static final long serialVersionUID = 1L;
+	
 	//////// Thread
 	private ChartUpdater chartupdater_;
 	private JProgressBarUpdater progressbarupdater_;
 	
 	//////// Properties
-	public final static String QPD_X = "QPD X";
-	public final static String QPD_Y = "QPD Y";
-	public final static String QPD_Z = "QPD Z";
+	public final String QPD_X = "QPD X";
+	public final String QPD_Y = "QPD Y";
+	public final String QPD_Z = "QPD Z";
 	
 	//////// Parameters
-	public final static String PARAM_XYMAX = "XY max";
-	public final static String PARAM_ZMAX = "Z max";
-	public final static String PARAM_IDLE = "Idle time (ms)";
+	public final String PARAM_XYMAX = "XY max";
+	public final String PARAM_ZMAX = "Z max";
+	public final String PARAM_IDLE = "Idle time (ms)";
 	
 	//////// Default parameters
 	private int idle_, xymax_, zmax_; 
@@ -45,8 +47,6 @@ public class QPDPanel extends ConfigurablePanel {
 	private Chart graph_;
 	private JPanel graphpanel_;
 	
-	private static final long serialVersionUID = 7082332561417231746L;
-
 	public QPDPanel(String label) {
 		super(label);
 		

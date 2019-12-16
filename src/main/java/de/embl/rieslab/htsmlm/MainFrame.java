@@ -23,16 +23,18 @@ public class MainFrame extends ConfigurableMainFrame{
 
 	private static final long serialVersionUID = 1L;
 
-	private static final String SETTING_USE_TRIGGER = "Trigger tab";
-	private static final String SETTING_USE_ADDFW = "Additional FW tab";
-	private static final String SETTING_USE_SINGLEFW = "Single FW panel";
-	private static final String SETTING_USE_QPD = "QPD tab";
-	private static final String SETTING_USE_IBS2 = "iBeamSmart #2";
-	private static final String SETTING_USE_IBS1 = "iBeamSmart #1";
-	private static final String SETTING_NAME_IBS2 = "iBeamSmart #2 name";
-	private static final String SETTING_NAME_IBS1 = "iBeamSmart #1 name";
-	private static final String SETTING_NAME_ADDFILT = "Additional FW tab title";
+	// settings
+	private final String SETTING_USE_TRIGGER = "Trigger tab";
+	private final String SETTING_USE_ADDFW = "Additional FW tab";
+	private final String SETTING_USE_SINGLEFW = "Single FW panel";
+	private final String SETTING_USE_QPD = "QPD tab";
+	private final String SETTING_USE_IBS2 = "iBeamSmart #2";
+	private final String SETTING_USE_IBS1 = "iBeamSmart #1";
+	private final String SETTING_NAME_IBS2 = "iBeamSmart #2 name";
+	private final String SETTING_NAME_IBS1 = "iBeamSmart #1 name";
+	private final String SETTING_NAME_ADDFILT = "Additional FW tab title";
 	
+	// configurable panels and other components
 	private AdditionalFiltersPanel addFiltersPanel;
 	private FocusPanel focusPanel;
 	private QPDPanel qpdPanel;

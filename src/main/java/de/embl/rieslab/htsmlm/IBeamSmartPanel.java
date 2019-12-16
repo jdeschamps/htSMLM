@@ -45,23 +45,23 @@ public class IBeamSmartPanel extends ConfigurablePanel {
 	private JLabel finebperc_;
 
 	//////// Properties
-	public final static String LASER_OPERATION = "operation";
-	public final static String LASER_ENABLEFINE = "enable fine";	
-	public final static String LASER_POWER = "laser power";	
-	public final static String LASER_PERCFINEA = "fine a (%)";	
-	public final static String LASER_PERCFINEB = "fine b (%)";	
-	public final static String LASER_MAXPOWER = "max power";	
-	public final static String LASER_EXTERNALTRIGGER = "ext trigger";	
+	public final String LASER_OPERATION = "operation";
+	public final String LASER_ENABLEFINE = "enable fine";	
+	public final String LASER_POWER = "laser power";	
+	public final String LASER_PERCFINEA = "fine a (%)";	
+	public final String LASER_PERCFINEB = "fine b (%)";	
+	public final String LASER_MAXPOWER = "max power";	
+	public final String LASER_EXTERNALTRIGGER = "ext trigger";	
 	
 	// parameters
-	public final static String PARAM_ENABLE_FINE = "fine available";
-	public final static String PARAM_ENABLE_EXT_TRIGGER = "external trigger available";
+	public final String PARAM_ENABLE_FINE = "fine available";
+	public final String PARAM_ENABLE_EXT_TRIGGER = "external trigger available";
 	
 	/////// Convenience variables
 	private int max_power;
 	private JPanel cardTrigger, cardFine;
-	private final static String ENABLED = "enabled";
-	private final static String DISABLED = "disabled";
+	private final String ENABLED = "enabled";
+	private final String DISABLED = "disabled";
 	
 	public IBeamSmartPanel(String label) {
 		super(label);

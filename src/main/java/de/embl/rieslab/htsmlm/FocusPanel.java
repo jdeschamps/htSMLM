@@ -68,10 +68,10 @@ public class FocusPanel extends ConfigurablePanel {
 	public final static String FOCUS_STABILIZATION = "Z stage focus locking";
 	
 	//////// Parameters
-	public final static String PARAM_LARGESTEP = "Large step";
-	public final static String PARAM_SMALLSTEP = "Small step";
-	public final static String PARAM_IDLE = "Idle time (ms)";
-	public final static String PARAM_NPOS = "Number of points";
+	public final String PARAM_LARGESTEP = "Large step";
+	public final String PARAM_SMALLSTEP = "Small step";
+	public final String PARAM_IDLE = "Idle time (ms)";
+	public final String PARAM_NPOS = "Number of points";
 	
 	//////// Default parameters
 	private double smallstep_, largestep_;

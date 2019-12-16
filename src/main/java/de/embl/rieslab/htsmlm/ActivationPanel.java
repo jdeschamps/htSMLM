@@ -64,18 +64,18 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 	private ActivationTask task_;
 	
 	//////// Properties
-	private final static String LASER_PULSE = "UV pulse duration (activation)";
+	private final String LASER_PULSE = "UV pulse duration (activation)";
 	
 	//////// Internal properties
-	private final static String INTERNAL_MAXPULSE = LaserPulsingPanel.INTERNAL_MAXPULSE;
+	private final String INTERNAL_MAXPULSE = LaserPulsingPanel.INTERNAL_MAXPULSE;
 	
 	//////// Parameters
-	private final static String PARAM_IDLE = "Idle time (ms)";
-	private final static String PARAM_NPOS = "Number of points";
-	private final static String PARAM_DEF_SD = "Default sd coeff";
-	private final static String PARAM_DEF_FB = "Default feedback";
+	private final String PARAM_IDLE = "Idle time (ms)";
+	private final String PARAM_NPOS = "Number of points";
+	private final String PARAM_DEF_SD = "Default sd coeff";
+	private final String PARAM_DEF_FB = "Default feedback";
 
-	//////// Convenience variables
+	//////// Misc variables
 	private boolean activate_, shownms_, autocutoff_;
 	private double sdcoeff_, feedback_, N0_ = 1, cutoff_ = 100;
 	private int npos_, idletime_, maxpulse_;
