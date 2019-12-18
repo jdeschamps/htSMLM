@@ -36,7 +36,7 @@ And in addition:
 
    ```bash
    $ cd htsmlm
-   $ ./mvnCompile.sh "C:\Path\to\MicroManager2gamma"
+   $ ./compileAndDeploy.sh "C:\Path\to\MicroManager2gamma"
    ```
 
 4. Start Micro-Manager and select **Plugins->Interface->EMU**.
