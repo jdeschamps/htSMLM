@@ -57,7 +57,6 @@ public class AcquisitionPanel extends ConfigurablePanel{
 	
     ///// Convenience variables
 	private String paramBFP_, paramLocking_, paramBrightField_;
-	
     private JFrame summaryframe_;
     
     ///// UI

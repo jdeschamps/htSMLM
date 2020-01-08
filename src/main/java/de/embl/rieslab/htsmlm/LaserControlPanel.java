@@ -47,13 +47,13 @@ public class LaserControlPanel extends ConfigurablePanel {
 	private TitledBorder border_;
 
 	//////// Properties
-	public final String LASER_PERCENTAGE = "power percentage";
-	public final String LASER_OPERATION = "enable";	
+	private static final String LASER_PERCENTAGE = "power percentage";
+	private static final String LASER_OPERATION = "enable";	
 	
 	//////// Parameters
-	public final String PARAM_TITLE = "Name";
-	public final String PARAM_COLOR = "Color";
-	public final String PARAM_ONOFF = "Use on/off";	
+	private static final String PARAM_TITLE = "Name";
+	private static final String PARAM_COLOR = "Color";
+	private static final String PARAM_ONOFF = "Use on/off";	
 	private String title_;	
 	private Color color_;
 	private boolean useOnOff_;

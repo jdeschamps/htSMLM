@@ -33,22 +33,22 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 	private TitledBorder border2_;
 	
 	//////// Properties
-	public final String SLIDER1_POSITION = "Slider 1 position";
-	public final String SLIDER2_POSITION = "Slider 2 position";
+	private static final String SLIDER1_POSITION = "Slider 1 position";
+	private static final String SLIDER2_POSITION = "Slider 2 position";
 	
 	//////// Parameters
-	public final String PARAM1_NAMES = "Slider 1 names";
-	public final String PARAM1_COLORS = "Slider 1 colors";
-	public final String PARAM2_NAMES = "Slider 2 names";
-	public final String PARAM2_COLORS = "Slider 2 colors";
-	public final String PARAM1_TITLE = "Slider 1 title";
-	public final String PARAM2_TITLE = "Slider 2 title";
+	private static final String PARAM1_NAMES = "Slider 1 names";
+	private static final String PARAM1_COLORS = "Slider 1 colors";
+	private static final String PARAM2_NAMES = "Slider 2 names";
+	private static final String PARAM2_COLORS = "Slider 2 colors";
+	private static final String PARAM1_TITLE = "Slider 1 title";
+	private static final String PARAM2_TITLE = "Slider 2 title";
 	
 	//////// Initial parameters
-	public final int NUM_POS = 4;
-	public final String NAME_EMPTY = "None";
-	public final String COLOR_EMPTY = ColorRepository.strgray;
-	String names1_, colors1_, names2_, colors2_, title1_, title2_; 
+	private static final int NUM_POS = 4;
+	private static final String NAME_EMPTY = "None";
+	private static final String COLOR_EMPTY = ColorRepository.strgray;
+	private String names1_, colors1_, names2_, colors2_, title1_, title2_; 
 
 
 	public AdditionalFiltersPanel(String label) {

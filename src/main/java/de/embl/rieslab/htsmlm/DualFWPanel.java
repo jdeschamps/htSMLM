@@ -30,22 +30,22 @@ public class DualFWPanel extends AbstractFiltersPanel {
 	private TitledBorder border_;
 	
 	//////// Properties
-	public final String FW_POSITION1 = "Filter wheel position";
-	public final String FW_POSITION2 = "Filter wheel 2 position";
+	private static final String FW_POSITION1 = "Filter wheel position";
+	private static final String FW_POSITION2 = "Filter wheel 2 position";
 	
 	//////// Parameters
-	public final String TITLE = "Filters";
-	public final String PARAM_NAMES1 = "Filter names";
-	public final String PARAM_COLORS1 = "Filter colors";
-	public final String PARAM_NAMES2 = "Filter names 2";
-	public final String PARAM_COLORS2 = "Filter colors 2";
-	public final String PARAM_TITLE = "Panel title";
+	private static final String TITLE = "Filters";
+	private static final String PARAM_NAMES1 = "Filter names";
+	private static final String PARAM_COLORS1 = "Filter colors";
+	private static final String PARAM_NAMES2 = "Filter names 2";
+	private static final String PARAM_COLORS2 = "Filter colors 2";
+	private static final String PARAM_TITLE = "Panel title";
 	
 	//////// Initial parameters
-	public final int NUM_POS = 6;
-	public final String NAME_EMPTY = "None";
-	public final String COLOR_EMPTY = ColorRepository.strgray;
-	String names1_, colors1_, names2_, colors2_, title_; 
+	private static final int NUM_POS = 6;
+	private static final String NAME_EMPTY = "None";
+	private static final String COLOR_EMPTY = ColorRepository.strgray;
+	private String names1_, colors1_, names2_, colors2_, title_; 
 
 
 	public DualFWPanel(String label) {

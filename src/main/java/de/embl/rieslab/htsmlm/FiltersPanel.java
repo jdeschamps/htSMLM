@@ -30,19 +30,19 @@ public class FiltersPanel extends AbstractFiltersPanel {
 	private TitledBorder border_;
 	
 	//////// Properties
-	public final String FW_POSITION = "Filter wheel position";
+	private static final String FW_POSITION = "Filter wheel position";
 	
 	//////// Parameters
-	public final String PARAM_TITLE = "Panel title";
-	public final String PARAM_NAMES = "Filter names";
-	public final String PARAM_COLORS = "Filter colors";
+	private static final String PARAM_TITLE = "Panel title";
+	private static final String PARAM_NAMES = "Filter names";
+	private static final String PARAM_COLORS = "Filter colors";
 	
 	//////// Initial parameters
-	public final int NUM_POS = 6;
-	public final String TITLE = "Filters";
-	public final String NAME_EMPTY = "None";
-	public final String COLOR_EMPTY = ColorRepository.strgray;
-	String names_, colors_, title_; 
+	private static final int NUM_POS = 6;
+	private static final String TITLE = "Filters";
+	private static final String NAME_EMPTY = "None";
+	private static final String COLOR_EMPTY = ColorRepository.strgray;
+	private String names_, colors_, title_; 
 
 
 	public FiltersPanel(String label) {

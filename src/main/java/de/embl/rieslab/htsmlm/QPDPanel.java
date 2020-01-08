@@ -29,14 +29,14 @@ public class QPDPanel extends ConfigurablePanel {
 	private JProgressBarUpdater progressbarupdater_;
 	
 	//////// Properties
-	public final String QPD_X = "QPD X";
-	public final String QPD_Y = "QPD Y";
-	public final String QPD_Z = "QPD Z";
+	private final static String QPD_X = "QPD X";
+	private final static String QPD_Y = "QPD Y";
+	private final static String QPD_Z = "QPD Z";
 	
 	//////// Parameters
-	public final String PARAM_XYMAX = "XY max";
-	public final String PARAM_ZMAX = "Z max";
-	public final String PARAM_IDLE = "Idle time (ms)";
+	private final static String PARAM_XYMAX = "XY max";
+	private final static String PARAM_ZMAX = "Z max";
+	private final static String PARAM_IDLE = "Idle time (ms)";
 	
 	//////// Default parameters
 	private int idle_, xymax_, zmax_; 

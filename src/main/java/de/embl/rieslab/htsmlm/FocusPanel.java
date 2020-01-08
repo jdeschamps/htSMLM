@@ -64,14 +64,14 @@ public class FocusPanel extends ConfigurablePanel {
 	private TimeChartUpdater updater_;
 
 	//////// Properties
-	public final static String FOCUS_POSITION = "Z stage position";
-	public final static String FOCUS_STABILIZATION = "Z stage focus locking";
+	private final static String FOCUS_POSITION = "Z stage position";
+	private final static String FOCUS_STABILIZATION = "Z stage focus locking";
 	
 	//////// Parameters
-	public final String PARAM_LARGESTEP = "Large step";
-	public final String PARAM_SMALLSTEP = "Small step";
-	public final String PARAM_IDLE = "Idle time (ms)";
-	public final String PARAM_NPOS = "Number of points";
+	private final String PARAM_LARGESTEP = "Large step";
+	private final String PARAM_SMALLSTEP = "Small step";
+	private final String PARAM_IDLE = "Idle time (ms)";
+	private final String PARAM_NPOS = "Number of points";
 	
 	//////// Default parameters
 	private double smallstep_, largestep_;

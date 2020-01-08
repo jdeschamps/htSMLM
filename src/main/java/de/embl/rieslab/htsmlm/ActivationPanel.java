@@ -55,7 +55,6 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 	private JToggleButton togglebuttonrun_;
 	private JToggleButton togglebuttonautocutoff_;
 	private JButton buttongetN_;
-	//private JButton buttongetcutoff_;
 	private JButton buttonclear_;
 	private JCheckBox checkboxnms_;
 	private JCheckBox checkboxactivate_;
@@ -64,16 +63,16 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 	private ActivationTask task_;
 	
 	//////// Properties
-	private final String LASER_PULSE = "UV pulse duration (activation)";
+	private static final String LASER_PULSE = "UV pulse duration (activation)";
 	
 	//////// Internal properties
-	private final String INTERNAL_MAXPULSE = LaserPulsingPanel.INTERNAL_MAXPULSE;
+	private static final String INTERNAL_MAXPULSE = LaserPulsingPanel.INTERNAL_MAXPULSE;
 	
 	//////// Parameters
-	private final String PARAM_IDLE = "Idle time (ms)";
-	private final String PARAM_NPOS = "Number of points";
-	private final String PARAM_DEF_SD = "Default sd coeff";
-	private final String PARAM_DEF_FB = "Default feedback";
+	private static final String PARAM_IDLE = "Idle time (ms)";
+	private static final String PARAM_NPOS = "Number of points";
+	private static final String PARAM_DEF_SD = "Default sd coeff";
+	private static final String PARAM_DEF_FB = "Default feedback";
 
 	//////// Misc variables
 	private boolean activate_, shownms_, autocutoff_;

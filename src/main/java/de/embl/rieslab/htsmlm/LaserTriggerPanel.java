@@ -46,21 +46,20 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 	private TitledBorder border_;
 
 	//////// Properties
-	private final String TRIGGER_MODE = "mode";
-	private final String TRIGGER_SEQUENCE = "sequence";
-	private final String PULSE_LENGTH = "pulse duration";
+	private static final String TRIGGER_MODE = "mode";
+	private static final String TRIGGER_SEQUENCE = "sequence";
+	private static final String PULSE_LENGTH = "pulse duration";
 	
 	//////// Parameters
-	private final String PARAM_TITLE = "Name";
-	private final String PARAM_COLOR = "Color";
+	private static final String PARAM_TITLE = "Name";
+	private static final String PARAM_COLOR = "Color";
 	private String title_;
 	private Color color_;
 	
 	// Mojo FPGA
-	public final int FPGA_MAX_PULSE = 65535;
-	public final int FPGA_MAX_SEQUENCE = 65535;
-	public final int FPGA_SEQUENCE_LENGTH = 16;
-	public final String[] FPGA_BEHAVIOURS = {"Off","On","Rising","Falling","Camera"};
+	private final static int FPGA_MAX_PULSE = 65535;
+	private final static int FPGA_MAX_SEQUENCE = 65535;
+	private final static String[] FPGA_BEHAVIOURS = {"Off","On","Rising","Falling","Camera"};
 	
 	public LaserTriggerPanel(String label) {
 		super(label);

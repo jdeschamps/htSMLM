@@ -30,28 +30,28 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 	private TitledBorder border_;
 
 	//////// Properties
-	public final String DEVICE_1 = "Two-state device 1";
-	public final String DEVICE_2 = "Two-state device 2";
-	public final String DEVICE_3 = "Two-state device 3";
-	public final String DEVICE_4 = "Two-state device 4";
-	public final String DEVICE_5 = "Two-state device 5";
-	public final String DEVICE_6 = "Two-state device 6";
+	private static final String DEVICE_1 = "Two-state device 1";
+	private static final String DEVICE_2 = "Two-state device 2";
+	private static final String DEVICE_3 = "Two-state device 3";
+	private static final String DEVICE_4 = "Two-state device 4";
+	private static final String DEVICE_5 = "Two-state device 5";
+	private static final String DEVICE_6 = "Two-state device 6";
 	
 	//////// Parameters
-	public final String PARAM_TITLE = "Title";
-	public final String PARAM_NAME1 = "Two-state device 1 name";
-	public final String PARAM_NAME2 = "Two-state device 2 name";
-	public final String PARAM_NAME3 = "Two-state device 3 name";
-	public final String PARAM_NAME4 = "Two-state device 4 name";
-	public final String PARAM_NAME5 = "Two-state device 5 name";
-	public final String PARAM_NAME6 = "Two-state device 6 name";
-	public final String PARAM_ENABLE1 = "Enable two-state device 1";
-	public final String PARAM_ENABLE2 = "Enable two-state device 2";
-	public final String PARAM_ENABLE3 = "Enable two-state device 3";
-	public final String PARAM_ENABLE4 = "Enable two-state device 4";
-	public final String PARAM_ENABLE5 = "Enable two-state device 5";
-	public final String PARAM_ENABLE6 = "Enable two-state device 6";
-	public final int PARAM_NPOS = 6;
+	private static final String PARAM_TITLE = "Title";
+	private static final String PARAM_NAME1 = "Two-state device 1 name";
+	private static final String PARAM_NAME2 = "Two-state device 2 name";
+	private static final String PARAM_NAME3 = "Two-state device 3 name";
+	private static final String PARAM_NAME4 = "Two-state device 4 name";
+	private static final String PARAM_NAME5 = "Two-state device 5 name";
+	private static final String PARAM_NAME6 = "Two-state device 6 name";
+	private static final String PARAM_ENABLE1 = "Enable two-state device 1";
+	private static final String PARAM_ENABLE2 = "Enable two-state device 2";
+	private static final String PARAM_ENABLE3 = "Enable two-state device 3";
+	private static final String PARAM_ENABLE4 = "Enable two-state device 4";
+	private static final String PARAM_ENABLE5 = "Enable two-state device 5";
+	private static final String PARAM_ENABLE6 = "Enable two-state device 6";
+	private static final int PARAM_NPOS = 6;
 	
 	public AdditionalControlsPanel(String label) {
 		super(label);
