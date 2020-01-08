@@ -24,15 +24,15 @@ public class MainFrame extends ConfigurableMainFrame{
 	private static final long serialVersionUID = 1L;
 
 	// settings
-	private final String SETTING_USE_TRIGGER = "Trigger tab";
-	private final String SETTING_USE_ADDFW = "Additional FW tab";
-	private final String SETTING_USE_SINGLEFW = "Single FW panel";
-	private final String SETTING_USE_QPD = "QPD tab";
-	private final String SETTING_USE_IBS2 = "iBeamSmart #2";
-	private final String SETTING_USE_IBS1 = "iBeamSmart #1";
-	private final String SETTING_NAME_IBS2 = "iBeamSmart #2 name";
-	private final String SETTING_NAME_IBS1 = "iBeamSmart #1 name";
-	private final String SETTING_NAME_ADDFILT = "Additional FW tab title";
+	private static final String SETTING_USE_TRIGGER = "Trigger tab";
+	private static final String SETTING_USE_ADDFW = "Additional FW tab";
+	private static final String SETTING_USE_SINGLEFW = "Single FW panel";
+	private static final String SETTING_USE_QPD = "QPD tab";
+	private static final String SETTING_USE_IBS2 = "iBeamSmart #2";
+	private static final String SETTING_USE_IBS1 = "iBeamSmart #1";
+	private static final String SETTING_NAME_IBS2 = "iBeamSmart #2 name";
+	private static final String SETTING_NAME_IBS1 = "iBeamSmart #1 name";
+	private static final String SETTING_NAME_ADDFILT = "Additional FW tab title";
 	
 	// configurable panels and other components
 	private AdditionalFiltersPanel addFiltersPanel;
@@ -163,14 +163,14 @@ public class MainFrame extends ConfigurableMainFrame{
 			tab.add("QPD", qpdPanel);
 		}
 
-		/// iBeamSmart for focus-lock
+		/// iBeamSmart 1
 		if(((BoolSetting) settings.get(SETTING_USE_IBS1)).getValue()) {
 			String name = settings.get(SETTING_NAME_IBS1).getStringValue();
 			focuslockpanel = new IBeamSmartPanel(name);
 			tab.add(name, focuslockpanel);
 		}
 		
-		/// iBeamSmart for booster
+		/// iBeamSmart 2
 		if(((BoolSetting) settings.get(SETTING_USE_IBS2)).getValue()) {
 			String name = settings.get(SETTING_NAME_IBS2).getStringValue();
 			focuslockpanel = new IBeamSmartPanel(name);
@@ -195,9 +195,9 @@ public class MainFrame extends ConfigurableMainFrame{
 		
 		/// Additional filters tab
 		if(((BoolSetting) settings.get(SETTING_USE_ADDFW)).getValue()) {			
-			String title = settings.get(SETTING_USE_ADDFW).getStringValue();
+			String title = settings.get(SETTING_NAME_ADDFILT).getStringValue();
 			addFiltersPanel = new AdditionalFiltersPanel(title);
-			tab.add("Additional filters", addFiltersPanel);
+			tab.add(title, addFiltersPanel);
 		}
 		
 		/// Acquisition tab
