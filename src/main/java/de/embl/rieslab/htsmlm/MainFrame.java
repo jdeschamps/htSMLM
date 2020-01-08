@@ -79,7 +79,6 @@ public class MainFrame extends ConfigurableMainFrame{
  
         this.pack(); 
         this.setResizable(false);
- 	    this.setVisible(true);        
     }
 
     @SuppressWarnings("rawtypes")
@@ -168,14 +167,14 @@ public class MainFrame extends ConfigurableMainFrame{
 		if(((BoolSetting) settings.get(SETTING_USE_IBS1)).getValue()) {
 			String name = settings.get(SETTING_NAME_IBS1).getStringValue();
 			focuslockpanel = new IBeamSmartPanel(name);
-			tab.add("Focus-lock", focuslockpanel);
+			tab.add(name, focuslockpanel);
 		}
 		
 		/// iBeamSmart for booster
 		if(((BoolSetting) settings.get(SETTING_USE_IBS2)).getValue()) {
 			String name = settings.get(SETTING_NAME_IBS2).getStringValue();
 			focuslockpanel = new IBeamSmartPanel(name);
-			tab.add("Booster", focuslockpanel);
+			tab.add(name, focuslockpanel);
 		}
 		
 		// Activation
