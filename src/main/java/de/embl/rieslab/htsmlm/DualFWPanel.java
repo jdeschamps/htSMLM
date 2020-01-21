@@ -204,7 +204,7 @@ public class DualFWPanel extends AbstractFiltersPanel {
 		String desc_names = "Filter names displayed by the UI. The entry should be written as \"name1,name2,name3,name4,name5,name6\". The names should be separated by a comma. "
 				+ "The maximum number of filters name is "+NUM_POS+", beyond that the names will be ignored.";
 		String desc_colors= "Filter colors displayed by the UI. The entry should be written as \"color1,color2,color3,color4,color5,color6\". The names should be separated by a comma. "
-				+ "The maximum number of filters color is "+NUM_POS+", beyond that the colors will be ignored. The available colors are:\n"+ColorRepository.getColorsInOneColumn();
+				+ "The maximum number of filters color is "+NUM_POS+", beyond that the colors will be ignored. The available colors are: "+ColorRepository.getCommaSeparatedColors();
 
 		addUIParameter(new StringUIParameter(this, PARAM_TITLE,"Title of the dual FW panel",title_));
 		addUIParameter(new StringUIParameter(this, PARAM_NAMES1,desc_names,names1_));
