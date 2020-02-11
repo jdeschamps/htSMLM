@@ -272,12 +272,10 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 	//////
 	////// Convenience methods
 	//////
-	
-	
 	protected void runActivation(boolean b){
 		if(b && !task_.isRunning()){
 			task_.startTask();
-		} else if(task_.isRunning()){
+		} else if(!b && task_.isRunning()){
 			task_.stopTask();
 		}
 	}
@@ -469,9 +467,9 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 				e.printStackTrace();
 				params[ActivationTask.PARAM_PULSE] = 0.;
 			}
-		} else {
+		} /*else {
 			params[ActivationTask.PARAM_PULSE] = 0.;
-		}
+		}*/
 		
 		params[ActivationTask.PARAM_SDCOEFF] = sdcoeff_; 
 		

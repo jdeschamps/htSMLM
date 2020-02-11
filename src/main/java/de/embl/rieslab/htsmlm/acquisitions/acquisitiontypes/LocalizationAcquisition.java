@@ -313,6 +313,7 @@ public class LocalizationAcquisition implements Acquisition {
 
 		if(useactivation_){			
 			activationTask_.pauseTask();
+			activationTask_.initializeTask();
 		}
 		
 		running_ = false;
