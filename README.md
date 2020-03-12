@@ -11,7 +11,7 @@ In particular, htSMLM features optional and reconfigurable controls for:
 - Up to six on/off controls (servos, flip mirros)
 - Focus monitoring, moving and locking (if a similar system to [pgfocus]( http://big.umassmed.edu/wiki/index.php/PgFocus ) is present)
 - A quadrant photodiode monitoring (see pgfocus)
-- Laser triggering interface for [Micro-Mojo]( https://github.com/jdeschamps/MicroMojo )
+- Laser triggering interface for [MicroFPGA]( https://github.com/jdeschamps/MicroFPGA )
 - Two iBeamSmart laser panels (focus-lock and booster tabs)
 
 And in addition:
