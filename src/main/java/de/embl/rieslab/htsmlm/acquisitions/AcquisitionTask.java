@@ -216,6 +216,9 @@ public class AcquisitionTask implements Task<Integer>{
 					}
 				}
 				
+				// set exposure time
+				setExposure(currAcq.getAcquisitionParameters().getExposureTime());
+				
 				// pause time in ms
 				try {
 					Thread.sleep(1000*currAcq.getAcquisitionParameters().getWaitingTime());
@@ -267,6 +270,14 @@ public class AcquisitionTask implements Task<Integer>{
 			interruptAcquistion();
 		}
 
+		private void setExposure(double exposure){
+			try {
+				core_.setExposure(exposure);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}		
+		}
+		
 		private void interruptAcquistion() {
 			if (currAcq != null && currAcq.isRunning()) {
 				currAcq.stopAcquisition();

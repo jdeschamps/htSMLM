@@ -802,10 +802,7 @@ public class AcquisitionTab extends JPanel {
 	 */
 	public final class BoldTableCellRenderer extends DefaultTableCellRenderer {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 7284712630858433079L;
+		private static final long serialVersionUID = 1L;
 
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
 				int row, int column) {
@@ -872,8 +869,8 @@ public class AcquisitionTab extends JPanel {
 	 */
 	public final class PropertyValueCellEditor extends AbstractCellEditor implements TableCellEditor {
 
-		private static final long serialVersionUID = 5022038969815692264L;
-	    SliderPanel slider_ = new SliderPanel();
+		private static final long serialVersionUID = 1L;
+		SliderPanel slider_ = new SliderPanel();
 	    @SuppressWarnings("rawtypes")
 		MMProperty prop;
 
