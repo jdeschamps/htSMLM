@@ -114,7 +114,7 @@ public class ZStackAcquisition implements Acquisition {
 	}
 
 	@Override
-	public boolean performAcquisition(Studio studio, String name, String path) {
+	public void performAcquisition(Studio studio, String name, String path) throws InterruptedException, IOException {
 		stopAcq_ = false;
 		running_ = true;
 		
@@ -154,30 +154,18 @@ public class ZStackAcquisition implements Acquisition {
 				interruptAcquisition(studio);
 			}
 			
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-				return false;
-			}
+			Thread.sleep(500);
 		}
 		
 		studio.displays().closeDisplaysFor(store);
 		
-		try {
-			store.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
+		store.close();
 
 		if(zstabProperty_!=null && disableZStab_){
 			zstabProperty_.setPropertyValue(TwoStateUIProperty.getOnStateLabel()); // sets on at the end
 		}
 		
 		running_ = false;
-		return true;
-			
 	}
 	
 	private void interruptAcquisition(Studio studio) {

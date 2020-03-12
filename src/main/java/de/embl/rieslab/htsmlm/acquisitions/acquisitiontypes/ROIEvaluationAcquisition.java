@@ -1,5 +1,7 @@
 package de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes;
 
+import java.io.IOException;
+
 import javax.swing.JPanel;
 
 import org.micromanager.Studio;
@@ -15,8 +17,7 @@ public class ROIEvaluationAcquisition implements Acquisition {
 	}
 
 	@Override
-	public boolean performAcquisition(Studio studio, String name, String path) {
-		return true;
+	public void performAcquisition(Studio studio, String name, String path) throws InterruptedException, IOException {
 	}
 
 	@Override

@@ -248,7 +248,7 @@ public class LocalizationAcquisition implements Acquisition {
 	}
 
 	@Override
-	public boolean performAcquisition(Studio studio, String name, String path) {
+	public void performAcquisition(Studio studio, String name, String path) throws IOException, InterruptedException {
 		
 		if(useactivation_){			
 			activationTask_.initializeTask();
@@ -277,13 +277,8 @@ public class LocalizationAcquisition implements Acquisition {
 			
 			// check if reached stop criterion
 			if(useactivation_ && stoponmax_ && activationTask_.isCriterionReached()){
-				try {
-					Thread.sleep(1000*stoponmaxdelay_);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-					return false;
-				}
-								
+				Thread.sleep(1000*stoponmaxdelay_);
+												
 				interruptAcquisition(studio);
 				interruptionRequested_ = true;
 			}
@@ -294,31 +289,20 @@ public class LocalizationAcquisition implements Acquisition {
 				interruptionRequested_ = true;
 			}
 			
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-				return false;
-			}
+			Thread.sleep(1000);
+			
 		}
 
 		studio.displays().closeDisplaysFor(store);
 	
-		try {
-			store.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
-
+		store.close();
+		
 		if(useactivation_){			
 			activationTask_.pauseTask();
 			activationTask_.initializeTask();
 		}
 		
 		running_ = false;
-		
-		return true;
 	}
 
 	private void interruptAcquisition(Studio studio) {

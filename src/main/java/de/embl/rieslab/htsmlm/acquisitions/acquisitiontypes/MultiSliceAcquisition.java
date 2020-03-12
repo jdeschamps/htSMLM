@@ -14,8 +14,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import org.micromanager.Studio;
 import org.micromanager.acquisition.SequenceSettings;
@@ -444,7 +442,7 @@ public class MultiSliceAcquisition implements Acquisition {
 	}
 
 	@Override
-	public boolean performAcquisition(Studio studio, String name, String path) {
+	public void performAcquisition(Studio studio, String name, String path) throws InterruptedException, IOException{
 		
 		CMMCore core  = studio.core();
 
@@ -515,12 +513,7 @@ public class MultiSliceAcquisition implements Acquisition {
 							
 							// checks if reached stop criterion
 							if(useactivation_ && stoponmax_ && ((actAtSt && j==sliceSt) || !actAtSt) && activationTask_.isCriterionReached()){
-								try {
-									Thread.sleep(1000*stoponmaxdelay_);
-								} catch (InterruptedException e) {
-									e.printStackTrace();
-									return false;
-								}
+								Thread.sleep(1000*stoponmaxdelay_);
 												
 								interruptAcquisition(studio);
 							}
@@ -531,22 +524,12 @@ public class MultiSliceAcquisition implements Acquisition {
 								interruptAcquisition(studio);
 							}
 							
-							try {
-								Thread.sleep(1000);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-								return false;
-							}
+							Thread.sleep(1000);
 						}
 
 						// close store
 						studio.displays().closeDisplaysFor(store);
-						try {
-							store.close();
-						} catch (IOException e) {
-							e.printStackTrace();
-							return false;
-						}
+						store.close();
 
 						if(i>0 && j==sliceSt && !disableFocusLock_ && focusLockAtZ0_) {
 							// updates z0 for the next iterations
@@ -561,11 +544,10 @@ public class MultiSliceAcquisition implements Acquisition {
 							activationTask_.pauseTask();
 						}
 						
-						
 					} catch (Exception e) {
-						running_ = false;
+						running_ = false;						
+						System.out.println("[htSMLM] Failed to move stage or query position after slice "+j+".");
 						e.printStackTrace();
-						return false;
 					}
 					
 					if(stopAcq_) {
@@ -599,8 +581,6 @@ public class MultiSliceAcquisition implements Acquisition {
 		}
 		
 		running_ = false;
-		
-		return true;
 	}
 
 	private void interruptAcquisition(Studio studio) {

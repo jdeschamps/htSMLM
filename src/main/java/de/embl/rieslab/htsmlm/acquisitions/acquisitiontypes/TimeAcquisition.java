@@ -159,7 +159,7 @@ public class TimeAcquisition implements Acquisition{
 	}
 
 	@Override
-	public boolean performAcquisition(Studio studio, String name, String path) {		
+	public void performAcquisition(Studio studio, String name, String path) throws InterruptedException, IOException {		
 		stopAcq_ = false;
 		running_ = true;
 		
@@ -183,25 +183,14 @@ public class TimeAcquisition implements Acquisition{
 				interruptAcquisition(studio);
 			}
 			
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-				return false;
-			}
+			Thread.sleep(500);
 		}
 		
 		studio.displays().closeDisplaysFor(store);
-		
-		try {
-			store.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
+
+		store.close();
 		
 		running_ = false;
-		return true;
 	}
 
 	private void interruptAcquisition(Studio studio) {

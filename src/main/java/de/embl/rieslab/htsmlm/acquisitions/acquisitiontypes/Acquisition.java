@@ -1,5 +1,7 @@
 package de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes;
 
+import java.io.IOException;
+
 import javax.swing.JPanel;
 
 import org.micromanager.Studio;
@@ -23,8 +25,10 @@ public interface Acquisition {
 	 * @param name Name of the acquisition.
 	 * @param path Path where to save the images.
 	 * @return True if the acqusition could be started, false otherwise.
+	 * @throws InterruptedException 
+	 * @throws  
 	 */
-	public abstract boolean performAcquisition(Studio studio, String name, String path);
+	public abstract void performAcquisition(Studio studio, String name, String path) throws InterruptedException, IOException;
 	
 	/**
 	 * Requests stop acqusition.

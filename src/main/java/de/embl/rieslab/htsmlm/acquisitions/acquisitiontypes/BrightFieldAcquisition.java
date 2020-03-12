@@ -16,10 +16,8 @@ import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.PropertyFilter;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.SinglePropertyFilter;
 
 import org.micromanager.Studio;
-import org.micromanager.data.Coords;
+import org.micromanager.acquisition.SequenceSettings;
 import org.micromanager.data.Datastore;
-import org.micromanager.data.Image;
-import org.micromanager.data.internal.DefaultCoords;
 
 public class BrightFieldAcquisition implements Acquisition{
 	
@@ -135,34 +133,34 @@ public class BrightFieldAcquisition implements Acquisition{
 	}
 
 	@Override
-	public boolean performAcquisition(Studio studio, String name, String path) {
+	public void performAcquisition(Studio studio, String name, String path) throws InterruptedException, IOException {
 		// turn on BF
 		bfprop_.setPropertyValue(TwoStateUIProperty.getOnStateLabel());
 
-		// create datastore and write an image to it
-		try {
-			Datastore store = studio.data().createSinglePlaneTIFFSeriesDatastore(path+name);
-			studio.displays().createDisplay(store);
+		SequenceSettings settings = new SequenceSettings();
+		settings.save = true;
+		settings.timeFirst = true;
+		settings.usePositionList = false;
+		settings.root = path;
+		settings.prefix = name;
+		settings.numFrames = 1;
+		settings.intervalMs = 0;
+		settings.shouldDisplayImages = true;
+		
+		// run acquisition
+		Datastore store = studio.acquisitions().runAcquisitionWithSettings(settings, false);
 
-			Coords.CoordsBuilder builder = new DefaultCoords.Builder();
-			builder.time(0).channel(0).z(0).stagePosition(0);
-				
-			Image image = studio.live().snap(false).get(0);
-			image = image.copyAtCoords(builder.build());
-				
-			store.putImage(image);
-			studio.displays().closeDisplaysFor(store);
-			store.close();
-
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
+		// loop to check if needs to be stopped or not
+		while(studio.acquisitions().isAcquisitionRunning()) {	
+			Thread.sleep(100);
 		}
 		
+		studio.displays().closeDisplaysFor(store);
+
 		// turn off BF
 		bfprop_.setPropertyValue(TwoStateUIProperty.getOffStateLabel());
-
-		return true;
+		
+		store.close();
 	}
 
 

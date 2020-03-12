@@ -1,5 +1,7 @@
 package de.embl.rieslab.htsmlm.acquisitions;
 
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -234,13 +236,14 @@ public class AcquisitionTask implements Task<Integer>{
 				
 				// build name
 				String name = "Pos"+String.valueOf(pos)+"_"+expname_+"_"+acqShortName[k];
-
 				
 				// run acquisition
-				boolean b = currAcq.performAcquisition(studio_, name, exppath_); 
-				if(b) {
+				try {
+					currAcq.performAcquisition(studio_, name, exppath_);
+				} catch (InterruptedException | IOException e) {
 					System.out.println("[htSMLM] Failed to perform "+currAcq.getShortName()+" acquisition.");
-				}
+					e.printStackTrace();
+				} 				
 				
 				if (stop_) {
 					System.out.println("[htSMLM] Acquisition interrupted after carrying "+currAcq.getShortName()+" out.");
