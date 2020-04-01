@@ -82,7 +82,7 @@ public class FiltersPanel extends AbstractFiltersPanel {
 					if(e.getStateChange()==ItemEvent.SELECTED){
 						int pos = getSelectedButtonNumber();
 						if(pos>=0 && pos<togglebuttons_.length){
-							setUIPropertyValue(FW_POSITION,String.valueOf(pos));
+							setUIPropertyValueByStateIndex(FW_POSITION,pos);
 						}				
 					} 
 				}

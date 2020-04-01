@@ -84,7 +84,7 @@ public class DualFWPanel extends AbstractFiltersPanel {
 					if(e.getStateChange()==ItemEvent.SELECTED){
 						int pos = getSelectedButtonNumber(0);
 						if(pos>=0 && pos<togglebuttons1_.length){
-							setUIPropertyValue(FW_POSITION1,String.valueOf(pos));
+							setUIPropertyValueByStateIndex(FW_POSITION1,pos);
 						}				
 					} 
 				}
@@ -110,7 +110,7 @@ public class DualFWPanel extends AbstractFiltersPanel {
 					if(e.getStateChange()==ItemEvent.SELECTED){
 						int pos = getSelectedButtonNumber(1);
 						if(pos>=0 && pos<togglebuttons2_.length){
-							setUIPropertyValue(FW_POSITION2,String.valueOf(pos));
+							setUIPropertyValueByStateIndex(FW_POSITION2,pos);
 						}				
 					} 
 				}

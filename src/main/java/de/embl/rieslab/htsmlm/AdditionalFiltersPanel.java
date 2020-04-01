@@ -101,7 +101,7 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 					if(e.getStateChange()==ItemEvent.SELECTED){
 						int pos = getSelectedButtonNumber(togglebuttons1_);
 						if(pos>=0 && pos<togglebuttons1_.length){
-							setUIPropertyValue(SLIDER1_POSITION,String.valueOf(pos));
+							setUIPropertyValueByStateIndex(SLIDER1_POSITION,pos);
 						}				
 					} 
 				}
@@ -125,7 +125,7 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 					if(e.getStateChange()==ItemEvent.SELECTED){
 						int pos = getSelectedButtonNumber(togglebuttons2_);
 						if(pos>=0 && pos<togglebuttons2_.length){
-							setUIPropertyValue(SLIDER2_POSITION,String.valueOf(pos));
+							setUIPropertyValueByStateIndex(SLIDER2_POSITION,pos);
 						}				
 					} 
 				}
