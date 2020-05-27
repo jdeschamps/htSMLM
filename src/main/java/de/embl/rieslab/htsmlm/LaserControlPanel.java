@@ -149,8 +149,8 @@ public class LaserControlPanel extends ConfigurablePanel {
         });
 		
 		togglebutton20_ = new JToggleButton("20%");
-		togglebutton100_.setToolTipText("Sets the power percentage to 20%.");
-		togglebutton100_.addItemListener(new ItemListener(){
+		togglebutton20_.setToolTipText("Sets the power percentage to 20%.");
+		togglebutton20_.addItemListener(new ItemListener(){
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if(e.getStateChange()==ItemEvent.SELECTED){
