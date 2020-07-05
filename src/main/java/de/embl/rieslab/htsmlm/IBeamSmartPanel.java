@@ -17,6 +17,7 @@ import javax.swing.border.TitledBorder;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.swinglisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.uiparameters.BoolUIParameter;
+import de.embl.rieslab.emu.ui.uiparameters.IntegerUIParameter;
 import de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
 import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 import de.embl.rieslab.emu.utils.ColorRepository;
@@ -50,10 +51,10 @@ public class IBeamSmartPanel extends ConfigurablePanel {
 	private static final String LASER_POWER = "laser power";	
 	private static final String LASER_PERCFINEA = "fine a (%)";	
 	private static final String LASER_PERCFINEB = "fine b (%)";	
-	private static final String LASER_MAXPOWER = "max power";	
 	private static final String LASER_EXTERNALTRIGGER = "ext trigger";	
 	
 	// parameters
+	private static final String PARAM_MAXPOW = "max power";
 	private static final String PARAM_ENABLE_FINE = "fine available";
 	private static final String PARAM_ENABLE_EXT_TRIGGER = "external trigger available";
 	
@@ -245,7 +246,6 @@ public class IBeamSmartPanel extends ConfigurablePanel {
 		addUIProperty(new UIProperty(this, getPropertyName(LASER_POWER),"iBeamSmart Power (mW).", new FocusLockFlag()));
 		addUIProperty(new UIProperty(this, getPropertyName(LASER_PERCFINEA),"iBeamSmart Power percentage of fine a.", new FocusLockFlag()));
 		addUIProperty(new UIProperty(this, getPropertyName(LASER_PERCFINEB),"iBeamSmart Power percentage of fine b.", new FocusLockFlag()));
-		addUIProperty(new UIProperty(this, getPropertyName(LASER_MAXPOWER),"iBeamSmart Maximum power (mW).", new FocusLockFlag()));
 
 		addUIProperty(new TwoStateUIProperty(this,getPropertyName(LASER_OPERATION),"iBeamSmart On/Off operation property.", new FocusLockFlag()));
 		addUIProperty(new TwoStateUIProperty(this,getPropertyName(LASER_ENABLEFINE),"iBeamSmart Enable property of fine.", new FocusLockFlag()));
@@ -306,15 +306,7 @@ public class IBeamSmartPanel extends ConfigurablePanel {
 			} catch (UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
-		} else if(getPropertyName(LASER_MAXPOWER).equals(name)){
-			if(EmuUtils.isNumeric(newvalue)){
-				double val = Double.parseDouble(newvalue);
-				max_power = (int) val;
-				if(sliderPower_ != null){
-					sliderPower_.setMaximum(max_power);
-				}
-			}
-		}
+		} 
 	}
 
 	@Override
@@ -342,7 +334,9 @@ public class IBeamSmartPanel extends ConfigurablePanel {
 	}
 	
 	@Override
-	protected void initializeParameters() {		
+	protected void initializeParameters() {
+		max_power = 100;
+		addUIParameter(new IntegerUIParameter(this, PARAM_MAXPOW,"Maximum laser power.", max_power));
 		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE_FINE,"Fine settings available in the iBeamSmart laser.", true));
 		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE_EXT_TRIGGER,"External trigger available in the iBeamSmart laser.", true));
 	}
@@ -369,7 +363,14 @@ public class IBeamSmartPanel extends ConfigurablePanel {
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
-		} 	
+		} else if(PARAM_MAXPOW.equals(label)){
+			try {
+				max_power = getIntegerUIParameterValue(PARAM_MAXPOW);
+				sliderPower_.setMaximum(max_power);
+			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private String getPropertyName(String propertyLabel) {
