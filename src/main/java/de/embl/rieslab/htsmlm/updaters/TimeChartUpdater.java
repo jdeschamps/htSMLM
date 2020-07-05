@@ -76,7 +76,6 @@ public class TimeChartUpdater {
 				// round
 				value = (Math.floor(value * 100) / 100);
 
-				
 				publish(value);
 
 				Thread.sleep(idletime_);

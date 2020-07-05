@@ -24,6 +24,7 @@ public class MainFrame extends ConfigurableMainFrame{
 	private static final long serialVersionUID = 1L;
 
 	// settings
+	private static final String SETTING_USE_POWERMETER = "Powermeter tab";
 	private static final String SETTING_USE_TRIGGER = "Trigger tab";
 	private static final String SETTING_USE_ADDFW = "Additional FW tab";
 	private static final String SETTING_USE_SINGLEFW = "Single FW panel";
@@ -38,7 +39,8 @@ public class MainFrame extends ConfigurableMainFrame{
 	private AdditionalFiltersPanel addFiltersPanel;
 	private FocusPanel focusPanel;
 	private QPDPanel qpdPanel;
-	private IBeamSmartPanel focuslockpanel;
+	private PowerMeterPanel powerPanel;
+	private IBeamSmartPanel focuslockpanel, focuslockpanel2;
 	private AbstractFiltersPanel filterPanel;
 	private LaserControlPanel[] controlPanels;
 	private LaserPulsingPanel pulsePanel;
@@ -169,12 +171,19 @@ public class MainFrame extends ConfigurableMainFrame{
 			focuslockpanel = new IBeamSmartPanel(name);
 			tab.add(name, focuslockpanel);
 		}
-		
+
 		/// iBeamSmart 2
 		if(((BoolSetting) settings.get(SETTING_USE_IBS2)).getValue()) {
 			String name = settings.get(SETTING_NAME_IBS2).getStringValue();
-			focuslockpanel = new IBeamSmartPanel(name);
-			tab.add(name, focuslockpanel);
+			focuslockpanel2 = new IBeamSmartPanel(name);
+			tab.add(name, focuslockpanel2);
+		}
+		
+		/// powermeter
+		if(((BoolSetting) settings.get(SETTING_USE_POWERMETER)).getValue()) {
+			String name = "Powermeter";
+			powerPanel = new PowerMeterPanel(name);
+			tab.add(name, powerPanel);
 		}
 		
 		// Activation
@@ -254,6 +263,7 @@ public class MainFrame extends ConfigurableMainFrame{
 	@Override
 	public HashMap<String, Setting> getDefaultPluginSettings() {
 		HashMap<String, Setting> defaultSettings = new HashMap<String, Setting>();
+		defaultSettings.put(SETTING_USE_POWERMETER, new BoolSetting(SETTING_USE_POWERMETER, "Check to use the powermeter tab in the plugin.", true));
 		defaultSettings.put(SETTING_USE_TRIGGER, new BoolSetting(SETTING_USE_TRIGGER, "Check to use the trigger tab in the plugin.", true));
 		defaultSettings.put(SETTING_USE_ADDFW, new BoolSetting(SETTING_USE_ADDFW, "Check to use the additional filters tab in the plugin.", true));
 		defaultSettings.put(SETTING_NAME_ADDFILT, new StringSetting(SETTING_NAME_ADDFILT, "Title of the additional filters tab.", "Additional filters"));
