@@ -185,8 +185,10 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 		} else if(getPropertyLabel(TRIGGER_SEQUENCE).equals(name)){
 			if(EmuUtils.isInteger(newvalue)){
 				textfieldsequence_.setText(BinaryConverter.getBinary16bits(Integer.parseInt(newvalue)));
+				textfieldsequence_.setForeground(ColorRepository.getColor("black"));
 			} else {
 				textfieldsequence_.setText(BinaryConverter.getBinary16bits(FPGA_MAX_SEQUENCE));
+				textfieldsequence_.setForeground(ColorRepository.getColor("black"));
 			}
 		} else if(getPropertyLabel(PULSE_LENGTH).equals(name)){
 			textfieldpulselength_.setText(newvalue);
