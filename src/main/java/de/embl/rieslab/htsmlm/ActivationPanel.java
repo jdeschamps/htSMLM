@@ -18,6 +18,7 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 
+import de.embl.rieslab.emu.micromanager.mmproperties.MMProperty.MMPropertyType;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.internalproperties.IntegerInternalProperty;
 import de.embl.rieslab.emu.ui.swinglisteners.SwingUIListeners;
@@ -442,7 +443,15 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		}
 		
 		if(activate_){
-			setUIPropertyValue(LASER_PULSE,String.valueOf(output[ActivationTask.OUTPUT_NEWPULSE]));
+			try {
+				if(getUIProperty(LASER_PULSE).getMMpropertyType().equals(MMPropertyType.INTEGER)) {
+					setUIPropertyValue(LASER_PULSE,String.valueOf((int) output[ActivationTask.OUTPUT_NEWPULSE].doubleValue()));
+				} else {
+					setUIPropertyValue(LASER_PULSE,String.valueOf(output[ActivationTask.OUTPUT_NEWPULSE]));	
+				}
+			} catch (UnknownUIPropertyException e) {
+				e.printStackTrace();
+			}
 		}
 		
 		counternms_ ++;
@@ -458,18 +467,16 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		params[ActivationTask.PARAM_MAXPULSE] = (double) maxpulse_;
 		params[ActivationTask.PARAM_N0] = N0_; 
 		
-		if(activate_) {
-			try {
-				if(EmuUtils.isNumeric(getUIProperty(LASER_PULSE).getPropertyValue())){
-					params[ActivationTask.PARAM_PULSE] = Double.parseDouble(getUIProperty(LASER_PULSE).getPropertyValue()); 
-				}
-			} catch (NumberFormatException | UnknownUIPropertyException e) {
-				e.printStackTrace();
-				params[ActivationTask.PARAM_PULSE] = 0.;
+		try {
+			if(EmuUtils.isNumeric(getUIProperty(LASER_PULSE).getPropertyValue())){
+				params[ActivationTask.PARAM_PULSE] = Double.parseDouble(getUIProperty(LASER_PULSE).getPropertyValue()); 
+			} else {
+				params[ActivationTask.PARAM_PULSE] =  0.;
 			}
-		} /*else {
+		} catch (NumberFormatException | UnknownUIPropertyException e) {
+			e.printStackTrace();
 			params[ActivationTask.PARAM_PULSE] = 0.;
-		}*/
+		}
 		
 		params[ActivationTask.PARAM_SDCOEFF] = sdcoeff_; 
 		
