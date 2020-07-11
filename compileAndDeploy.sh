@@ -9,5 +9,5 @@ else
 	mvn clean package shade:shade
 	
 	# deploy to MM2
-	cp "target\htSMLM-1.0-SNAPSHOTs.jar" "$MM2_HOME\EMU\htSMLM-1.0.jar"
+	cp "target\htsmlm-1.0-SNAPSHOT.jar" "$MM2_HOME\EMU\htsmlm-1.0.jar"
 fi
