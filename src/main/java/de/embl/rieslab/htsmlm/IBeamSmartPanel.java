@@ -87,10 +87,12 @@ public class IBeamSmartPanel extends ConfigurablePanel {
 		// slider fine a
 		sliderFinea_ = new JSlider(JSlider.HORIZONTAL, 0, 100, 0);
 		sliderFinea_.setToolTipText("Set the fina a percentage.");
+		sliderFinea_.setPreferredSize(new Dimension(100,20));
 	
 		// Slider fine b
 		sliderFineb_ = new JSlider(JSlider.HORIZONTAL, 0, 100, 0);
 		sliderFineb_.setToolTipText("Set the fine b percentage.");
+		sliderFineb_.setPreferredSize(new Dimension(100,20));
 
 		
 		togglebuttonLaserOnOff_ = new TogglePower();
