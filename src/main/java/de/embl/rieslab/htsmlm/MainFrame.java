@@ -196,7 +196,7 @@ public class MainFrame extends ConfigurableMainFrame{
 			lasertrigg.setLayout(new GridLayout(2,2));
 			triggerPanels = new LaserTriggerPanel[4];
 			for(int i=0;i<triggerPanels.length;i++){
-				triggerPanels[i] = new LaserTriggerPanel("Laser "+i); // The "Laser #" is used in the AcquisitionPanel to discriminate lasers
+				triggerPanels[i] = new LaserTriggerPanel("Laser "+i+" trigger"); 
 				lasertrigg.add(triggerPanels[i]);
 			}
 			tab.add("Trigger", lasertrigg);
