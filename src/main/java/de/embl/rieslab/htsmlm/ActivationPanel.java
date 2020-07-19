@@ -192,7 +192,7 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		N0_ = 1;
 		textfieldN0_ = new JTextField(String.valueOf(N0_));
 		textfieldN0_.setToolTipText("Target number of emitters.");
-		SwingUIListeners.addActionListenerToDoubleAction(val -> N0_ = val, textfieldN0_, 1, Double.POSITIVE_INFINITY);
+		SwingUIListeners.addActionListenerToDoubleAction(val -> N0_ = val, textfieldN0_, 0, Double.POSITIVE_INFINITY);
 
 		c.gridy = 7;
 		c.insets = new Insets(2,6,2,6);

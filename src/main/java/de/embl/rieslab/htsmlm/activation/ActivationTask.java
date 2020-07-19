@@ -207,16 +207,23 @@ public class ActivationTask implements Task<Double> {
 		double N = output_[OUTPUT_N];
 		double newPulse;
 		
-		if(core_.isSequenceRunning()){
-					
-			dp = dp + 0.1 + currentPulse*feedback*(1-N/N0);
-			
-			newPulse = currentPulse+dp;
+		if(core_.isSequenceRunning()){		
+			if(N0 > 0) {
+				dp = dp + 0.1 + currentPulse*feedback*(1-N/N0);
 
-			if(dp > 1) {
-				dp = 0;
+				newPulse = currentPulse+dp;
+
+				if(dp*dp > 1) {
+					dp = 0;
+				}
+				
+				if(newPulse == 0 && dp<0) {
+					dp = 0;
+				}
+				
+			} else {
+				newPulse = 0;
 			}
-			
 		} else {
 			newPulse = currentPulse;
 		}
