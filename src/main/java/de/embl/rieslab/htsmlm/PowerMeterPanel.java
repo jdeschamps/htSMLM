@@ -283,7 +283,7 @@ public class PowerMeterPanel extends ConfigurablePanel{
 		} else {
 			offset = 0.;
 		}
-		
+
 		return slope*value+offset;
 	}
 	

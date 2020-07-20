@@ -51,7 +51,7 @@ public class ActivationTask implements Task<Double> {
 	private Double[] output_;
 	private ImageProcessor ip_;
 	
-	private double previous_pulse_;
+	private double dp;
 	
 	public ActivationTask(TaskHolder<Double> holder, CMMCore core, int idle){
 		running_ = false;
@@ -61,7 +61,7 @@ public class ActivationTask implements Task<Double> {
 
 		registerHolder(holder);
 		
-		previous_pulse_ = 0.4;
+		dp = 0;
 		
 		output_ = new Double[3];
 		output_[0] = 0.;
@@ -112,9 +112,7 @@ public class ActivationTask implements Task<Double> {
 
 			width = (int) core_.getImageWidth();
 			height = (int) core_.getImageHeight();
-			
-			long st = System.currentTimeMillis();
-			
+						
 			// try to extract two images
 			while(tagged1 == null && abort == false) {
 				//System.out.println("Try tagged 1");
@@ -205,63 +203,36 @@ public class ActivationTask implements Task<Double> {
 		}
 	}
 	
-	private void getPulse(double feedback, double N0, double pulse, double maxpulse){
+	private void getPulse(double feedback, double N0, double currentPulse, double maxpulse){
 		double N = output_[OUTPUT_N];
-		double temppulse = 0;
-		double min = 0.4;
+		double newPulse;
 		
-		if(Math.abs(previous_pulse_-pulse)>1){ // in case of user intervention
-			previous_pulse_ = pulse;
-		}
-		
-		
-		double npulse = previous_pulse_;// avoid getting stuck between 0 and 1 (otherwise newp=0.4+0.4*1.99*coeff < 1 unless coeff ~> 0.7 
-										// which is not good for higher values of the pulse) by reusing the previous pulse and not the current pulse
-		
-		if(core_.isSequenceRunning()){
-						
-			if(previous_pulse_ < min){ 
-				npulse = min;
-			}
-			
-			// calculate new pulse
-			if(N0 > 0){
-				temppulse = npulse*(1+feedback*(1-N/N0));
-			} else {
-				output_[OUTPUT_NEWPULSE] = 0.;
-				return;
-			}
-			
-			
-			if(temppulse < min){
-				temppulse = min;
-			}
-			
-	
-			// if new pulse is higher than camera exposure
-			double exp;
-			try {
-				exp = 1000*core_.getExposure();
-				if(temppulse > exp) {
-					temppulse = exp; 
+		if(core_.isSequenceRunning()){		
+			if(N0 > 0) {
+				dp = dp + 0.1 + currentPulse*feedback*(1-N/N0);
+
+				newPulse = currentPulse+dp;
+
+				if(dp*dp > 1) {
+					dp = 0;
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
+				
+				if(newPulse == 0 && dp<0) {
+					dp = 0;
+				}
+				
+			} else {
+				newPulse = 0;
 			}
-
-			npulse = temppulse;
-
 		} else {
-			npulse = pulse;
+			newPulse = currentPulse;
 		}
 		
-		if(npulse > maxpulse){
-			npulse = maxpulse;
+		if(newPulse > maxpulse){
+			newPulse = maxpulse;
 		}		
 		
-	
-		previous_pulse_ = npulse;
-		output_[OUTPUT_NEWPULSE] = Math.floor(npulse);
+		output_[OUTPUT_NEWPULSE] = newPulse;
 	}
 
 	@Override
