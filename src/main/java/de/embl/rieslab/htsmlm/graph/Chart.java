@@ -57,14 +57,16 @@ public class Chart {
     	XYItemRenderer renderer = plot.getRenderer();  
     	renderer.setSeriesPaint(0, new Color(255,91,91));    	    	
         
+    	double unit = 100.*Math.floor(maxrange_/5./100.);
     	NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
-    	rangeAxis.setTickUnit(new NumberTickUnit(200));
+    	rangeAxis.setTickUnit(new NumberTickUnit(unit));
     	NumberAxis domainAxis = (NumberAxis) plot.getDomainAxis();
-    	domainAxis.setTickUnit(new NumberTickUnit(200));
+    	domainAxis.setTickUnit(new NumberTickUnit(unit));
     	
     	
         cp = new ChartPanel(chart) {
-			private static final long serialVersionUID = 2350250611998987051L;
+
+			private static final long serialVersionUID = 1L;
 
 			@Override
             public Dimension getPreferredSize() {
