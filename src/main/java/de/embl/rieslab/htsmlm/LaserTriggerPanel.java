@@ -16,6 +16,7 @@ import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
+import de.embl.rieslab.emu.ui.internalproperties.IntegerInternalProperty;
 import de.embl.rieslab.emu.ui.swinglisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.uiparameters.ColorUIParameter;
 import de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
@@ -23,7 +24,9 @@ import de.embl.rieslab.emu.ui.uiproperties.MultiStateUIProperty;
 import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 import de.embl.rieslab.emu.utils.ColorRepository;
 import de.embl.rieslab.emu.utils.EmuUtils;
+import de.embl.rieslab.emu.utils.exceptions.IncorrectInternalPropertyTypeException;
 import de.embl.rieslab.emu.utils.exceptions.IncorrectUIParameterTypeException;
+import de.embl.rieslab.emu.utils.exceptions.UnknownInternalPropertyException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.htsmlm.uipropertyflags.LaserFlag;
@@ -55,11 +58,16 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 	private static final String PARAM_COLOR = "Color";
 	private String title_;
 	private Color color_;
+
+	//////// Internal properties
+	private static final String INTERNAL_MAXPULSE = LaserPulsingPanel.INTERNAL_MAXPULSE;
 	
 	// Mojo FPGA
 	private final static int FPGA_MAX_PULSE = 65535;
 	private final static int FPGA_MAX_SEQUENCE = 65535;
 	private final static String[] FPGA_BEHAVIOURS = {"Off","On","Rising","Falling","Camera"};
+	
+	private int maxpulse_;
 	
 	public LaserTriggerPanel(String label) {
 		super(label);
@@ -238,12 +246,20 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 
 	@Override
 	protected void initializeInternalProperties() {
-		// Do nothing
-	}
+		maxpulse_ = 10000;
+		
+		addInternalProperty(new IntegerInternalProperty(this, INTERNAL_MAXPULSE, maxpulse_));	}
 
 	@Override
 	public void internalpropertyhasChanged(String label) {
-		// Do nothing
+		if(INTERNAL_MAXPULSE.equals(label)){
+			try {
+				maxpulse_ = getIntegerInternalPropertyValue(INTERNAL_MAXPULSE);
+				sliderpulse_.setMaximum(maxpulse_);
+			} catch (IncorrectInternalPropertyTypeException | UnknownInternalPropertyException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	private String getPropertyLabel(String propName) {

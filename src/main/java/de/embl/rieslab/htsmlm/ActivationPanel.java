@@ -408,9 +408,9 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 
 	@Override
 	public void internalpropertyhasChanged(String label) {
-		if(label.equals(INTERNAL_MAXPULSE)){
+		if(INTERNAL_MAXPULSE.equals(label)){
 			try {
-				maxpulse_ = getIntegerInternalPropertyValue(label);
+				maxpulse_ = getIntegerInternalPropertyValue(INTERNAL_MAXPULSE);
 			} catch (IncorrectInternalPropertyTypeException | UnknownInternalPropertyException e) {
 				e.printStackTrace();
 			}
