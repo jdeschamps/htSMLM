@@ -118,11 +118,17 @@ public class ZStackAcquisition implements Acquisition {
 		stopAcq_ = false;
 		running_ = true;
 		
+		String default_device = studio.getCMMCore().getFocusDevice();
+		try {
+			studio.getCMMCore().setFocusDevice(zdevice_);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 		if(zstabProperty_!= null && disableZStab_){ // if there is a stabilization property and 
 			zstabProperty_.setPropertyValue(TwoStateUIProperty.getOffStateLabel()); // turn it off
 		}
-		
-			
+				
 		SequenceSettings settings = new SequenceSettings();
 		settings.save = true;
 		settings.slicesFirst = true;
@@ -160,11 +166,17 @@ public class ZStackAcquisition implements Acquisition {
 		studio.displays().closeDisplaysFor(store);
 		
 		store.close();
-
+		
 		if(zstabProperty_!=null && disableZStab_){
 			zstabProperty_.setPropertyValue(TwoStateUIProperty.getOnStateLabel()); // sets on at the end
 		}
-		
+
+		try {
+			studio.getCMMCore().setFocusDevice(default_device);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+					
 		running_ = false;
 	}
 	
