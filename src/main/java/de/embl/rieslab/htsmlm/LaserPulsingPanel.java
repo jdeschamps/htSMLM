@@ -261,7 +261,7 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 						return;
 					}
 
-					if(prop.getMMpropertyType().equals(MMPropertyType.FLOAT)) {
+					if(prop.getMMPropertyType().equals(MMPropertyType.FLOAT)) {
 						int val = Math.round(Float.parseFloat(typed));
 						double dval = Math.round(100.*Float.parseFloat(typed))/100;
 						if (val <= logslider_.getMaxWithin()) {
@@ -290,7 +290,7 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 					if (!EmuUtils.isNumeric(typed)) {
 						return;
 					}
-					if(prop.getMMpropertyType().equals(MMPropertyType.FLOAT)) {
+					if(prop.getMMPropertyType().equals(MMPropertyType.FLOAT)) {
 						int val = Math.round(Float.parseFloat(typed));
 						double dval = Math.round(100.*Float.parseFloat(typed))/100;
 						if (val <= logslider_.getMaxWithin()) {

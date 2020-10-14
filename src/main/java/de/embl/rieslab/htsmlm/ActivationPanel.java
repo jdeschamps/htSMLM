@@ -444,7 +444,7 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		
 		if(activate_){
 			try {
-				if(getUIProperty(LASER_PULSE).getMMpropertyType().equals(MMPropertyType.INTEGER)) {
+				if(getUIProperty(LASER_PULSE).getMMPropertyType().equals(MMPropertyType.INTEGER)) {
 					setUIPropertyValue(LASER_PULSE,String.valueOf((int) output[ActivationTask.OUTPUT_NEWPULSE].doubleValue()));
 				} else {
 					setUIPropertyValue(LASER_PULSE,String.valueOf(output[ActivationTask.OUTPUT_NEWPULSE]));	
