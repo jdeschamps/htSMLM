@@ -4,6 +4,8 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,6 +49,7 @@ public class PowerMeterPanel extends ConfigurablePanel{
 	private int idle_, npos_;
 	private boolean monitoring_ = false;
 	private Processor monitorThread;
+	private int selectedWavelength_;
 	
 	public static final String PROP_POWER = "Laser powermeter";
 	
@@ -64,7 +67,15 @@ public class PowerMeterPanel extends ConfigurablePanel{
 		Font f = label_.getFont();
 		label_.setFont(f.deriveFont(f.getStyle() | Font.BOLD));
 		
+		selectedWavelength_ = 0;
 		combobox_ = new JComboBox<String>(temp);
+		combobox_.addActionListener (new ActionListener () {
+		    public void actionPerformed(ActionEvent e) {
+		    	if(e.getModifiers() == ActionEvent.MOUSE_EVENT_MASK) {
+		    		selectedWavelength_ = combobox_.getSelectedIndex();
+		    	}
+		    }
+		});
 		togglebutton_ = new JToggleButton("Monitor");
 		
 		panelGraph_ = new JPanel();
@@ -265,7 +276,7 @@ public class PowerMeterPanel extends ConfigurablePanel{
 	}
 	
 	protected int getCurrentWavelength() {
-		return combobox_.getSelectedIndex();
+		return selectedWavelength_;
 	}
 	
 	protected double convertPower(double value) {
