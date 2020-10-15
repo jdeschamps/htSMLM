@@ -78,10 +78,14 @@ Deschamps, J., Ries, J. EMU: reconfigurable graphical user interfaces for Micro-
 - Nuclear pores as versatile reference standards for quantitative superresolution microscopy.
   Thevathasan JV, Kahnwald M, Cieśliński K, Hoess P, Peneti SK, Reitberger M, Heid D, Kasuba KC, Hoerner SJ, Li Y, Wu Y, Mund M, Matti U, Pereira PM, Henriques R, Nijmeijer B, Kueblbeck M, Sabinina VJ, Ellenberg J, Ries J.
   *Nature Methods* doi: [10.1038/s41592-019-0574-9](http://dx.doi.org/10.1038/s41592-019-0574-9)
-
-- A cost-efficient open source laser engine for microscopy.
-  Schroeder D, Deschamps J, Dasgupta A, Matti U, Ries J.
-  *bioRxiv* doi: [10.1101/796482](http://dx.doi.org/10.1101/796482)
-
   
+- Cost-efficient open source laser engine for microscopy.
+  Schröder D, Deschamps J, Dasgupta A, Matti U, Ries J.
+  Biomed. Opt. Express 11, 609-623 (2020) 
+  *Biomed Opt Express* doi: [10.1364/BOE.380815](https://doi.org/10.1364/BOE.380815)
+
+- Optimizing imaging speed and excitation intensity for single-molecule localization microscopy.
+  Diekmann, R., Kahnwald, M., Schoenit, A. et al. 
+  Nat Methods 17, 909–912 (2020). 
+  *Nature Methods* doi: [10.1038/s41592-020-0918-5](https://doi.org/10.1038/s41592-020-0918-5)
 
