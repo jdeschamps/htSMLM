@@ -43,7 +43,7 @@ public class AcquisitionWizard {
 		propertyValues_ = propertyValues;
 		tabs_ = new ArrayList<AcquisitionTab>();
 		
-		setUpFrame(0, 0, new ArrayList<Acquisition>());
+		setUpFrame(3, 0, new ArrayList<Acquisition>());
 	}
 	
 	public AcquisitionWizard(SystemController controller, AcquisitionController owner, HashMap<String, String> propertyValues, Experiment exp) {
