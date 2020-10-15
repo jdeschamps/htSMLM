@@ -90,12 +90,12 @@ public class ZStackAcquisition implements Acquisition {
 
 		double z = zstart;
 		if(invert) {
-			while (z>=EmuUtils.round(zend+zstep,2)){
+			while (z>=zend){
 				z -= zstep;
 				slices.add(EmuUtils.round(z,2));
 			}
 		} else {
-			while (z<=EmuUtils.round(zend-zstep,2)){
+			while (z<=zend){
 				z += zstep;
 				slices.add(EmuUtils.round(z,2));
 			}
@@ -376,14 +376,6 @@ public class ZStackAcquisition implements Acquisition {
 		zstep = Double.parseDouble(parameters[2][1]);
 		zdevice_ = parameters[3][1];
 		disableZStab_ = Boolean.parseBoolean(parameters[4][1]);
-	}
-
-	public void setZRange(double zstart, double zend, double zstep){
-		this.zstart = zstart;
-		this.zend = zend;
-		this.zstep = zstep;
-		
-		this.setSlices(zstart,zend,zstep);
 	}
 
 	public void setZDevice(String zdevice){
