@@ -377,7 +377,7 @@ public class MultiSliceAcquisition implements Acquisition {
 		s[10] = "Number of slices = "+nSlices;
 		s[11] = "Z difference = "+deltaZ+" um";
 		s[12] = "Slice St = "+sliceSt;
-		s[14] = "Activate at St = "+actAtSt;
+		s[13] = "Activate at St = "+actAtSt;
 		return s;
 	}
 
@@ -531,13 +531,13 @@ public class MultiSliceAcquisition implements Acquisition {
 						studio.displays().closeDisplaysFor(store);
 						store.close();
 
-						if(i>0 && j==sliceSt && !disableFocusLock_ && focusLockAtZ0_) {
+			/*			if(i>0 && j==sliceSt && !disableFocusLock_ && focusLockAtZ0_) {
 							// updates z0 for the next iterations
 							z0 = core.getPosition(zdevice_);
 							
 							zstabProperty_.setPropertyValue(TwoStateUIProperty.getOffStateLabel());
 						}
-						
+				*/		
 						
 						// pause activation
 						if(useactivation_){			
