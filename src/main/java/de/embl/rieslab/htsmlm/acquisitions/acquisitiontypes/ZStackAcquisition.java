@@ -116,7 +116,7 @@ public class ZStackAcquisition implements Acquisition {
 	}
 
 	@Override
-	public void performAcquisition(Studio studio, String name, String path) throws InterruptedException, IOException {
+	public void performAcquisition(Studio studio, String name, String path, Datastore.SaveMode savemode) throws InterruptedException, IOException {
 		stopAcq_ = false;
 		running_ = true;
 		
@@ -146,6 +146,7 @@ public class ZStackAcquisition implements Acquisition {
 		seqBuilder.sliceZBottomUm(zstart);
 		seqBuilder.sliceZStepUm(zstep);
 		seqBuilder.sliceZTopUm(zend);
+		seqBuilder.saveMode(savemode);
 		
 		double z0;
 		try {

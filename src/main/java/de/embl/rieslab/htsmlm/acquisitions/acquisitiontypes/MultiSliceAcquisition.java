@@ -455,7 +455,7 @@ public class MultiSliceAcquisition implements Acquisition {
 	}
 
 	@Override
-	public void performAcquisition(Studio studio, String name, String path) throws InterruptedException, IOException{
+	public void performAcquisition(Studio studio, String name, String path, Datastore.SaveMode savemode) throws InterruptedException, IOException{
 		
 		CMMCore core  = studio.core();
 
@@ -476,6 +476,7 @@ public class MultiSliceAcquisition implements Acquisition {
 		seqBuilder.intervalMs(0);
 		seqBuilder.shouldDisplayImages(true);
 		seqBuilder.useFrames(true);
+		seqBuilder.saveMode(savemode);
 
 		double z0 = 0;
 		try {

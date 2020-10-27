@@ -212,6 +212,7 @@ public class AcquisitionFactory {
 		ArrayList<Acquisition> acqlist = new ArrayList<Acquisition>();
 		int waitingtime = 3;
 		int numpos = 0;
+		String savemode = Experiment.MULTITIFFS;
 
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
@@ -225,6 +226,7 @@ public class AcquisitionFactory {
 			
 			waitingtime = expw.pauseTime;
 			numpos = expw.numberPositions;
+			savemode = expw.savemode;
 			
 			if(acqwlist != null && !acqwlist.isEmpty()){
 				for(int i=0;i<acqwlist.size();i++){
@@ -286,7 +288,7 @@ public class AcquisitionFactory {
 			e.printStackTrace();
 		}
 		
-		return new Experiment(waitingtime, numpos, acqlist);
+		return new Experiment(waitingtime, numpos, Experiment.getSaveModeFromString(savemode), acqlist);
 	}
 	
 	private void configureGeneralAcquistion(Acquisition acq, AcquisitionWrapper acqw){

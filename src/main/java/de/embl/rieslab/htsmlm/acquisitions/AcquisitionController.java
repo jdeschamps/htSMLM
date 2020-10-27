@@ -42,7 +42,7 @@ public class AcquisitionController implements TaskHolder<Integer>{
 		infopanel_.setInitialText();
 		
 		// placeholder experiment
-		exp_ = new Experiment(0, 0, new ArrayList<Acquisition>());
+		exp_ = new Experiment(0, 0, controller_.getStudio().data().getPreferredSaveMode(), new ArrayList<Acquisition>());
 	}
 	
 	////////////////////////////////////////////////////////////////////
@@ -229,6 +229,7 @@ public class AcquisitionController implements TaskHolder<Integer>{
 	public void setExperiment(Experiment exp){
 		exp_ = exp;
 		infopanel_.setSummaryText(exp_);
+		owner_.updateSummary();
 	}
 
 	public void shutDown() {

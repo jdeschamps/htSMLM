@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.swing.JPanel;
 
 import org.micromanager.Studio;
+import org.micromanager.data.Datastore;
 
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory.AcquisitionType;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.PropertyFilter;
@@ -17,7 +18,7 @@ public class ROIEvaluationAcquisition implements Acquisition {
 	}
 
 	@Override
-	public void performAcquisition(Studio studio, String name, String path) throws InterruptedException, IOException {
+	public void performAcquisition(Studio studio, String name, String path, Datastore.SaveMode savemode) throws InterruptedException, IOException {
 	}
 
 	@Override

@@ -10,12 +10,17 @@ import java.util.HashMap;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+
+import org.micromanager.data.Datastore;
+import org.micromanager.data.Datastore.SaveMode;
 
 import de.embl.rieslab.emu.controller.SystemController;
 import de.embl.rieslab.emu.micromanager.presetgroups.MMPresetGroupRegistry;
@@ -34,6 +39,8 @@ public class AcquisitionWizard {
 	private JTabbedPane tabbedpane_;
 	private JTextField waitfield;
 	private JTextField numposfield;
+	private JRadioButton single;
+	private JRadioButton multi;
 	private SystemController controller_;
 	private HashMap<String, String> propertyValues_;
 	
@@ -43,7 +50,8 @@ public class AcquisitionWizard {
 		propertyValues_ = propertyValues;
 		tabs_ = new ArrayList<AcquisitionTab>();
 		
-		setUpFrame(3, 0, new ArrayList<Acquisition>());
+		Datastore.SaveMode savemode = controller_.getStudio().data().getPreferredSaveMode();
+		setUpFrame(3, 0, savemode, new ArrayList<Acquisition>());
 	}
 	
 	public AcquisitionWizard(SystemController controller, AcquisitionController owner, HashMap<String, String> propertyValues, Experiment exp) {
@@ -52,15 +60,15 @@ public class AcquisitionWizard {
 		propertyValues_ = propertyValues;
 		tabs_ = new ArrayList<AcquisitionTab>();
 
-		setUpFrame(exp.getPauseTime(),exp.getNumberPositions(), exp.getAcquisitionList());
+		setUpFrame(exp.getPauseTime(),exp.getNumberPositions(), exp.getSaveMode(), exp.getAcquisitionList());
 	}
 	
-	private void setUpFrame(int waitingtime, int numpos, ArrayList<Acquisition> acqlist) {
+	private void setUpFrame(int waitingtime, int numpos, Datastore.SaveMode savemode, ArrayList<Acquisition> acqlist) {
 		frame_ = new JFrame("Acquisition wizard");
 		JPanel contentpane = new JPanel();
 		contentpane.setLayout(new BoxLayout(contentpane,BoxLayout.LINE_AXIS));
 
-		contentpane.add(setUpLeftPanel(waitingtime, numpos));
+		contentpane.add(setUpLeftPanel(waitingtime, numpos, savemode));
 		contentpane.add(setUpRightPanel(acqlist));
 		
 		frame_.add(contentpane);
@@ -70,7 +78,7 @@ public class AcquisitionWizard {
 		frame_.setVisible(true);
 	}
 
-	private JPanel setUpLeftPanel(int waitingtime, int numpos) {
+	private JPanel setUpLeftPanel(int waitingtime, int numpos, SaveMode savemode) {
 		JPanel leftpane = new JPanel();
 
 		JButton add = new JButton("Add");
@@ -127,6 +135,20 @@ public class AcquisitionWizard {
             }
         });
 		
+		// radio button group 
+        single = new JRadioButton("Separate imgs");
+        multi = new JRadioButton("Image stack");
+        
+        ButtonGroup buttonGroup = new ButtonGroup();
+        buttonGroup.add(single);
+        buttonGroup.add(multi);
+
+        if(savemode.equals(Datastore.SaveMode.SINGLEPLANE_TIFF_SERIES)) {
+        	single.setSelected(true);
+        } else {
+        	multi.setSelected(true);
+        }		
+		
 	    /////////////////////////////////////////////////
 	    /// Grid bag layout
 		JPanel pane = new JPanel();
@@ -179,9 +201,18 @@ public class AcquisitionWizard {
 		c.gridy = 6;
 		c.gridwidth = 2;
 		pane.add(numposfield, c);	
-		
+
+		c.gridx = 0;
+		c.gridy = 7;
+		pane.add(single, c);	
+
 		c.gridx = 0;
 		c.gridy = 8;
+		pane.add(multi, c);	
+		
+		c.gridx = 0;
+		c.gridy = 9;
+		c.gridwidth = 2;
 		pane.add(save, c);	
 
 		leftpane.add(pane);
@@ -269,7 +300,7 @@ public class AcquisitionWizard {
     }
     	
     protected void saveAcqList() {
-		owner_.setExperiment(new Experiment(getWaitingTime(), getNumberPositions(), getAcquisitionList()));
+		owner_.setExperiment(new Experiment(getWaitingTime(), getNumberPositions(), getSaveMode(), getAcquisitionList()));
 		shutDown();		
 	}
     
@@ -287,6 +318,14 @@ public class AcquisitionWizard {
 			return Integer.parseInt(s); 
 		}
 		return 0;
+	}
+	
+	private Datastore.SaveMode getSaveMode(){
+		if(single.isSelected()) {
+			return Datastore.SaveMode.SINGLEPLANE_TIFF_SERIES;
+		} else {
+			return Datastore.SaveMode.MULTIPAGE_TIFF;
+		}
 	}
 	
 	private ArrayList<Acquisition> getAcquisitionList() {

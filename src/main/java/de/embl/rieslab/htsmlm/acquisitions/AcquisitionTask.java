@@ -239,7 +239,7 @@ public class AcquisitionTask implements Task<Integer>{
 				
 				// run acquisition
 				try {
-					currAcq.performAcquisition(studio_, name, exppath_);
+					currAcq.performAcquisition(studio_, name, exppath_, exp_.getSaveMode());
 				} catch (InterruptedException | IOException e) {
 					System.out.println("[htSMLM] Failed to perform "+currAcq.getShortName()+" acquisition.");
 					e.printStackTrace();

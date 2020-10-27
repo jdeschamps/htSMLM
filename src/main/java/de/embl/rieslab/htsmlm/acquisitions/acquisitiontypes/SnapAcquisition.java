@@ -120,7 +120,7 @@ public class SnapAcquisition implements Acquisition{
 	}
 	
 	@Override
-	public void performAcquisition(Studio studio, String name, String path) throws InterruptedException, IOException {
+	public void performAcquisition(Studio studio, String name, String path, Datastore.SaveMode savemode) throws InterruptedException, IOException {
 
 		Builder seqBuilder = new SequenceSettings.Builder();
 		seqBuilder.save(true);
@@ -132,6 +132,7 @@ public class SnapAcquisition implements Acquisition{
 		seqBuilder.intervalMs(0);
 		seqBuilder.shouldDisplayImages(true);
 		seqBuilder.useFrames(true);
+		seqBuilder.saveMode(savemode);
 		
 		// run acquisition
 		AcquisitionManager acqManager = studio.acquisitions();

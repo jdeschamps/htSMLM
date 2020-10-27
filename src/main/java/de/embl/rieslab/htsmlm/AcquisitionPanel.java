@@ -58,6 +58,7 @@ public class AcquisitionPanel extends ConfigurablePanel{
     ///// Convenience variables
 	private String paramBFP_, paramLocking_, paramBrightField_;
     private JFrame summaryframe_;
+    private boolean showSummaryTree_;
     
     ///// UI
     private JButton jButton_setpath;
@@ -89,6 +90,7 @@ public class AcquisitionPanel extends ConfigurablePanel{
 				}
             }
           });
+		showSummaryTree_ = false;
 		
 		owner_.addWindowListener(new WindowAdapter() {
             @Override
@@ -365,6 +367,7 @@ public class AcquisitionPanel extends ConfigurablePanel{
 	
 	private void showSummary(boolean b){
 		if(b){
+			showSummaryTree_ = true;
 			summaryframe_ = new JFrame("Acquisitions summary");
 			summaryframe_.setLocation(getSummaryButtonLocation());
 			summaryframe_.setUndecorated(true);
@@ -372,12 +375,19 @@ public class AcquisitionPanel extends ConfigurablePanel{
 			summaryframe_.pack();
 			summaryframe_.setVisible(true);
 		} else {
+			showSummaryTree_ = false;
 			if(summaryframe_ != null){
 				summaryframe_.dispose();
 			}
 		}
 	}
 	
+	public void updateSummary() {
+		if (showSummaryTree_) {
+			showSummary(false); // this is a quick fix, surely there is a better way
+			showSummary(true);
+		}
+	}
 	
 	/////////////////////////////////////////////////////////////////////////////
 	//////

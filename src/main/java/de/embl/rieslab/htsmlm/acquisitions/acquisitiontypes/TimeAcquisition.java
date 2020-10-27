@@ -20,6 +20,7 @@ import org.micromanager.data.Datastore;
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory.AcquisitionType;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.NoPropertyFilter;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.PropertyFilter;
+import de.embl.rieslab.htsmlm.acquisitions.wrappers.Experiment;
 
 public class TimeAcquisition implements Acquisition{
 	
@@ -161,7 +162,7 @@ public class TimeAcquisition implements Acquisition{
 	}
 
 	@Override
-	public void performAcquisition(Studio studio, String name, String path) throws InterruptedException, IOException {		
+	public void performAcquisition(Studio studio, String name, String path, Datastore.SaveMode savemode) throws InterruptedException, IOException {		
 		stopAcq_ = false;
 		running_ = true;
 		
@@ -175,10 +176,15 @@ public class TimeAcquisition implements Acquisition{
 		seqBuilder.intervalMs(0);
 		seqBuilder.shouldDisplayImages(true);
 		seqBuilder.useFrames(true);
-		
+		seqBuilder.saveMode(savemode);
 		
 		// runs acquisition
 		AcquisitionManager acqManager = studio.acquisitions();
+		
+		//SequenceSettings ss = seqBuilder.build();
+		//studio.getLogManager().logDebugMessage("[htSMLM] saveMode: "+Experiment.saveModeToString(ss.saveMode())+".");
+		//studio.getLogManager().logDebugMessage("[htSMLM] frames: "+ss.numFrames()+".");
+		
 		acqManager.setAcquisitionSettings(seqBuilder.build());
 		Datastore store = acqManager.runAcquisition();
 

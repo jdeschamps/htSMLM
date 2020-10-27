@@ -282,7 +282,7 @@ public class LocalizationAcquisition implements Acquisition {
 	}
 
 	@Override
-	public void performAcquisition(Studio studio, String name, String path) throws IOException, InterruptedException {
+	public void performAcquisition(Studio studio, String name, String path, Datastore.SaveMode savemode) throws IOException, InterruptedException {
 		
 		if(useactivation_){			
 			activationTask_.initializeTask();
@@ -303,6 +303,7 @@ public class LocalizationAcquisition implements Acquisition {
 		seqBuilder.intervalMs(0);
 		seqBuilder.shouldDisplayImages(true);
 		seqBuilder.useFrames(true);
+		seqBuilder.saveMode(savemode);
 		
 		// runs acquisition
 		AcquisitionManager acqManager = studio.acquisitions();

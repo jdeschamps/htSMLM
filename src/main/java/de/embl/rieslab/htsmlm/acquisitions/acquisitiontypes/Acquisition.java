@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.swing.JPanel;
 
 import org.micromanager.Studio;
+import org.micromanager.data.Datastore;
 
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory.AcquisitionType;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.PropertyFilter;
@@ -28,7 +29,7 @@ public interface Acquisition {
 	 * @throws InterruptedException 
 	 * @throws  
 	 */
-	public abstract void performAcquisition(Studio studio, String name, String path) throws InterruptedException, IOException;
+	public abstract void performAcquisition(Studio studio, String name, String path, Datastore.SaveMode savemode) throws InterruptedException, IOException;
 	
 	/**
 	 * Requests stop acqusition.

@@ -39,6 +39,9 @@ public class ExperimentTreeSummary {
             	top.add(expnode);
             }
 	    	
+    	    expnode = new DefaultMutableTreeNode("Save mode: "+exp.getSaveModeAsString());
+            top.add(expnode);
+            
 	    	ArrayList<Acquisition> acqlist = exp.getAcquisitionList();
 	    	for(int i=0;i<acqlist.size();i++){
 	    		acq = acqlist.get(i);
