@@ -16,6 +16,7 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
 import org.micromanager.Studio;
+import org.micromanager.acquisition.AcquisitionManager;
 import org.micromanager.acquisition.SequenceSettings;
 import org.micromanager.acquisition.internal.DefaultAcquisitionManager;
 import org.micromanager.data.Datastore;
@@ -162,13 +163,23 @@ public class MultiSliceAcquisition implements Acquisition {
 		activatecheck.setName(LABEL_USEACTIVATION);
 		activatecheck.setToolTipText("Use activation during the acquisition.");
 
-		
 		stoponmaxcheck = new JCheckBox(LABEL_USESTOPONMAXUV);
 		stoponmaxcheck.setSelected(stoponmax_);
 		stoponmaxcheck.setEnabled(!nullActivation_);
 		stoponmaxcheck.setName(LABEL_USESTOPONMAXUV);
 		stoponmaxcheck.setToolTipText("Stop the acquisition after reaching the maximum activation value.");
-
+		stoponmaxcheck.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent actionEvent) {
+				AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
+				boolean selected = abstractButton.getModel().isSelected();
+				if (!selected) {
+					waitonmaxspin.setValue(0);
+					waitonmaxspin.setEnabled(false);
+				} else {
+					waitonmaxspin.setEnabled(true);
+				}
+			}
+		});	
 		
 		activateSt = new JCheckBox(LABEL_ACTATST);
 		activateSt.setEnabled(!nullActivation_);
@@ -185,6 +196,8 @@ public class MultiSliceAcquisition implements Acquisition {
 				if (!selected) {
 					stoponmaxcheck.setEnabled(false);
 					stoponmaxcheck.setSelected(false);
+					waitonmaxspin.setValue(0);
+					waitonmaxspin.setEnabled(false);
 					activateSt.setEnabled(false);
 					activateSt.setSelected(false);
 					slicest.setEnabled(false);
@@ -453,15 +466,17 @@ public class MultiSliceAcquisition implements Acquisition {
 			zstabProperty_.setPropertyValue(TwoStateUIProperty.getOffStateLabel());
 		}
 		
-		SequenceSettings settings = new SequenceSettings();
-		settings.save = true;
-		settings.timeFirst = true;
-		settings.usePositionList = false;
-		settings.root = path;
-		settings.numFrames = params_.getNumberFrames();
-		settings.intervalMs = 0;
-		settings.shouldDisplayImages = true;
-		
+		SequenceSettings.Builder seqBuilder = new SequenceSettings.Builder();
+
+		seqBuilder.save(true);
+		seqBuilder.timeFirst(true);
+		seqBuilder.usePositionList(false);
+		seqBuilder.root(path);
+		seqBuilder.numFrames(params_.getNumberFrames());
+		seqBuilder.intervalMs(0);
+		seqBuilder.shouldDisplayImages(true);
+		seqBuilder.useFrames(true);
+
 		double z0 = 0;
 		try {
 			z0 = core.getPosition(zdevice_);
@@ -498,7 +513,7 @@ public class MultiSliceAcquisition implements Acquisition {
 						}
 						
 						// sets-up name
-						settings.prefix = "L"+i+"S"+j+"_"+name;
+						seqBuilder.prefix("L"+i+"S"+j+"_"+name);
 						
 						if(stopAcq_){
 							System.out.println("[htSMLM] Multislice interruption before slice "+j+".");
@@ -506,7 +521,9 @@ public class MultiSliceAcquisition implements Acquisition {
 						}
 						
 						// runs acquisition
-						Datastore store = studio.acquisitions().runAcquisitionWithSettings(settings, false);
+						AcquisitionManager acqManager = studio.acquisitions();
+						acqManager.setAcquisitionSettings(seqBuilder.build());
+						Datastore store = acqManager.runAcquisition();
 
 						// loops to check if needs to be stopped or not
 						while(studio.acquisitions().isAcquisitionRunning()) {

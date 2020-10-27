@@ -11,7 +11,9 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
 import org.micromanager.Studio;
+import org.micromanager.acquisition.AcquisitionManager;
 import org.micromanager.acquisition.SequenceSettings;
+import org.micromanager.acquisition.SequenceSettings.Builder;
 import org.micromanager.acquisition.internal.DefaultAcquisitionManager;
 import org.micromanager.data.Datastore;
 
@@ -163,18 +165,22 @@ public class TimeAcquisition implements Acquisition{
 		stopAcq_ = false;
 		running_ = true;
 		
-		SequenceSettings settings = new SequenceSettings();
-		settings.save = true;
-		settings.timeFirst = true;
-		settings.usePositionList = false;
-		settings.root = path;
-		settings.prefix = name;
-		settings.numFrames = params_.getNumberFrames();
-		settings.intervalMs = 0;
-		settings.shouldDisplayImages = true;
+		Builder seqBuilder = new SequenceSettings.Builder();
+		seqBuilder.save(true);
+		seqBuilder.timeFirst(true);
+		seqBuilder.usePositionList(false);
+		seqBuilder.root(path);
+		seqBuilder.prefix(name);
+		seqBuilder.numFrames(params_.getNumberFrames());
+		seqBuilder.intervalMs(0);
+		seqBuilder.shouldDisplayImages(true);
+		seqBuilder.useFrames(true);
 		
-		// run acquisition
-		Datastore store = studio.acquisitions().runAcquisitionWithSettings(settings, false);
+		
+		// runs acquisition
+		AcquisitionManager acqManager = studio.acquisitions();
+		acqManager.setAcquisitionSettings(seqBuilder.build());
+		Datastore store = acqManager.runAcquisition();
 
 		// loop to check if needs to be stopped or not
 		while(studio.acquisitions().isAcquisitionRunning()) {
@@ -227,5 +233,57 @@ public class TimeAcquisition implements Acquisition{
 	public String getShortName() {
 		return "t";
 	}
+
+	/*
+	@Override
+	public Builder getBuilder(String path, String name, GenericAcquisitionParameters params) {
+		
+		Builder seqBuilder = new SequenceSettings.Builder();
+		
+		
+		seqBuilder.save(true);
+		seqBuilder.timeFirst(true);
+		seqBuilder.usePositionList(false);
+		seqBuilder.root(path);
+		seqBuilder.prefix(name);
+		seqBuilder.numFrames(params_.getNumberFrames());
+		seqBuilder.intervalMs(0);
+		seqBuilder.shouldDisplayImages(true);
+		seqBuilder.useFrames(true);
+		
+		
+		//seqBuilder.acqOrderMode(0) ;
+		//seqBuilder.cameraTimeout(1000) ;
+		//seqBuilder.channelGroup("") ;
+		//seqBuilder.channels(null) ;
+		//seqBuilder.comment(java.lang.String c) ;
+		//seqBuilder.customIntervalsMs(java.util.ArrayList<java.lang.Double> c) ;
+		seqBuilder. 	displayTimeUnit(int d) ;
+		seqBuilder. 	intervalMs(double d) ;
+		seqBuilder. 	keepShutterOpenChannels(boolean k) ;
+		seqBuilder. 	keepShutterOpenSlices(boolean k) ;
+		seqBuilder. 	numFrames(int nFrames) ;
+		seqBuilder. 	prefix(java.lang.String p) ;
+		seqBuilder. 	relativeZSlice(boolean r) ;
+		seqBuilder. 	root(java.lang.String r) ;
+		seqBuilder. 	save(boolean s) ;
+		seqBuilder. 	saveMode(Datastore.SaveMode s) ;
+		seqBuilder. 	shouldDisplayImages(boolean s) ;
+		seqBuilder. 	skipAutofocusCount(int s) ;
+		seqBuilder. 	slices(java.util.ArrayList<java.lang.Double> s) ;
+		seqBuilder. 	slicesFirst(boolean s) ;
+		seqBuilder. 	sliceZBottomUm(double s) ;
+		seqBuilder. 	sliceZStepUm(double s) ;
+		seqBuilder. 	sliceZTopUm(double s) ;
+		seqBuilder. 	timeFirst(boolean t) ;
+		seqBuilder. 	useAutofocus(boolean u) ;
+		seqBuilder. 	useChannels(boolean u) ;
+		seqBuilder. 	useCustomIntervals(boolean use) ;
+		seqBuilder. 	useFrames(boolean u) ;
+		seqBuilder. 	usePositionList(boolean u) ;
+		seqBuilder. 	useSlices(boolean u) ;
+		seqBuilder. 	zReference(double z);
+		return seqBuilder;
+	}*/
 
 }

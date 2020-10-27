@@ -189,7 +189,7 @@ public class AcquisitionTask implements Task<Integer>{
 				currAcq = exp_.getAcquisitionList().get(k);
 
 				if (stop_) {
-					System.out.println("[htSMLM] Acquisition interrupted before carrying "+currAcq.getShortName()+" out and setting config groups.");
+					System.out.println("[htSMLM] Acquisition interrupted before carrying out "+currAcq.getShortName()+" and setting config groups.");
 					break;
 				}
 				// set-up system
@@ -230,7 +230,7 @@ public class AcquisitionTask implements Task<Integer>{
 				}
 				
 				if (stop_) {
-					System.out.println("[htSMLM] Acquisition interrupted before carrying "+currAcq.getShortName()+" out.");
+					System.out.println("[htSMLM] Acquisition interrupted before carrying out "+currAcq.getShortName()+".");
 					break;
 				}
 				
@@ -246,7 +246,7 @@ public class AcquisitionTask implements Task<Integer>{
 				} 				
 				
 				if (stop_) {
-					System.out.println("[htSMLM] Acquisition interrupted after carrying "+currAcq.getShortName()+" out.");
+					System.out.println("[htSMLM] Acquisition interrupted after carrying out "+currAcq.getShortName()+".");
 					break;
 				}
 			}

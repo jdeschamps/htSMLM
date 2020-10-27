@@ -2,9 +2,12 @@ package de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes;
 
 import java.awt.Component;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.HashMap;
 
+import javax.swing.AbstractButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -12,7 +15,9 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
 import org.micromanager.Studio;
+import org.micromanager.acquisition.AcquisitionManager;
 import org.micromanager.acquisition.SequenceSettings;
+import org.micromanager.acquisition.SequenceSettings.Builder;
 import org.micromanager.acquisition.internal.DefaultAcquisitionManager;
 import org.micromanager.data.Datastore;
 
@@ -114,6 +119,35 @@ public class LocalizationAcquisition implements Acquisition {
 		stoponmaxcheck.setEnabled(!nullActivation_);
 		stoponmaxcheck.setName(LABEL_USESTOPONMAXUV);
 		stoponmaxcheck.setToolTipText("Stop the acquisition after reaching the maximum activation value.");
+
+		activatecheck.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent actionEvent) {
+				AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
+				boolean selected = abstractButton.getModel().isSelected();
+				if (!selected) {
+					stoponmaxcheck.setSelected(false);
+					stoponmaxcheck.setEnabled(false);
+					waitonmaxspin.setValue(0);
+					waitonmaxspin.setEnabled(false);
+				} else {
+					stoponmaxcheck.setEnabled(true);
+				}
+			}
+		});
+		
+		stoponmaxcheck.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent actionEvent) {
+				AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
+				boolean selected = abstractButton.getModel().isSelected();
+				if (!selected) {
+					waitonmaxspin.setValue(0);
+					waitonmaxspin.setEnabled(false);
+				} else {
+					waitonmaxspin.setEnabled(true);
+				}
+			}
+		});
+		
 		
 		int nrow = 3;
 		int ncol = 4;
@@ -259,18 +293,21 @@ public class LocalizationAcquisition implements Acquisition {
 		interruptionRequested_ = false;
 		running_ = true;
 		
-		SequenceSettings settings = new SequenceSettings();
-		settings.save = true;
-		settings.timeFirst = true;
-		settings.usePositionList = false;
-		settings.root = path;
-		settings.prefix = name;
-		settings.numFrames = params_.getNumberFrames();
-		settings.intervalMs = 0;
-		settings.shouldDisplayImages = true;
+		Builder seqBuilder = new SequenceSettings.Builder();
+		seqBuilder.save(true);
+		seqBuilder.timeFirst(true);
+		seqBuilder.usePositionList(false);
+		seqBuilder.root(path);
+		seqBuilder.prefix(name);
+		seqBuilder.numFrames(params_.getNumberFrames());
+		seqBuilder.intervalMs(0);
+		seqBuilder.shouldDisplayImages(true);
+		seqBuilder.useFrames(true);
 		
-		// run acquisition
-		Datastore store = studio.acquisitions().runAcquisitionWithSettings(settings, false);
+		// runs acquisition
+		AcquisitionManager acqManager = studio.acquisitions();
+		acqManager.setAcquisitionSettings(seqBuilder.build());
+		Datastore store = acqManager.runAcquisition();
 
 		// loop to check if needs to be stopped or not
 		while(studio.acquisitions().isAcquisitionRunning()) {

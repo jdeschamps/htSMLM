@@ -16,7 +16,9 @@ import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.PropertyFilter;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.SinglePropertyFilter;
 
 import org.micromanager.Studio;
+import org.micromanager.acquisition.AcquisitionManager;
 import org.micromanager.acquisition.SequenceSettings;
+import org.micromanager.acquisition.SequenceSettings.Builder;
 import org.micromanager.data.Datastore;
 
 public class BFPAcquisition implements Acquisition{
@@ -137,19 +139,22 @@ public class BFPAcquisition implements Acquisition{
 		// turn on BF
 		bfpprop_.setPropertyValue(TwoStateUIProperty.getOnStateLabel());
 
-		SequenceSettings settings = new SequenceSettings();
-		settings.save = true;
-		settings.timeFirst = true;
-		settings.usePositionList = false;
-		settings.root = path;
-		settings.prefix = name;
-		settings.numFrames = 1;
-		settings.intervalMs = 0;
-		settings.shouldDisplayImages = true;
+		Builder seqBuilder = new SequenceSettings.Builder();
+		seqBuilder.save(true);
+		seqBuilder.timeFirst(true);
+		seqBuilder.usePositionList(false);
+		seqBuilder.root(path);
+		seqBuilder.prefix(name);
+		seqBuilder.numFrames(1);
+		seqBuilder.intervalMs(0);
+		seqBuilder.shouldDisplayImages(true);
+		seqBuilder.useFrames(true);
 		
 		// run acquisition
-		Datastore store = studio.acquisitions().runAcquisitionWithSettings(settings, false);
-
+		AcquisitionManager acqManager = studio.acquisitions();
+		acqManager.setAcquisitionSettings(seqBuilder.build());
+		Datastore store = acqManager.runAcquisition();
+		
 		// loop to check if needs to be stopped or not
 		while(studio.acquisitions().isAcquisitionRunning()) {	
 			Thread.sleep(100);

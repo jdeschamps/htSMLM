@@ -11,7 +11,9 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
 import org.micromanager.Studio;
+import org.micromanager.acquisition.AcquisitionManager;
 import org.micromanager.acquisition.SequenceSettings;
+import org.micromanager.acquisition.SequenceSettings.Builder;
 import org.micromanager.data.Datastore;
 
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory.AcquisitionType;
@@ -120,18 +122,21 @@ public class SnapAcquisition implements Acquisition{
 	@Override
 	public void performAcquisition(Studio studio, String name, String path) throws InterruptedException, IOException {
 
-		SequenceSettings settings = new SequenceSettings();
-		settings.save = true;
-		settings.timeFirst = true;
-		settings.usePositionList = false;
-		settings.root = path;
-		settings.prefix = name;
-		settings.numFrames = 1;
-		settings.intervalMs = 0;
-		settings.shouldDisplayImages = true;
+		Builder seqBuilder = new SequenceSettings.Builder();
+		seqBuilder.save(true);
+		seqBuilder.timeFirst(true);
+		seqBuilder.usePositionList(false);
+		seqBuilder.root(path);
+		seqBuilder.prefix(name);
+		seqBuilder.numFrames(1);
+		seqBuilder.intervalMs(0);
+		seqBuilder.shouldDisplayImages(true);
+		seqBuilder.useFrames(true);
 		
 		// run acquisition
-		Datastore store = studio.acquisitions().runAcquisitionWithSettings(settings, false);
+		AcquisitionManager acqManager = studio.acquisitions();
+		acqManager.setAcquisitionSettings(seqBuilder.build());
+		Datastore store = acqManager.runAcquisition();
 
 		// loop to check if needs to be stopped or not
 		while(studio.acquisitions().isAcquisitionRunning()) {	

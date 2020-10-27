@@ -21,7 +21,9 @@ import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.PropertyFilter;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.SinglePropertyFilter;
 
 import org.micromanager.Studio;
+import org.micromanager.acquisition.AcquisitionManager;
 import org.micromanager.acquisition.SequenceSettings;
+import org.micromanager.acquisition.SequenceSettings.Builder;
 import org.micromanager.acquisition.internal.DefaultAcquisitionManager;
 import org.micromanager.data.Datastore;
 
@@ -128,30 +130,35 @@ public class ZStackAcquisition implements Acquisition {
 		if(zstabProperty_!= null && disableZStab_){ // if there is a stabilization property and 
 			zstabProperty_.setPropertyValue(TwoStateUIProperty.getOffStateLabel()); // turn it off
 		}
-				
-		SequenceSettings settings = new SequenceSettings();
-		settings.save = true;
-		settings.slicesFirst = true;
-		settings.relativeZSlice = true;
-		settings.slices = params_.getZSlices();
+		
+		Builder seqBuilder = new SequenceSettings.Builder();
+		seqBuilder.save(true);
+		seqBuilder.slicesFirst(true);
+		seqBuilder.usePositionList(false);
+		seqBuilder.root(path);
+		seqBuilder.prefix(name);
+		seqBuilder.numFrames(1);
+		seqBuilder.intervalMs(0);
+		seqBuilder.shouldDisplayImages(true);
+		seqBuilder.useSlices(true);
+		seqBuilder.relativeZSlice(true);
+		//seqBuilder.slices(params_.getZSlices());
+		seqBuilder.sliceZBottomUm(zstart);
+		seqBuilder.sliceZStepUm(zstep);
+		seqBuilder.sliceZTopUm(zend);
 		
 		double z0;
 		try {
 			z0 = studio.getCMMCore().getPosition(zdevice_);
-			settings.zReference = z0;
+			seqBuilder.zReference(z0);
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
-		
-		settings.usePositionList = false;
-		settings.root = path;
-		settings.prefix = name;
-		settings.numFrames = 1;
-		settings.intervalMs = 0;
-		settings.shouldDisplayImages = true;
 
 		// run acquisition
-		Datastore store = studio.acquisitions().runAcquisitionWithSettings(settings, false);
+		AcquisitionManager acqManager = studio.acquisitions();
+		acqManager.setAcquisitionSettings(seqBuilder.build());
+		Datastore store = acqManager.runAcquisition();
 
 		// loop to check if needs to be stopped or not
 		while(studio.acquisitions().isAcquisitionRunning()) {

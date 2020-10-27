@@ -111,5 +111,7 @@ public interface Acquisition {
 	 * @return AcquisitionType.
 	 */
 	public abstract AcquisitionType getType();
+	
+	//public abstract SequenceSettings.Builder getBuilder(String path, String name, GenericAcquisitionParameters params);
 
 }
