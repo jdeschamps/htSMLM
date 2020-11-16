@@ -83,7 +83,7 @@ public class Experiment {
 		}
 	}
 
-	public static String saveModeToString(SaveMode saveMode) {
+	public static String saveModeToString(Datastore.SaveMode saveMode) {
 		if(Datastore.SaveMode.SINGLEPLANE_TIFF_SERIES.equals(saveMode)) {
 			return SINGLEPLANE;
 		} else {
