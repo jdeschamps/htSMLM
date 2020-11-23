@@ -24,7 +24,7 @@ And in addition:
 
 ## Installation
 
-1. Make sure you have the most recent Micro-Manager 2 installation (nightly builts), to ensure that you have the correct EMU version.
+1. Make sure you have the most recent Micro-Manager 2 installation (nightly build), to ensure that you have the correct EMU version.
 
 2. Using the console, go to the folder you wish to install htSMLM in and type (omitting the $):
 
