@@ -22,30 +22,9 @@ And in addition:
 
   
 
-## Installation
+## Guide
 
-1. Make sure you have the most recent Micro-Manager 2 installation (nightly build), to ensure that you have the correct EMU version.
-
-2. Using the console, go to the folder you wish to install htSMLM in and type (omitting the $):
-
-   ```bash
-   $ git clone https://github.com/jdeschamps/htSMLM.git
-   ```
-
-3. Finally, compile htSMLM using Maven. 
-
-   ```bash
-   $ cd htsmlm
-   $ ./compileAndDeploy.sh "C:\Path\to\MicroManager2gamma"
-   ```
-
-4. Start Micro-Manager and select **Plugins->Interface->EMU**.
-
-<br>
-
-## Using htSMLM
-
-(coming soon)
+To install and use htSMLM, please consult the [user guide](guide).
 
 
 

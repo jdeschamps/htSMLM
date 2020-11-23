@@ -4,10 +4,17 @@ htSMLM (high-throughput single-molecule localization microscopy) is an [EMU]( ht
 
 1. [Installation](#installation)
 2. [EMU configuration](#emu-configuration)
-3. Activation script
-4. Acquisitions with htSMLM
-5. Trigger tab
-6. Powermeter tab
+   1. [Plugin settings](#plugin-settings)
+   2. [Properties](#properties)
+   3. [Parameters](#parameters)
+   4. [Global settings](#global-settings)
+3. [Using htSMLM](#using-htsmlm)
+   1. [Default panels](#default-panels)
+   2. [Activation script](#activation-script)
+   3. [Acquisitions with htSMLM](#acquisitions-with-htsmlm)
+   4. [QPD tab](#qpd-tab)
+   5. [Laser trigger tab](#laser-trigger-tab)
+   6. [Powermeter tab](#powermeter-tab)
 
 
 
@@ -107,7 +114,7 @@ The "iBeamSmart #1/2 name" plugin setting influences the name of the following p
 - **[Name] ext trigger**: iBeamSmart specific property. Leave unmapped to ignore. The corresponding panel can be disabled in the Parameters tab. Consult the Micro-Manager device property browser to determine them  (e.g. "1" and "0" or "On" and Off").
 - **[Name] fine a (%)**: iBeamSmart specific property. Leave unmapped to ignore. The corresponding panel can be disabled in the Parameters tab.
 - **[Name] fine b (%)**: iBeamSmart specific property. Leave unmapped to ignore. The corresponding panel can be disabled in the Parameters tab.
-- **[Name] laser power**: Laser power in mW. This GUI property can also be used with a power percentage device property; however, the "mW" mention will remain.
+- **[Name] laser power**: Laser power in mW. This GUI property can also be used with a power percentage device property by setting the maximum power in the Properties tab to 100; however, the "mW" mention will remain.
 - **[Name] operation**: Laser On/Off property. Lasers are numbered from left to right in the main interface. Both on and off values must be set. Consult the Micro-Manager device property browser to determine them  (e.g. "1" and "0" or "On" and Off").
 
 #### Parameters
@@ -140,7 +147,7 @@ The "iBeamSmart #1/2 name" plugin setting influences the name of the following p
 
 - **Filters - Panel title**: Title appearing at the top of the filter panel.
 
-- **Focus - Idle time (ms)**: Idle time (ms) between two iterations of the stage position monitoring.
+- **Focus - Idle time (ms)**: Idle time (ms) between two updates of the stage position.
 
 - **Focus - Large step**: Default value for the large z stage step, shown in the GUI.
 
@@ -170,7 +177,7 @@ The "iBeamSmart #1/2 name" plugin setting influences the name of the following p
 
 ###### Powermeter tab selected
 
-- **Powermeter - idle time (ms)**: Idle time (ms) between two iterations of the powermeter monitoring.
+- **Powermeter - idle time (ms)**: Idle time (ms) between two updates of the powermeter value.
 - **Powermeter - number of points**: Number of laser power measurements displayed in the chart (x axis).
 - **Powermeter - offsets**: Comma-separated offsets to convert the measurements to mW. Make sure to input as many slopes as wavelengths, otherwise a default value of 1 will be applied.
 - **Powermeter - slopes**: Comma-separated slopes to convert the measurements to Watts. Make sure to input as many slopes as there are wavelengths, otherwise, a default value of 1 will be applied.
@@ -178,14 +185,49 @@ The "iBeamSmart #1/2 name" plugin setting influences the name of the following p
 
 ###### QPD tab selected
 
-- 
+- **QPD - Idle time (ms)**: Idle time (ms) between two updates of the QPD signals value.
+- **QPD - XY max**: Maximum X and Y signals value in the graph.
+- **QPD - Z max**: Maximum Z value in the progress bar.
 
 ###### Trigger tab selected
 
-- 
+- **Laser # trigger - Color**: Color of the laser name as displayed in the laser trigger panel.
+- **Laser # trigger - Name**: Name of the laser as displayed on top of the laser trigger panel.
 
-###### iBeamSmart#1/2 seleced
+###### iBeamSmart#1/2 selected
 
-- 
+The "iBeamSmart #1/2 name" plugin setting influences the name of the following parameters.
+
+- **[Name] - external trigger available**: Unselect to hide the external trigger (iBeamSmart specific property) panel.
+- **[Name] - fine available**: Unselect to hide the fine (iBeamSmart specific property) panel.
+- **[Name] - max power**: Maximum laser power, sets the maximum of the slider in the GUI.
 
 #### Global Settings
+
+- **Enable unallocated warnings**: When enabled, a message will be prompted to the user if some UI properties are not allocated. Disable to prevent the message from being shown.
+
+
+
+## Using htSMLM
+
+#### Default panels
+
+##### Activation laser pulse panel
+
+##### Laser control panel
+
+##### Filters panel
+
+##### Focus panel
+
+##### Controls panel
+
+#### Activation script
+
+#### Acquisitions with htSMLM
+
+#### QPD tab
+
+#### Laser trigger tab
+
+#### Powermeter tab
