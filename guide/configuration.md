@@ -14,9 +14,7 @@ Refer to [using htSMLM](using-htsmlm.md) to get details on what each button of t
 
 ------
 
-#### Plugin Settings
-
-------
+## Plugin Settings
 
 Selecting or unselecting certain plugin settings will modify the number of properties and parameters available in the other sections.
 
@@ -31,7 +29,9 @@ Selecting or unselecting certain plugin settings will modify the number of prope
 - **iBeamSmart #2**: Check to use the iBeamSmart #2 tab. Originally aimed at controlling an iBeamSmart laser from Toptica, the Toptica specific aspects can be disabled to correspond to a simple laser. 
 - **iBeamSmart #2 name**: Name of iBeamSmart #2 tab, if the "iBeamSmart #2" setting is selected. The corresponding properties and parameters will bear the same name.
 
-#### Properties
+------
+
+## Properties
 
 In EMU, properties can be mapped to Micro-Manager device properties. In the Properties tab, this is done for a specific property by first selecting a device in the second column, then the relevant device property in the third column. Unmapped properties are simply for not doing anything. Note that the activation script requires certain properties to be mapped to function.
 
@@ -39,39 +39,49 @@ In addition to being mapped to a device property, [certain GUI properties](https
 
 Finally, some GUI properties are only available when the corresponding Plugin setting is selected (or unselected).
 
-##### Properties that are always present:
+#### Properties that are always present:
 
 - **Camera exposure**: Camera exposure in ms.
+
 - **Filter wheel position**: Filter wheel position. Choose a device property that corresponds to an element with a finite number of states (e.g. a filter wheel). The filter wheel property has 6 positions. For each position, indicate in the "Filter wheel position state #" the corresponding device property value. In order to determine the value, use the Micro-Manager device property browser. All states must be set, but multiple states can have the same value. Each state name and color can be configured in the Parameters tab.
+
 - **Laser # enable**: Laser On/Off property. Lasers are numbered from left to right in the main interface. Both on and off values must be set. Consult the Micro-Manager device property browser to determine them  (e.g. "1" and "0" or "On" and Off"). The On/Off button can be disabled in the Parameters tab.
+
 - **Laser # power percentage**: Power percentage of the laser. This property allows rescaling the device property value. If the laser has only a power set point (mW) property instead of a percentage property, then use a slope value equal to (maximum power / 100) to turn to scale the device property to a power percentage. 
+
 - **Two-state device #**: Map to this GUI property a device property with two positions (e.g. On/Off or In/Out). Consult the Micro-Manager device property browser to determine them  (e.g. "1" and "0" or "On" and Off"). The two-state device appears in the interface as a single toggle button. The name of the button can be set in the Parameters tab. 
+
 - **UV pulse duration (activation)**: Pulse length, power or power percentage property of the activation laser. This property is required for the Activation script. Note that it should be mapped to the same device property as "UV pulse duration (main frame)".
+
 - **UV pulse duration (main frame)**: Pulse length, power or power percentage property of the activation laser. This property is required for the Activation script. Note that it should be mapped to the same device property as "UV pulse duration (activation)".
+
 - **Z stage focus-locking**: Property used to toggle focus stabilization.
+
 - **Z stage position**: Position of the stage, used to move the stage and monitor its position.
 
-##### Properties requiring a Plugin Setting to be selected:
+  
 
-###### Additional FW tab selected
+#### Properties requiring a Plugin Setting to be selected:
+
+##### Additional FW tab selected
 
 - **Slider # position**: Slider position. Choose a device property that corresponds to an element with a finite number of states (e.g. a filter wheel). Each slider property has 4 positions. For each position, indicate in the "Slider # position state #" the corresponding device property value. In order to determine the value, use the Micro-Manager device property browser. All states must be set, but multiple states can have the same value. Each state name and color can be configured in the Parameters tab.
 
-###### Powermeter tab selected
+##### Powermeter tab selected
 
 - **Laser powermeter**: Laser power signal value. The device property should be numerical. Slope and offset to convert it to mW can be set in the Parameters tab.
 
-###### QPD tab selected
+##### QPD tab selected
 
 - **QPD #**: # signal of the quadrant photo-diode (QPD). Can alternatively be used to plot any device property (X vs Y and Z as a progress bar).
 
-###### Trigger tab selected
+##### Trigger tab selected
 
 - **Laser # trigger mode**: MicroFPGA (Github: jdeschamps/MicroFPGA) property dictating the behaviour of the laser trigger.
 - **Laser # pulse duration**: MicroFPGA (Github: jdeschamps/MicroFPGA) duration of the laser pulses.
 - **Laser # trigger sequence**: MicroFPGA (Github: jdeschamps/MicroFPGA) trigger sequence.
 
-###### iBeamSmart #1/2 selected
+##### iBeamSmart #1/2 selected
 
 The "iBeamSmart #1/2 name" plugin setting influences the name of the following properties.
 
@@ -82,9 +92,11 @@ The "iBeamSmart #1/2 name" plugin setting influences the name of the following p
 - **[Name] laser power**: Laser power in mW. This GUI property can also be used with a power percentage device property by setting the maximum power in the Properties tab to 100; however, the "mW" mention will remain.
 - **[Name] operation**: Laser On/Off property. Lasers are numbered from left to right in the main interface. Both on and off values must be set. Consult the Micro-Manager device property browser to determine them  (e.g. "1" and "0" or "On" and Off").
 
-#### Parameters
+------
 
-##### Parameters that are always present:
+## Parameters
+
+#### Parameters that are always present:
 
 - **Acquisitions - BFP lens**: Choose among the mapped GUI properties that have two states. Originally aimed for a Bertrand lens, this parameter is used by a specific type of acquisition (BFP). Before a BFP acquisition, the selected GUI property is set to its on state, a single frame is recorded, and the property is finally set to its off state. 
 
@@ -132,15 +144,15 @@ The "iBeamSmart #1/2 name" plugin setting influences the name of the following p
 
   
 
-##### Parameters requiring a Plugin Setting to be selected:
+#### Parameters requiring a Plugin Setting to be selected:
 
-###### Additional FW tab selected
+##### Additional FW tab selected
 
 - **Additional filters - Slider # colors**: Colors of the filter names displayed on the GUI. The entry should be written as "color1,color2,color3,grey,grey,grey". The names should be separated by commas. The maximum number of filters color is 4, beyond that the colors will be ignored. The available colors are: pink, violet, dark violet, dark blue, blue, pastel blue, dark green, green, yellow, orange, brown, dark red, red, black, gray, white
 - **Additional filters - Slider # names**: Filter names displayed on the GUI. The entry should be written as "name1,name2,name3,None,None,None". The names should be separated by a comma. The maximum number of filters name is 4, beyond that the names will be ignored. If the commas are not present, then the entry will be set as the name of the first filter.
 - **Additional filters - Slider # title**: Title of the # set of additional filters.
 
-###### Powermeter tab selected
+##### Powermeter tab selected
 
 - **Powermeter - idle time (ms)**: Idle time (ms) between two updates of the powermeter value.
 - **Powermeter - number of points**: Number of laser power measurements displayed in the chart (x axis).
@@ -148,18 +160,18 @@ The "iBeamSmart #1/2 name" plugin setting influences the name of the following p
 - **Powermeter - slopes**: Comma-separated slopes to convert the measurements to Watts. Make sure to input as many slopes as there are wavelengths, otherwise, a default value of 1 will be applied.
 - **Powermeter - wavelengths**: Comma-separated wavelengths of the different lasers measured by the powermeter property.
 
-###### QPD tab selected
+##### QPD tab selected
 
 - **QPD - Idle time (ms)**: Idle time (ms) between two updates of the QPD signals value.
 - **QPD - XY max**: Maximum X and Y signals value in the graph.
 - **QPD - Z max**: Maximum Z value in the progress bar.
 
-###### Trigger tab selected
+##### Trigger tab selected
 
 - **Laser # trigger - Color**: Color of the laser name as displayed in the laser trigger panel.
 - **Laser # trigger - Name**: Name of the laser as displayed on top of the laser trigger panel.
 
-###### iBeamSmart#1/2 selected
+##### iBeamSmart#1/2 selected
 
 The "iBeamSmart #1/2 name" plugin setting influences the name of the following parameters.
 
@@ -167,35 +179,39 @@ The "iBeamSmart #1/2 name" plugin setting influences the name of the following p
 - **[Name] - fine available**: Unselect to hide the fine (iBeamSmart specific property) panel.
 - **[Name] - max power**: Maximum laser power, sets the maximum of the slider in the GUI.
 
-#### Global Settings
+------
+
+## Global Settings
 
 - **Enable unallocated warnings**: When enabled, a message will be prompted to the user if some UI properties are not allocated. Disable to prevent the message from being shown.
 
 
 
-#### FAQ
+------
 
-##### My lasers do not have a power percentage device property
+## FAQ
+
+#### My lasers do not have a power percentage device property
 
 Not a problem, the GUI property corresponding to the power percentage has two parameters: slope and offset. You can set the slope to max_power/100, then setting 50% power will set your laser power to max_power/2. You effectively have now a power percentage!
 
-##### I only have four filters in my filter wheel
+#### I only have four filters in my filter wheel
 
 Simply set the remaining two filters (in the main filter wheel of the interface) to the same value, for instance a position in between that blocks light, or the same value than one of the other filters. Choose gray or black color and an appropriate name.
 
-##### I have more than four lasers and none of them are iBeamSmart lasers
+#### I have more than four lasers and none of them are iBeamSmart lasers
 
 Use the iBeamSmart laser options nonetheless and disable the iBeamSmart specific features in the parameters.
 
-##### I don't understand what the controls panel do
+#### I don't understand what the controls panel do
 
 These are simply several buttons that can toggle between two states. You can map to each button any device property of your choice, as long as you intend to switch them from one state to the other.
 
-##### I don't have a focus stabilization system
+#### I don't have a focus stabilization system
 
 In such case, the "Lock" button in the focus panel will just be useless, ignore it. In the same way, the QPD panel is intended to monitor the sensor in charge of the focus stabilization, you can just deactivate it. Note that the automated acquisitions were designed while having the focus stabilization in mind. You can still use them, but not as effectively.
 
-##### Why can we deactivate the on/off button for the lasers
+#### Why can we deactivate the on/off button for the lasers
 
 Some lasers do not have on/off properties and are simply off when at 0 power.
 
