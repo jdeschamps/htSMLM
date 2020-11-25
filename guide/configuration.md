@@ -4,10 +4,13 @@ Start Micro-Manager and select **Plugins->Interface->EMU**. The EMU configuratio
 
 In this section, we describe all the properties and parameters of htSMLM. Note that all descriptions are available in the interface during configuration by selecting the "**Help**" button. Have a look at the [htSMLM overview](overview.md) before starting.
 
+Refer to [using htSMLM](using-htsmlm.md) to get details on what each button of the interface does.
+
 1. [Plugin settings](#plugin-settings)
 2. [Properties](#properties)
 3. [Parameters](#parameters)
 4. [Global settings](#global-settings)
+5. [FAQ](#faq)
 
 #### Plugin Settings
 
@@ -163,3 +166,34 @@ The "iBeamSmart #1/2 name" plugin setting influences the name of the following p
 #### Global Settings
 
 - **Enable unallocated warnings**: When enabled, a message will be prompted to the user if some UI properties are not allocated. Disable to prevent the message from being shown.
+
+
+
+#### FAQ
+
+##### My lasers do not have a power percentage device property
+
+Not a problem, the GUI property corresponding to the power percentage has two parameters: slope and offset. You can set the slope to max_power/100, then setting 50% power will set your laser power to max_power/2. You effectively have now a power percentage!
+
+##### I only have four filters in my filter wheel
+
+Simply set the remaining two filters (in the main filter wheel of the interface) to the same value, for instance a position in between that blocks light, or the same value than one of the other filters. Choose gray or black color and an appropriate name.
+
+##### I have more than four lasers and none of them are iBeamSmart lasers
+
+Use the iBeamSmart laser options nonetheless and disable the iBeamSmart specific features in the parameters.
+
+##### I don't understand what the controls panel do
+
+These are simply several buttons that can toggle between two states. You can map to each button any device property of your choice, as long as you intend to switch them from one state to the other.
+
+##### I don't have a focus stabilization system
+
+In such case, the "Lock" button in the focus panel will just be useless, ignore it. In the same way, the QPD panel is intended to monitor the sensor in charge of the focus stabilization, you can just deactivate it. Note that the automated acquisitions were designed while having the focus stabilization in mind. You can still use them, but not as effectively.
+
+##### Why can we deactivate the on/off button for the lasers
+
+Some lasers do not have on/off properties and are simply off when at 0 power.
+
+
+
