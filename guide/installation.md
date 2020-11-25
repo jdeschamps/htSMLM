@@ -19,6 +19,6 @@
    $ ./compileAndDeploy.sh "C:\Path\to\MicroManager2gamma"
    ```
 
-   > **Note**: the compilation script has been written for Windows. For unix-like systems, replace "\\" by "/" in the paths variables.
+   > **Note**: the compilation script has been written for Windows. For unix-like systems, replace "\\" by "/" in the path variables.
 
 6. Start Micro-Manager and select **Plugins->Interface->EMU**.
