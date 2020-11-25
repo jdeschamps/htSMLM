@@ -12,7 +12,11 @@ Refer to [using htSMLM](using-htsmlm.md) to get details on what each button of t
 4. [Global settings](#global-settings)
 5. [FAQ](#faq)
 
+------
+
 #### Plugin Settings
+
+------
 
 Selecting or unselecting certain plugin settings will modify the number of properties and parameters available in the other sections.
 
