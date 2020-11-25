@@ -2,7 +2,7 @@
 
 Start Micro-Manager and select **Plugins->Interface->EMU**. The EMU configuration wizard is launched automatically on the first start. It can be also be started from the menu in the EMU window, under "Configuration" and "Modify configuration". To get familiar with EMU, please consult the [EMU guide](https://jdeschamps.github.io/EMU-guide/). In particular, the [quick introduction](https://jdeschamps.github.io/EMU-guide/quickintro.html) gives an easy introduction to the configuration system.
 
-In this section, we describe all the properties and parameters of htSMLM. Note that all descriptions are available in the interface during configuration by selecting the "**Help**" button.
+In this section, we describe all the properties and parameters of htSMLM. Note that all descriptions are available in the interface during configuration by selecting the "**Help**" button. Have a look at the [htSMLM overview](overview.md) before starting.
 
 1. [Plugin settings](#plugin-settings)
 2. [Properties](#properties)
