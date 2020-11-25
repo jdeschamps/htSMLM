@@ -1,13 +1,15 @@
-## Using htSMLM
+# Using htSMLM
 
 1. [Default panels](#default-panels)
 2. [Optional panels](#optional-panels)
 3. [Activation script](#activation-script)
 4. [Acquisitions with htSMLM](#acquisitions-with-htsmlm)
 
-#### Default panels
+------
 
-##### Activation laser pulse panel
+## Default panels
+
+#### Activation laser pulse panel
 
 <p align="center">
   <img height="200" src="img/pulse.png">
@@ -23,7 +25,7 @@ Linked to Laser0: name and color
 
 Linked to Laser0 trigger if selected
 
-##### Laser control panel
+#### Laser control panel
 
 <p align="center">
   <img height="200" src="img/lasers.png">
@@ -43,7 +45,7 @@ Name and color
 
 Laser0 linked to the activation panel for name and color
 
-##### Filters panel
+#### Filters panel
 
 <p align="center">
   <img height="80" src="img/filters.png">
@@ -51,7 +53,7 @@ Laser0 linked to the activation panel for name and color
 
 
 
-##### Focus panel
+#### Focus panel
 
 <p align="center">
   <img height="150" src="img/focus.png">
@@ -67,7 +69,7 @@ Graph parameters: number of points and update frequency
 
 Default values as parameters
 
-##### Controls panel
+#### Controls panel
 
 <p align="center">
   <img height="200" src="img/controls.png">
@@ -77,9 +79,11 @@ Default values as parameters
 
 Names and enable/disable
 
-#### Optional panels
+------
 
-##### Additional filters panel
+## Optional panels
+
+#### Additional filters panel
 
 <p align="center">
   <img height="150" src="img/add_filters.png">
@@ -87,7 +91,7 @@ Names and enable/disable
 
 - 
 
-##### QPD tab
+#### QPD tab
 
 <p align="center">
   <img height="250" src="img/qpd.png">
@@ -95,7 +99,7 @@ Names and enable/disable
 
 - 
 
-##### Laser trigger tab
+#### Laser trigger tab
 
 <p align="center">
   <img height="250" src="img/trigger.png">
@@ -103,7 +107,7 @@ Names and enable/disable
 
 - 
 
-##### Powermeter tab
+#### Powermeter tab
 
 <p align="center">
   <img height="250" src="img/powermeter.png">
@@ -111,7 +115,7 @@ Names and enable/disable
 
 - 
 
-##### iBeamSmart laser tab
+#### iBeamSmart laser tab
 
 <p align="center">
   <img height="230" src="img/ibeam.png">
@@ -119,7 +123,9 @@ Names and enable/disable
 
 - 
 
-#### Activation script
+------
+
+## Activation script
 
 Principle of the algorithm
 
@@ -141,7 +147,9 @@ Principle of the algorithm
 
 Number of points, frequency of updates in parameters
 
-#### Acquisitions with htSMLM
+------
+
+## Acquisitions with htSMLM
 
 <p align="center">
   <img height="300" src="img/acq.png">
@@ -155,7 +163,7 @@ Number of points, frequency of updates in parameters
 
 - On/Off button
 
-##### Acquisition wizard
+#### Acquisition wizard
 
 <p align="center">
   <img height="300" src="img/acq-wizard.png">
@@ -163,7 +171,9 @@ Number of points, frequency of updates in parameters
 
 - On/Off button
 
-###### Localization
+#### Acquisition types
+
+##### Localization
 
 <p align="center">
   <img height="120" src="img/loc.png">
@@ -171,7 +181,7 @@ Number of points, frequency of updates in parameters
 
 - On/Off button
 
-###### BFP or Bright-field or Snap
+##### BFP or Bright-field or Snap
 
 <p align="center">
   <img height="100" src="img/bfp.png">
@@ -179,7 +189,7 @@ Number of points, frequency of updates in parameters
 
 - On/Off button
 
-###### Z-stack
+##### Z-stack
 
 <p align="center">
   <img height="120" src="img/z.png">
@@ -187,7 +197,7 @@ Number of points, frequency of updates in parameters
 
 - On/Off button
 
-###### Time
+##### Time
 
 <p align="center">
   <img height="120" src="img/time.png">
@@ -195,7 +205,7 @@ Number of points, frequency of updates in parameters
 
 - On/Off button
 
-###### Multislice localization
+##### Multislice localization
 
 <p align="center">
   <img height="250" src="img/multislice.png">
