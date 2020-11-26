@@ -24,7 +24,7 @@
 <p align="center">
   <img height="200" src="img/pulse.png">
 </p>
-The activation laser panel offers a logarithmic scale with a user-defined maximum value. It corresponds to a single GUI property: "**UV pulse duration (main frame)**". While it is intended for a pulse duration in us, it can be used with an absolute laser power or power percentage, albeit with reduced dynamical range.
+The activation laser panel offers a logarithmic scale with a user-defined maximum value. It corresponds to a single GUI property: **UV pulse duration (main frame)**. While it is intended for a pulse duration in us, it can be used with an absolute laser power or power percentage, albeit with reduced dynamical range.
 
 
 - Slider: change the laser pulse / power up to the maximum value.
@@ -38,7 +38,7 @@ The laser name and colors are the same as the first laser (Laser 0, see paramete
 <p align="center">
   <img height="200" src="img/lasers.png">
 </p>
-htSMLM has four main laser control panels. Each laser control panel interacts with two GUI properties: "**Laser # power percentage**" and "**Laser # enable**" (where # is 0, 1, 2 or 3). Additionally, two modes of power percentage control are available: slider or buttons.
+htSMLM has four main laser control panels. Each laser control panel interacts with two GUI properties: **Laser # power percentage** and "**Laser # enable**" (where # is 0, 1, 2 or 3). Additionally, two modes of power percentage control are available: slider or buttons.
 
 
 - On/Off button: switches the "**Laser # enable**" property between its ON and OFF state.
