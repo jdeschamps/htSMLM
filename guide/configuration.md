@@ -134,7 +134,7 @@ The "iBeamSmart #1/2 name" plugin setting influences the name of the following p
 
 - **Laser # - Color**: Color of the laser name as shown in the GUI.
 
-- **Laser 0 - Default max pulse**: Default maximum value for the activation laser pulse length (or power). This default value appears in the grey box at the top-left corner of the GUI. 
+- **Laser 0 - Default max pulse**: Default maximum value for the activation laser pulse length (or power). This default value appears in the grey box at the top-left corner of the GUI. The value must be an integer.
 
 - **Laser # - Name**: Laser name displayed on top of the laser control panel in the GUI.
 
