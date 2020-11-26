@@ -94,31 +94,49 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 		}  
 	}
 		
+	private String getPropertyDescription(int i) {
+		return "Map to this GUI property (button No"+i+" in controls panel) a device property with two positions (e.g. On/Off or In/Out). "
+				+ "Consult the Micro-Manager device property browser to determine them  (e.g. \"1\" and "
+				+ "\"0\" or \"On\" and Off\"). The two-state device appears in the interface as a single "
+				+ "toggle button. The name of the button can be set in the Parameters tab.";
+	}
+	
 	@Override
 	protected void initializeProperties() {
-		addUIProperty(new TwoStateUIProperty(this, DEVICE_1,"Position property of the first two-state device.", new TwoStateFlag()));
-		addUIProperty(new TwoStateUIProperty(this, DEVICE_2,"Position property of the second two-state device.", new TwoStateFlag()));
-		addUIProperty(new TwoStateUIProperty(this, DEVICE_3,"Position property of the third two-state device.", new TwoStateFlag()));
-		addUIProperty(new TwoStateUIProperty(this, DEVICE_4,"Position property of the fourth two-state device.", new TwoStateFlag()));
-		addUIProperty(new TwoStateUIProperty(this, DEVICE_5,"Position property of the fifth two-state device.", new TwoStateFlag()));
-		addUIProperty(new TwoStateUIProperty(this, DEVICE_6,"Position property of the sixth two-state device.", new TwoStateFlag()));
+		addUIProperty(new TwoStateUIProperty(this, DEVICE_1,getPropertyDescription(1), new TwoStateFlag()));
+		addUIProperty(new TwoStateUIProperty(this, DEVICE_2,getPropertyDescription(2), new TwoStateFlag()));
+		addUIProperty(new TwoStateUIProperty(this, DEVICE_3,getPropertyDescription(3), new TwoStateFlag()));
+		addUIProperty(new TwoStateUIProperty(this, DEVICE_4,getPropertyDescription(4), new TwoStateFlag()));
+		addUIProperty(new TwoStateUIProperty(this, DEVICE_5,getPropertyDescription(5), new TwoStateFlag()));
+		addUIProperty(new TwoStateUIProperty(this, DEVICE_6,getPropertyDescription(6), new TwoStateFlag()));
 	}
 
+	private String getEnableDescription(int i) {
+		return "Select to enable the toggle button No"+i+" in the controls panel of the GUI. When unselected, the button is greyed out.";
+	}	
+	
+	private String getNameDescription(int i) {
+		return "Text appearing on the button No"+i+" of the controls panel.";
+	}
+	
 	@Override
 	protected void initializeParameters() {
-		addUIParameter(new StringUIParameter(this, PARAM_TITLE,"Title of the section.","Controls"));
-		addUIParameter(new StringUIParameter(this, PARAM_NAME1,"Two-state device 1 name, as dislayed in the UI.","BFP"));
-		addUIParameter(new StringUIParameter(this, PARAM_NAME2,"Two-state device 2 name, as dislayed in the UI.","3DA"));
-		addUIParameter(new StringUIParameter(this, PARAM_NAME3,"Two-state device 3 name, as dislayed in the UI.","Servo 3"));
-		addUIParameter(new StringUIParameter(this, PARAM_NAME4,"Two-state device 4 name, as dislayed in the UI.","Servo 4"));
-		addUIParameter(new StringUIParameter(this, PARAM_NAME5,"Two-state device 5 name, as dislayed in the UI.","Servo 5"));
-		addUIParameter(new StringUIParameter(this, PARAM_NAME6,"Two-state device 6 name, as dislayed in the UI.","Servo 6"));
-		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE1,"Enable the first button.", true));
-		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE2,"Enable the second button.",true));
-		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE3,"Enable the third button.",false));
-		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE4,"Enable the fourth button.",false));
-		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE5,"Enable the fifth button.",false));
-		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE6,"Enable the sixth button.",false));
+		String descTitle = "Title appearing at the top of the controls panel.";
+		addUIParameter(new StringUIParameter(this, PARAM_TITLE, descTitle,"Controls"));
+		
+		addUIParameter(new StringUIParameter(this, PARAM_NAME1,getNameDescription(1),"BFP"));
+		addUIParameter(new StringUIParameter(this, PARAM_NAME2,getNameDescription(2),"3DA"));
+		addUIParameter(new StringUIParameter(this, PARAM_NAME3,getNameDescription(3),"None"));
+		addUIParameter(new StringUIParameter(this, PARAM_NAME4,getNameDescription(4),"None"));
+		addUIParameter(new StringUIParameter(this, PARAM_NAME5,getNameDescription(5),"None"));
+		addUIParameter(new StringUIParameter(this, PARAM_NAME6,getNameDescription(6),"None"));
+		
+		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE1,getEnableDescription(1),true));
+		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE2,getEnableDescription(2),true));
+		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE3,getEnableDescription(3),false));
+		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE4,getEnableDescription(4),false));
+		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE5,getEnableDescription(5),false));
+		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE6,getEnableDescription(6),false));
 	}
 
 	@Override

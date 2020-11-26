@@ -317,7 +317,12 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 	
 	@Override
 	protected void initializeProperties() {
-		addUIProperty(new UIProperty(this, LASER_PULSE,"Pulse length property of the activation laser"));		
+		
+		String descPulse = "Pulse length, power or power percentage property of the activation laser. This property"
+				+ " is required for the Activation script. Note that it should be mapped to the same device property"
+				+ " as \"UV pulse duration (main frame)\".";
+		
+		addUIProperty(new UIProperty(this, LASER_PULSE,descPulse));		
 	}
 
 	@Override
@@ -326,11 +331,23 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		feedback_ = 0.4;
 		idletime_ = 100;
 		npos_ = 30; 
+
+		String descSd = "Default value of the parameter controlling the auto cut-off level when the Activation script "
+				+ "is running. A high value leads to a high cut-off level, which in turns decreases the number of "
+				+ "molecules detected.";
 		
-		addUIParameter(new DoubleUIParameter(this, PARAM_DEF_SD,"Default value of the cutoff coefficient.",sdcoeff_));
-		addUIParameter(new DoubleUIParameter(this, PARAM_DEF_FB,"Default value of the activation feedback coefficient.",feedback_));
-		addUIParameter(new IntegerUIParameter(this, PARAM_IDLE,"Idle time (ms) between each iteration.",idletime_)); // thread idle time
-		addUIParameter(new IntegerUIParameter(this, PARAM_NPOS,"Number of points on the x axis.",npos_)); // number of point in the graph
+		String descFb = "Default value of the parameter controlling the speed at which the pulse length (or power) of "
+				+ "the activation laser is increased when the Activation script is running. A higher value leads to a "
+				+ "faster increase.";
+		
+		String descIdle = "Idle time (ms) between each iteration of the Activation script.";
+
+		String descNPos = "Number of points on the x axis of the Activation script graph.";
+		
+		addUIParameter(new DoubleUIParameter(this, PARAM_DEF_SD,descSd,sdcoeff_));
+		addUIParameter(new DoubleUIParameter(this, PARAM_DEF_FB,descFb,feedback_));
+		addUIParameter(new IntegerUIParameter(this, PARAM_IDLE,descIdle,idletime_)); // thread idle time
+		addUIParameter(new IntegerUIParameter(this, PARAM_NPOS,descNPos,npos_)); // number of point in the graph
 	}
 
 	@Override

@@ -49,7 +49,7 @@ Finally, some GUI properties are only available when the corresponding Plugin se
 
 - **Laser # power percentage**: Power percentage of the laser. This property allows rescaling the device property value. If the laser has only a power set point (mW) property instead of a percentage property, then use a slope value equal to (maximum power / 100) to turn to scale the device property to a power percentage. 
 
-- **Two-state device #**: Map to this GUI property a device property with two positions (e.g. On/Off or In/Out). Consult the Micro-Manager device property browser to determine them  (e.g. "1" and "0" or "On" and Off"). The two-state device appears in the interface as a single toggle button. The name of the button can be set in the Parameters tab. 
+- **Two-state device #**: Map to this GUI property (button No# in controls panel) a device property with two positions (e.g. On/Off or In/Out). Consult the Micro-Manager device property browser to determine them  (e.g. "1" and "0" or "On" and Off"). The two-state device appears in the interface as a single toggle button. The name of the button can be set in the Parameters tab. 
 
 - **UV pulse duration (activation)**: Pulse length, power or power percentage property of the activation laser. This property is required for the Activation script. Note that it should be mapped to the same device property as "UV pulse duration (main frame)".
 
@@ -65,7 +65,7 @@ Finally, some GUI properties are only available when the corresponding Plugin se
 
 ##### Additional FW tab selected
 
-- **Slider # position**: Slider position. Choose a device property that corresponds to an element with a finite number of states (e.g. a filter wheel). Each slider property has 4 positions. For each position, indicate in the "Slider # position state #" the corresponding device property value. In order to determine the value, use the Micro-Manager device property browser. All states must be set, but multiple states can have the same value. Each state name and color can be configured in the Parameters tab.
+- **Slider # position**: Slider No# position. Choose a device property that corresponds to an element with a finite number of states (e.g. a filter wheel). Each slider property has 4 positions. For each position, indicate in the "Slider # position state x" (where x is 0, 1, 2 or 3) the corresponding device property value. In order to determine the value, use the Micro-Manager device property browser. All states must be set, but multiple states can have the same value. Each state name and color can be configured in the Parameters tab.
 
 ##### Powermeter tab selected
 
@@ -102,7 +102,7 @@ The "iBeamSmart #1/2 name" plugin setting influences the name of the following p
 
 - **Acquisitions - Bright field**: Choose among the mapped GUI properties that have two states. Originally aimed for a bright-field LED array, this parameter is used by a specific type of acquisition (Bright-field). Before a Bright-field acquisition, the selected GUI property is set to its on state, a single frame is recorded, and the property is finally set to its off state. 
 
-- **Acquisitions - Bright field**: Select the "Z stage focus locking" property if it has been mapped in the Properties tab. This allows the acquisition controller to turn on or off the focus stabilization depending on the designed experiments.
+- **Acquisitions - Focus stabilization**: Select the "Z stage focus locking" property if it has been mapped in the Properties tab. This allows the acquisition controller to turn on or off the focus stabilization depending on the designed experiments.
 
 - **Activation - Default feedback**: Default value of the parameter controlling the speed at which the pulse length (or power) of the activation laser is increased when the Activation script is running. A higher value leads to a faster increase.
 
@@ -112,11 +112,11 @@ The "iBeamSmart #1/2 name" plugin setting influences the name of the following p
 
 - **Activation - Number of points**: Number of points on the x axis of the Activation script graph.
 
-- **Controls - Enable two-state device #**: Select to enable the corresponding toggle button in the control panel of the GUI. When unselected, the button is greyed out.
+- **Controls - Enable two-state device #**: Select to enable the toggle button No# in the controls panel of the GUI. When unselected, the button is greyed out.
 
-- **Controls - Title**: Title appearing at the top of the control panel.
+- **Controls - Title**: Title appearing at the top of the controls panel.
 
-- **Controls - Two-state device # name**: Text appearing on the corresponding button.
+- **Controls - Two-state device # name**: Text appearing on the button No# of the controls panel.
 
 - **Filters - Filter colors**: Colors of the filter names displayed on the GUI. The entry should be written as "color1,color2,color3,color4,color5,color6". The names should be separated by commas. The maximum number of filter colors is 6, beyond that the colors will be ignored. The available colors are: pink, violet, dark violet, dark blue, blue, pastel blue, dark green, green, yellow, orange, brown, dark red, red, black, gray, white.
 
@@ -148,9 +148,9 @@ The "iBeamSmart #1/2 name" plugin setting influences the name of the following p
 
 ##### Additional FW tab selected
 
-- **Additional filters - Slider # colors**: Colors of the filter names displayed on the GUI. The entry should be written as "color1,color2,color3,grey,grey,grey". The names should be separated by commas. The maximum number of filters color is 4, beyond that the colors will be ignored. The available colors are: pink, violet, dark violet, dark blue, blue, pastel blue, dark green, green, yellow, orange, brown, dark red, red, black, gray, white
-- **Additional filters - Slider # names**: Filter names displayed on the GUI. The entry should be written as "name1,name2,name3,None,None,None". The names should be separated by a comma. The maximum number of filters name is 4, beyond that the names will be ignored. If the commas are not present, then the entry will be set as the name of the first filter.
-- **Additional filters - Slider # title**: Title of the # set of additional filters.
+- **Additional filters - Slider # colors**: Colors of the filter names displayed on the GUI for the additional filter wheel No#. The entry should be written as "color1,color2,color3,grey,grey,grey". The colors should be separated by commas. The maximum number of filters color is 4, beyond that the colors will be ignored. The available colors are: pink, violet, dark violet, dark blue, blue, pastel blue, dark green, green, yellow, orange, brown, dark red, red, black, gray, white.
+- **Additional filters - Slider # names**: Filter names displayed on the GUI for the additional filter wheel No#. The entry should be written as "name1,name2,name3,None,None,None". The names should be separated by a comma. The maximum number of filters name is 4, beyond that the names will be ignored. If the commas are not present, then the entry will be set as the name of the first filter.
+- **Additional filters - Slider # title**: Title of the set of additional filters No#.
 
 ##### Powermeter tab selected
 

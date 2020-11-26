@@ -215,12 +215,47 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 		}
 	}
 	
+	private String getPosDescription(int i) {
+		return "Slider No"+i+" position. Choose a device property that corresponds to an element with a finite"
+				+ " number of states (e.g. a filter wheel). Each slider property has 4 positions. For each "
+				+ "position, indicate in the \"Slider No"+i+" position state x\" (where x is between 0 and "+(NUM_POS-1)+") the "
+						+ "corresponding device property value. In order to determine the value, use the "
+						+ "Micro-Manager device property browser. All states must be set, but multiple states "
+						+ "can have the same value. Each state name and color can be configured in the "
+						+ "Parameters tab.";
+	}
+	
 	@Override
 	protected void initializeProperties() {
-		addUIProperty(new MultiStateUIProperty(this, SLIDER1_POSITION, "Slider 1 position.", new FilterWheelFlag(),NUM_POS));		
-		addUIProperty(new MultiStateUIProperty(this, SLIDER2_POSITION, "Slider 2 position.", new FilterWheelFlag(),NUM_POS));		
+		addUIProperty(new MultiStateUIProperty(this, SLIDER1_POSITION, getPosDescription(1), new FilterWheelFlag(),NUM_POS));		
+		addUIProperty(new MultiStateUIProperty(this, SLIDER2_POSITION, getPosDescription(2), new FilterWheelFlag(),NUM_POS));		
 	}
 
+	
+	private String getNameDescription(int i) {
+		String names = NAME_EMPTY;
+		for(int j=0;j<NUM_POS-1;j++){
+			names += ","+NAME_EMPTY; 
+		}
+	
+		return "Filter names displayed on the GUI for the additional filter wheel No"+i+". The entry should be written "
+				+ "as \""+names+"\". The names should be separated by a comma. The maximum "
+				+ "number of filters name is "+NUM_POS+", beyond that the names will be ignored. If the commas are not "
+				+ "present, then the entry will be set as the name of the first filter.";
+	}
+	
+	private String getColorDescription(int i) {
+		String colors = COLOR_EMPTY;
+		for(int j=0;j<NUM_POS-1;j++){
+			colors += ","+COLOR_EMPTY; 
+		}
+		
+		return "Colors of the filter names displayed on the GUI for the additional filter wheel No"+i+". The entry "
+				+ "should be written as \""+colors+"\". The colors should be separated by commas. The maximum number "
+						+ "of filters color is "+NUM_POS+", beyond that the colors will be ignored. The available "
+								+ "colors are: "+ColorRepository.getCommaSeparatedColors()+".";
+	}
+	
 	@Override
 	protected void initializeParameters() {
 		names1_ = NAME_EMPTY;
@@ -236,16 +271,14 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 		title1_ = "Slider 1";
 		title2_ = "Slider 2";
 
-		addUIParameter(new StringUIParameter(this, PARAM1_TITLE, "Title of the first set of additional filters.",title1_));
-		addUIParameter(new StringUIParameter(this, PARAM2_TITLE, "Title of the second set of additional filters.",title2_));
-		addUIParameter(new StringUIParameter(this, PARAM1_NAMES,"Filter names displayed by the UI. The entry should be written as \"name1,name2,name3,None,None,None\". The names should be separated by a comma. "
-				+ "The maximum number of filters name is "+NUM_POS+", beyond that the names will be ignored. If the comma are not present, then the entry will be set as the name of the first filter.",names1_));
-		addUIParameter(new StringUIParameter(this, PARAM1_COLORS,"Filter colors displayed by the UI. The entry should be written as \"color1,color2,color3,grey,grey,grey\". The names should be separated by a comma. "
-				+ "The maximum number of filters color is "+NUM_POS+", beyond that the colors will be ignored. If the comma are not present, then no color will be allocated. The available colors are: "+ColorRepository.getCommaSeparatedColors(),colors1_));
-		addUIParameter(new StringUIParameter(this, PARAM2_NAMES,"Filter names displayed by the UI. The entry should be written as \"name1,name2,name3,None,None,None\". The names should be separated by a comma. "
-				+ "The maximum number of filters name is "+NUM_POS+", beyond that the names will be ignored. If the comma are not present, then the entry will be set as the name of the first filter.",names2_));
-		addUIParameter(new StringUIParameter(this, PARAM2_COLORS,"Filter colors displayed by the UI. The entry should be written as \"color1,color2,color3,grey,grey,grey\". The names should be separated by a comma. "
-				+ "The maximum number of filters color is "+NUM_POS+", beyond that the colors will be ignored. If the comma are not present, then no color will be allocated. The available colors are: "+ColorRepository.getCommaSeparatedColors(),colors2_));
+		addUIParameter(new StringUIParameter(this, PARAM1_TITLE, "Title of the set of additional filters No1.",title1_));
+		addUIParameter(new StringUIParameter(this, PARAM2_TITLE, "Title of the set of additional filters No2.",title2_));
+		
+		addUIParameter(new StringUIParameter(this, PARAM1_NAMES,getNameDescription(1),names1_));
+		addUIParameter(new StringUIParameter(this, PARAM1_COLORS,getColorDescription(1),colors1_));
+		
+		addUIParameter(new StringUIParameter(this, PARAM2_NAMES,getNameDescription(2),names2_));
+		addUIParameter(new StringUIParameter(this, PARAM2_COLORS,getColorDescription(2),colors2_));
 	}
 
 	@Override

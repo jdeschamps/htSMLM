@@ -408,11 +408,25 @@ public class AcquisitionPanel extends ConfigurablePanel{
 	protected void initializeParameters() {
 		paramBFP_ = UIPropertyParameter.NO_PROPERTY;
 		paramLocking_ = UIPropertyParameter.NO_PROPERTY;
-		paramBrightField_ = UIPropertyParameter.NO_PROPERTY;	
+		paramBrightField_ = UIPropertyParameter.NO_PROPERTY;
+
+		String descBfp = "Choose among the mapped GUI properties that have two states. Originally aimed for a "
+				+ "Bertrand lens, this parameter is used by a specific type of acquisition (BFP). Before a BFP "
+				+ "acquisition, the selected GUI property is set to its on state, a single frame is recorded, "
+				+ "and the property is finally set to its off state.";
+
+		String descBf = "Choose among the mapped GUI properties that have two states. Originally aimed for a "
+				+ "bright-field LED array, this parameter is used by a specific type of acquisition (Bright-field). "
+				+ "Before a Bright-field acquisition, the selected GUI property is set to its on state, a single "
+				+ "frame is recorded, and the property is finally set to its off state. "; 
 		
-		addUIParameter(new UIPropertyParameter(this, PARAM_BFP,"UIProperty corresponding to the insertion of a Bertrand lens.", new TwoStateFlag()));
-		addUIParameter(new UIPropertyParameter(this, PARAM_LOCKING,"UIProperty corresponding to the locking of the focus stabilization.", new FocusStabFlag())); 
-		addUIParameter(new UIPropertyParameter(this, PARAM_BRIGHTFIELD,"UIProperty corresponding to the triggering of the white light illumination.", new TwoStateFlag())); 
+		String descFl = "Select the \"Z stage focus locking\" property if it has been mapped in the Properties tab. "
+				+ "This allows the acquisition controller to turn on or off the focus stabilization depending on the "
+				+ "designed experiments.";
+		
+		addUIParameter(new UIPropertyParameter(this, PARAM_BFP,descBfp, new TwoStateFlag()));
+		addUIParameter(new UIPropertyParameter(this, PARAM_LOCKING,descFl, new FocusStabFlag()));
+		addUIParameter(new UIPropertyParameter(this, PARAM_BRIGHTFIELD,descBf, new TwoStateFlag()));
 	}
 
 	@Override
