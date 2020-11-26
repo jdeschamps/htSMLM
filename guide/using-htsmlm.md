@@ -70,7 +70,7 @@ All texts and colors, as well as the panel title, can be set in the properties t
 <p align="center">
   <img height="150" src="img/focus.png">
 </p>
-The focus panel allows moving and monitoring the position of your focusing device ("**Z stage position**" GUI property). It also includes a button to enable or disable focus stabilization, if this feature is present on your microscope (see examples such as [pgFocus]( https://github.com/ries-lab/RiesPieces/tree/master/Microscopy/Focus-locking ) or the [Ries lab solution]( https://github.com/ries-lab/RiesPieces/tree/master/Microscopy/Focus-locking )).
+The focus panel allows moving and monitoring the position of your focusing device ("**Z stage position**" GUI property). It also includes a button to enable or disable focus stabilization, if this feature is present on your microscope (see examples such as [pgFocus](https://github.com/ries-lab/RiesPieces/tree/master/Microscopy/Focus-locking) or the [Ries lab solution]( https://github.com/ries-lab/RiesPieces/tree/master/Microscopy/Focus-locking )).
 
 
 - Position: set the GUI property to the requested value (up to two decimals). 
