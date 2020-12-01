@@ -123,9 +123,11 @@ public class QPDPanel extends ConfigurablePanel {
 
 	@Override
 	protected void initializeProperties() {
-		addUIProperty(new UIProperty(this, QPD_X,"X signal of the QPD."));
-		addUIProperty(new UIProperty(this, QPD_Y,"Y signal of the QPD."));
-		addUIProperty(new UIProperty(this, QPD_Z,"Sum signal of the QPD."));
+		String desc = " signal of the quadrant photo-diode (QPD). Can alternatively be used to plot "
+				+ "any device property (X vs Y and Z as a progress bar).";
+		addUIProperty(new UIProperty(this, QPD_X,"X"+desc));
+		addUIProperty(new UIProperty(this, QPD_Y,"Y"+desc));
+		addUIProperty(new UIProperty(this, QPD_Z,"Z"+desc));
 	}
 
 	@Override
@@ -134,9 +136,9 @@ public class QPDPanel extends ConfigurablePanel {
 		zmax_ = 1024;
 		idle_ = 100;
 		
-		addUIParameter(new IntegerUIParameter(this, PARAM_XYMAX,"Maximum X and Y signals value from the QPD.",xymax_));
-		addUIParameter(new IntegerUIParameter(this, PARAM_ZMAX,"Maximum Sum signal value from the QPD.",zmax_));
-		addUIParameter(new IntegerUIParameter(this, PARAM_IDLE,"Idle time (ms) in between two measurements of the QPD signals.",idle_)); // thread idle time
+		addUIParameter(new IntegerUIParameter(this, PARAM_XYMAX,"Maximum X and Y signals value in the graph.",xymax_));
+		addUIParameter(new IntegerUIParameter(this, PARAM_ZMAX,"Maximum Z value in the progress bar.",zmax_));
+		addUIParameter(new IntegerUIParameter(this, PARAM_IDLE,"Idle time (ms) between two updates of the QPD signals value.",idle_)); // thread idle time
 	}
 
 	@Override

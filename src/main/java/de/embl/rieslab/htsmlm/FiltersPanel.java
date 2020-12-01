@@ -126,9 +126,40 @@ public class FiltersPanel extends AbstractFiltersPanel {
 	
 	@Override
 	protected void initializeProperties() {
-		addUIProperty(new MultiStateUIProperty(this, FW_POSITION, "Filter wheel position.", new FilterWheelFlag(),NUM_POS));		
+		String desc = "Filter wheel position. Choose a device property that corresponds to an element with a "
+				+ "finite number of states (e.g. a filter wheel). The filter wheel property has "+NUM_POS+" positions. "
+				+ "For each position, indicate in the \"Filter wheel position state #\" the corresponding "
+				+ "device property value. In order to determine the value, use the Micro-Manager device "
+				+ "property browser. All states must be set, but multiple states can have the same value. "
+				+ "Each state name and color can be configured in the Parameters tab.";
+		
+		addUIProperty(new MultiStateUIProperty(this, FW_POSITION, desc, new FilterWheelFlag(),NUM_POS));		
 	}
 
+	
+	private String getNameDescription() {
+		String names = "Name0";
+		for(int j=1;j<NUM_POS;j++){
+			names += ","+"Name"+j; 
+		}
+	
+		return "Filter names displayed on the GUI. The entry should be written "
+				+ "as \""+names+"\". The names should be separated by commas. The maximum "
+				+ "number of filters name is "+NUM_POS+", beyond that the names will be ignored.";
+	}
+	
+	private String getColorDescription() {
+		String colors = "Color0";
+		for(int j=1;j<NUM_POS;j++){
+			colors += ","+"Color"+j; 
+		}
+		
+		return "Filter name colors displayed on the GUI. The entry should be written "
+				+ "as \""+colors+"\". The colors should be separated by commas. The maximum number "
+						+ "of filters color is "+NUM_POS+", beyond that the colors will be ignored. The available "
+								+ "colors are: "+ColorRepository.getCommaSeparatedColors()+".";
+	}
+	
 	@Override
 	protected void initializeParameters() {
 		title_ = TITLE;
@@ -140,10 +171,8 @@ public class FiltersPanel extends AbstractFiltersPanel {
 		}
 		
 		addUIParameter(new StringUIParameter(this, PARAM_TITLE,"Title of the FW panel",title_));
-		addUIParameter(new StringUIParameter(this, PARAM_NAMES,"Filter names displayed by the UI. The entry should be written as \"name1,name2,name3,name4,name5,name6\". The names should be separated by a comma. "
-				+ "The maximum number of filters name is "+NUM_POS+", beyond that the names will be ignored.",names_));
-		addUIParameter(new StringUIParameter(this, PARAM_COLORS,"Filter colors displayed by the UI. The entry should be written as \"color1,color2,color3,color4,color5,color6\". The names should be separated by a comma. "
-				+ "The maximum number of filters color is "+NUM_POS+", beyond that the colors will be ignored. The available colors are: "+ColorRepository.getCommaSeparatedColors(),colors_));
+		addUIParameter(new StringUIParameter(this, PARAM_NAMES,getNameDescription(),names_));
+		addUIParameter(new StringUIParameter(this, PARAM_COLORS,getColorDescription(),colors_));
 	}
 
 	@Override

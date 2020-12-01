@@ -233,21 +233,21 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 
 	
 	private String getNameDescription(int i) {
-		String names = NAME_EMPTY;
-		for(int j=0;j<NUM_POS-1;j++){
-			names += ","+NAME_EMPTY; 
+		String names = "Name0";
+		for(int j=1;j<NUM_POS;j++){
+			names += ","+"Name"+j; 
 		}
 	
 		return "Filter names displayed on the GUI for the additional filter wheel No"+i+". The entry should be written "
-				+ "as \""+names+"\". The names should be separated by a comma. The maximum "
+				+ "as \""+names+"\". The names should be separated by commas. The maximum "
 				+ "number of filters name is "+NUM_POS+", beyond that the names will be ignored. If the commas are not "
 				+ "present, then the entry will be set as the name of the first filter.";
 	}
 	
 	private String getColorDescription(int i) {
-		String colors = COLOR_EMPTY;
-		for(int j=0;j<NUM_POS-1;j++){
-			colors += ","+COLOR_EMPTY; 
+		String colors = "Color";
+		for(int j=1;j<NUM_POS;j++){
+			colors += ","+"Color"+j; 
 		}
 		
 		return "Colors of the filter names displayed on the GUI for the additional filter wheel No"+i+". The entry "

@@ -29,6 +29,7 @@ import de.embl.rieslab.emu.utils.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.htsmlm.components.TogglePower;
 import de.embl.rieslab.htsmlm.components.ToggleSlider;
 import de.embl.rieslab.htsmlm.uipropertyflags.FocusLockFlag;
+import de.embl.rieslab.htsmlm.uipropertyflags.LaserFlag;
 
 public class IBeamSmartPanel extends ConfigurablePanel {
 
@@ -245,13 +246,35 @@ public class IBeamSmartPanel extends ConfigurablePanel {
 	protected void initializeProperties() {
 		max_power = 200;
 		
-		addUIProperty(new UIProperty(this, getPropertyName(LASER_POWER),"iBeamSmart Power (mW).", new FocusLockFlag()));
-		addUIProperty(new UIProperty(this, getPropertyName(LASER_PERCFINEA),"iBeamSmart Power percentage of fine a.", new FocusLockFlag()));
-		addUIProperty(new UIProperty(this, getPropertyName(LASER_PERCFINEB),"iBeamSmart Power percentage of fine b.", new FocusLockFlag()));
+		String descEnFine = "iBeamSmart specific property. Leave unmapped to ignore. The corresponding panel "
+				+ "can be disabled in the Parameters tab. Consult the Micro-Manager device property browser "
+				+ "to determine them  (e.g. \"1\" and \"0\" or \"On\" and Off\").";
+		
+		String descExTrig = "iBeamSmart specific property. Leave unmapped to ignore. The corresponding panel "
+				+ "can be disabled in the Parameters tab. Consult the Micro-Manager device property browser "
+				+ "to determine them  (e.g. \"1\" and \"0\" or \"On\" and Off\").";
 
-		addUIProperty(new TwoStateUIProperty(this,getPropertyName(LASER_OPERATION),"iBeamSmart On/Off operation property.", new FocusLockFlag()));
-		addUIProperty(new TwoStateUIProperty(this,getPropertyName(LASER_ENABLEFINE),"iBeamSmart Enable property of fine.", new FocusLockFlag()));
-		addUIProperty(new TwoStateUIProperty(this,getPropertyName(LASER_EXTERNALTRIGGER),"iBeamSmart digital trigger on/off.", new FocusLockFlag()));
+		String descFine = "iBeamSmart specific property. Leave unmapped to ignore. The corresponding panel can "
+				+ "be disabled in the Parameters tab.";
+
+		String descPower = "Laser power in mW. This GUI property can also be used with a power percentage "
+				+ "device property by setting the maximum power in the Properties tab to 100; however, the "
+				+ "\"mW\" mention will remain.";
+		
+		String descOnOff = "Laser On/Off property. Lasers are numbered from left to right in the main "
+				+ "interface. Both on and off values must be set. Consult the Micro-Manager device property "
+				+ "browser to determine them  (e.g. \"1\" and \"0\" or \"On\" and Off\").";
+		
+		// all these UIProp use to have FocusLock flag, changed them to none or Laser flag, should check
+		// if that makes better sense.
+		
+		addUIProperty(new UIProperty(this, getPropertyName(LASER_POWER),descPower, new LaserFlag()));
+		addUIProperty(new UIProperty(this, getPropertyName(LASER_PERCFINEA),descFine));
+		addUIProperty(new UIProperty(this, getPropertyName(LASER_PERCFINEB),descFine));
+
+		addUIProperty(new TwoStateUIProperty(this,getPropertyName(LASER_OPERATION),descOnOff, new LaserFlag()));
+		addUIProperty(new TwoStateUIProperty(this,getPropertyName(LASER_ENABLEFINE),descEnFine));
+		addUIProperty(new TwoStateUIProperty(this,getPropertyName(LASER_EXTERNALTRIGGER),descExTrig));
 	}
 
 	@Override
@@ -338,9 +361,10 @@ public class IBeamSmartPanel extends ConfigurablePanel {
 	@Override
 	protected void initializeParameters() {
 		max_power = 100;
-		addUIParameter(new IntegerUIParameter(this, PARAM_MAXPOW,"Maximum laser power.", max_power));
-		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE_FINE,"Fine settings available in the iBeamSmart laser.", true));
-		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE_EXT_TRIGGER,"External trigger available in the iBeamSmart laser.", true));
+	
+		addUIParameter(new IntegerUIParameter(this, PARAM_MAXPOW,"Maximum laser power, sets the maximum value of the power slider in the GUI.", max_power));
+		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE_FINE,"Unselect to hide the fine (iBeamSmart specific property) panel.", true));
+		addUIParameter(new BoolUIParameter(this, PARAM_ENABLE_EXT_TRIGGER,"Unselect to hide the external trigger (iBeamSmart specific property) panel.", true));
 	}
 
 	@Override

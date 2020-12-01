@@ -320,7 +320,7 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		
 		String descPulse = "Pulse length, power or power percentage property of the activation laser. This property"
 				+ " is required for the Activation script. Note that it should be mapped to the same device property"
-				+ " as \"UV pulse duration (main frame)\".";
+				+ " as \"UV pulse duration (main frame)\" for consistence.";
 		
 		addUIProperty(new UIProperty(this, LASER_PULSE,descPulse));		
 	}

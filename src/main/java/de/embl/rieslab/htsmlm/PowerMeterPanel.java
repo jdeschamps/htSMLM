@@ -123,8 +123,8 @@ public class PowerMeterPanel extends ConfigurablePanel{
 	
 	@Override
 	protected void initializeProperties() {
-		addUIProperty(new UIProperty(this, PROP_POWER, "Laser power signal value. The device property should be numerical. "
-				+ "Slope and offset to convert it to mW can be set as parameters."));
+		addUIProperty(new UIProperty(this, PROP_POWER, "Laser power signal value. The device property should "
+				+ "be numerical. Slope and offset to convert it to mW can be set in the Parameters tab."));
 	}
 
 	@Override
@@ -154,18 +154,26 @@ public class PowerMeterPanel extends ConfigurablePanel{
 		String wlgth = "405,488,561,638";
 		String slope = "1,1,1,1";
 		String offset = "0,0,0,0";
-		addUIParameter(new StringUIParameter(this, PARAM_WAVELENGTHS, "Comma-separated wavelengths of the "
-				+ "different lasers measured by the power meter property.", wlgth));
-		addUIParameter(new StringUIParameter(this, PARAM_SLOPES, "Comma-separated slopes to convert the measurements to Watts. Make sure to input"
-				+ "as many slopes as there are wavelengths. Otherwise, a default value of 1 will be applied.", slope));
-		addUIParameter(new StringUIParameter(this, PARAM_OFFSETS, "Comma-separated offsets to convert the measurements to Watts. Make sure to input"
-				+ "as many slopes as there are wavelengths. Otherwise, a default value of 1 will be applied.", offset));
+
+		String descW = "Comma-separated wavelengths of the different lasers measured by the powermeter property.";
+		String descSl = "Comma-separated slopes to convert the measurements to Watts. Make sure to input as "
+				+ "many slopes as there are wavelengths, otherwise, a default value of 1 will be applied.";
+		String descOf = "Comma-separated offsets to convert the measurements to mW. Make sure to input as "
+				+ "many slopes as wavelengths, otherwise a default value of 1 will be applied.";
+		String descId = "Idle time (ms) between two updates of the powermeter value.";
+		String descN = "Number of laser power measurements displayed in the chart (x axis).";
+		
+		
+		
+		addUIParameter(new StringUIParameter(this, PARAM_WAVELENGTHS, descW, wlgth));
+		addUIParameter(new StringUIParameter(this, PARAM_SLOPES, descSl, slope));
+		addUIParameter(new StringUIParameter(this, PARAM_OFFSETS, descOf, offset));
 		
 
 		idle_ = 1000;
 		npos_ = 100; 
-		addUIParameter(new IntegerUIParameter(this, PARAM_IDLE,"Idle time (ms) of the laser power monitoring.",idle_)); 
-		addUIParameter(new IntegerUIParameter(this, PARAM_NPOS,"Number of laser power measurements displayed in the chart (x axis).",npos_));
+		addUIParameter(new IntegerUIParameter(this, PARAM_IDLE, descId,idle_)); 
+		addUIParameter(new IntegerUIParameter(this, PARAM_NPOS, descN,npos_));
 	}
 
 	@Override

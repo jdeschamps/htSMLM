@@ -150,8 +150,16 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 
 	@Override
 	protected void initializeProperties() {
+		
+		String descMode = "MicroFPGA (Github: jdeschamps/MicroFPGA) property dictating the behaviour of the "
+				+ "laser trigger.";
+		
+		String descSeq = "MicroFPGA (Github: jdeschamps/MicroFPGA) trigger sequence.";
+		
+		String descPulse = "MicroFPGA (Github: jdeschamps/MicroFPGA) duration of the laser pulses.";
+		
 		addUIProperty(new MultiStateUIProperty(this, getPropertyLabel(TRIGGER_MODE),
-				"Micro-Mojo FPGA: property dictating the behaviour of the laser trigger, from camera to pulsing.",
+				descMode,
 				new LaserFlag(), FPGA_BEHAVIOURS.length));
 		
 		try {
@@ -161,10 +169,10 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 		}
 		
 		addUIProperty(new UIProperty(this, getPropertyLabel(TRIGGER_SEQUENCE),
-				"Micro-Mojo FPGA: trigger sequence property, following a 16 bits pattern of 0 (not triggered) and 1 (triggered).",
+				descSeq,
 				new LaserFlag()));
 		addUIProperty(new UIProperty(this, getPropertyLabel(PULSE_LENGTH),
-				"Micro-Mojo FPGA: duration of the laser pulses.", new LaserFlag()));
+				descPulse, new LaserFlag()));
 	}
 
 	@Override
@@ -177,8 +185,8 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 			modes = modes+","+FPGA_BEHAVIOURS[i];
 		}
 		
-		addUIParameter(new StringUIParameter(this, PARAM_TITLE,"Name of the laser, as displayed in the border title.",title_));
-		addUIParameter(new ColorUIParameter(this, PARAM_COLOR,"Color of the laser name.",color_)); 
+		addUIParameter(new StringUIParameter(this, PARAM_TITLE,"Name of the laser as displayed on top of the laser trigger panel.",title_));
+		addUIParameter(new ColorUIParameter(this, PARAM_COLOR,"Color of the laser name as displayed in the laser trigger panel.",color_)); 
 	}
 
 	@Override

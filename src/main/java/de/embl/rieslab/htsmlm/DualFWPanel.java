@@ -185,33 +185,60 @@ public class DualFWPanel extends AbstractFiltersPanel {
 	
 	@Override
 	protected void initializeProperties() {
-		addUIProperty(new MultiStateUIProperty(this, FW_POSITION1, "Filter wheel 1 position.", new FilterWheelFlag(),NUM_POS));
-		addUIProperty(new MultiStateUIProperty(this, FW_POSITION2, "Filter wheel 2 position.", new FilterWheelFlag(),NUM_POS));		
+		String desc = "Filter wheel No1 position. Choose a device property that corresponds to an element with a "
+				+ "finite number of states (e.g. a filter wheel). The filter wheel property has "+NUM_POS+" positions. "
+				+ "For each position, indicate in the \"Filter wheel position state #\" the corresponding "
+				+ "device property value. In order to determine the value, use the Micro-Manager device "
+				+ "property browser. All states must be set, but multiple states can have the same value. "
+				+ "Each state name and color can be configured in the Parameters tab.";
+		
+		String desc2 = "Filter wheel No2 position. Choose a device property that corresponds to an element with a "
+				+ "finite number of states (e.g. a filter wheel). The filter wheel property has "+NUM_POS+" positions. "
+				+ "For each position, indicate in the \"Filter wheel position state #\" the corresponding "
+				+ "device property value. In order to determine the value, use the Micro-Manager device "
+				+ "property browser. All states must be set, but multiple states can have the same value. "
+				+ "Each state name and color can be configured in the Parameters tab.";
+		
+		addUIProperty(new MultiStateUIProperty(this, FW_POSITION1, desc, new FilterWheelFlag(),NUM_POS));
+		addUIProperty(new MultiStateUIProperty(this, FW_POSITION2, desc2, new FilterWheelFlag(),NUM_POS));		
 	}
+
 
 	@Override
 	protected void initializeParameters() {
 		title_ = TITLE;
+		String names = "Name0";
+		String colors = "Color";
 		names1_ = NAME_EMPTY;
 		colors1_ = COLOR_EMPTY;
-		for(int i=0;i<NUM_POS-1;i++){
-			names1_ += ","+NAME_EMPTY; 
-			colors1_ += ","+COLOR_EMPTY; 
-		}
-		names2_ = names1_;
-		colors2_ = colors1_;
-		
-		String desc_names = "Filter names displayed by the UI. The entry should be written as \"name1,name2,name3,name4,name5,name6\". The names should be separated by a comma. "
-				+ "The maximum number of filters name is "+NUM_POS+", beyond that the names will be ignored.";
-		String desc_colors= "Filter colors displayed by the UI. The entry should be written as \"color1,color2,color3,color4,color5,color6\". The names should be separated by a comma. "
-				+ "The maximum number of filters color is "+NUM_POS+", beyond that the colors will be ignored. The available colors are: "+ColorRepository.getCommaSeparatedColors();
+		names2_ = NAME_EMPTY;
+		colors2_ = COLOR_EMPTY;
+		for(int j=1;j<NUM_POS;j++){
+			names += ","+"Name"+j; 
+			colors += ","+"Color"+j; 
 
-		addUIParameter(new StringUIParameter(this, PARAM_TITLE,"Title of the dual FW panel",title_));
-		addUIParameter(new StringUIParameter(this, PARAM_NAMES1,desc_names,names1_));
-		addUIParameter(new StringUIParameter(this, PARAM_COLORS1,desc_colors,colors1_));
+			names1_ += ","+NAME_EMPTY;
+			colors1_ += ","+COLOR_EMPTY;
+			names2_ += ","+NAME_EMPTY;
+			colors2_ += ","+COLOR_EMPTY;
+		};
+		
+		String desc_c1 = "Filter name colors displayed on the GUI. The entry should be written "
+				+ "as \""+colors+"\". The colors should be separated by commas. The maximum number "
+				+ "of filters color is "+NUM_POS+", beyond that the colors will be ignored. The available "
+						+ "colors are: "+ColorRepository.getCommaSeparatedColors()+".";
+
+		String desc_n1 = "Filter names displayed on the GUI. The entry should be written "
+				+ "as \""+names+"\". The names should be separated by commas. The maximum "
+				+ "number of filters name is "+NUM_POS+", beyond that the names will be ignored.";
+		
 	
-		addUIParameter(new StringUIParameter(this, PARAM_NAMES2,desc_names,names2_));
-		addUIParameter(new StringUIParameter(this, PARAM_COLORS2,desc_colors,colors2_));
+		addUIParameter(new StringUIParameter(this, PARAM_TITLE,"Title of the dual FW panel",title_));
+		addUIParameter(new StringUIParameter(this, PARAM_NAMES1,desc_n1,names1_));
+		addUIParameter(new StringUIParameter(this, PARAM_COLORS1,desc_c1,colors1_));
+	
+		addUIParameter(new StringUIParameter(this, PARAM_NAMES2,desc_n1,names2_));
+		addUIParameter(new StringUIParameter(this, PARAM_COLORS2,desc_c1,colors2_));
 	
 	}
 

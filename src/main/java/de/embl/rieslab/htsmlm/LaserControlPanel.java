@@ -214,11 +214,18 @@ public class LaserControlPanel extends ConfigurablePanel {
 
 	@Override
 	protected void initializeProperties() {
-		String text = "Power percentage of the laser. If the laser only has a power set point (mW) property instead of a percentage property, "
-				+ "then use a slope value equal to (maximum power / 100) to turn the property it into a power percentage.";
+		String descPerc = "Power percentage of the laser. This property allows rescaling the device property "
+				+ "value. If the laser has only a power set point (mW) property instead of a percentage "
+				+ "property, then use a slope value equal to (maximum power / 100) to turn to scale the device "
+				+ "property to a power percentage. ";
 		
-		addUIProperty(new RescaledUIProperty(this, getPropertylabel(LASER_PERCENTAGE),text, new LaserFlag()));
-		addUIProperty(new TwoStateUIProperty(this,getPropertylabel(LASER_OPERATION),"Laser On/Off property (e.g. 1/0 or On/Off).", new LaserFlag()));
+		String descOperation = "Laser On/Off property. Lasers are numbered from left to right in the main "
+				+ "interface. Both on and off values must be set. Consult the Micro-Manager device property "
+				+ "browser to determine them  (e.g. \"1\" and \"0\" or \"On\" and Off\"). The On/Off button "
+				+ "can be disabled in the Parameters tab.";
+		
+		addUIProperty(new RescaledUIProperty(this, getPropertylabel(LASER_PERCENTAGE),descPerc, new LaserFlag()));
+		addUIProperty(new TwoStateUIProperty(this,getPropertylabel(LASER_OPERATION),descOperation, new LaserFlag()));
 	}
 
 	@Override
@@ -228,11 +235,17 @@ public class LaserControlPanel extends ConfigurablePanel {
 		useOnOff_ = true;
 		useSlider_ = true;
 		
-		addUIParameter(new StringUIParameter(this, PARAM_TITLE,"Panel title.",title_));
-		addUIParameter(new ColorUIParameter(this, PARAM_COLOR,"Panel title color.",color_));
+		addUIParameter(new StringUIParameter(this, PARAM_TITLE,"Laser name displayed on top of the laser "
+				+ "control panel in the GUI.",title_));
+		addUIParameter(new ColorUIParameter(this, PARAM_COLOR,"Color of the laser name as shown in the GUI.",color_));
 		addUIParameter(new BoolUIParameter(this, PARAM_ONOFF,"Enable/disable the On/Off button.",useOnOff_));
-		addUIParameter(new BoolUIParameter(this, PARAM_SLIDER,"Use a slider to control the laser power, if disabled"
-				+ "the slider is replaced by a user-defined and three pre-defined buttons.",useSlider_));
+		
+		
+		String descSlider = "If selected, the laser power percentage control appears as a slider. If disabled "
+				+ "the slider is replaced by three pre-defined buttons (1%, 20% and 100%), as well as a "
+				+ "user-defined button whose corresponding percentage can be set in a text-field.";
+		
+		addUIParameter(new BoolUIParameter(this, PARAM_SLIDER,descSlider,useSlider_));
 	}
 
 	@Override

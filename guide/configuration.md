@@ -51,9 +51,9 @@ Finally, some GUI properties are only available when the corresponding Plugin se
 
 - **Two-state device #**: Map to this GUI property (button No# in controls panel) a device property with two positions (e.g. On/Off or In/Out). Consult the Micro-Manager device property browser to determine them  (e.g. "1" and "0" or "On" and Off"). The two-state device appears in the interface as a single toggle button. The name of the button can be set in the Parameters tab. 
 
-- **UV pulse duration (activation)**: Pulse length, power or power percentage property of the activation laser. This property is required for the Activation script. Note that it should be mapped to the same device property as "UV pulse duration (main frame)".
+- **UV pulse duration (activation)**: Pulse length, power or power percentage property of the activation laser. This property is required for the Activation script. Note that it should be mapped to the same device property as "UV pulse duration (main frame)" for consistence.
 
-- **UV pulse duration (main frame)**: Pulse length, power or power percentage property of the activation laser. This property is required for the Activation script. Note that it should be mapped to the same device property as "UV pulse duration (activation)".
+- **UV pulse duration (main frame)**: Pulse length, power or power percentage property of the activation laser. This property is required for the Activation script. Note that it should be mapped to the same device property as "UV pulse duration (activation)" for consistence.
 
 - **Z stage focus-locking**: Property used to toggle focus stabilization.
 
@@ -66,6 +66,17 @@ Finally, some GUI properties are only available when the corresponding Plugin se
 ##### Additional FW tab selected
 
 - **Slider # position**: Slider No# position. Choose a device property that corresponds to an element with a finite number of states (e.g. a filter wheel). Each slider property has 4 positions. For each position, indicate in the "Slider # position state x" (where x is 0, 1, 2 or 3) the corresponding device property value. In order to determine the value, use the Micro-Manager device property browser. All states must be set, but multiple states can have the same value. Each state name and color can be configured in the Parameters tab.
+
+##### iBeamSmart #1/2 selected
+
+The "iBeamSmart #1/2 name" plugin setting influences the name of the following properties.
+
+- **[Name] enable fine**: iBeamSmart specific property. Leave unmapped to ignore. The corresponding panel can be disabled in the Parameters tab. Consult the Micro-Manager device property browser to determine them  (e.g. "1" and "0" or "On" and Off").
+- **[Name] ext trigger**: iBeamSmart specific property. Leave unmapped to ignore. The corresponding panel can be disabled in the Parameters tab. Consult the Micro-Manager device property browser to determine them  (e.g. "1" and "0" or "On" and Off").
+- **[Name] fine a (%)**: iBeamSmart specific property. Leave unmapped to ignore. The corresponding panel can be disabled in the Parameters tab.
+- **[Name] fine b (%)**: iBeamSmart specific property. Leave unmapped to ignore. The corresponding panel can be disabled in the Parameters tab.
+- **[Name] laser power**: Laser power in mW. This GUI property can also be used with a power percentage device property by setting the maximum power in the Properties tab to 100; however, the "mW" mention will remain.
+- **[Name] operation**: Laser On/Off property. Lasers are numbered from left to right in the main interface. Both on and off values must be set. Consult the Micro-Manager device property browser to determine them  (e.g. "1" and "0" or "On" and Off").
 
 ##### Powermeter tab selected
 
@@ -81,16 +92,9 @@ Finally, some GUI properties are only available when the corresponding Plugin se
 - **Laser # pulse duration**: MicroFPGA (Github: jdeschamps/MicroFPGA) duration of the laser pulses.
 - **Laser # trigger sequence**: MicroFPGA (Github: jdeschamps/MicroFPGA) trigger sequence.
 
-##### iBeamSmart #1/2 selected
+#### Properties requiring a Plugin Setting to be unselected:
 
-The "iBeamSmart #1/2 name" plugin setting influences the name of the following properties.
-
-- **[Name] enable fine**: iBeamSmart specific property. Leave unmapped to ignore. The corresponding panel can be disabled in the Parameters tab. Consult the Micro-Manager device property browser to determine them  (e.g. "1" and "0" or "On" and Off").
-- **[Name] ext trigger**: iBeamSmart specific property. Leave unmapped to ignore. The corresponding panel can be disabled in the Parameters tab. Consult the Micro-Manager device property browser to determine them  (e.g. "1" and "0" or "On" and Off").
-- **[Name] fine a (%)**: iBeamSmart specific property. Leave unmapped to ignore. The corresponding panel can be disabled in the Parameters tab.
-- **[Name] fine b (%)**: iBeamSmart specific property. Leave unmapped to ignore. The corresponding panel can be disabled in the Parameters tab.
-- **[Name] laser power**: Laser power in mW. This GUI property can also be used with a power percentage device property by setting the maximum power in the Properties tab to 100; however, the "mW" mention will remain.
-- **[Name] operation**: Laser On/Off property. Lasers are numbered from left to right in the main interface. Both on and off values must be set. Consult the Micro-Manager device property browser to determine them  (e.g. "1" and "0" or "On" and Off").
+Note that if **Single FW panel** is unselected, an additional filter wheel is present, with its corresponding property and parameters. The property and parameters names are similar to the other filter wheel.
 
 ------
 
@@ -118,7 +122,7 @@ The "iBeamSmart #1/2 name" plugin setting influences the name of the following p
 
 - **Controls - Two-state device # name**: Text appearing on the button No# of the controls panel.
 
-- **Filters - Filter colors**: Colors of the filter names displayed on the GUI. The entry should be written as "color1,color2,color3,color4,color5,color6". The names should be separated by commas. The maximum number of filter colors is 6, beyond that the colors will be ignored. The available colors are: pink, violet, dark violet, dark blue, blue, pastel blue, dark green, green, yellow, orange, brown, dark red, red, black, gray, white.
+- **Filters - Filter colors**: Filter name colors displayed on the GUI. The entry should be written as "color1,color2,color3,color4,color5,color6". The names should be separated by commas. The maximum number of filter colors is 6, beyond that the colors will be ignored. The available colors are: pink, violet, dark violet, dark blue, blue, pastel blue, dark green, green, yellow, orange, brown, dark red, red, black, gray, white.
 
 - **Filters - Filter names**: Filter names displayed on the GUI. The entry should be written as "name1,name2,name3,name4,name5,name6". The names should be separated by commas. The maximum number of filter names is 6, beyond that the names will be ignored.
 
@@ -152,6 +156,14 @@ The "iBeamSmart #1/2 name" plugin setting influences the name of the following p
 - **Additional filters - Slider # names**: Filter names displayed on the GUI for the additional filter wheel No#. The entry should be written as "name1,name2,name3,None,None,None". The names should be separated by a comma. The maximum number of filters name is 4, beyond that the names will be ignored. If the commas are not present, then the entry will be set as the name of the first filter.
 - **Additional filters - Slider # title**: Title of the set of additional filters No#.
 
+##### iBeamSmart#1/2 selected
+
+The "iBeamSmart #1/2 name" plugin setting influences the name of the following parameters.
+
+- **[Name] - external trigger available**: Unselect to hide the external trigger (iBeamSmart specific property) panel.
+- **[Name] - fine available**: Unselect to hide the fine (iBeamSmart specific property) panel.
+- **[Name] - max power**: Maximum laser power, sets the maximum value of the power slider in the GUI.
+
 ##### Powermeter tab selected
 
 - **Powermeter - idle time (ms)**: Idle time (ms) between two updates of the powermeter value.
@@ -171,13 +183,9 @@ The "iBeamSmart #1/2 name" plugin setting influences the name of the following p
 - **Laser # trigger - Color**: Color of the laser name as displayed in the laser trigger panel.
 - **Laser # trigger - Name**: Name of the laser as displayed on top of the laser trigger panel.
 
-##### iBeamSmart#1/2 selected
+#### Parameters requiring a Plugin Setting to be unselected:
 
-The "iBeamSmart #1/2 name" plugin setting influences the name of the following parameters.
-
-- **[Name] - external trigger available**: Unselect to hide the external trigger (iBeamSmart specific property) panel.
-- **[Name] - fine available**: Unselect to hide the fine (iBeamSmart specific property) panel.
-- **[Name] - max power**: Maximum laser power, sets the maximum of the slider in the GUI.
+Note that if **Single FW panel** is unselected, an additional filter wheel is present, with its corresponding property and parameters. The property and parameters names are similar to the other filter wheel.
 
 ------
 

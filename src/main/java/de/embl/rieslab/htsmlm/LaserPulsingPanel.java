@@ -120,8 +120,12 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 
 	@Override
 	protected void initializeProperties() {
+		String descPulse = "Pulse length, power or power percentage property of the activation laser. This "
+				+ "property is required for the Activation script. Note that it should be mapped to the same "
+				+ "device property as \"UV pulse duration (activation)\" for consistence.";
+		
 		addUIProperty(new UIProperty(this, CAMERA_EXPOSURE,"Camera exposure in ms.", new CameraExpFlag()));
-		addUIProperty(new UIProperty(this, LASER_PULSE,"Pulse duration of the activation laser."));
+		addUIProperty(new UIProperty(this, LASER_PULSE,descPulse));
 	}
 
 	@Override
@@ -129,10 +133,14 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 		title_ = "UV";	
 		color_ = Color.black;
 		maxpulse_  = 10000;
-		
-		addUIParameter(new StringUIParameter(this, PARAM_TITLE,"Panel title.",title_));
-		addUIParameter(new ColorUIParameter(this, PARAM_COLOR,"Panel title color.",color_));
-		addUIParameter(new IntegerUIParameter(this, PARAM_DEFAULT_MAX,"Default maximum value for the activation laser pulse length.",maxpulse_));
+
+		addUIParameter(new StringUIParameter(this, PARAM_TITLE,"Laser name displayed on top of the laser "
+				+ "control panel in the GUI.",title_));
+		addUIParameter(new ColorUIParameter(this, PARAM_COLOR,"Color of the laser name as shown in the GUI.",color_));
+				
+		String desc = "Default maximum value for the activation laser pulse length (or power). This default "
+				+ "value appears in the grey box at the top-left corner of the GUI. The value must be an integer.";
+		addUIParameter(new IntegerUIParameter(this, PARAM_DEFAULT_MAX, desc, maxpulse_));
 	}
 
 	@Override

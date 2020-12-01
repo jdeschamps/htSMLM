@@ -263,16 +263,47 @@ public class MainFrame extends ConfigurableMainFrame{
 	@Override
 	public HashMap<String, Setting> getDefaultPluginSettings() {
 		HashMap<String, Setting> defaultSettings = new HashMap<String, Setting>();
-		defaultSettings.put(SETTING_USE_POWERMETER, new BoolSetting(SETTING_USE_POWERMETER, "Check to use the powermeter tab in the plugin.", true));
-		defaultSettings.put(SETTING_USE_TRIGGER, new BoolSetting(SETTING_USE_TRIGGER, "Check to use the trigger tab in the plugin.", true));
-		defaultSettings.put(SETTING_USE_ADDFW, new BoolSetting(SETTING_USE_ADDFW, "Check to use the additional filters tab in the plugin.", true));
-		defaultSettings.put(SETTING_NAME_ADDFILT, new StringSetting(SETTING_NAME_ADDFILT, "Title of the additional filters tab.", "Additional filters"));
-		defaultSettings.put(SETTING_USE_SINGLEFW, new BoolSetting(SETTING_USE_SINGLEFW, "Check to use a single FW panel, uncheck for a double FW panel.", true));
-		defaultSettings.put(SETTING_USE_QPD, new BoolSetting(SETTING_USE_QPD, "Check to use the QPD tab in the plugin.", true));
-		defaultSettings.put(SETTING_USE_IBS2, new BoolSetting(SETTING_USE_IBS2, "Check to use the iBeamSmart #2.", true));
-		defaultSettings.put(SETTING_USE_IBS1, new BoolSetting(SETTING_USE_IBS1, "Check to use the iBeamSmart #1.", true));
-		defaultSettings.put(SETTING_NAME_IBS2, new StringSetting(SETTING_NAME_IBS2, "Name of iBeamSmart #2.", "iBeamSmart #2"));
-		defaultSettings.put(SETTING_NAME_IBS1, new StringSetting(SETTING_NAME_IBS1, "Name of iBeamSmart #1.", "iBeamSmart #1"));
+
+		String descPow = "Check to use the powermeter tab in the plugin. Causes a new tab to appear, allowing "
+				+ "users to read a Micro-manager property and linearly transform it to represent a power in mW. "
+				+ "Users can choose a number of names for the channels (wavelengths), as well as the slopes and "
+				+ "offsets for the linear transformation.  ";
+		String descTri = "Check to use the trigger tab in the plugin. The trigger tab can be used with MicroFPGA, "
+				+ "an FPGA board aimed, among other things, at triggering lasers in a flexible manner.  MicroFPGA "
+				+ "can be found on Github (jdeschamps/MicroFPGA).";
+		String descAFW = "Check to use the additional filters tab in the plugin. When selected, a new tab "
+				+ "containing two sliders with four positions each. All slider position names and colors can "
+				+ "be customized.";
+		String descNameAFW = "Title of the additional filters tab, if the \"Additional FW tab\" setting is "
+				+ "selected.";
+		String descSFW = "Check to use a single filter wheel panel. When unchecked, the filter wheel panel "
+				+ "contains two rows of filters, with customizable names and colors, corresponding to two "
+				+ "different filter wheels.";
+		String descQPD = "Check to use the QPD tab in the plugin. The QPD tab is aimed at plotting three "
+				+ "signals (X, Y, Z) from a quadrant photo-diode in time. The tab contains one graph (X vs Y) "
+				+ "and one progress bar (Z). This is part of a focus-locking system. ";
+		String descUseIB2 = "Check to use the iBeamSmart #2 tab. Originally aimed at controlling an "
+				+ "iBeamSmart laser from Toptica, the Toptica specific aspects can be disabled to correspond to "
+				+ "a simple laser. ";
+		String descUseIB1 = "Check to use the iBeamSmart #1 tab. Originally aimed at controlling an "
+				+ "iBeamSmart laser from Toptica, the Toptica specific aspects can be disabled to correspond to "
+				+ "a simple laser. ";
+		String descNIB2 = "Name of iBeamSmart #2 tab, if the \"iBeamSmart #2\" setting is selected. The "
+				+ "corresponding properties and parameters will bear the same name.";
+		String descNIB1 = "Name of iBeamSmart #1 tab, if the \"iBeamSmart #1\" setting is selected. The "
+				+ "corresponding properties and parameters will bear the same name.";
+		
+		
+		defaultSettings.put(SETTING_USE_POWERMETER, new BoolSetting(SETTING_USE_POWERMETER, descPow, true));
+		defaultSettings.put(SETTING_USE_TRIGGER, new BoolSetting(SETTING_USE_TRIGGER, descTri, true));
+		defaultSettings.put(SETTING_USE_ADDFW, new BoolSetting(SETTING_USE_ADDFW, descAFW, true));
+		defaultSettings.put(SETTING_NAME_ADDFILT, new StringSetting(SETTING_NAME_ADDFILT, descNameAFW, "Additional filters"));
+		defaultSettings.put(SETTING_USE_SINGLEFW, new BoolSetting(SETTING_USE_SINGLEFW, descSFW, true));
+		defaultSettings.put(SETTING_USE_QPD, new BoolSetting(SETTING_USE_QPD, descQPD, true));
+		defaultSettings.put(SETTING_USE_IBS2, new BoolSetting(SETTING_USE_IBS2, descUseIB2, true));
+		defaultSettings.put(SETTING_USE_IBS1, new BoolSetting(SETTING_USE_IBS1, descUseIB1, true));
+		defaultSettings.put(SETTING_NAME_IBS2, new StringSetting(SETTING_NAME_IBS2, descNIB2, "iBeamSmart #2"));
+		defaultSettings.put(SETTING_NAME_IBS1, new StringSetting(SETTING_NAME_IBS1, descNIB1, "iBeamSmart #1"));
 		
 		return defaultSettings;
 	}
