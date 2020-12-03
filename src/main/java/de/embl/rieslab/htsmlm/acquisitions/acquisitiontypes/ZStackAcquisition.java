@@ -159,7 +159,7 @@ public class ZStackAcquisition implements Acquisition {
 		// run acquisition
 		AcquisitionManager acqManager = studio.acquisitions();
 		acqManager.setAcquisitionSettings(seqBuilder.build());
-		Datastore store = acqManager.runAcquisition();
+		Datastore store = acqManager.runAcquisitionNonblocking();
 
 		// loop to check if needs to be stopped or not
 		while(studio.acquisitions().isAcquisitionRunning()) {

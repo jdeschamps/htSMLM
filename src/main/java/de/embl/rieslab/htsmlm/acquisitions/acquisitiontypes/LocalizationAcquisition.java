@@ -308,8 +308,10 @@ public class LocalizationAcquisition implements Acquisition {
 		// runs acquisition
 		AcquisitionManager acqManager = studio.acquisitions();
 		acqManager.setAcquisitionSettings(seqBuilder.build());
-		Datastore store = acqManager.runAcquisition();
-
+		
+		System.out.println(acqManager.getAcquisitionSettings().numFrames());
+		Datastore store = acqManager.runAcquisitionNonblocking();
+		
 		// loop to check if needs to be stopped or not
 		while(studio.acquisitions().isAcquisitionRunning()) {
 			
@@ -328,7 +330,6 @@ public class LocalizationAcquisition implements Acquisition {
 			}
 			
 			Thread.sleep(1000);
-			
 		}
 
 		studio.displays().closeDisplaysFor(store);
@@ -349,7 +350,7 @@ public class LocalizationAcquisition implements Acquisition {
 				// not pretty but I could not find any other way to stop the acquisition without getting a JDialog popping up and requesting user input
 				((DefaultAcquisitionManager) studio.acquisitions()).getAcquisitionEngine().stop(true);
 				
-	
+				//((DefaultAcquisitionManager) studio.acquisitions()).haltAcquisition();
 				//((DefaultAcquisitionManager) studio.acquisitions()).getAcquisitionEngine().abortRequested();
 			} catch (Exception e) {
 				e.printStackTrace();

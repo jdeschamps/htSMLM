@@ -524,7 +524,7 @@ public class MultiSliceAcquisition implements Acquisition {
 						// runs acquisition
 						AcquisitionManager acqManager = studio.acquisitions();
 						acqManager.setAcquisitionSettings(seqBuilder.build());
-						Datastore store = acqManager.runAcquisition();
+						Datastore store = acqManager.runAcquisitionNonblocking();
 
 						// loops to check if needs to be stopped or not
 						while(studio.acquisitions().isAcquisitionRunning()) {

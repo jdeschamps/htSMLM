@@ -186,7 +186,7 @@ public class TimeAcquisition implements Acquisition{
 		//studio.getLogManager().logDebugMessage("[htSMLM] frames: "+ss.numFrames()+".");
 		
 		acqManager.setAcquisitionSettings(seqBuilder.build());
-		Datastore store = acqManager.runAcquisition();
+		Datastore store = acqManager.runAcquisitionNonblocking();
 
 		// loop to check if needs to be stopped or not
 		while(studio.acquisitions().isAcquisitionRunning()) {
