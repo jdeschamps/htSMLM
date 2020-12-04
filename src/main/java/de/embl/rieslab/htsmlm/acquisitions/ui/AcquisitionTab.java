@@ -3,6 +3,7 @@ package de.embl.rieslab.htsmlm.acquisitions.ui;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -404,8 +405,13 @@ public class AcquisitionTab extends JPanel {
 		 */
 
 		pane.add(new JPanel());
-
-		return pane;
+		HLimitScrollPane scrollpane = new HLimitScrollPane(pane, 500);
+		
+		JPanel pane2 = new JPanel();
+		GridLayout experimentLayout = new GridLayout(0,1);
+		pane2.setLayout(experimentLayout);
+		pane2.add(scrollpane);
+		return pane2;
 	}
 
 	private void setUpPanel() {
@@ -421,8 +427,7 @@ public class AcquisitionTab extends JPanel {
 
 		contentpane.add(acqcard_);
 
-		this.add(new JScrollPane(contentpane, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
+		this.add(contentpane);
 
 	}
 
@@ -926,5 +931,25 @@ public class AcquisitionTab extends JPanel {
 	    public Object getCellEditorValue() {
 	    	return slider_.getText();
 	    }
+	}
+	
+	private class HLimitScrollPane extends JScrollPane{
+		
+		int maxHeight;
+		
+		public HLimitScrollPane(Component comp, int height) {
+			super(comp);
+			
+			this.maxHeight = height;
+			this.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);  
+			this.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); 
+		}
+		
+		@Override
+		public Dimension getPreferredSize() {
+			Dimension d = super.getPreferredSize();
+
+			return new Dimension(d.width, maxHeight);
+		}
 	}
 }
