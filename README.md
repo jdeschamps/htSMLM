@@ -4,6 +4,10 @@
 
 htSMLM (high-throughput single-molecule localization microscopy) is an [EMU]( https://github.com/jdeschamps/EMU ) user interface for [Micro-Manager](https://micro-manager.org/wiki/Micro-Manager). EMU allows loading easily reconfigurable user interfaces in Micro-Manager. 
 
+<p align="center">
+  <img height="600" src="guide/img/htsmlm.png">
+</p>
+
 In particular, htSMLM features optional and reconfigurable controls for:
 
 - Four lasers (on/off and laser percentage)
