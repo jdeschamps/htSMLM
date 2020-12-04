@@ -211,6 +211,10 @@ Simply set the remaining two filters (in the main filter wheel of the interface)
 
 Use the iBeamSmart laser options nonetheless and disable the iBeamSmart specific features in the parameters.
 
+#### I want to use another laser than iBeamSmart with the corresponding panel, but this laser does not have an absolute laser power device property
+
+The IBeamSmart panels have a maximum laser power parameter, simply set it to 100. That way, you can use a laser power percentage device property.
+
 #### I don't understand what the controls panel do
 
 These are simply several buttons that can toggle between two states. You can map to each button any device property of your choice, as long as you intend to switch them from one state to the other.

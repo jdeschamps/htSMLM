@@ -1,6 +1,6 @@
 # Guide
 
-htSMLM (high-throughput single-molecule localization microscopy) is an [EMU]( https://github.com/jdeschamps/EMU ) user interface for [Micro-Manager](https://micro-manager.org/wiki/Micro-Manager). It must be compiled or installed separately. 
+htSMLM (high-throughput single-molecule localization microscopy) is an [EMU]( https://github.com/jdeschamps/EMU ) user interface for [Micro-Manager](https://micro-manager.org/wiki/Micro-Manager). It must be compiled or installed separately from EMU/Micro-Manager. 
 
 1. [Installation](installation.md)
 2. [Overview](overview.md)
@@ -15,4 +15,5 @@ htSMLM (high-throughput single-molecule localization microscopy) is an [EMU]( ht
    3. [Activation script](using-htsmlm.md#activation-script)
    4. [Acquisitions with htSMLM](using-htsmlm.md#acquisitions-with-htsmlm)
 
-
+> Note: htSMLM acquisitions were last tested with the 20201203 Micro-Manager gamma nightly build.
+>

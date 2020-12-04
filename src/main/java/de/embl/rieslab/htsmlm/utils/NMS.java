@@ -8,6 +8,13 @@ import ij.gui.ImageWindow;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
 
+/**
+ * Implementation following: Neubeck, A., & Van Gool, L. (2006, August).
+ * Efficient non-maximum suppression. In 18th International Conference on
+ * Pattern Recognition (ICPR'06) (Vol. 3, pp. 850-855). IEEE.
+ *
+ */
+
 public class NMS {
 	ImageProcessor imp, impresult;
 	ImagePlus im_, imtemp_;

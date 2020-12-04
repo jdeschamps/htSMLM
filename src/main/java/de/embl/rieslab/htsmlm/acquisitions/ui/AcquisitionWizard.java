@@ -99,11 +99,11 @@ public class AcquisitionWizard {
 		JLabel wait = new JLabel("Waiting (s)");
 		waitfield = new JTextField(String.valueOf(waitingtime));
 		waitfield.setPreferredSize(new Dimension(30,20));
-		waitfield.setToolTipText("Waiting time (s) before starting the experiment (this waiting period occurs only once).");
+		waitfield.setToolTipText("Waiting time (s) before starting the experiment (this waiting period occurs only once for each position).");
 		
 		JLabel pos = new JLabel("Pos number");
 		numposfield = new JTextField(String.valueOf(numpos));
-		numposfield.setToolTipText("Number of positions from the position list to use (0 = use all).");
+		numposfield.setToolTipText("Number of positions to use from the position list (0 = use all).");
 		
 		add.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

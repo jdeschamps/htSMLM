@@ -478,6 +478,7 @@ public class MultiSliceAcquisition implements Acquisition {
 		seqBuilder.useFrames(true);
 		seqBuilder.saveMode(savemode);
 
+		double zst = 0;
 		double z0 = 0;
 		try {
 			z0 = core.getPosition(zdevice_);
@@ -496,7 +497,12 @@ public class MultiSliceAcquisition implements Acquisition {
 					}					
 					
 					// set z
-					double z = z0 + j*deltaZ;
+					double z;
+					if(i == 0) {
+						z = z0 + j*deltaZ;
+					} else { // !!!!! ACTUALLY this should also depend on whether there is focus lock or focus lock at Z0 !!!!
+						z = zst + (j-sliceSt)*deltaZ;
+					}
 					
 					try {
 						// moves the stage
@@ -510,7 +516,7 @@ public class MultiSliceAcquisition implements Acquisition {
 							zstabProperty_.setPropertyValue(TwoStateUIProperty.getOffStateLabel());
 							
 							// updates z0 for the next iterations
-							z0 = core.getPosition(zdevice_);
+							zst = core.getPosition(zdevice_);
 						}
 						
 						// sets-up name
@@ -549,6 +555,7 @@ public class MultiSliceAcquisition implements Acquisition {
 						studio.displays().closeDisplaysFor(store);
 						store.close();
 
+						/// this used to be uncommented, what was the point???!!!
 			/*			if(i>0 && j==sliceSt && !disableFocusLock_ && focusLockAtZ0_) {
 							// updates z0 for the next iterations
 							z0 = core.getPosition(zdevice_);
@@ -584,7 +591,7 @@ public class MultiSliceAcquisition implements Acquisition {
 		
 		// go back to position z0
 		try {
-			core.setPosition(zdevice_, z0);
+			core.setPosition(zdevice_, z0); //// how to recover z0 if sliceSt != 0 ?!
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
