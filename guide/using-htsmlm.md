@@ -24,6 +24,7 @@
 <p align="center">
   <img height="200" src="img/pulse.png">
 </p>
+
 The activation laser panel offers a logarithmic scale with a user-defined maximum value. It corresponds to a single GUI property: **UV pulse duration (main frame)**. While it is intended for a pulse duration in us, it can be used with an absolute laser power or power percentage, albeit with reduced dynamical range.
 
 
@@ -38,6 +39,7 @@ The laser name and colors are the same as the first laser (Laser 0, see paramete
 <p align="center">
   <img height="200" src="img/lasers.png">
 </p>
+
 htSMLM has four main laser control panels. Each laser control panel interacts with two GUI properties: **Laser # power percentage** and "**Laser # enable**" (where # is 0, 1, 2 or 3). Additionally, two modes of power percentage control are available: slider or buttons.
 
 
@@ -60,6 +62,7 @@ Note that the laser percentage GUI property can be mapped to an absolute laser p
 <p align="center">
   <img height="80" src="img/filters.png">
 </p>
+
 The filter panel offer controls for one or two filter wheels. Only one filter can be selected in each row, setting the GUI property "**Filter wheel position**" (or **Filter wheel 2 position**) to the corresponding state.
 
 All texts and colors, as well as the panel title, can be set in the properties tab of the EMU configuration wizard.
@@ -70,6 +73,7 @@ All texts and colors, as well as the panel title, can be set in the properties t
 <p align="center">
   <img height="150" src="img/focus.png">
 </p>
+
 The focus panel allows moving and monitoring the position of your focusing device ("**Z stage position**" GUI property). It also includes a button to enable or disable focus stabilization, if this feature is present on your microscope (see examples such as [pgFocus](https://github.com/ries-lab/RiesPieces/tree/master/Microscopy/Focus-locking) or the [Ries lab solution]( https://github.com/ries-lab/RiesPieces/tree/master/Microscopy/Focus-locking )).
 
 
@@ -86,6 +90,7 @@ Two parameters can be set: the number of points shown in the graph and the graph
 <p align="center">
   <img height="200" src="img/controls.png">
 </p>
+
 The controls panel contain a few toggle buttons that can be used to switch certain devices between two states. This can for instance be in/out elements (lenses, single filters, laser stops) or on/off (bright-field light). Each button corresponds to a "**Two-state device #**" GUI property, and their text can be customized. Finally, unused buttons can be disabled in the parameters. 
 
 
@@ -99,6 +104,7 @@ The controls panel contain a few toggle buttons that can be used to switch certa
 <p align="center">
   <img height="150" src="img/add_filters.png">
 </p>
+
 The additional filters panel contains two filter wheels / sliders with four positions each. The two filter wheels GUI properties are called **Slider # position**.
 
 All titles, including the tab title, names and filter colors can be set in the parameters.
@@ -108,6 +114,7 @@ All titles, including the tab title, names and filter colors can be set in the p
 <p align="center">
   <img height="250" src="img/qpd.png">
 </p>
+
 The QPD tab was designed to monitor a quadrant photodiode used in a [home-made focus stabilization system](https://github.com/ries-lab/RiesPieces/tree/master/Microscopy/Focus-locking). It has three GUI properties: X, Y and Z (**QPD #**). When the monitor button is selected, the panel continuously updates with the values of the device properties mapped to X, Y and Z. The graph plots Y vs X, while the progress bar shows the value of Z as a percentage of filling. 
 
 The maximum values for X and Y (same for both), and for Z can be set in the parameters, as well as the time in between two updates.
@@ -119,6 +126,7 @@ In case Micro-Manager has trouble with refreshing an image display during acquis
 <p align="center">
   <img height="250" src="img/trigger.png">
 </p>
+
 The laser trigger tab was meant to be used with [MicroFPGA](https://github.com/jdeschamps/MicroFPGA), an electronic platform that allows flexible laser triggering, among other things. Refer to MicroFPGA to understand the different triggering parameters and how to set-up the system. 
 
 Since this panel is specific for the MicroFPGA project, the device properties are named similarly as the GUI properties: the device property "Mode0" should be mapped to one of the **Laser # trigger mode** GUI properties, and likewise for pulse duration and sequence.
@@ -143,6 +151,7 @@ The trigger sequence turns red if a digit other than 0 or 1 is entered. It turns
 <p align="center">
   <img height="250" src="img/powermeter.png">
 </p>
+
 The powermeter tab, as its name gives it away, plots currently measured laser power. The laser power is read through a single GUI property: **Laser powermeter**. The Ries lab uses a simple custom [powermeter](https://github.com/ries-lab/RiesPieces/tree/master/Electronics/Powermeter).
 
 Select the "monitor" button to start plotting the laser power. Each update round, the script performs a simple scaling of the device property value and adds it to the plot.
@@ -152,12 +161,12 @@ In the parameters, you must enter the slopes and offsets used for the scaling of
 Finally, the  number of points and the time between two updates can also be set in the parameters tab.
 
 
-
 #### iBeamSmart laser tab
 
 <p align="center">
   <img height="230" src="img/ibeam.png">
 </p>
+
 The iBeamSmart laser tab is also a specialized panel, tailored to Toptica iBeamSmart series. Nevertheless, it is designed so that iBeamSmart specific features can be removed from the GUI by unselecting the corresponding parameters (**[Name] - external trigger available** and **[Name] - fine available**, where Name is the name given to the lasers in the Settings tab).
 
 
@@ -184,6 +193,7 @@ htSMLM provides an activation script that can be used to increase the activation
 <p align="center">
   <img height="280" src="img/activation.png">
 </p>
+
 The activation script estimates the number of molecules at a time, compare it to a user-defined target number and increase/decrease the activation laser pulse duration (**UV pulse duration (activation)**) to bring the estimated number of molecules closer to the target number. 
 
 ### GUI
