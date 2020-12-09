@@ -1,6 +1,7 @@
 package de.embl.rieslab.htsmlm.acquisitions;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,7 +47,7 @@ public class AcquisitionTask implements Task<Integer>{
 				
 		exp_ = exp;
 		expname_ = expname;
-		exppath_ = exppath+"/"+expname+"/";
+		exppath_ = exppath+File.separator+expname+File.separator;
 		
 		registerHolder(holder);
 	}

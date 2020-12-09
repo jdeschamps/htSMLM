@@ -264,4 +264,5 @@ public class AcquisitionController implements TaskHolder<Integer>{
 	public TaskHolder getTaskHolder(String taskName) {
 		return owner_.getTaskHolders().get(taskName);
 	}
+
 }

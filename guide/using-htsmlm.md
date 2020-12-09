@@ -388,7 +388,23 @@ All BPF, Bright-field and Snap acquisitions are similar. BFP or Bright-field acq
 
 ##### Multislice localization
 
-A multislice localization acquisition is a set of localization acquisitions that are performed at multiple depth in the sample and loop through the slices.
+This acquisition type is quite complex, in particular due to the activation and focus stabilization options. 
+
+The main principle of this acquisition is to perform localization microscopy at different heights, and loop several time through the slices. For instance by choosing **N loops / N slices / dZ (um)** = (2,3,0.3), then the acquisition will process as follow:
+
+1st loop: 
+
+1. image slice 0 at Z0
+2. image slice 1 at Z0+0.3
+3. image slice 2 at Z0+0.6
+
+2nd loop: 
+
+1. image slice 0 at Z0
+2. image slice 1 at Z0+0.3
+3. image slice 2 at Z0+0.6
+
+See the definition of each parameter below, plus some more details on the activation and focus stabilization.
 
 <p align="center">
   <img height="250" src="img/multislice.png">
@@ -398,19 +414,41 @@ A multislice localization acquisition is a set of localization acquisitions that
 - **Number of frames**: number of frames to acquire per slice and per loop.
 - **Pause (s)**: pause before starting the acquisition.
 - **Interval (ms)**: interval between frames.
-- **Stop on max delay (s)**: delay in seconds after which to stop the acquisition once the maximum pulse duration value (defined in the activation laser panel) is reached. This value has no effect if "stop on max" or "use activation" are not selected.
+- **Stop on max delay (s)**: delay in seconds after which to stop the acquisition once the maximum pulse duration value (defined in the activation laser panel) is reached. This value has no effect if "stop on max" or "use activation" are not selected. Note that the delay only works within the same slice.
 - **Stop on max**: stop when the maximum pulse duration value (defined in the activation laser panel) is reached.
 - **Use activation**: use the activation script with the parameters set in the GUI (activation tab) if the checkbox is selected.
 - **Activate only at slice**: only use activation at a pre-determined slice (see next bullet point).
-- **Slice Z0**: slice at which to activate (counting is 0 based).
+- **Slice Zs**: slice at which to activate (counting is 0 based).
 - **Moving device**: z-stage used to move the focus.
 - **Disable focus-lock**: if checked, the focus stabilization is disabled throughout the entire acquisition. If unchecked, then the focus stabilization is maintained. This means that in such case, the moving device must be chosen to be the stage carrying the sensor used in the feedback loop to the objective stage. For more details, see QPD in the [Ries lab focus stabilization system](https://github.com/ries-lab/RiesPieces/tree/master/Microscopy/Focus-locking). Selecting the sensor stage and keeping the focus-lock active means that the experiment can be performed by moving the sensor stage only.
-- **Only at Z0**: if checked, the focus stabilization is only enabled at Z0 (see Slice Z0 above) and not while imaging the other slices. This allows readjusting the Z range every time the acquisition moves to the Z0 slice. If unchecked, the focus stabilization is kept throughout the slices.
+- **Only at Z0**: if checked, the focus stabilization is only enabled at Z0 (the starting Z) and not while imaging the other slices. This allows readjusting the Z range every time the acquisition moves to the Z0 slice. If unchecked, the focus stabilization is kept throughout the slices.
 - **N loops**: number of loops through the slices.
 - **N slices**: number of slices to image during a single loop.
 - **dZ (um)**: z step (um) between each slice. Note that the z step refers to movements of the z-stage selected above.
 
+**Activation**: 
 
+Only working if there is a device property mapped to the **UV pulse duration (activation)** GUI property.
+
+| Use activation | Stop on max | Only at slice |                            Result                            |
+| :------------: | :---------: | :-----------: | :----------------------------------------------------------: |
+|     - [x]      |    - [x]    |     - [x]     | Activate only at slice St and will stop the <br />entire acquisition when reaching the maximum pulse |
+|     - [x]      |    - [x]    |    - [  ]     | Activate at every slice and will stop the entire <br />acquisition when reaching the maximum pulse |
+|     - [x]      |   - [  ]    |     - [x]     | Activate only at slice St and will not stop the<br />acquisition when reaching the maximum pulse |
+|     - [x]      |   - [  ]    |    - [  ]     | Activate at every slice and will not stop the<br />acquisition when reaching the maximum pulse |
+|     - [  ]     |   - [  ]    |    - [  ]     |                        No activation                         |
+
+**Focus-stabilization**:
+
+Only working if there is a device property mapped to the **Z stage focus-locking** GUI property and if the z stabilization parameter is set to this GUI property. Here "acquisition" refers to the entire MultiSliceLocalization acquisition (all loops/slices included).
+
+| disable focus-lock | only at Z0 |                            Result                            |
+| :----------------: | :--------: | :----------------------------------------------------------: |
+|       - [x]        |   - [  ]   | No FS during the acquisition. The FS is disabled <br />at the start of the experiment and switched on at the end. |
+|       - [  ]       |   - [x]    | FS only at Z0 during the experiment, switched off for all<br />other slices. Switched on at the end of the acquisition. |
+|       - [  ]       |   - [  ]   | FS switched on all the time. Use only if your FS sensor is<br />mounted on a stage and that you can use this stage to<br />perform a z-stack by selecting it as **Moving device** |
+
+FS: focus stabilization.
 
 #### Acquisition script
 
@@ -431,9 +469,10 @@ This section describes the acquisition process:
 
 
 
-Each acquisition type might proceed differently, here we describe only the more complex or exotic acquisition types :
+Each acquisition type might proceed differently, here we describe only the more complex or exotic acquisition types (see previous point 5 in acquisition):
 
 - **Localization**:
+  
   1. If **use activation**, reinitialize the activation (pulse = 0) and activation running.
   2. Start time acquisition.
   3. In parallel, if **use activation** and **stop on max**:
@@ -441,8 +480,34 @@ Each acquisition type might proceed differently, here we describe only the more 
      2. If yes, stop acquisition after **stop on max delay** seconds
      3. if not, wait 1 s and check again.
   4. After the experiment stopped (enough frames acquired or stopped on max), pause the activation task and reinitialize it.
+  
 - **Multislice localization**:
-  1. if the **focus stabilization is disabled** or it **is enabled** but **only at Z0**, turn off the focus stabilization
-  2. 
+  
+  This one is complex and still experimental.
+  
+  1. if the **focus stabilization is disabled** or it **is enabled** but **only at Z0**, turn off the focus stabilization. If the **focus stabilization is enabled for all slices**, then turn it on.
+  2. if **use activation**, reinitialize the activation and pause it.
+  3. Save Z0 position (starting position).
+  4. For each loop:
+     1. For each slice:
+        1. if **use activation**, and either it **only activates at slice Zs**  and **this is the current slice** or it **always activates**, then (re)start activation.
+        2. Set new position: z = Z0 + **dZ** * slice_number
+        3. if **the focus stabilization is not disabled** but it is **only enabled at Z0** and **this is Z0**, then switch on the focus stabilization. 
+        4. Start the acquisition of N n**umber of frames** at this slice.
+        5. While the acquisition is running, if we **use the activation** and the **acquisition should be stopped on max activation**, and either **we activate only at Zs** and **this is Zs**, or we **always activate**, then stop the acquisition after the **stop on max delay** if the activation pulse reached its maximum.
+        6. After the slice acquisition, if the focus stabilization is enabled but **only at Z0** and this is **Z0**, then update the Z0 position in memory, then switch off the focus stabilization.
+        7. if **use activation**, and either it **only activates at slice Zs**  and **this is the current slice** or it **always activates**, then pause activation.
+  5. At the end, switches on the focus stabilization if it was off.
+  6. Reinitialize the activation.
+  
 - **BFP acquisition**:
+
+  - Turn on the BFP property
+  - Acquire a snapshot
+  - Turn off the BFP property
+
 - **Bright-field acquisition**:
+
+  - Turn on the bright-field property
+  - Acquire a snapshot
+  - Turn off the bright-field property

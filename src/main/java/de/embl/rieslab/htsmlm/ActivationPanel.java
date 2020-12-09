@@ -485,10 +485,10 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		params[ActivationTask.PARAM_N0] = N0_; 
 		
 		try {
-			if(EmuUtils.isNumeric(getUIProperty(LASER_PULSE).getPropertyValue())){
-				params[ActivationTask.PARAM_PULSE] = Double.parseDouble(getUIProperty(LASER_PULSE).getPropertyValue()); 
+			if (EmuUtils.isNumeric(getUIProperty(LASER_PULSE).getPropertyValue())) {
+				params[ActivationTask.PARAM_PULSE] = Double.parseDouble(getUIProperty(LASER_PULSE).getPropertyValue());
 			} else {
-				params[ActivationTask.PARAM_PULSE] =  0.;
+				params[ActivationTask.PARAM_PULSE] = 0.;
 			}
 		} catch (NumberFormatException | UnknownUIPropertyException e) {
 			e.printStackTrace();
@@ -565,19 +565,19 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 
 	@Override
 	public void pauseTask() {
-		if(activate_){ 
-			 Runnable checkactivate = new Runnable() {
-				 public void run() {
-					 checkboxactivate_.setSelected(false);
-				 }
-			 };
-			 if (SwingUtilities.isEventDispatchThread()) {
-				 checkactivate.run();
-			 } else {
-				  EventQueue.invokeLater(checkactivate);
-			 }
-			 activate_ = false;
-		}		
+		if (activate_) {	
+			Runnable checkactivate = new Runnable() {
+				public void run() {
+					checkboxactivate_.setSelected(false);
+				}
+			};
+			if (SwingUtilities.isEventDispatchThread()) {
+				checkactivate.run();
+			} else {
+				EventQueue.invokeLater(checkactivate);
+			}
+			activate_ = false;
+		}
 	}
 
 	@Override
@@ -621,4 +621,6 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		// Do nothing
 	}
 
+	// in order to maintain UV activation during Multislice localization
+	// we need to be able to circumvent Micro-Manager cache 
 }
