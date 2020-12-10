@@ -471,7 +471,7 @@ This section describes the acquisition process:
 
 
 
-Each acquisition type might proceed differently, here we describe only the more complex or exotic acquisition types (see previous point 5 in acquisition):
+Each acquisition type might proceed differently, here we describe only the more complex or exotic acquisition types (see previous point **e** in acquisition):
 
 - **Localization**:
   
