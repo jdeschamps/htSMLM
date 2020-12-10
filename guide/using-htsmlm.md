@@ -430,23 +430,23 @@ See the definition of each parameter below, plus some more details on the activa
 
 Only working if there is a device property mapped to the **UV pulse duration (activation)** GUI property.
 
-| Use activation | Stop on max | Only at slice |                            Result                            |
-| :------------: | :---------: | :-----------: | :----------------------------------------------------------: |
-| <li>- [x]</li> |    - [x]    |     - [x]     | Activate only at slice St and will stop the <br />entire acquisition when reaching the maximum pulse |
-|     - [x]      |    - [x]    |    - [  ]     | Activate at every slice and will stop the entire <br />acquisition when reaching the maximum pulse |
-|     - [x]      |   - [  ]    |     - [x]     | Activate only at slice St and will not stop the<br />acquisition when reaching the maximum pulse |
-|     - [x]      |   - [  ]    |    - [  ]     | Activate at every slice and will not stop the<br />acquisition when reaching the maximum pulse |
-|     - [  ]     |   - [  ]    |    - [  ]     |                        No activation                         |
+|    Use activation     |      Stop on max      |     Only at slice     |                            Result                            |
+| :-------------------: | :-------------------: | :-------------------: | :----------------------------------------------------------: |
+|  :white_check_mark:   |  :white_check_mark:   |  :white_check_mark:   | Activate only at slice St and will stop the <br />entire acquisition when reaching the maximum pulse |
+|  :white_check_mark:   |  :white_check_mark:   | :black_square_button: | Activate at every slice and will stop the entire <br />acquisition when reaching the maximum pulse |
+|  :white_check_mark:   | :black_square_button: |  :white_check_mark:   | Activate only at slice St and will not stop the<br />acquisition when reaching the maximum pulse |
+|  :white_check_mark:   | :black_square_button: | :black_square_button: | Activate at every slice and will not stop the<br />acquisition when reaching the maximum pulse |
+| :black_square_button: | :black_square_button: | :black_square_button: |                        No activation                         |
 
 **Focus-stabilization**:
 
 Only working if there is a device property mapped to the **Z stage focus-locking** GUI property and if the z stabilization parameter is set to this GUI property. Here "acquisition" refers to the entire MultiSliceLocalization acquisition (all loops/slices included).
 
-| disable focus-lock | only at Z0 |                            Result                            |
-| :----------------: | :--------: | :----------------------------------------------------------: |
-|       - [x]        |   - [  ]   | No FS during the acquisition. The FS is disabled <br />at the start of the experiment and switched on at the end. |
-|       - [  ]       |   - [x]    | FS only at Z0 during the experiment, switched off for all<br />other slices. Switched on at the end of the acquisition. |
-|       - [  ]       |   - [  ]   | FS switched on all the time. Use only if your FS sensor is<br />mounted on a stage and that you can use this stage to<br />perform a z-stack by selecting it as **Moving device** |
+|  disable focus-lock   |      only at Z0       |                            Result                            |
+| :-------------------: | :-------------------: | :----------------------------------------------------------: |
+|  :white_check_mark:   | :black_square_button: | No FS during the acquisition. The FS is disabled <br />at the start of the experiment and switched on at the end. |
+| :black_square_button: |  :white_check_mark:   | FS only at Z0 during the experiment, switched off for all<br />other slices. Switched on at the end of the acquisition. |
+| :black_square_button: | :black_square_button: | FS switched on all the time. Use only if your FS sensor is<br />mounted on a stage and that you can use this stage to<br />perform a z-stack by selecting it as **Moving device** |
 
 FS: focus stabilization.
 
