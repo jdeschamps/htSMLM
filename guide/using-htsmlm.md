@@ -432,7 +432,7 @@ Only working if there is a device property mapped to the **UV pulse duration (ac
 
 | Use activation | Stop on max | Only at slice |                            Result                            |
 | :------------: | :---------: | :-----------: | :----------------------------------------------------------: |
-|     - [x]      |    - [x]    |     - [x]     | Activate only at slice St and will stop the <br />entire acquisition when reaching the maximum pulse |
+| <li>- [x]</li> |    - [x]    |     - [x]     | Activate only at slice St and will stop the <br />entire acquisition when reaching the maximum pulse |
 |     - [x]      |    - [x]    |    - [  ]     | Activate at every slice and will stop the entire <br />acquisition when reaching the maximum pulse |
 |     - [x]      |   - [  ]    |     - [x]     | Activate only at slice St and will not stop the<br />acquisition when reaching the maximum pulse |
 |     - [x]      |   - [  ]    |    - [  ]     | Activate at every slice and will not stop the<br />acquisition when reaching the maximum pulse |

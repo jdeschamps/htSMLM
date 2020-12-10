@@ -675,6 +675,7 @@ public class MultiSliceAcquisition implements Acquisition {
 		return "MultiSliceLoc";
 	}
 
+	// does not belong here, should go into a utility class
 	private static String incrementName(String name) {
 		String newName;
 		int ind = name.length();
