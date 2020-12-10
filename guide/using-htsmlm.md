@@ -6,12 +6,14 @@
 4. [Activation script](#activation-script)
 5. [Acquisitions with htSMLM](#acquisitions-with-htsmlm)
 
+This section assumes that htSMLM has been properly [configured](configuration.md).
+
 ------
 
 ## General tips
 
-- To validate what one enters in a text field, either press **enter** or click away from the field.
-- All monitoring threads can be turned on/off. During imaging, and depending on your workstation, the updating of graphical components in Java and Micro-Manager can be stalling. This includes the refreshment of the acquisition window. In order to lift the number of actions the main graphical thread has to perform, turn off the various htSMLM monitoring (except the activation or acquisition if your are using them). 
+- To validate what is entered in a text field, either press **enter** or click away from the field.
+- All monitoring threads can be turned on/off (see "monitoring" button). During imaging, and depending on your workstation, the updating of graphical components in Java and Micro-Manager can be stalling. This includes the refreshment of the acquisition window. In order to reduce the number of actions the main graphical thread (EDT) has to perform, turn off the various htSMLM monitoring (except the activation or acquisition if your are using them). 
 
 
 
@@ -25,14 +27,14 @@
   <img height="200" src="img/pulse.png">
 </p>
 
-The activation laser panel offers a logarithmic scale with a user-defined maximum value. It corresponds to a single GUI property: **UV pulse duration (main frame)**. While it is intended for a pulse duration in us, it can be used with an absolute laser power or power percentage, albeit with reduced dynamical range.
+The activation laser panel displays a logarithmic scale with a user-defined maximum value. It corresponds to a single GUI property: "**UV pulse duration (main frame)**". While it is intended for a pulse duration in us, it can be used with an absolute laser power or power percentage, albeit with reduced dynamical range.
 
 
 - Slider: change the laser pulse / power up to the maximum value.
 - Top text field (gray background): change the maximum value allowed for the laser pulse / power. The value must be an integer.
 - Bottom text field: change the laser pulse / power up to the maximum value. Decimals are accepted.
 
-The laser name and colors are the same as the first laser (Laser 0, see parameters).
+The laser name and colors are the same as the first laser (Laser 0, see parameters), the maximum laser pulse also caps the pulse in the laser trigger panel (if present).
 
 #### Laser control panel
 
@@ -40,20 +42,20 @@ The laser name and colors are the same as the first laser (Laser 0, see paramete
   <img height="200" src="img/lasers.png">
 </p>
 
-htSMLM has four main laser control panels. Each laser control panel interacts with two GUI properties: **Laser # power percentage** and "**Laser # enable**" (where # is 0, 1, 2 or 3). Additionally, two modes of power percentage control are available: slider or buttons.
+htSMLM has four main laser control panels. Each laser control panel interacts with two GUI properties: **Laser # power percentage**" and "**Laser # enable**" (where # is 0, 1, 2 or 3). Additionally, two modes of power percentage control are available: slider or buttons. The control mode is chosen via the **Laser # - Use slider** parameter.
 
 
 - On/Off button: switches the "**Laser # enable**" property between its ON and OFF state.
 - Power percentage: change the "**Laser # power percentage**" value.
   - Slider mode:
-    - Slider: changes the GUI property to the set value and display the new value in the text field.
-    - Text field: changes the GUI property to the set value and updates the slider. The text field only accepts integer values.
+    - Slider: changes the GUI property and display the new value in the text field.
+    - Text field: changes the GUI property and updates the slider. The text field only accepts integer values.
   - Buttons mode:
     - 1%, 20% and 100% buttons:  set the GUI property to the corresponding power percentage.
     - User-defined percentage button: selecting the button sets the GUI property to the displayed percentage.
     - Text field: choose the user-defined percentage. Note that by changing the user-defined percentage, the GUI property is only change if the button is currently selected.
 
-The laser name and the colors are GUI parameters. Additionally, Laser 0 name and color are linked to the activation laser panel.
+The laser name and color are GUI parameters. Additionally, Laser 0 name and color are linked to the activation laser panel.
 
 Note that the laser percentage GUI property can be mapped to an absolute laser power, as long as the slope parameter (properties tab in the EMU configuration wizard) rescales the power to the range 0-100.
 
@@ -65,7 +67,7 @@ Note that the laser percentage GUI property can be mapped to an absolute laser p
 
 The filter panel offer controls for one or two filter wheels. Only one filter can be selected in each row, setting the GUI property "**Filter wheel position**" (or **Filter wheel 2 position**) to the corresponding state.
 
-All texts and colors, as well as the panel title, can be set in the properties tab of the EMU configuration wizard.
+All texts and colors, as well as the panel title, can be set in the properties tab of the EMU configuration wizard. You can choose between one or two filter wheels by checking/unchecking **Single FW panel** in the Settings.
 
 
 #### Focus panel
@@ -91,7 +93,7 @@ Two parameters can be set: the number of points shown in the graph and the graph
   <img height="200" src="img/controls.png">
 </p>
 
-The controls panel contain a few toggle buttons that can be used to switch certain devices between two states. This can for instance be in/out elements (lenses, single filters, laser stops) or on/off (bright-field light). Each button corresponds to a "**Two-state device #**" GUI property, and their text can be customized. Finally, unused buttons can be disabled in the parameters. 
+The controls panel contain a few toggle buttons that can be used to switch certain devices between two states. This can for instance be in/out elements (lenses, single filters, laser stops), on/off (bright-field light) or simply between two positions. Each button corresponds to a "**Two-state device #**" GUI property, and their text can be customized in the parameters. Finally, unused buttons can be disabled (parameters). 
 
 
 
@@ -129,7 +131,7 @@ In case Micro-Manager has trouble with refreshing an image display during acquis
 
 The laser trigger tab was meant to be used with [MicroFPGA](https://github.com/jdeschamps/MicroFPGA), an electronic platform that allows flexible laser triggering, among other things. Refer to MicroFPGA to understand the different triggering parameters and how to set-up the system. 
 
-Since this panel is specific for the MicroFPGA project, the device properties are named similarly as the GUI properties: the device property "Mode0" should be mapped to one of the **Laser # trigger mode** GUI properties, and likewise for pulse duration and sequence.
+Since this panel is specific for the MicroFPGA project, the device properties are named exactly as the GUI properties, although you don't have to match the numbers: the device property "Mode0" should be mapped to one of the **Laser # trigger mode** GUI properties, and likewise for pulse duration and sequence.
 
 Here is a short summary of the panel's function:
 
@@ -144,7 +146,7 @@ Here is a short summary of the panel's function:
 
 The trigger sequence turns red if a digit other than 0 or 1 is entered. It turns blue if there are too many or too few digits.
 
-**Note**: The slider of the first laser ("activation laser" in the example) is linked to the slider in the activation laser panel (see the default panels section).
+**Note**: The slider of the first laser ("activation laser" in the example) is linked to the slider in the activation laser panel (see the default panels section). In particular, they obey the same maximum.
 
 #### Powermeter tab
 
@@ -188,13 +190,13 @@ The iBeamSmart laser tab is also a specialized panel, tailored to Toptica iBeamS
 
 ## Activation script
 
-htSMLM provides an activation script that can be used to increase the activation laser power throughout a localization microscopy experiment. The activation script is also controlled by the automated acquisitions scripts.
+htSMLM provides an activation script that can be used to increase the activation laser power throughout a localization microscopy experiment. The activation script cam be started/paused by htSMLM acquisitions.
 
 <p align="center">
   <img height="280" src="img/activation.png">
 </p>
 
-The activation script estimates the number of molecules at a time, compare it to a user-defined target number and increase/decrease the activation laser pulse duration (**UV pulse duration (activation)**) to bring the estimated number of molecules closer to the target number. 
+The activation script estimates the number of molecules at each cycle, compare it to a user-defined target number and increase/decrease the activation laser pulse duration (**UV pulse duration (activation)**) to bring the estimated number of molecules closer to the target number. 
 
 ### GUI
 
@@ -234,7 +236,7 @@ The number of points shown in the graph, as well as the time between two updates
    6. If the new pulse is larger than the **maximum pulse** (set in the GUI, in the activation laser pulse panel), then *p(t+1)* = **maximum pulse**.
 3. Finally, the activation laser pulse length is updated.
 
-Note that the activation script has been written for 16 bits depth cameras, and will not work for 8 bits one. This would be quite simple to fix, if this is your case, please open an issue on Github.
+> **Note**: the activation script has been written for 16 bits depth cameras, and will not work for 8 bits one. This would be quite simple to fix, if this is your case, please open an issue on Github.
 
 ------
 

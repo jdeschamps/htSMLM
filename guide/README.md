@@ -14,6 +14,6 @@ htSMLM (high-throughput single-molecule localization microscopy) is an [EMU]( ht
    2. [Optional panels](using-htsmlm.md#optional-panels)
    3. [Activation script](using-htsmlm.md#activation-script)
    4. [Acquisitions with htSMLM](using-htsmlm.md#acquisitions-with-htsmlm)
+5. [Feedback, known issues](feedback.md)
 
-> Note: htSMLM acquisitions were last tested with the 20201203 Micro-Manager gamma nightly build.
->
+
