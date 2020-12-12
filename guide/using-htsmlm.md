@@ -97,6 +97,10 @@ The controls panel contain a few toggle buttons that can be used to switch certa
 
 
 
+### Activation and acquisition script panels
+
+See in the description in their corresponding sections after the optional panels.
+
 ------
 
 ## Optional panels
