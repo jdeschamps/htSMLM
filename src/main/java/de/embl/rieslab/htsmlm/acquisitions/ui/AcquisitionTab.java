@@ -62,6 +62,9 @@ import de.embl.rieslab.htsmlm.uipropertyflags.LaserFlag;
 /**
  * This class is super messy and difficult to read... Need to go over it again.
  * 
+ * In particular, extracting the values of the properties through a component
+ * search does not make sense and it would be much more efficient and clearer
+ * to simply keep a list of all the JTabel and extract their rows directly.
  */
 public class AcquisitionTab extends JPanel {
 
@@ -693,7 +696,9 @@ public class AcquisitionTab extends JPanel {
 	 * @return
 	 */
 	private HashMap<String, String> extractPropertyValues(Component c, HashMap<String, String> properties) {
+
 		if (c instanceof JTable && (c.getName() == null || !c.getName().equals(KEY_MMCONF))) {
+
 			if (((JTable) c).isEditing()) {
 				((JTable) c).getCellEditor().stopCellEditing();
 			}
@@ -701,6 +706,7 @@ public class AcquisitionTab extends JPanel {
 			int nrow = model.getRowCount();
 			for (int k = 0; k < nrow; k++) { // loop through the rows
 				String s = (String) model.getValueAt(k, 0);
+
 				if (!(model.getValueAt(k, 1) instanceof Boolean)) { // if second row is not a boolean property
 					properties.put(propsfriendlyname_.get(s), (String) model.getValueAt(k, 1));
 				} else {
@@ -716,6 +722,9 @@ public class AcquisitionTab extends JPanel {
 			for (int l = 0; l < subcomps.length; l++) {
 				extractPropertyValues(subcomps[l], properties);
 			}
+		} else if (c instanceof HLimitScrollPane) {
+			Component comp = ((HLimitScrollPane) c).getComponent();
+			extractPropertyValues(comp, properties);
 		}
 		return properties;
 	}
@@ -934,11 +943,16 @@ public class AcquisitionTab extends JPanel {
 	}
 	
 	private class HLimitScrollPane extends JScrollPane{
-		
+
+		private static final long serialVersionUID = 1L;
+
 		int maxHeight;
+		Component content;
 		
 		public HLimitScrollPane(Component comp, int height) {
 			super(comp);
+			
+			content = comp;
 			
 			this.maxHeight = height;
 			this.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);  
@@ -950,6 +964,10 @@ public class AcquisitionTab extends JPanel {
 			Dimension d = super.getPreferredSize();
 
 			return new Dimension(d.width, maxHeight);
+		}
+		
+		public Component getComponent() {
+			return content;
 		}
 	}
 }
