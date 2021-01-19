@@ -20,7 +20,7 @@ import org.micromanager.data.Datastore;
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory.AcquisitionType;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.NoPropertyFilter;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.PropertyFilter;
-import de.embl.rieslab.htsmlm.acquisitions.wrappers.Experiment;
+
 
 public class TimeAcquisition implements Acquisition{
 	
@@ -166,27 +166,25 @@ public class TimeAcquisition implements Acquisition{
 		stopAcq_ = false;
 		running_ = true;
 		
-		Builder seqBuilder = new SequenceSettings.Builder();
+		Builder seqBuilder = new SequenceSettings.Builder();		
 		seqBuilder.save(true);
 		seqBuilder.timeFirst(true);
-		seqBuilder.usePositionList(false);
 		seqBuilder.root(path);
 		seqBuilder.prefix(name);
 		seqBuilder.numFrames(params_.getNumberFrames());
-		seqBuilder.intervalMs(0);
+		seqBuilder.intervalMs(params_.getIntervalMs()); 
 		seqBuilder.shouldDisplayImages(true);
+		seqBuilder.useAutofocus(false);
+		seqBuilder.useChannels(false);
+		seqBuilder.useCustomIntervals(false);
 		seqBuilder.useFrames(true);
+		seqBuilder.usePositionList(false);
+		seqBuilder.useSlices(false);
 		seqBuilder.saveMode(savemode);
 		
 		// runs acquisition
 		AcquisitionManager acqManager = studio.acquisitions();
-		
-		//SequenceSettings ss = seqBuilder.build();
-		//studio.getLogManager().logDebugMessage("[htSMLM] saveMode: "+Experiment.saveModeToString(ss.saveMode())+".");
-		//studio.getLogManager().logDebugMessage("[htSMLM] frames: "+ss.numFrames()+".");
-		
-		acqManager.setAcquisitionSettings(seqBuilder.build());
-		Datastore store = acqManager.runAcquisitionNonblocking();
+		Datastore store = acqManager.runAcquisitionWithSettings(seqBuilder.build(), false);
 
 		// loop to check if needs to be stopped or not
 		while(studio.acquisitions().isAcquisitionRunning()) {

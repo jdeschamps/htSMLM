@@ -134,18 +134,21 @@ public class ZStackAcquisition implements Acquisition {
 		Builder seqBuilder = new SequenceSettings.Builder();
 		seqBuilder.save(true);
 		seqBuilder.slicesFirst(true);
-		seqBuilder.usePositionList(false);
 		seqBuilder.root(path);
 		seqBuilder.prefix(name);
 		seqBuilder.numFrames(1);
 		seqBuilder.intervalMs(0);
 		seqBuilder.shouldDisplayImages(true);
-		seqBuilder.useSlices(true);
-		seqBuilder.relativeZSlice(true);
-		//seqBuilder.slices(params_.getZSlices());
 		seqBuilder.sliceZBottomUm(zstart);
 		seqBuilder.sliceZStepUm(zstep);
 		seqBuilder.sliceZTopUm(zend);
+		seqBuilder.relativeZSlice(true);
+		seqBuilder.useAutofocus(false);
+		seqBuilder.useChannels(false);
+		seqBuilder.useCustomIntervals(false);
+		seqBuilder.useFrames(false);
+		seqBuilder.usePositionList(false);
+		seqBuilder.useSlices(true);
 		seqBuilder.saveMode(savemode);
 		
 		double z0;
@@ -158,8 +161,7 @@ public class ZStackAcquisition implements Acquisition {
 
 		// run acquisition
 		AcquisitionManager acqManager = studio.acquisitions();
-		acqManager.setAcquisitionSettings(seqBuilder.build());
-		Datastore store = acqManager.runAcquisitionNonblocking();
+		Datastore store = acqManager.runAcquisitionWithSettings(seqBuilder.build(), false);
 
 		// loop to check if needs to be stopped or not
 		while(studio.acquisitions().isAcquisitionRunning()) {

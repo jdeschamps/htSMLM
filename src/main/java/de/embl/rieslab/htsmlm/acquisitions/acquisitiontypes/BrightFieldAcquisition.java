@@ -21,6 +21,9 @@ import org.micromanager.acquisition.SequenceSettings;
 import org.micromanager.acquisition.SequenceSettings.Builder;
 import org.micromanager.data.Datastore;
 
+/*
+ * this should be an extension class of SnapAcq
+ */
 public class BrightFieldAcquisition implements Acquisition{
 	
 	private GenericAcquisitionParameters params_;
@@ -142,19 +145,22 @@ public class BrightFieldAcquisition implements Acquisition{
 		Builder seqBuilder = new SequenceSettings.Builder();
 		seqBuilder.save(true);
 		seqBuilder.timeFirst(true);
-		seqBuilder.usePositionList(false);
 		seqBuilder.root(path);
 		seqBuilder.prefix(name);
 		seqBuilder.numFrames(1);
 		seqBuilder.intervalMs(0);
 		seqBuilder.shouldDisplayImages(true);
+		seqBuilder.useAutofocus(false);
+		seqBuilder.useChannels(false);
+		seqBuilder.useCustomIntervals(false);
 		seqBuilder.useFrames(true);
+		seqBuilder.usePositionList(false);
+		seqBuilder.useSlices(false);
 		seqBuilder.saveMode(savemode);
-		
-		// run acquisition		
+
+		// run acquisition
 		AcquisitionManager acqManager = studio.acquisitions();
-		acqManager.setAcquisitionSettings(seqBuilder.build());
-		Datastore store = acqManager.runAcquisition();
+		Datastore store = acqManager.runAcquisitionWithSettings(seqBuilder.build(), false);
 
 		// loop to check if needs to be stopped or not
 		while(studio.acquisitions().isAcquisitionRunning()) {	

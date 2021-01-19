@@ -184,6 +184,12 @@ public class AcquisitionTask implements Task<Integer>{
 			// create acq names
 			String[] acqShortName = createAcqShortNameSet(exp_.getAcquisitionList()).toArray(new String[0]);
 
+			studio_.logs().logMessage("******* Perform acq in Task ");
+			studio_.logs().logMessage("*** List acq: "+exp_.getAcquisitionList().size());
+			for (int k = 0; k < exp_.getAcquisitionList().size(); k++) {
+				studio_.logs().logMessage("*** acq name: "+exp_.getAcquisitionList().get(k).getShortName());
+			}
+			
 			// perform each acquisition sequentially
 			for (int k = 0; k < exp_.getAcquisitionList().size(); k++) {
 

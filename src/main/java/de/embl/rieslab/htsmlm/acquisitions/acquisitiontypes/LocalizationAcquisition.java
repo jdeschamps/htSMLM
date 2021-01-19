@@ -293,24 +293,25 @@ public class LocalizationAcquisition implements Acquisition {
 		interruptionRequested_ = false;
 		running_ = true;
 		
-		Builder seqBuilder = new SequenceSettings.Builder();
+		Builder seqBuilder = new SequenceSettings.Builder();		
 		seqBuilder.save(true);
 		seqBuilder.timeFirst(true);
-		seqBuilder.usePositionList(false);
 		seqBuilder.root(path);
 		seqBuilder.prefix(name);
 		seqBuilder.numFrames(params_.getNumberFrames());
-		seqBuilder.intervalMs(0);
+		seqBuilder.intervalMs(params_.getIntervalMs()); 
 		seqBuilder.shouldDisplayImages(true);
+		seqBuilder.useAutofocus(false);
+		seqBuilder.useChannels(false);
+		seqBuilder.useCustomIntervals(false);
 		seqBuilder.useFrames(true);
+		seqBuilder.usePositionList(false);
+		seqBuilder.useSlices(false);
 		seqBuilder.saveMode(savemode);
 		
 		// runs acquisition
 		AcquisitionManager acqManager = studio.acquisitions();
-		acqManager.setAcquisitionSettings(seqBuilder.build());
-		
-		System.out.println(acqManager.getAcquisitionSettings().numFrames());
-		Datastore store = acqManager.runAcquisitionNonblocking();
+		Datastore store = acqManager.runAcquisitionWithSettings(seqBuilder.build(), false);
 		
 		// loop to check if needs to be stopped or not
 		while(studio.acquisitions().isAcquisitionRunning()) {

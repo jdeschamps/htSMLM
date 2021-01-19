@@ -121,23 +121,26 @@ public class SnapAcquisition implements Acquisition{
 	
 	@Override
 	public void performAcquisition(Studio studio, String name, String path, Datastore.SaveMode savemode) throws InterruptedException, IOException {
-
+		
 		Builder seqBuilder = new SequenceSettings.Builder();
 		seqBuilder.save(true);
 		seqBuilder.timeFirst(true);
-		seqBuilder.usePositionList(false);
 		seqBuilder.root(path);
 		seqBuilder.prefix(name);
 		seqBuilder.numFrames(1);
 		seqBuilder.intervalMs(0);
 		seqBuilder.shouldDisplayImages(true);
+		seqBuilder.useAutofocus(false);
+		seqBuilder.useChannels(false);
+		seqBuilder.useCustomIntervals(false);
 		seqBuilder.useFrames(true);
+		seqBuilder.usePositionList(false);
+		seqBuilder.useSlices(false);
 		seqBuilder.saveMode(savemode);
-		
+
 		// run acquisition
 		AcquisitionManager acqManager = studio.acquisitions();
-		acqManager.setAcquisitionSettings(seqBuilder.build());
-		Datastore store = acqManager.runAcquisition();
+		Datastore store = acqManager.runAcquisitionWithSettings(seqBuilder.build(), false);
 
 		// loop to check if needs to be stopped or not
 		while(studio.acquisitions().isAcquisitionRunning()) {	
