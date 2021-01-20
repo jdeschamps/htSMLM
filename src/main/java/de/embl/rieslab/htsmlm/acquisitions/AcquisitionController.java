@@ -74,14 +74,6 @@ public class AcquisitionController implements TaskHolder<Integer>{
 	public boolean startTask() {
 		// this is running on the EDT
 		
-		controller_.getStudio().logs().logMessage("******* Start task in AcqController ");
-		controller_.getStudio().logs().logMessage("*** List acq: "+exp_.getAcquisitionList().size());
-		for (int k = 0; k < exp_.getAcquisitionList().size(); k++) {
-			controller_.getStudio().logs().logMessage("*** acq name: "+exp_.getAcquisitionList().get(k).getShortName());
-		}
-		
-		
-		
 		// set path and experiment name in acquisition
 		final String experimentName = owner_.getExperimentName();
 		final String folderPath = owner_.getExperimentPath();

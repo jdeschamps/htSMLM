@@ -626,12 +626,14 @@ public class MultiSliceAcquisition implements Acquisition {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
+		
 		// if focus locked disabled, set to ON state
-		if (zstabProperty_.isOffState(zstabProperty_.getPropertyValue())) {
-			stabilizeFocus(true);
+		if (zstabProperty_ != null && zstabProperty_.isAssigned()) {
+			if (zstabProperty_.isOffState(zstabProperty_.getPropertyValue())) {
+				stabilizeFocus(true);
+			}
 		}
-
+		
 		if (useactivation_) {
 			activationTask_.initializeTask();
 		}
@@ -765,7 +767,6 @@ public class MultiSliceAcquisition implements Acquisition {
 				}
 
 				// close store
-				display.close();
 				store.close();
 			} catch (Exception e) {
 				e.printStackTrace();
