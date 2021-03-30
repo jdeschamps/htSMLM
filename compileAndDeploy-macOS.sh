@@ -15,7 +15,7 @@ else
 	# tests if the Micro-Manager jars are present and deploy them
 	MMJ="$MM2_HOME/plugins/Micro-Manager/MMJ_.jar"
 	MMAcqEngine="$MM2_HOME/plugins/Micro-Manager/MMAcqEngine.jar"
-	AcqEngJ="$MM2_HOME/plugins/Micro-Manager/AcqEngJ-0.8.0.jar"
+	AcqEngJ="$MM2_HOME/plugins/Micro-Manager/AcqEngJ-0.12.0.jar"
 	MMCoreJ="$MM2_HOME/plugins/Micro-Manager/MMCoreJ.jar"
 	EMU="$MM2_HOME/mmplugins/Emu.jar"
 	MM2_PLUGINS_HOME="$MM2_HOME/mmplugins"
