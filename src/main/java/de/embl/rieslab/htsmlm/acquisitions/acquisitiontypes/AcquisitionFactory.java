@@ -133,19 +133,19 @@ public class AcquisitionFactory {
 		
 		String fullpath, shortname;
 		if(fileName.endsWith("."+HTSMLMConstants.ACQ_EXT)){
-			if(parentFolder.endsWith("\\")) {
+			if(parentFolder.endsWith(File.separator)) {
 				fullpath = parentFolder+fileName;	
 				shortname = fileName.substring(fileName.length()-2-HTSMLMConstants.ACQ_EXT.length());
 			} else {
-				fullpath = parentFolder+"\\"+fileName;	
+				fullpath = parentFolder+File.separator+fileName;	
 				shortname = fileName.substring(fileName.length()-2-HTSMLMConstants.ACQ_EXT.length());		
 			}
 		} else {
-			if(parentFolder.endsWith("\\")) {
+			if(parentFolder.endsWith(File.separator)) {
 				fullpath = parentFolder+fileName+"."+HTSMLMConstants.ACQ_EXT;	
 				shortname = fileName;
 			} else {
-				fullpath = parentFolder+"\\"+fileName+"."+HTSMLMConstants.ACQ_EXT;	
+				fullpath = parentFolder+File.separator+fileName+"."+HTSMLMConstants.ACQ_EXT;	
 				shortname = fileName;		
 			}
 		}
