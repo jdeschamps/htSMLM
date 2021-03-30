@@ -22,6 +22,7 @@ import org.micromanager.Studio;
 import org.micromanager.data.Coords.Builder;
 import org.micromanager.data.Datastore;
 import org.micromanager.data.Image;
+import org.micromanager.data.Metadata;
 import org.micromanager.display.DisplayWindow;
 
 import de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
@@ -741,6 +742,7 @@ public class MultiSliceAcquisition implements Acquisition {
 				Builder cb = studio.data().getCoordsBuilder().z(0).c(0).p(0).t(0);
 
 				core.startSequenceAcquisition(params_.getNumberFrames(), params_.getIntervalMs(), true);
+				Metadata.Builder metadata = studio.data().getMetadataBuilder();
 
 				int curFrame = 0;
 				try {
@@ -750,7 +752,7 @@ public class MultiSliceAcquisition implements Acquisition {
 							TaggedImage tagged = core.popNextTaggedImage();
 
 							// Convert to an Image at the desired time point
-							Image image = studio.data().convertTaggedImage(tagged, cb.time(curFrame).build(), null);
+							Image image = studio.data().convertTaggedImage(tagged, cb.time(curFrame).build(), metadata.build());
 							store.putImage(image);
 							curFrame++;
 						} else {
