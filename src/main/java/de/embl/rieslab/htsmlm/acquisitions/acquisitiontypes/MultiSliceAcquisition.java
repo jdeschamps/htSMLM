@@ -6,6 +6,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 
 import javax.swing.AbstractButton;
@@ -18,6 +20,10 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import mmcorej.Configuration;
+import mmcorej.PropertySetting;
+import org.micromanager.PropertyMap;
+import org.micromanager.PropertyMaps;
 import org.micromanager.Studio;
 import org.micromanager.data.Coords.Builder;
 import org.micromanager.data.Datastore;
@@ -34,6 +40,7 @@ import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.SinglePropertyFilte
 import de.embl.rieslab.htsmlm.tasks.TaskHolder;
 import mmcorej.CMMCore;
 import mmcorej.TaggedImage;
+import org.micromanager.internal.MMStudio;
 
 public class MultiSliceAcquisition implements Acquisition {
 
@@ -742,7 +749,7 @@ public class MultiSliceAcquisition implements Acquisition {
 				Builder cb = studio.data().getCoordsBuilder().z(0).c(0).p(0).t(0);
 
 				core.startSequenceAcquisition(params_.getNumberFrames(), params_.getIntervalMs(), true);
-				Metadata.Builder metadata = studio.data().getMetadataBuilder();
+				Metadata metadata = studio.data().getMetadataBuilder().build();
 
 				int curFrame = 0;
 				try {
@@ -752,7 +759,8 @@ public class MultiSliceAcquisition implements Acquisition {
 							TaggedImage tagged = core.popNextTaggedImage();
 
 							// Convert to an Image at the desired time point
-							Image image = studio.data().convertTaggedImage(tagged, cb.time(curFrame).build(), metadata.build());
+							Image image = studio.data().convertTaggedImage(tagged, cb.time(curFrame).build(), generateMetadata(studio, metadata));
+							
 							store.putImage(image);
 							curFrame++;
 						} else {
@@ -777,5 +785,61 @@ public class MultiSliceAcquisition implements Acquisition {
 
 			isRunning_ = false;
 		}
-	};
+	}
+
+	/*
+	 * adapted from DefaultAcquisitionManager
+	 */
+	private Metadata generateMetadata(Studio studio, Metadata metadata) throws Exception {
+		String camera = studio.core().getCameraDevice();
+
+		MMStudio mmstudio = (MMStudio) studio;
+		Metadata.Builder result = metadata.copyBuilderWithNewUUID()
+				.camera(camera)
+				.receivedTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS Z").format(new Date()))
+				.pixelSizeUm(mmstudio.cache().getPixelSizeUm())
+				.pixelSizeAffine(mmstudio.cache().getPixelSizeAffine())
+				.xPositionUm(mmstudio.cache().getStageX())
+				.yPositionUm(mmstudio.cache().getStageY())
+				.zPositionUm(mmstudio.cache().getStageZ())
+				.bitDepth(mmstudio.cache().getImageBitDepth());
+
+		try {
+			String binning = studio.core().getPropertyFromCache(camera, "Binning");
+			if (binning.contains("x")) {
+				// HACK: assume the binning parameter is e.g. "1x1" or "2x2" and
+				// just take the first number.
+				try {
+					result.binning(Integer.parseInt(binning.split("x", 2)[0]));
+				}
+				catch (NumberFormatException e) {
+					studio.logs().logError("Unable to determine binning from " + binning);
+				}
+			}
+			else {
+				try {
+					result.binning(Integer.parseInt(binning));
+				}
+				catch (NumberFormatException e) {
+					studio.logs().logError("Unable to determine binning from " + binning);
+				}
+			}
+		}
+		catch (Exception ignored) {
+			// Again, this can fail if there is no camera.
+		}
+
+		PropertyMap.Builder scopeBuilder = PropertyMaps.builder();
+		Configuration config = studio.core().getSystemStateCache();
+		for (long i = 0; i < config.size(); ++i) {
+			PropertySetting setting = config.getSetting(i);
+			// NOTE: this key format chosen to match that used by the current
+			// acquisition engine.
+			scopeBuilder.putString(setting.getDeviceLabel() + "-" + setting.getPropertyName(),
+						setting.getPropertyValue());
+		}
+		result.scopeData(scopeBuilder.build());
+
+		return result.build();
+	}
 }
