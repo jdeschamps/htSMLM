@@ -25,10 +25,8 @@ import mmcorej.PropertySetting;
 import org.micromanager.PropertyMap;
 import org.micromanager.PropertyMaps;
 import org.micromanager.Studio;
+import org.micromanager.data.*;
 import org.micromanager.data.Coords.Builder;
-import org.micromanager.data.Datastore;
-import org.micromanager.data.Image;
-import org.micromanager.data.Metadata;
 import org.micromanager.display.DisplayWindow;
 
 import de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
@@ -570,7 +568,7 @@ public class MultiSliceAcquisition implements Acquisition {
 						}
 
 						// creates runnable acquisition and starts a thread associated with the runnable
-						RunnableAcq acqThread = new RunnableAcq(studio, savemode, final_path);
+						RunnableAcq acqThread = new RunnableAcq(studio, savemode, final_path, path, newAcqName);
 						new Thread(acqThread).start();
 
 						// wait 1sec to make sure we don't miss the start of the experiment
@@ -714,13 +712,15 @@ public class MultiSliceAcquisition implements Acquisition {
 
 		private final Studio studio;
 		private final Datastore.SaveMode savemode;
-		private final String path;
+		private final String path, directory, name;
 		private boolean isRunning_;
 
-		public RunnableAcq(Studio studio, Datastore.SaveMode savemode, String path) {
+		public RunnableAcq(Studio studio, Datastore.SaveMode savemode, String path, String directory, String name) {
 			this.studio = studio;
 			this.savemode = savemode;
 			this.path = path;
+			this.directory = directory;
+			this.name = name;
 
 			isRunning_ = false;
 		}
@@ -744,6 +744,8 @@ public class MultiSliceAcquisition implements Acquisition {
 					store = studio.data().createSinglePlaneTIFFSeriesDatastore(path);
 				}
 
+				store.setSummaryMetadata(generateSummaryMetadata(studio, directory, name, params_.getNumberFrames()));
+
 				// display and coordinate builder
 				DisplayWindow display = studio.displays().createDisplay(store);
 				Builder cb = studio.data().getCoordsBuilder().z(0).c(0).p(0).t(0);
@@ -760,7 +762,7 @@ public class MultiSliceAcquisition implements Acquisition {
 
 							// Convert to an Image at the desired time point
 							Image image = studio.data().convertTaggedImage(tagged, cb.time(curFrame).build(), generateMetadata(studio, metadata));
-							
+
 							store.putImage(image);
 							curFrame++;
 						} else {
@@ -785,6 +787,22 @@ public class MultiSliceAcquisition implements Acquisition {
 
 			isRunning_ = false;
 		}
+	}
+
+	private SummaryMetadata generateSummaryMetadata(Studio studio, String path, String name, int n){//Map<String, Object> properties){
+
+		SummaryMetadata defaultSM = studio.acquisitions().generateSummaryMetadata();
+		SummaryMetadata.Builder smBuilder = defaultSM.copyBuilder();
+
+		// stacks dimensions
+		Coords coords = defaultSM.getIntendedDimensions();
+		smBuilder.intendedDimensions(coords.copyBuilder().t(n).c(1).p(1).z(1).build());
+
+		// others
+		smBuilder.prefix(name);
+		smBuilder.directory(path);
+
+		return smBuilder.build();
 	}
 
 	/*
