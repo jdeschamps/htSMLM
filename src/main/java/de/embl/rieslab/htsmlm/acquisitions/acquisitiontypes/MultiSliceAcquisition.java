@@ -739,6 +739,8 @@ public class MultiSliceAcquisition implements Acquisition {
 			try {
 				// creates store
 				Datastore store;
+
+				// TODO in case users want to generate a metadata.txt, this will not be taken into account here
 				if (Datastore.SaveMode.MULTIPAGE_TIFF == savemode) {
 					store = studio.data().createMultipageTIFFDatastore(path, false, false);
 				} else {
@@ -809,7 +811,7 @@ public class MultiSliceAcquisition implements Acquisition {
 	/*
 	 * adapted from DefaultAcquisitionManager
 	 */
-	private Metadata generateMetadata(Studio studio, Metadata metadata) throws Exception {
+	private Metadata generateMetadata(Studio studio, Metadata metadata) {
 		String camera = studio.core().getCameraDevice();
 
 		MMStudio mmstudio = (MMStudio) studio;
@@ -821,13 +823,7 @@ public class MultiSliceAcquisition implements Acquisition {
 				.xPositionUm(mmstudio.cache().getStageX())
 				.yPositionUm(mmstudio.cache().getStageY())
 				.zPositionUm(mmstudio.cache().getStageZ())
-				.bitDepth(mmstudio.cache().getImageBitDepth())
-				.roi( mmstudio.core().getROI() )
-				.exposureMs( mmstudio.core().getExposure() );;
-
-		// add ROI
-		final Rectangle r = studio.core().getROI();
-		result.roi( r );
+				.bitDepth(mmstudio.cache().getImageBitDepth());
 
 		try {
 			String binning = studio.core().getPropertyFromCache(camera, "Binning");
@@ -854,14 +850,43 @@ public class MultiSliceAcquisition implements Acquisition {
 			// Again, this can fail if there is no camera.
 		}
 
+		try
+		{
+			final double expo = mmstudio.core().getExposure();
+			result.exposureMs( expo );
+		}
+		catch ( Exception e )
+		{
+			e.printStackTrace();
+		}
+
+		try
+		{
+			final Rectangle r = mmstudio.core().getROI();
+			result.roi( r );
+		}
+		catch ( Exception e )
+		{
+			e.printStackTrace();
+		}
+
 		PropertyMap.Builder scopeBuilder = PropertyMaps.builder();
 		Configuration config = studio.core().getSystemStateCache();
 		for (long i = 0; i < config.size(); ++i) {
-			PropertySetting setting = config.getSetting(i);
-			// NOTE: this key format chosen to match that used by the current
-			// acquisition engine.
-			scopeBuilder.putString(setting.getDeviceLabel() + "-" + setting.getPropertyName(),
+			PropertySetting setting = null;
+			try
+			{
+				setting = config.getSetting(i);
+
+				// NOTE: this key format chosen to match that used by the current
+				// acquisition engine.
+				scopeBuilder.putString(setting.getDeviceLabel() + "-" + setting.getPropertyName(),
 						setting.getPropertyValue());
+			}
+			catch ( Exception e )
+			{
+				e.printStackTrace();
+			}
 		}
 		result.scopeData(scopeBuilder.build());
 
