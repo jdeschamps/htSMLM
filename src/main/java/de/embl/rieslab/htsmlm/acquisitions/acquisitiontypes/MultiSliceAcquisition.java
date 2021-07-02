@@ -2,6 +2,7 @@ package de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes;
 
 import java.awt.Component;
 import java.awt.GridLayout;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -820,7 +821,13 @@ public class MultiSliceAcquisition implements Acquisition {
 				.xPositionUm(mmstudio.cache().getStageX())
 				.yPositionUm(mmstudio.cache().getStageY())
 				.zPositionUm(mmstudio.cache().getStageZ())
-				.bitDepth(mmstudio.cache().getImageBitDepth());
+				.bitDepth(mmstudio.cache().getImageBitDepth())
+				.roi( mmstudio.core().getROI() )
+				.exposureMs( mmstudio.core().getExposure() );;
+
+		// add ROI
+		final Rectangle r = studio.core().getROI();
+		result.roi( r );
 
 		try {
 			String binning = studio.core().getPropertyFromCache(camera, "Binning");
