@@ -176,6 +176,15 @@ public class ActivationTask implements Task<Double> {
 							HTSMLMConstants.gaussianMaskSize,
 							HTSMLMConstants.gaussianMaskPrecision);
 
+					// set negative values to 0
+					for(int i=0;i<imp3.getWidth();i++){
+						for(int j=0;j<imp3.getHeight();j++){
+							if(imp3.getProcessor().get(i, j) < 0){
+								imp3.getProcessor().setf(i,j,0.f);
+							}
+						}
+					}
+
 					// 0 cutoff
 					ip_ = nms.run(imp3, HTSMLMConstants.nmsMaskSize, 0);
 
