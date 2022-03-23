@@ -1,9 +1,10 @@
 package de.embl.rieslab.htsmlm.utils;
 
 public class Peak {
-	private int x_,y_,value_;
+	private int x_,y_;
+	private double value_;
 	
-	public Peak(int x, int y, int value){
+	public Peak(int x, int y, double value){
 		x_ = x;
 		y_ = y;
 		value_ = value;
@@ -23,7 +24,7 @@ public class Peak {
 		return y_;
 	}
 	
-	public int getValue(){
+	public double getValue(){
 		return value_;
 	}
 

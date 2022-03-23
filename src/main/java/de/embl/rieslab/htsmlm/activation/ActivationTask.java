@@ -1,10 +1,11 @@
 package de.embl.rieslab.htsmlm.activation;
 
+import de.embl.rieslab.htsmlm.utils.Peak;
 import ij.ImagePlus;
 import ij.plugin.ImageCalculator;
 import ij.plugin.filter.GaussianBlur;
 import ij.process.ImageProcessor;
-import ij.process.ShortProcessor;
+import ij.process.FloatProcessor;
 import de.embl.rieslab.htsmlm.constants.HTSMLMConstants;
 import de.embl.rieslab.htsmlm.tasks.Task;
 import de.embl.rieslab.htsmlm.tasks.TaskHolder;
@@ -42,7 +43,10 @@ public class ActivationTask implements Task<Double> {
 	public static int NUM_PARAMETERS = 9;
 	public static int NUM_OUTPUTS = 3;
 	private static int MAX_COUNTER = 200;
-	
+
+	private static double LOW_QUANTILE = 0.2;
+	private static double HIGH_QUANTILE = 0.8;
+
 	private CMMCore core_;
 	private TaskHolder<Double> holder_;
 	private int idletime_;
@@ -103,12 +107,12 @@ public class ActivationTask implements Task<Double> {
 			int counter1 = 0, counter2 = 0;
 
 			TaggedImage tagged1 = null, tagged2 = null;
-			ShortProcessor ip, ip2;
+			FloatProcessor ip, ip2;
 			ImagePlus imp, imp2;
 			ImageCalculator calcul = new ImageCalculator();
 			ImagePlus imp3;
 			GaussianBlur gau = new GaussianBlur();
-			NMS NMSuppr = new NMS();
+			NMS nms = new NMS();
 
 			width = (int) core_.getImageWidth();
 			height = (int) core_.getImageHeight();
@@ -156,8 +160,8 @@ public class ActivationTask implements Task<Double> {
 
 			if (!abort) {
 				try {
-					ip = new ShortProcessor(width, height);
-					ip2 = new ShortProcessor(width, height);
+					ip = new FloatProcessor(width, height);
+					ip2 = new FloatProcessor(width, height);
 	
 					ip.setPixels(tagged1.pix);
 					ip2.setPixels(tagged2.pix);
@@ -167,22 +171,27 @@ public class ActivationTask implements Task<Double> {
 	
 					// Subtraction
 					imp3 = calcul.run("Substract create", imp, imp2);
-	
+					System.out.println("MIIIIIIN: "+imp3.getStatistics().min);
+
 					// Gaussian filter
 					gau.blurGaussian(imp3.getProcessor(),
 							HTSMLMConstants.gaussianMaskSize,
 							HTSMLMConstants.gaussianMaskSize,
 							HTSMLMConstants.gaussianMaskPrecision);
-	
-					try {
-						tempcutoff = imp3.getStatistics().mean + sdcoeff
-								* imp3.getStatistics().stdDev;
-					} catch (Exception e) {
-						tempcutoff = cutoff;
-					}
+
+					// 0 cutoff
+					ip_ = nms.run(imp3, HTSMLMConstants.nmsMaskSize, 0);
+
+					double q1 = nms.getQuantile(LOW_QUANTILE);
+					double q2 = nms.getQuantile(HIGH_QUANTILE);
+					double median = nms.getQuantile(0.5);
+
+					double slope = (q2-q1)/(HIGH_QUANTILE-LOW_QUANTILE);
+					tempcutoff = median+slope*sdcoeff; // sdcoeff changed meaning as compared to previous version
 	
 					double newcutoff;
-					if (autocutoff) {
+					if (autocutoff) { // <- we never use the non autocutoff, remove?
+						// do you still want a rolling average?
 						newcutoff = (1 - 1 / dT) * cutoff + tempcutoff / dT;
 						newcutoff = Math.floor(10 * newcutoff + 0.5) / 10;
 					} else {
@@ -191,10 +200,9 @@ public class ActivationTask implements Task<Double> {
 							newcutoff = Math.floor(10 * tempcutoff + 0.5) / 10;;
 						}
 					}
-					
-					ip_ = NMSuppr.run(imp3, HTSMLMConstants.nmsMaskSize, newcutoff);
+
 					output_[OUTPUT_NEWCUTOFF] = newcutoff;
-					output_[OUTPUT_N] = (double) NMSuppr.getN();
+					output_[OUTPUT_N] = (double) nms.getN(newcutoff);
 				} catch (Exception e) {
 					// exit?
 					e.printStackTrace();

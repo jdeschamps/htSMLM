@@ -2,6 +2,8 @@ package de.embl.rieslab.htsmlm.utils;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import ij.ImagePlus;
 import ij.gui.ImageWindow;
@@ -12,7 +14,6 @@ import ij.process.ImageProcessor;
  * Implementation following: Neubeck, A., & Van Gool, L. (2006, August).
  * Efficient non-maximum suppression. In 18th International Conference on
  * Pattern Recognition (ICPR'06) (Vol. 3, pp. 850-855). IEEE.
- *
  */
 
 public class NMS {
@@ -24,7 +25,7 @@ public class NMS {
 	int n_;
 	double cutoff_;
 	int sizeRoi=10;
-	
+	double epsilon = 0.000001d;
 	ArrayList<Peak> peaks;
 	
 	public NMS(){
@@ -46,6 +47,56 @@ public class NMS {
 		peaks.clear();
 		
 		return process();
+	}
+
+	// algorithm from
+	// https://www.mathworks.com/help/matlab/ref/quantile.html;jsessionid=62adf577fa8b77dce03112a70ad5#btf91zm
+	// https://www.mathworks.com/help/matlab/ref/quantile.html#btf91wi
+	public double getQuantile(double q){
+		if(q<0 || q>1){
+			throw new IllegalArgumentException("Quantile should be in range [0,1]");
+		}
+
+		// construct array with values
+		double[] vals = peaks.stream().mapToDouble(p -> p.getValue()).toArray();
+		int n = vals.length;
+
+		// sort the array in place
+		Arrays.sort(vals);
+
+		if(q < 0.5/n){
+			return vals[0];
+		} else if(q > (n-0.5)/n){
+			return vals[n-1];
+		} else {
+			// find points to interpolate
+			int counter = 0;
+			double pmin = 0.5/n;
+			double pmax = pmin;
+			double max_val = (n-0.5)/n;
+			while((Math.abs(q-pmax)<epsilon || pmax < q) &&
+					(Math.abs(max_val-pmax)<epsilon || pmax < max_val)){ // account for double precision error
+				pmin = pmax;
+				pmax = (0.5+(++counter))/n;
+			}
+
+			if((Math.abs(q-pmax)<epsilon)){
+				return vals[counter];
+			} else {
+				// linear interpolation
+				double qq =  vals[counter-1]+(q-pmin)*(vals[counter]-vals[counter-1])/(pmax-pmin);
+				return qq;
+			}
+		}
+	}
+
+	public long getN(double cutoff){
+		if(!(peaks == null)) {
+			long n = 0;
+			return peaks.stream().filter(p -> p.getValue()>= cutoff).count();
+		}
+
+		return -1;
 	}
 	
 	public int getN(){
