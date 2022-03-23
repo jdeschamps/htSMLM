@@ -1,11 +1,10 @@
 package de.embl.rieslab.htsmlm.activation;
 
-import de.embl.rieslab.htsmlm.utils.Peak;
 import ij.ImagePlus;
 import ij.plugin.ImageCalculator;
 import ij.plugin.filter.GaussianBlur;
 import ij.process.ImageProcessor;
-import ij.process.FloatProcessor;
+import ij.process.ShortProcessor;
 import de.embl.rieslab.htsmlm.constants.HTSMLMConstants;
 import de.embl.rieslab.htsmlm.tasks.Task;
 import de.embl.rieslab.htsmlm.tasks.TaskHolder;
@@ -100,14 +99,14 @@ public class ActivationTask implements Task<Double> {
 	}
 
 	private void getN(double sdcoeff, double cutoff, double dT, boolean autocutoff) {
-		if (core_.isSequenceRunning() && core_.getBytesPerPixel() == 2) {			
+		if (core_.isSequenceRunning() && core_.getBytesPerPixel() == 2) {
 			int width, height;
 			double tempcutoff;
 			boolean abort = false;
 			int counter1 = 0, counter2 = 0;
 
 			TaggedImage tagged1 = null, tagged2 = null;
-			FloatProcessor ip, ip2;
+			ShortProcessor ip, ip2;
 			ImagePlus imp, imp2;
 			ImageCalculator calcul = new ImageCalculator();
 			ImagePlus imp3;
@@ -120,7 +119,7 @@ public class ActivationTask implements Task<Double> {
 			// try to extract two images
 			while(tagged1 == null && abort == false) {
 				//System.out.println("Try tagged 1");
-				
+
 				try {
 					Thread.sleep(2);
 					tagged1 = core_.getLastTaggedImage();
@@ -136,7 +135,6 @@ public class ActivationTask implements Task<Double> {
 			}
 			
 			while(tagged2 == null && abort == false) {
-				
 				try {
 					Thread.sleep(2);
 					
@@ -160,18 +158,17 @@ public class ActivationTask implements Task<Double> {
 
 			if (!abort) {
 				try {
-					ip = new FloatProcessor(width, height);
-					ip2 = new FloatProcessor(width, height);
-	
+					ip = new ShortProcessor(width, height);
+					ip2 = new ShortProcessor(width, height);
+
 					ip.setPixels(tagged1.pix);
 					ip2.setPixels(tagged2.pix);
-	
-					imp = new ImagePlus("", ip);
-					imp2 = new ImagePlus("", ip2);
-	
+
+					imp = new ImagePlus("", ip.convertToFloatProcessor());
+					imp2 = new ImagePlus("", ip2.convertToFloatProcessor());
+
 					// Subtraction
 					imp3 = calcul.run("Substract create", imp, imp2);
-					System.out.println("MIIIIIIN: "+imp3.getStatistics().min);
 
 					// Gaussian filter
 					gau.blurGaussian(imp3.getProcessor(),
@@ -186,9 +183,9 @@ public class ActivationTask implements Task<Double> {
 					double q2 = nms.getQuantile(HIGH_QUANTILE);
 					double median = nms.getQuantile(0.5);
 
-					double slope = (q2-q1)/(HIGH_QUANTILE-LOW_QUANTILE);
-					tempcutoff = median+slope*sdcoeff; // sdcoeff changed meaning as compared to previous version
-	
+					double slope = (q2 - q1) / (HIGH_QUANTILE - LOW_QUANTILE);
+					tempcutoff = median + slope * sdcoeff; // sdcoeff changed meaning as compared to previous version
+
 					double newcutoff;
 					if (autocutoff) { // <- we never use the non autocutoff, remove?
 						// do you still want a rolling average?
@@ -197,14 +194,13 @@ public class ActivationTask implements Task<Double> {
 					} else {
 						newcutoff = cutoff;
 						if (newcutoff == 0) {
-							newcutoff = Math.floor(10 * tempcutoff + 0.5) / 10;;
+							newcutoff = Math.floor(10 * tempcutoff + 0.5) / 10;
 						}
 					}
 
 					output_[OUTPUT_NEWCUTOFF] = newcutoff;
 					output_[OUTPUT_N] = (double) nms.getN(newcutoff);
-				} catch (Exception e) {
-					// exit?
+				} catch (Exception e){
 					e.printStackTrace();
 				}
 			}
