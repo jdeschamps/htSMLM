@@ -3,7 +3,6 @@ package de.embl.rieslab.htsmlm.utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import ij.ImagePlus;
 import ij.gui.ImageWindow;
@@ -17,36 +16,48 @@ import ij.process.ImageProcessor;
  */
 
 public class NMS {
-	ImageProcessor imp, impresult;
+	ImageProcessor imp;
 	ImagePlus im_, imtemp_;
 	ImageWindow iw;
-	Roi roi;
 	int width_, height_;
 	int n_;
-	double cutoff_;
 	int sizeRoi=10;
 	double epsilon = 0.000001d;
 	ArrayList<Peak> peaks;
 	
 	public NMS(){
-		peaks = new ArrayList<Peak>();
+		peaks = new ArrayList<>();
 		imtemp_ = new ImagePlus();
 		imtemp_.setTitle("NMS");
-		roi = new Roi(0,0,sizeRoi,sizeRoi);
 	}
 	
-	public ImageProcessor run(ImagePlus im, int n, double cutoff){
+	public void run(ImagePlus im, int n){
 		im_ = im;		
 		width_ = im.getWidth();
 		height_ = im.getHeight();
 		imp = im.getProcessor();
-		impresult = (ImageProcessor) imp.clone();
-		impresult.setValue(65535);		// white
 		n_ = n;
-		cutoff_ = cutoff;
 		peaks.clear();
 		
-		return process();
+		process();
+	}
+
+	public ImageProcessor getNMSDetections(ImagePlus im, double cutoff){
+		ImageProcessor impresult = (ImageProcessor) imp.clone();
+		impresult.setValue(65535);		// white
+
+		Peak[] filt_peaks = (Peak[]) peaks.stream().filter(p -> p.getValue()>= cutoff).toArray();
+
+		Roi roi = new Roi(0,0,sizeRoi,sizeRoi);
+		for(Peak p: filt_peaks){
+			int mi = p.getX();
+			int mj = p.getY();
+			roi.setLocation(mi-sizeRoi/2, mj-sizeRoi/2);
+			impresult.draw(roi);
+		}
+		impresult.multiply(5);
+
+		return impresult;
 	}
 
 	// algorithm from
@@ -109,10 +120,10 @@ public class NMS {
 		return N;
 	}
 	
-	public ImageProcessor process(){
+	public void process(){
 		int i,j,ii,jj,ll,kk;
 		int mi,mj;
-		boolean failed=false;
+		boolean failed = false;
 	
 		for(i=0;i<width_-n_-1;i+=n_+1){	// Loop over (n+1)x(n+1)
 			for(j=0;j<height_-n_-1;j+=n_+1){
@@ -142,21 +153,9 @@ public class NMS {
 					}
 				}
 				if(!failed){
-					if(imp.get(mi,mj) > cutoff_){
-						peaks.add(new Peak(mi, mj, imp.get(mi,mj)));
-					}
+					peaks.add(new Peak(mi, mj, imp.get(mi,mj)));
 				}
 			}			
-		}	
-
-		for(int k=0;k<peaks.size();k++){
-			mi = peaks.get(k).getX();
-			mj = peaks.get(k).getY();
-			roi.setLocation(mi-sizeRoi/2, mj-sizeRoi/2);
-			impresult.draw(roi);
 		}
-		impresult.multiply(5);
-		
-		return impresult;
 	}
 }

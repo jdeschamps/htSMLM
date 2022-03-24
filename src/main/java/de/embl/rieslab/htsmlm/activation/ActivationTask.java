@@ -185,8 +185,8 @@ public class ActivationTask implements Task<Double> {
 						}
 					}
 
-					// 0 cutoff
-					ip_ = nms.run(imp3, HTSMLMConstants.nmsMaskSize, 0);
+					// run nms
+					nms.run(imp3, HTSMLMConstants.nmsMaskSize);
 
 					double q1 = nms.getQuantile(LOW_QUANTILE);
 					double q2 = nms.getQuantile(HIGH_QUANTILE);
@@ -207,6 +207,7 @@ public class ActivationTask implements Task<Double> {
 						}
 					}
 
+					ip_ = nms.getNMSDetections( imp3, newcutoff); // now this filters the peak list a second time....
 					output_[OUTPUT_NEWCUTOFF] = newcutoff;
 					output_[OUTPUT_N] = (double) nms.getN(newcutoff);
 				} catch (Exception e){
