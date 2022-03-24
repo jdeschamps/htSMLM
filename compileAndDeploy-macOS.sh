@@ -29,7 +29,7 @@ else
 		mvn install:install-file -Dfile="$EMU" -DgroupId=de.embl.rieslab  -DartifactId=EMU -Dversion=$EMU_VERSION -Dpackaging=jar
 		
 		# compile project
-		mvn clean package shade:shade
+		mvn clean package shade:shade -Dmaven.test.skip=true
 	
 		# test if the EMU folder exist, otherwise create it
 		MM2_EMU="$MM2_HOME/EMU"
