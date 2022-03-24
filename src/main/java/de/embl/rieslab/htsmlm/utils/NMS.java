@@ -41,7 +41,7 @@ public class NMS {
 	}
 
 	public ImageProcessor applyCutoff(double cutoff){
-		impresult = (ImageProcessor) im_.clone();
+		impresult = (ImageProcessor) imp.clone();
 		impresult.setValue(65535);		// white
 		Peak[] filt_peaks = (Peak[]) peaks.stream().filter(p -> p.getValue()>= cutoff).toArray();
 
@@ -52,7 +52,7 @@ public class NMS {
 			roi.setLocation(mi-sizeRoi/2, mj-sizeRoi/2);
 			impresult.draw(roi);
 		}
-		impresult.multiply(5);
+		impresult.multiply(5); // for contrast
 
 		return impresult;
 	}
