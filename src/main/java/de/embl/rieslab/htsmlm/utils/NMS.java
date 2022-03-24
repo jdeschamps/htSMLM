@@ -8,6 +8,7 @@ import ij.ImagePlus;
 import ij.gui.ImageWindow;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
+import mmcorej.CMMCore;
 
 /**
  * Implementation following: Neubeck, A., & Van Gool, L. (2006, August).
@@ -18,7 +19,6 @@ import ij.process.ImageProcessor;
 public class NMS {
 	ImageProcessor imp, impresult;
 	ImagePlus im_;
-	ImageWindow iw;
 	int width_, height_;
 	int n_;
 	int sizeRoi=10;
@@ -43,10 +43,16 @@ public class NMS {
 	public ImageProcessor applyCutoff(double cutoff){
 		impresult = (ImageProcessor) imp.clone();
 		impresult.setValue(65535);		// white
-		Peak[] filt_peaks = (Peak[]) peaks.stream().filter(p -> p.getValue()>= cutoff).toArray();
+
+		ArrayList<Peak> filter_peaks = new ArrayList<>();
+		for(Peak p: peaks){
+			if(p.getValue() >= cutoff){
+				filter_peaks.add(p);
+			}
+		}
 
 		Roi roi = new Roi(0,0,sizeRoi,sizeRoi);
-		for(Peak p: filt_peaks){
+		for(Peak p: filter_peaks){
 			int mi = p.getX();
 			int mj = p.getY();
 			roi.setLocation(mi-sizeRoi/2, mj-sizeRoi/2);

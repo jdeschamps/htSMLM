@@ -84,6 +84,7 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 	private ImageProcessor ip_;
 	private int counternms_ = 0;
 	private Double[] params;
+	private CMMCore core_;
 	
 	public ActivationPanel(String label, CMMCore core) {
 		super(label);
@@ -93,7 +94,8 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		task_ = new ActivationTask(this, core, idletime_);
     	ip_ = new ShortProcessor(200,200);
 		im_ = new ImagePlus("NMS result");
-		
+		core_ = core;
+
 		params = new Double[ActivationTask.NUM_PARAMETERS];
 		
 	}
@@ -285,6 +287,8 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		if(b){
 			shownms_ = true;
 			im_.setProcessor(ip_);
+			core_.logMessage("[panel] Max value of image is "+ip_.getStatistics().max);
+			core_.logMessage("[panel] Width value of image is "+ip_.getWidth());
 			im_.show();
 		} else {
 			shownms_ = false;
