@@ -53,7 +53,7 @@ public class ActivationTask implements Task<Double> {
 	private boolean running_;
 	private Double[] output_;
 	private ImageProcessor ip_;
-	
+
 	private double dp;
 	
 	public ActivationTask(TaskHolder<Double> holder, CMMCore core, int idle){
@@ -207,9 +207,9 @@ public class ActivationTask implements Task<Double> {
 						}
 					}
 
-					ip_ = nms.getNMSDetections( imp3, newcutoff); // now this filters the peak list a second time....
+					ip_ = nms.applyCutoff(newcutoff); // now this filters the peak list
 					output_[OUTPUT_NEWCUTOFF] = newcutoff;
-					output_[OUTPUT_N] = (double) nms.getN(newcutoff);
+					output_[OUTPUT_N] = (double) nms.getN(newcutoff); // and this a second time
 				} catch (Exception e){
 					e.printStackTrace();
 				}
@@ -253,11 +253,11 @@ public class ActivationTask implements Task<Double> {
 	public void notifyHolder(Double[] outputs) {
 		holder_.update(outputs);
 	}
-	
+
 	public ImageProcessor getNMSResult(){
 		return ip_;
 	}
-	
+
 	private class AutomatedActivation extends SwingWorker<Integer, Double[]> {
 		
 		@Override

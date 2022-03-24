@@ -16,8 +16,8 @@ import ij.process.ImageProcessor;
  */
 
 public class NMS {
-	ImageProcessor imp;
-	ImagePlus im_, imtemp_;
+	ImageProcessor imp, impresult;
+	ImagePlus im_;
 	ImageWindow iw;
 	int width_, height_;
 	int n_;
@@ -27,12 +27,10 @@ public class NMS {
 	
 	public NMS(){
 		peaks = new ArrayList<>();
-		imtemp_ = new ImagePlus();
-		imtemp_.setTitle("NMS");
 	}
 	
 	public void run(ImagePlus im, int n){
-		im_ = im;		
+		im_ = im;
 		width_ = im.getWidth();
 		height_ = im.getHeight();
 		imp = im.getProcessor();
@@ -42,10 +40,9 @@ public class NMS {
 		process();
 	}
 
-	public ImageProcessor getNMSDetections(ImagePlus im, double cutoff){
-		ImageProcessor impresult = (ImageProcessor) imp.clone();
+	public ImageProcessor applyCutoff(double cutoff){
+		impresult = (ImageProcessor) im_.clone();
 		impresult.setValue(65535);		// white
-
 		Peak[] filt_peaks = (Peak[]) peaks.stream().filter(p -> p.getValue()>= cutoff).toArray();
 
 		Roi roi = new Roi(0,0,sizeRoi,sizeRoi);
@@ -104,7 +101,7 @@ public class NMS {
 	public long getN(double cutoff){
 		if(!(peaks == null)) {
 			long n = 0;
-			return peaks.stream().filter(p -> p.getValue()>= cutoff).count();
+			return peaks.stream().filter(p -> p.getValue()>=cutoff).count();
 		}
 
 		return -1;

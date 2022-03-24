@@ -451,7 +451,7 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		if(shownms_ && counternms_ % 10 == 0){
 			ImageProcessor imp = task_.getNMSResult();
 			if(imp != null && imp.getPixels() != null){
-				ip_ = task_.getNMSResult();
+				ip_ = imp;
 				im_.setProcessor(ip_);
 				im_.updateAndRepaintWindow();
 			}
