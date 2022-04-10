@@ -59,19 +59,14 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 	private String title_;
 	private Color color_;
 
-	//////// Internal properties
-	private static final String INTERNAL_MAXPULSE = LaserPulsingPanel.INTERNAL_MAXPULSE;
-	
 	// Mojo FPGA
 	private final static int FPGA_MAX_PULSE = 65535;
 	private final static int FPGA_MAX_SEQUENCE = 65535;
 	private final static String[] FPGA_BEHAVIOURS = {"Off","On","Rising","Falling","Camera"};
-	
-	private int maxpulse_;
-	
+
 	public LaserTriggerPanel(String label) {
 		super(label);
-		
+
 		setupPanel();
 	}
 
@@ -254,20 +249,12 @@ public class LaserTriggerPanel extends ConfigurablePanel {
 
 	@Override
 	protected void initializeInternalProperties() {
-		maxpulse_ = 10000;
-		
-		addInternalProperty(new IntegerInternalProperty(this, INTERNAL_MAXPULSE, maxpulse_));	}
+		// do nothing
+	}
 
 	@Override
 	public void internalpropertyhasChanged(String label) {
-		if(INTERNAL_MAXPULSE.equals(label)){
-			try {
-				maxpulse_ = getIntegerInternalPropertyValue(INTERNAL_MAXPULSE);
-				sliderpulse_.setMaximum(maxpulse_);
-			} catch (IncorrectInternalPropertyTypeException | UnknownInternalPropertyException e) {
-				e.printStackTrace();
-			}
-		}
+		// do nothing
 	}
 	
 	private String getPropertyLabel(String propName) {

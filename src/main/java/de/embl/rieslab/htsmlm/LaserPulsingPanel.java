@@ -1,11 +1,6 @@
 package de.embl.rieslab.htsmlm;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -13,11 +8,10 @@ import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import javax.swing.BorderFactory;
-import javax.swing.JSlider;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.border.TitledBorder;
 
+import de.embl.rieslab.emu.micromanager.mmproperties.MMProperty;
 import de.embl.rieslab.emu.micromanager.mmproperties.MMProperty.MMPropertyType;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.internalproperties.IntegerInternalProperty;
@@ -39,28 +33,42 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 	private static final long serialVersionUID = 1L;
 
 	//////// Components
-	private JTextField textfieldmax_;
-	private JTextField textfieldvalue_;
-	private LogarithmicJSlider logslider_;
+	private JTextField textFieldMax1_;
+	private JTextField textFieldValue1_;
+	private LogarithmicJSlider logSlider1_;
+	private JTextField textFieldMax2_;
+	private JTextField textFieldValue2_;
+	private LogarithmicJSlider logSlider2_;
+
 	private TitledBorder border_;
+
+	private JComboBox<String> pulseCombo_;
+	private JPanel card_;
 
 	//////// Properties
 	private static final String CAMERA_EXPOSURE = "Camera exposure";
-	private static final String LASER_PULSE = "UV pulse duration (main frame)";	
-	
+	private static final String LASER_PULSE1 = "Pulse duration 1 (main frame)";
+	private static final String LASER_PULSE2 = "Pulse duration 2 (main frame)";
+
 	//////// Parameters
 	private static final String PARAM_TITLE = "Name";
 	private static final String PARAM_COLOR = "Color";
-	private static final String PARAM_DEFAULT_MAX = "Default max pulse";	
+	private static final String PARAM_DEFAULT_MAX = "Default max pulse";
+	private static final String PARAM_ACTIVATION_NAME1 = "Activation 1 name";
+	private static final String PARAM_ACTIVATION_NAME2 = "Activation 2 name";
 	private String title_;	
 	private Color color_;
 	
 	//////// Internal property
-	public final static String INTERNAL_MAXPULSE = "Maximum pulse";
+	public final static String INTERNAL_MAXPULSE1 = "Maximum pulse 1";
+	public final static String INTERNAL_MAXPULSE2 = "Maximum pulse 2";
 	
 	//////// Convenience variables
-	private int maxpulse_;
-	
+	private int maxpulse1_, maxpulse2_;
+	private boolean showPulseDuration1_;
+
+	private static final String[] CARDS_NAME = {"0", "1"};
+
 	public LaserPulsingPanel(String label) {
 		super(label);
 		
@@ -70,69 +78,162 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 	private void setupPanel() {
 
 		this.setLayout(new GridBagLayout());
-		
+
 		border_ = BorderFactory.createTitledBorder(null, title_, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, color_);
 		this.setBorder(border_);
 		border_.setTitleFont(border_.getTitleFont().deriveFont(Font.BOLD, 12));
-		
-		GridBagConstraints c = new GridBagConstraints();
-		c.gridx = 0;
-		c.gridheight = 1;
-		c.gridwidth = 1;
-		c.insets = new Insets(1,15,1,15);
-		
-		///////////////////////////////////////////////////////////////////////// User max text field
-		textfieldmax_ = new JTextField("10000");
-		textfieldmax_.setToolTipText("Maximum value allowed for the activation pulse/power.");
-		textfieldmax_.setPreferredSize(new Dimension(30,15));
-		textfieldmax_.setBackground(new Color(220,220,220));
-		
-		c.fill = GridBagConstraints.BOTH;
-		c.gridy = 0;
-		c.ipady = 7;
-		this.add(textfieldmax_, c);
-		
-		
-		///////////////////////////////////////////////////////////////////////// User value text field
-		textfieldvalue_ = new JTextField();
-		textfieldvalue_.setToolTipText("Current value of the activation pulse/power.");
-		c.fill = GridBagConstraints.BOTH;
-		c.gridy = 1;
-		this.add(textfieldvalue_, c);
-		
-		
-		///////////////////////////////////////////////////////////////////////// Log JSlider
-		logslider_ = new LogarithmicJSlider(JSlider.VERTICAL,1, 10000, 10);
-		logslider_.setToolTipText("Current value of the activation pulse/power.");
-		
-		logslider_.setPaintTicks(true);
-		logslider_.setPaintTrack(true);
-		logslider_.setPaintLabels(true);
-		logslider_.setMajorTickSpacing(10);
-		logslider_.setMinorTickSpacing(10);  
+
+		String[] properties;
+		try {
+			properties = getPropertiesName();
+		} catch (UnknownUIParameterException e) {
+			e.printStackTrace();
+			properties = new String[]{"Activation 1, Activation 2"};
+		}
+		pulseCombo_ = new JComboBox(properties);
+		pulseCombo_.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				showPulseDuration1_ = pulseCombo_.getSelectedIndex() == 0;
+
+				CardLayout cl = (CardLayout)(card_.getLayout());
+				if(showPulseDuration1_){
+					cl.show(card_, CARDS_NAME[0]);
+				} else {
+					cl.show(card_, CARDS_NAME[1]);
+				}
+			}
+		});
+		GridBagConstraints c1 = new GridBagConstraints();
+		c1.gridx = 0;
+		c1.gridheight = 1;
+		c1.gridwidth = 1;
+		c1.insets = new Insets(1, 15, 1, 15);
+		this.add(pulseCombo_, c1);
 
 
-		c.gridy = 2;
-		c.ipady = 0;
-		this.add(logslider_, c);
+		card_ = new JPanel(new CardLayout());
+		JPanel[] cardPanels = {new JPanel(), new JPanel()};
+
+		textFieldMax1_ = new JTextField("10000");
+		textFieldValue1_ = new JTextField();
+		logSlider1_ = new LogarithmicJSlider(JSlider.VERTICAL, 1, 10000, 10);
+		textFieldMax2_ = new JTextField("10000");
+		textFieldValue2_ = new JTextField();
+		logSlider2_ = new LogarithmicJSlider(JSlider.VERTICAL, 1, 10000, 10);
+
+		int counter = 0;
+		for (JPanel pane :cardPanels){
+			pane.setLayout(new GridBagLayout());
+			
+			///////////////////////////////////////////////////////////////////////// User max text field
+			JTextField textFieldMax = getTextFieldMax(counter);
+			textFieldMax.setToolTipText("Maximum value allowed for the activation pulse/power.");
+			textFieldMax.setPreferredSize(new Dimension(30, 15));
+			textFieldMax.setBackground(new Color(220, 220, 220));
+
+
+			GridBagConstraints c = new GridBagConstraints();
+			c.gridx = 0;
+			c.gridheight = 1;
+			c.gridwidth = 1;
+			c.insets = new Insets(1, 15, 1, 15);
+
+
+			c.fill = GridBagConstraints.BOTH;
+			c.ipady = 7;
+			c.gridy = 0;
+			pane.add(textFieldMax, c);
+
+
+			///////////////////////////////////////////////////////////////////////// User value text field
+			JTextField textFieldValue = getTextFieldValue(counter);
+			textFieldValue.setToolTipText("Current value of the activation pulse/power.");
+			c.fill = GridBagConstraints.BOTH;
+			c.gridy = 1;
+			pane.add(textFieldValue, c);
+
+
+			///////////////////////////////////////////////////////////////////////// Log JSlider
+			LogarithmicJSlider logSlider = getLogSlider(counter);
+			logSlider.setToolTipText("Current value of the activation pulse/power.");
+
+			logSlider.setPaintTicks(true);
+			logSlider.setPaintTrack(true);
+			logSlider.setPaintLabels(true);
+			logSlider.setMajorTickSpacing(10);
+			logSlider.setMinorTickSpacing(10);
+
+
+			c.gridy = 2;
+			c.ipady = 0;
+			pane.add(logSlider, c);
+
+			card_.add(pane, CARDS_NAME[counter++]);
+		}
+		/////////////////////////////////////////////////////////////////////////
+
+		c1.insets = new Insets(0, 0, 0, 0);
+		c1.fill = GridBagConstraints.BOTH;
+		this.add(card_, c1);
 	}
-	
+
+	private LogarithmicJSlider getLogSlider(int index){
+		if(index == 0){
+			return logSlider1_;
+		} else {
+			return logSlider2_;
+		}
+	}
+
+	private JTextField getTextFieldMax(int index){
+		if(index == 0){
+			return textFieldMax1_;
+		} else {
+			return textFieldMax2_;
+		}
+	}
+
+	private JTextField getTextFieldValue(int index){
+		if(index == 0){
+			return textFieldValue1_;
+		} else {
+			return textFieldValue2_;
+		}
+	}
+
+	private String getProperty(int i){
+		if(i==0){
+			return LASER_PULSE1;
+		} else {
+			return LASER_PULSE2;
+		}
+	}
+
+	private String[] getPropertiesName() throws UnknownUIParameterException {
+		String[] str = {this.getStringUIParameterValue(PARAM_ACTIVATION_NAME1),
+				this.getStringUIParameterValue(PARAM_ACTIVATION_NAME2)};
+
+		return str;
+	}
+
 
 	@Override
 	protected void initializeProperties() {
 		String descPulse = "Pulse length, power or power percentage property of the activation laser. This "
 				+ "property is required for the Activation script. Note that it should be mapped to the same "
-				+ "device property as \"UV pulse duration (activation)\" for consistence.";
+				+ "device property as \"Pulse duration X (activation)\" for consistence.";
 		
 		addUIProperty(new UIProperty(this, CAMERA_EXPOSURE,"Camera exposure in ms.", new CameraExpFlag()));
-		addUIProperty(new UIProperty(this, LASER_PULSE,descPulse));
+		addUIProperty(new UIProperty(this, LASER_PULSE1,descPulse));
+		addUIProperty(new UIProperty(this, LASER_PULSE2,descPulse));
 	}
 
 	@Override
 	protected void initializeParameters() {
 		title_ = "UV";	
 		color_ = Color.black;
-		maxpulse_  = 10000;
+		maxpulse1_  = 10000;
+		maxpulse2_  = 10000;
 
 		addUIParameter(new StringUIParameter(this, PARAM_TITLE,"Laser name displayed on top of the laser "
 				+ "control panel in the GUI.",title_));
@@ -140,34 +241,64 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 				
 		String desc = "Default maximum value for the activation laser pulse length (or power). This default "
 				+ "value appears in the grey box at the top-left corner of the GUI. The value must be an integer.";
-		addUIParameter(new IntegerUIParameter(this, PARAM_DEFAULT_MAX, desc, maxpulse_));
+		addUIParameter(new IntegerUIParameter(this, PARAM_DEFAULT_MAX, desc, maxpulse1_));
+
+		String descActivation = "Name of the activation property (pulse duration) appearing in the drop-down menu of " +
+				"the activation panel.";
+		addUIParameter(new StringUIParameter(this, PARAM_ACTIVATION_NAME1, descActivation,"Activation 1"));
+		addUIParameter(new StringUIParameter(this, PARAM_ACTIVATION_NAME2, descActivation,"Activation 2"));
 	}
 
 	@Override
 	public void propertyhasChanged(String name, String newvalue) {
-		if(LASER_PULSE.equals(name)){
+		if(LASER_PULSE1.equals(name)){
 			if(EmuUtils.isInteger(newvalue)){
 				int val = Integer.parseInt(newvalue);
-				
-				if(val>logslider_.getMaxWithin()){
-					logslider_.setValueWithin(logslider_.getMaxWithin());
-					textfieldvalue_.setText(String.valueOf(logslider_.getMaxWithin()));
-					setUIPropertyValue(LASER_PULSE,String.valueOf(logslider_.getMaxWithin()));
+
+				if(val > logSlider1_.getMaxWithin()){
+					logSlider1_.setValueWithin(logSlider1_.getMaxWithin());
+					textFieldValue1_.setText(String.valueOf(logSlider1_.getMaxWithin()));
+					setUIPropertyValue(LASER_PULSE1,String.valueOf(logSlider1_.getMaxWithin()));
 				} else {
-					logslider_.setValueWithin(val);
-					textfieldvalue_.setText(newvalue);
+					logSlider1_.setValueWithin(val);
+					textFieldValue1_.setText(newvalue);
 				}
 			} else if(EmuUtils.isFloat(newvalue)){
 				int val = Math.round(Float.parseFloat(newvalue));
 				double dval = Math.round(100.*Float.parseFloat(newvalue))/100;
-				
-				if(val>logslider_.getMaxWithin()){
-					logslider_.setValueWithin(logslider_.getMaxWithin());
-					textfieldvalue_.setText(String.valueOf(logslider_.getMaxWithin()));
-					setUIPropertyValue(LASER_PULSE,String.valueOf(logslider_.getMaxWithin()));
+
+				if(val > logSlider1_.getMaxWithin()){
+					logSlider1_.setValueWithin(logSlider1_.getMaxWithin());
+					textFieldValue1_.setText(String.valueOf(logSlider1_.getMaxWithin()));
+					setUIPropertyValue(LASER_PULSE1,String.valueOf(logSlider1_.getMaxWithin()));
 				} else {
-					logslider_.setValueWithin(val);
-					textfieldvalue_.setText(String.valueOf(dval));
+					logSlider1_.setValueWithin(val);
+					textFieldValue1_.setText(String.valueOf(dval));
+				}
+			}
+		} else if(LASER_PULSE2.equals(name)){
+			if(EmuUtils.isInteger(newvalue)){
+				int val = Integer.parseInt(newvalue);
+
+				if(val > logSlider2_.getMaxWithin()){
+					logSlider2_.setValueWithin(logSlider2_.getMaxWithin());
+					textFieldValue2_.setText(String.valueOf(logSlider2_.getMaxWithin()));
+					setUIPropertyValue(LASER_PULSE2,String.valueOf(logSlider2_.getMaxWithin()));
+				} else {
+					logSlider2_.setValueWithin(val);
+					textFieldValue2_.setText(newvalue);
+				}
+			} else if(EmuUtils.isFloat(newvalue)){
+				int val = Math.round(Float.parseFloat(newvalue));
+				double dval = Math.round(100.*Float.parseFloat(newvalue))/100;
+
+				if(val > logSlider2_.getMaxWithin()){
+					logSlider2_.setValueWithin(logSlider2_.getMaxWithin());
+					textFieldValue2_.setText(String.valueOf(logSlider2_.getMaxWithin()));
+					setUIPropertyValue(LASER_PULSE2,String.valueOf(logSlider2_.getMaxWithin()));
+				} else {
+					logSlider2_.setValueWithin(val);
+					textFieldValue2_.setText(String.valueOf(dval));
 				}
 			}
 		}
@@ -193,15 +324,24 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 			}
 		} else if(PARAM_DEFAULT_MAX.equals(label)){
 			try {
-				maxpulse_ = getIntegerUIParameterValue(PARAM_DEFAULT_MAX);
-				logslider_.setMaxWithin(maxpulse_);
-				if (logslider_.getValue() > logslider_.getMaxWithin()) {
-					logslider_.setValueWithin(logslider_.getMaxWithin());
-					textfieldvalue_.setText(String.valueOf(logslider_.getValue()));
-					setUIPropertyValue(LASER_PULSE,String.valueOf(logslider_.getValue()));
+				maxpulse1_ = getIntegerUIParameterValue(PARAM_DEFAULT_MAX);
+				logSlider1_.setMaxWithin(maxpulse1_);
+				if (logSlider1_.getValue() > logSlider1_.getMaxWithin()) {
+					logSlider1_.setValueWithin(logSlider1_.getMaxWithin());
+					textFieldValue1_.setText(String.valueOf(logSlider1_.getValue()));
+					setUIPropertyValue(LASER_PULSE1,String.valueOf(logSlider1_.getValue()));
 				}
-				textfieldmax_.setText(String.valueOf(maxpulse_));
-				changeMaxPulseProperty(maxpulse_);
+				textFieldMax1_.setText(String.valueOf(maxpulse1_));
+				changeMaxPulseProperty(maxpulse1_, 0);
+
+				logSlider2_.setMaxWithin(maxpulse2_);
+				if (logSlider2_.getValue() > logSlider2_.getMaxWithin()) {
+					logSlider2_.setValueWithin(logSlider2_.getMaxWithin());
+					textFieldValue2_.setText(String.valueOf(logSlider2_.getValue()));
+					setUIPropertyValue(LASER_PULSE2,String.valueOf(logSlider2_.getValue()));
+				}
+				textFieldMax2_.setText(String.valueOf(maxpulse2_));
+				changeMaxPulseProperty(maxpulse2_, 1);
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
@@ -221,169 +361,197 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 	}
 
 	@Override
-	protected void initializeInternalProperties() {		
-		addInternalProperty(new IntegerInternalProperty(this, INTERNAL_MAXPULSE, maxpulse_));
+	protected void initializeInternalProperties() {
+		addInternalProperty(new IntegerInternalProperty(this, INTERNAL_MAXPULSE1, maxpulse1_));
+		addInternalProperty(new IntegerInternalProperty(this, INTERNAL_MAXPULSE2, maxpulse2_));
 	}
 
 	@Override
 	public void internalpropertyhasChanged(String label) {
-		if(INTERNAL_MAXPULSE.equals(label)){
+		if(INTERNAL_MAXPULSE1.equals(label)){
 			try {
-				maxpulse_ = getIntegerInternalPropertyValue(INTERNAL_MAXPULSE);
-				logslider_.setMaxWithin(maxpulse_);
-				if (logslider_.getValue() > logslider_.getMaxWithin()) {
-					logslider_.setValueWithin(logslider_.getMaxWithin());
-					textfieldvalue_.setText(String.valueOf(logslider_.getValue()));
-					setUIPropertyValue(LASER_PULSE,String.valueOf(logslider_.getValue()));
+				maxpulse1_ = getIntegerInternalPropertyValue(INTERNAL_MAXPULSE1);
+				logSlider1_.setMaxWithin(maxpulse1_);
+				if (logSlider1_.getValue() > logSlider1_.getMaxWithin()) {
+					logSlider1_.setValueWithin(logSlider1_.getMaxWithin());
+					textFieldValue1_.setText(String.valueOf(logSlider1_.getValue()));
+					setUIPropertyValue(LASER_PULSE1,String.valueOf(logSlider1_.getValue()));
 				}
-				textfieldmax_.setText(String.valueOf(maxpulse_));
+				textFieldMax1_.setText(String.valueOf(maxpulse1_));
+			} catch (IncorrectInternalPropertyTypeException | UnknownInternalPropertyException e) {
+				e.printStackTrace();
+			}
+		} else if(INTERNAL_MAXPULSE2.equals(label)){
+			try {
+				maxpulse2_ = getIntegerInternalPropertyValue(INTERNAL_MAXPULSE2);
+				logSlider2_.setMaxWithin(maxpulse2_);
+				if (logSlider2_.getValue() > logSlider2_.getMaxWithin()) {
+					logSlider2_.setValueWithin(logSlider2_.getMaxWithin());
+					textFieldValue2_.setText(String.valueOf(logSlider2_.getValue()));
+					setUIPropertyValue(LASER_PULSE2,String.valueOf(logSlider2_.getValue()));
+				}
+				textFieldMax2_.setText(String.valueOf(maxpulse2_));
 			} catch (IncorrectInternalPropertyTypeException | UnknownInternalPropertyException e) {
 				e.printStackTrace();
 			}
 		}
 	}
 
-	private void changeMaxPulseProperty(int val){
-		try {
-			setInternalPropertyValue(INTERNAL_MAXPULSE,val);
-		} catch (IncorrectInternalPropertyTypeException | UnknownInternalPropertyException e) {
-			e.printStackTrace();
+	private void changeMaxPulseProperty(int val, int channel){
+		if(channel == 0){
+			try {
+				setInternalPropertyValue(INTERNAL_MAXPULSE1,val);
+			} catch (IncorrectInternalPropertyTypeException | UnknownInternalPropertyException e) {
+				e.printStackTrace();
+			}
+		} else {
+			try {
+				setInternalPropertyValue(INTERNAL_MAXPULSE2,val);
+			} catch (IncorrectInternalPropertyTypeException | UnknownInternalPropertyException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
 	@Override
 	protected void addComponentListeners() {
-		
-		try {
-			final UIProperty prop = this.getUIProperty(LASER_PULSE);
-			
-			textfieldvalue_.addFocusListener(new FocusListener() {
-				@Override
-				public void focusGained(FocusEvent arg0) {
-				}
 
-				@Override
-				public void focusLost(FocusEvent arg0) {
-					String typed = textfieldvalue_.getText();
-					if (!EmuUtils.isNumeric(typed)) {
-						return;
+		for(int i=0; i<2; i++){
+			final int index = i;
+			JTextField textFieldValue = getTextFieldValue(index);
+			JTextField textFieldMax = getTextFieldMax(index);
+			LogarithmicJSlider slider = getLogSlider(index);
+
+			try {
+				final UIProperty prop = this.getUIProperty(getProperty(index));
+
+				textFieldValue.addFocusListener(new FocusListener() {
+					@Override
+					public void focusGained(FocusEvent arg0) {
 					}
 
-					if(prop.getMMPropertyType().equals(MMPropertyType.FLOAT)) {
-						int val = Math.round(Float.parseFloat(typed));
-						double dval = Math.round(100.*Float.parseFloat(typed))/100;
-						if (val <= logslider_.getMaxWithin()) {
-							logslider_.setValueWithin(val);
-							setUIPropertyValue(LASER_PULSE, String.valueOf(dval));
+					@Override
+					public void focusLost(FocusEvent arg0) {
+						String typed = textFieldValue.getText();
+						if (!EmuUtils.isNumeric(typed)) {
+							return;
+						}
+
+						if(prop.getMMPropertyType().equals(MMPropertyType.FLOAT)) {
+							int val = Math.round(Float.parseFloat(typed));
+							double dval = Math.round(100.*Float.parseFloat(typed))/100;
+							if (val <= slider.getMaxWithin()) {
+								slider.setValueWithin(val);
+								setUIPropertyValue(getProperty(index), String.valueOf(dval));
+							} else {
+								slider.setValueWithin(slider.getMaxWithin());
+								setUIPropertyValue(getProperty(index), String.valueOf(slider.getMaxWithin()));
+							}
 						} else {
-							logslider_.setValueWithin(logslider_.getMaxWithin());
-							setUIPropertyValue(LASER_PULSE, String.valueOf(logslider_.getMaxWithin()));
+							int val = Math.round(Float.parseFloat(typed));
+							if (val <= slider.getMaxWithin()) {
+								slider.setValueWithin(val);
+								setUIPropertyValue(getProperty(index), String.valueOf(val));
+							} else {
+								slider.setValueWithin(slider.getMaxWithin());
+								setUIPropertyValue(getProperty(index), String.valueOf(slider.getMaxWithin()));
+							}
 						}
-					} else {
-						int val = Math.round(Float.parseFloat(typed));
-						if (val <= logslider_.getMaxWithin()) {
-							logslider_.setValueWithin(val);
-							setUIPropertyValue(LASER_PULSE, String.valueOf(val));
+					}
+				});
+				textFieldValue.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						String typed = textFieldValue.getText();
+						if (!EmuUtils.isNumeric(typed)) {
+							return;
+						}
+						if(prop.getMMPropertyType().equals(MMPropertyType.FLOAT)) {
+							int val = Math.round(Float.parseFloat(typed));
+							double dval = Math.round(100.*Float.parseFloat(typed))/100;
+							if (val <= slider.getMaxWithin()) {
+								slider.setValueWithin(val);
+								setUIPropertyValue(getProperty(index), String.valueOf(dval));
+							} else {
+								slider.setValueWithin(slider.getMaxWithin());
+								setUIPropertyValue(getProperty(index), String.valueOf(slider.getMaxWithin()));
+							}
 						} else {
-							logslider_.setValueWithin(logslider_.getMaxWithin());
-							setUIPropertyValue(LASER_PULSE, String.valueOf(logslider_.getMaxWithin()));
+							int val = Math.round(Float.parseFloat(typed));
+							if (val <= slider.getMaxWithin()) {
+								slider.setValueWithin(val);
+								setUIPropertyValue(getProperty(index), String.valueOf(val));
+							} else {
+								slider.setValueWithin(slider.getMaxWithin());
+								setUIPropertyValue(getProperty(index), String.valueOf(slider.getMaxWithin()));
+							}
 						}
 					}
-				}
-			});
-			textfieldvalue_.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					String typed = textfieldvalue_.getText();
-					if (!EmuUtils.isNumeric(typed)) {
-						return;
-					}
-					if(prop.getMMPropertyType().equals(MMPropertyType.FLOAT)) {
-						int val = Math.round(Float.parseFloat(typed));
-						double dval = Math.round(100.*Float.parseFloat(typed))/100;
-						if (val <= logslider_.getMaxWithin()) {
-							logslider_.setValueWithin(val);
-							setUIPropertyValue(LASER_PULSE, String.valueOf(dval));
-						} else {
-							logslider_.setValueWithin(logslider_.getMaxWithin());
-							setUIPropertyValue(LASER_PULSE, String.valueOf(logslider_.getMaxWithin()));
-						}
-					} else {
-						int val = Math.round(Float.parseFloat(typed));
-						if (val <= logslider_.getMaxWithin()) {
-							logslider_.setValueWithin(val);
-							setUIPropertyValue(LASER_PULSE, String.valueOf(val));
-						} else {
-							logslider_.setValueWithin(logslider_.getMaxWithin());
-							setUIPropertyValue(LASER_PULSE, String.valueOf(logslider_.getMaxWithin()));
-						}
-					}
-				}
-			});
+				});
 
-			textfieldmax_.addFocusListener(new FocusListener() {
-				@Override
-				public void focusGained(FocusEvent arg0) {
-				}
-
-				@Override
-				public void focusLost(FocusEvent arg0) {
-					String typed = textfieldmax_.getText();
-					if (!EmuUtils.isInteger(typed)) {
-						return;
+				textFieldMax.addFocusListener(new FocusListener() {
+					@Override
+					public void focusGained(FocusEvent arg0) {
 					}
-					int val = Integer.parseInt(typed);
-					if (val > 0) {
-						if (logslider_.getValue() > val) {
-							logslider_.setValueWithin(val);
-							textfieldvalue_.setText(typed);
-							setUIPropertyValue(LASER_PULSE, typed);
+
+					@Override
+					public void focusLost(FocusEvent arg0) {
+						String typed = textFieldMax.getText();
+						if (!EmuUtils.isInteger(typed)) {
+							return;
 						}
-						logslider_.setMaxWithin(val);
+						int val = Integer.parseInt(typed);
+						if (val > 0) {
+							if (slider.getValue() > val) {
+								slider.setValueWithin(val);
+								textFieldValue.setText(typed);
+								setUIPropertyValue(getProperty(index), typed);
+							}
+							slider.setMaxWithin(val);
 
-						// set maximum value
-						changeMaxPulseProperty(val);
-					}
-				}
-			});
-			textfieldmax_.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					String typed = textfieldmax_.getText();
-					if (!EmuUtils.isInteger(typed)) {
-						return;
-					}
-					int val = Integer.parseInt(typed);
-					if (val > 0) {
-						if (logslider_.getValue() > val) {
-							logslider_.setValueWithin(val);
-							textfieldvalue_.setText(typed);
-							setUIPropertyValue(LASER_PULSE, typed);
+							// set maximum value
+							changeMaxPulseProperty(val, index);
 						}
-						logslider_.setMaxWithin(val);
+					}
+				});
+				textFieldMax.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						String typed = textFieldMax.getText();
+						if (!EmuUtils.isInteger(typed)) {
+							return;
+						}
+						int val = Integer.parseInt(typed);
+						if (val > 0) {
+							if (slider.getValue() > val) {
+								slider.setValueWithin(val);
+								textFieldValue.setText(typed);
+								setUIPropertyValue(getProperty(index), typed);
+							}
+							slider.setMaxWithin(val);
 
-						// set maximum value
-						changeMaxPulseProperty(val);
+							// set maximum value
+							changeMaxPulseProperty(val, index);
+						}
 					}
-				}
-			});
-			logslider_.addMouseListener(new MouseAdapter() {
-				public void mouseReleased(MouseEvent e) {
-					int val = logslider_.getValue();
-					logslider_.setValueWithin(val);
-					try {
-						textfieldvalue_.setText(String.valueOf(logslider_.getValue()));
-						setUIPropertyValue(LASER_PULSE, String.valueOf(logslider_.getValue()));
-					} catch (Exception ex) {
-						ex.printStackTrace();
+				});
+				slider.addMouseListener(new MouseAdapter() {
+					public void mouseReleased(MouseEvent e) {
+						int val = slider.getValue();
+						slider.setValueWithin(val);
+						try {
+							textFieldValue.setText(String.valueOf(slider.getValue()));
+							setUIPropertyValue(getProperty(index), String.valueOf(slider.getValue()));
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
 					}
-				}
-			});
-			
-			
-		} catch (UnknownUIPropertyException e1) {
-			e1.printStackTrace();
+				});
+
+
+			} catch (UnknownUIPropertyException e1) {
+				e1.printStackTrace();
+			}
 		}
-		
 	}
 }
