@@ -124,7 +124,7 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 		int counter = 0;
 		for (JPanel pane :cardPanels){
 			pane.setLayout(new GridBagLayout());
-			
+
 			///////////////////////////////////////////////////////////////////////// User max text field
 			JTextField textFieldMax = getTextFieldMax(counter);
 			textFieldMax.setToolTipText("Maximum value allowed for the activation pulse/power.");

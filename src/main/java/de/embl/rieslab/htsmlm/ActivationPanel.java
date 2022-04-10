@@ -70,7 +70,10 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 	private static final String PARAM_ACTIVATION_NAME2 = "Activation 2 name";
 
 	//////// Misc variables
-	private boolean activate_, showNMS_, autoCutoff_;
+	public static int INPUT_WHICH_ACTIVATION = 0;
+	public static String NO_PROP = "NoProperty";
+	private boolean activate_, showNMS_, autoCutoff_, singleActivation_, singelCheckDone_=false;
+	private String singleActivationName_;
 	private boolean useActivation1_;
 	private double sdCoeff_, feedback_, N0_ = 1, cutoff_ = 100;
 	private int nPos_, idleTime_, maxPulse1_, maxPulse2_;
@@ -346,11 +349,23 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		}
 	}
 
-	private String[] getPropertiesName() throws UnknownUIParameterException {
-		String[] str = {this.getStringUIParameterValue(PARAM_ACTIVATION_NAME1),
-				this.getStringUIParameterValue(PARAM_ACTIVATION_NAME2)};
-
+	public String[] getPropertiesName() throws UnknownUIParameterException {
+		String[] str;
+		if(singleActivation_) {
+			str = new String[]{singleActivationName_};
+		} else {
+			if(NO_PROP.equals(singleActivationName_)){ // there is actually NO activation property mapped
+				str = new String[]{};
+			} else {
+				str = new String[]{this.getStringUIParameterValue(PARAM_ACTIVATION_NAME1),
+						this.getStringUIParameterValue(PARAM_ACTIVATION_NAME2)};
+			}
+		}
 		return str;
+	}
+
+	public boolean isActivation1(){
+		return useActivation1_;
 	}
 
 	/////////////////////////////////////////////////////////////////////////////
@@ -400,9 +415,63 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		addUIParameter(new StringUIParameter(this, PARAM_ACTIVATION_NAME2, descActivation,"Activation 2"));
 	}
 
+	/*
+	super hacky, don't really have time to rethink but basically this is to make sure that the combobox is reflecting
+	the UIProperty allocations. On top of this, the localization experiments need to select which activation to use,
+	but in the case where only one is mapped, then the localization needs to know that there is only one...
+	 */
 	@Override
 	public void propertyhasChanged(String name, String newvalue) {
-		// do nothing
+		// check if the two properties have been allocated
+		if(!singelCheckDone_) {
+			boolean propAllocated1 = false, propAllocated2 = false;
+			try {
+				propAllocated1 = this.getUIProperty(LASER_PULSE1).isAssigned();
+				propAllocated2 = this.getUIProperty(LASER_PULSE2).isAssigned();
+			} catch (UnknownUIPropertyException e) {
+				e.printStackTrace();
+			}
+
+			if (!propAllocated1 && !propAllocated2) {
+				singleActivation_ = false;
+				singleActivationName_ = NO_PROP;
+				// deactivate the checkbox and the combobox
+				String[] str = {""};
+				DefaultComboBoxModel<String> model = new DefaultComboBoxModel(str);
+				activationProp_.setModel(model);
+				activationProp_.setEnabled(false);
+				checkBoxActivate_.setSelected(false);
+				checkBoxActivate_.setSelected(false);
+			}
+			if (propAllocated1 && !propAllocated2) {
+				singleActivation_ = true;
+				String[] str;
+				try {
+					str = new String[]{getPropertiesName()[0]};
+					singleActivationName_ = str[0];
+					DefaultComboBoxModel<String> model = new DefaultComboBoxModel(str);
+					activationProp_.setModel(model);
+					activationProp_.setEnabled(false);
+				} catch (UnknownUIParameterException e) {
+					e.printStackTrace();
+				}
+			} else if (!propAllocated1 && propAllocated2) {
+				singleActivation_ = true;
+				String[] str;
+				try {
+					str = new String[]{getPropertiesName()[1]};
+					singleActivationName_ = str[0];
+					DefaultComboBoxModel<String> model = new DefaultComboBoxModel(str);
+					activationProp_.setModel(model);
+					activationProp_.setEnabled(false);
+				} catch (UnknownUIParameterException e) {
+					e.printStackTrace();
+				}
+			} else {
+				singleActivation_ = false;
+			}
+			singelCheckDone_ = true;
+		}
 	}
 
 	@Override
@@ -625,11 +694,6 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 	}
 
 	@Override
-	public boolean isPausable() {
-		return true;
-	}
-
-	@Override
 	public void pauseTask() {
 		if (activate_) {	
 			Runnable checkactivate = new Runnable() {
@@ -671,10 +735,11 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		setUIPropertyValue(getProperty(),"0");
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
-	public Task getTask() {
-		return task_;
+	public void initializeTask(Double[] input) {
+		int index  = (int) Math.round(input[INPUT_WHICH_ACTIVATION]);
+		activationProp_.setSelectedIndex(index); // on EDT ?? probably not
+		setUIPropertyValue(getProperty(),"0");
 	}
 
 	@Override

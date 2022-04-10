@@ -7,13 +7,10 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.HashMap;
 
-import javax.swing.AbstractButton;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
+import javax.swing.*;
 
+import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
+import de.embl.rieslab.htsmlm.ActivationPanel;
 import org.micromanager.Studio;
 import org.micromanager.acquisition.AcquisitionManager;
 import org.micromanager.acquisition.SequenceSettings;
@@ -38,6 +35,7 @@ public class LocalizationAcquisition implements Acquisition {
 	private final static String LABEL_USEACTIVATION = "Use activation";
 	private final static String LABEL_USESTOPONMAXUV = "Stop on max";
 	private final static String LABEL_MAXUVTIME = "Stop on max delay (s):";
+	private final static String LABEL_ACTIVATION = "Activation:";
 	
 	public final static String KEY_USEACT = "Use activation?";
 	public final static String KEY_STOPONMAX = "Stop on max?";
@@ -47,7 +45,7 @@ public class LocalizationAcquisition implements Acquisition {
 	private TaskHolder activationTask_;
 	private boolean useactivation_, stoponmax_, nullActivation_;
 	private volatile boolean stopAcq_, running_;
-	private int stoponmaxdelay_;
+	private int stoponmaxdelay_, activationIndex_;
 	private boolean interruptionRequested_;
 	
 	@SuppressWarnings("rawtypes")
@@ -67,6 +65,7 @@ public class LocalizationAcquisition implements Acquisition {
 		interruptionRequested_ = false;
 		stoponmax_ = true;
 		stoponmaxdelay_ = 5;
+		activationIndex_ = ((ActivationPanel) activationTask_).isActivation1() ? 0:1;
 
 		params_ = new GenericAcquisitionParameters(AcquisitionType.LOCALIZATION, 
 				exposure, 0, 3, 30000, new HashMap<String,String>(), new HashMap<String,String>());
@@ -78,9 +77,10 @@ public class LocalizationAcquisition implements Acquisition {
 		
 		pane.setName(getPanelName());
 		
-		JLabel exposurelab, waitinglab, numframelab, intervallab,waitonmaxlab;
-		JSpinner exposurespin, waitingspin, numframespin, intervalspin, waitonmaxspin;
-		JCheckBox activatecheck, stoponmaxcheck;
+		final JLabel exposurelab, waitinglab, numframelab, intervallab,waitonmaxlab, labelActivation;
+		final JSpinner exposurespin, waitingspin, numframespin, intervalspin, waitonmaxspin;
+		final JCheckBox activatecheck, stoponmaxcheck;
+		final JComboBox<String> activationCombo;
 		
 		exposurelab = new JLabel(LABEL_EXPOSURE);
 		waitinglab = new JLabel(LABEL_PAUSE);
@@ -106,50 +106,69 @@ public class LocalizationAcquisition implements Acquisition {
 		
 		waitonmaxspin = new JSpinner(new SpinnerNumberModel(stoponmaxdelay_, 0, 10000, 1));
 		waitonmaxspin.setName(LABEL_MAXUVTIME);
-		waitonmaxspin.setToolTipText("Time (s) before stopping the acquisition after reaching the maximum activation value.");
+		waitonmaxspin.setToolTipText("Time (s) before stopping the acquisition after reaching the maximum activationCombo value.");
 
 		activatecheck = new JCheckBox(LABEL_USEACTIVATION);
 		activatecheck.setSelected(useactivation_);
 		activatecheck.setEnabled(!nullActivation_);
 		activatecheck.setName(LABEL_USEACTIVATION);
-		activatecheck.setToolTipText("Use activation during the acquisition.");
+		activatecheck.setToolTipText("Use activationCombo during the acquisition.");
 		
 		stoponmaxcheck = new JCheckBox(LABEL_USESTOPONMAXUV);
 		stoponmaxcheck.setSelected(stoponmax_);
 		stoponmaxcheck.setEnabled(!nullActivation_);
 		stoponmaxcheck.setName(LABEL_USESTOPONMAXUV);
-		stoponmaxcheck.setToolTipText("Stop the acquisition after reaching the maximum activation value.");
+		stoponmaxcheck.setToolTipText("Stop the acquisition after reaching the maximum activationCombo value.");
 
-		activatecheck.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
-				AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
-				boolean selected = abstractButton.getModel().isSelected();
-				if (!selected) {
-					stoponmaxcheck.setSelected(false);
-					stoponmaxcheck.setEnabled(false);
-					waitonmaxspin.setValue(0);
-					waitonmaxspin.setEnabled(false);
-				} else {
-					stoponmaxcheck.setEnabled(true);
-				}
+		String[] acts = {};
+		try {
+			acts = ((ActivationPanel) activationTask_).getPropertiesName();
+		} catch (UnknownUIParameterException e) {
+			e.printStackTrace();
+		}
+
+		final boolean canSwitchActivation = acts.length > 1;
+		labelActivation = new JLabel(LABEL_ACTIVATION);
+		activationCombo = new JComboBox<>(acts);
+		activatecheck.setName(LABEL_ACTIVATION);
+		if(!canSwitchActivation){
+			activationCombo.setEnabled(false);
+		}
+
+		activatecheck.addActionListener(actionEvent -> {
+			AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
+			boolean selected = abstractButton.getModel().isSelected();
+			if (!selected) {
+				stoponmaxcheck.setSelected(false);
+				stoponmaxcheck.setEnabled(false);
+				waitonmaxspin.setValue(0);
+				waitonmaxspin.setEnabled(false);
+				activationCombo.setEnabled(false);
+			} else {
+				stoponmaxcheck.setEnabled(true);
+				waitonmaxspin.setEnabled(true);
+
+				if(canSwitchActivation)	activationCombo.setEnabled(true);
 			}
 		});
 		
-		stoponmaxcheck.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
-				AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
-				boolean selected = abstractButton.getModel().isSelected();
-				if (!selected) {
-					waitonmaxspin.setValue(0);
-					waitonmaxspin.setEnabled(false);
-				} else {
-					waitonmaxspin.setEnabled(true);
-				}
+		stoponmaxcheck.addActionListener(actionEvent -> {
+			AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
+			boolean selected = abstractButton.getModel().isSelected();
+			if (!selected) {
+				waitonmaxspin.setValue(0);
+				waitonmaxspin.setEnabled(false);
+				activationCombo.setEnabled(false);
+			} else {
+				waitonmaxspin.setEnabled(true);
+				waitonmaxspin.setEnabled(true);
+
+				if(canSwitchActivation)	activationCombo.setEnabled(true);
 			}
 		});
+
 		
-		
-		int nrow = 3;
+		int nrow = 4;
 		int ncol = 4;
 		JPanel[][] panelHolder = new JPanel[nrow][ncol];    
 		pane.setLayout(new GridLayout(nrow,ncol));
@@ -172,10 +191,12 @@ public class LocalizationAcquisition implements Acquisition {
 		panelHolder[0][2].add(numframelab);
 		panelHolder[1][2].add(intervallab);
 		panelHolder[2][2].add(stoponmaxcheck);
+		panelHolder[3][2].add(labelActivation);
 
 		panelHolder[0][3].add(numframespin);
 		panelHolder[1][3].add(intervalspin);
 		panelHolder[2][3].add(activatecheck);
+		panelHolder[3][3].add(activationCombo);
 	
 		return pane;
 	}
@@ -195,7 +216,11 @@ public class LocalizationAcquisition implements Acquisition {
 	private void setUseStopOnMaxUVDelay(int delay){
 		stoponmaxdelay_ = delay;
 	}
-	
+
+	private void setActivation(int index){
+		activationIndex_ = index;
+	}
+
 	@Override
 	public void readOutAcquisitionParameters(JPanel pane) {
 		if(pane.getName().equals(getPanelName())){
@@ -220,6 +245,8 @@ public class LocalizationAcquisition implements Acquisition {
 								this.setUseStopOnMaxUV(((JCheckBox) comp[i]).isSelected());
 							}else if(comp[i].getName().equals(LABEL_MAXUVTIME) && comp[i] instanceof JSpinner){
 								this.setUseStopOnMaxUVDelay((Integer) ((JSpinner) comp[i]).getValue());
+							}else if(comp[i].getName().equals(LABEL_ACTIVATION) && comp[i] instanceof JComboBox){
+								this.setActivation(((JComboBox) comp[i]).getSelectedIndex());
 							}
 						}
 					}
@@ -235,13 +262,18 @@ public class LocalizationAcquisition implements Acquisition {
 
 	@Override
 	public String[] getHumanReadableSettings() {
-		String[] s = new String[6];
+		String[] s = new String[7];
 		s[0] = "Exposure = "+params_.getExposureTime()+" ms";
 		s[1] = "Interval = "+params_.getIntervalMs()+" ms";
 		s[2] = "Number of frames = "+params_.getNumberFrames();
 		s[3] = "Use activation = "+useactivation_;
 		s[4] = "Stop on max UV = "+stoponmax_;
 		s[5] = "Stop on max delay = "+stoponmaxdelay_+" s";
+		try {
+			s[6] = "Activation = "+((ActivationPanel) activationTask_).getPropertiesName()[activationIndex_];
+		} catch (UnknownUIParameterException e) {
+			e.printStackTrace();
+		}
 		return s;
 	}
 
@@ -284,8 +316,9 @@ public class LocalizationAcquisition implements Acquisition {
 	@Override
 	public void performAcquisition(Studio studio, String name, String path, Datastore.SaveMode savemode) throws IOException, InterruptedException {
 		
-		if(useactivation_){			
-			activationTask_.initializeTask();
+		if(useactivation_){
+			Double[] initialization = {new Double(activationIndex_)};
+			activationTask_.initializeTask(initialization);
 			activationTask_.resumeTask();
 		}
 		
@@ -339,7 +372,8 @@ public class LocalizationAcquisition implements Acquisition {
 		
 		if(useactivation_){			
 			activationTask_.pauseTask();
-			activationTask_.initializeTask();
+			Double[] initialization = {new Double(activationIndex_)};
+			activationTask_.initializeTask(initialization);
 		}
 		
 		running_ = false;

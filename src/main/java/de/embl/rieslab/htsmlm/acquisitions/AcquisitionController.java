@@ -115,11 +115,6 @@ public class AcquisitionController implements TaskHolder<Integer>{
 	}
 
 	@Override
-	public boolean isPausable() {
-		return false;
-	}
-
-	@Override
 	public void pauseTask() {
 		// Do nothing		
 	}
@@ -149,12 +144,11 @@ public class AcquisitionController implements TaskHolder<Integer>{
 		// Do nothing
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
-	public Task getTask() {
-		return task_;
+	public void initializeTask(Integer[] input) {
+		// Do nothing
 	}
-	
+
 	@Override
 	public void taskDone() {
 		if (SwingUtilities.isEventDispatchThread()) {
