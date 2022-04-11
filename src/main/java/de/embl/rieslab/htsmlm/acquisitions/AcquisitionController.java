@@ -90,7 +90,7 @@ public class AcquisitionController implements TaskHolder<Integer>{
 	
 					if (!b) {
 						// report problem saving
-						System.out.println("[htSMLM] Error writting acquisition list");
+						System.out.println("[htSMLM] Error writing acquisition list");
 					}
 	
 					task_.startTask();

@@ -168,7 +168,7 @@ public class ActivationTask implements Task<Double> {
 					imp2 = new ImagePlus("", ip2.convertToFloatProcessor());
 
 					// Subtraction
-					imp3 = calcul.run("Substract create", imp, imp2);
+					imp3 = calcul.run("Subtract create", imp, imp2);
 
 					// Gaussian filter
 					gau.blurGaussian(imp3.getProcessor(),

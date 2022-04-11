@@ -13,6 +13,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.*;
 
@@ -71,8 +72,7 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 
 	//////// Misc variables
 	public static int INPUT_WHICH_ACTIVATION = 0;
-	public static String NO_PROP = "NoProperty";
-	private boolean activate_, showNMS_, autoCutoff_, singleActivation_, singelCheckDone_=false;
+	private boolean activate_, showNMS_, autoCutoff_;
 	private String singleActivationName_;
 	private boolean useActivation1_;
 	private double sdCoeff_, feedback_, N0_ = 1, cutoff_ = 100;
@@ -199,16 +199,18 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		c.insets = new Insets(2,6,2,6);
 		pane.add(textFieldN0_,c);
 
-		String[] properties;
-		try {
-			properties = getPropertiesName();
-		} catch (UnknownUIParameterException e) {
-			e.printStackTrace();
-			properties = new String[]{"Activation 1, Activation 2"};
-		}
+		String[] properties = {"Activation 1", "Activation 2"};
 		activationProp_ = new JComboBox(properties);
-		activationProp_.addActionListener(e -> useActivation1_ = activationProp_.getSelectedIndex() == 0);
+		activationProp_.addActionListener(e -> {
+			try {
+				String propName = this.getStringUIParameterValue(PARAM_ACTIVATION_NAME1);
+				useActivation1_ = activationProp_.getSelectedItem().equals(propName);
+			} catch (UnknownUIParameterException ex) {
+				ex.printStackTrace();
+			}
+		});
 		c.gridy = 8;
+		c.insets = new Insets(15,6,15,6);
 		pane.add(activationProp_,c);
 
 		checkBoxActivate_ = new JCheckBox("Activate");
@@ -216,7 +218,7 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		SwingUIListeners.addActionListenerToBooleanAction(b -> activate_ = b, checkBoxActivate_);
 
 		c.gridy = 9;
-		c.insets = new Insets(40,6,2,6);
+		c.insets = new Insets(15,6,2,6);
 		pane.add(checkBoxActivate_,c);
 		
 		toggleButtonRun_ = new JToggleButton("Run");
@@ -298,8 +300,7 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		if(b){
 			showNMS_ = true;
 			im_.setProcessor(ip_);
-			core_.logMessage("[panel] Max value of image is "+ip_.getStatistics().max);
-			core_.logMessage("[panel] Width value of image is "+ip_.getWidth());
+			im_.setDisplayRange(im_.getStatistics().min, im_.getStatistics().max);
 			im_.show();
 		} else {
 			showNMS_ = false;
@@ -349,19 +350,59 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		}
 	}
 
-	public String[] getPropertiesName() throws UnknownUIParameterException {
-		String[] str;
-		if(singleActivation_) {
-			str = new String[]{singleActivationName_};
-		} else {
-			if(NO_PROP.equals(singleActivationName_)){ // there is actually NO activation property mapped
-				str = new String[]{};
-			} else {
-				str = new String[]{this.getStringUIParameterValue(PARAM_ACTIVATION_NAME1),
-						this.getStringUIParameterValue(PARAM_ACTIVATION_NAME2)};
+	public String getCurrentActivation(){
+		try {
+			if(useActivation1_) {
+				return this.getStringUIParameterValue(PARAM_ACTIVATION_NAME1);
+			} else if(getAllocatedProperties().length == 1) {
+				return this.getStringUIParameterValue(PARAM_ACTIVATION_NAME2);
+			}
+		} catch (UnknownUIParameterException e) {
+				e.printStackTrace();
+		}
+		return "None";
+	}
+
+	public String[] getAllocatedProperties(){
+		ArrayList<String> str = new ArrayList();
+
+		String[] props = {LASER_PULSE1, LASER_PULSE2};
+		for(String prop: props) {
+			try {
+				String prop1 = this.getUIProperty(prop).isAssigned() ? prop : "";
+				if (prop1.length() > 0) {
+					str.add(prop);
+				}
+			} catch (UnknownUIPropertyException e) {
+				e.printStackTrace();
 			}
 		}
-		return str;
+
+		return str.toArray(new String[0]);
+	}
+
+	private String getCorrespondingName(String property){
+		if(LASER_PULSE1.equals(property)){
+			return PARAM_ACTIVATION_NAME1;
+		} else{
+			return PARAM_ACTIVATION_NAME2;
+		}
+	}
+
+	public String[] getPropertiesName() {
+		ArrayList<String> str = new ArrayList();
+		String[] props = getAllocatedProperties();
+
+		for(String prop: props) {
+			try {
+				String propName = this.getStringUIParameterValue(getCorrespondingName(prop));
+				str.add(propName);
+			} catch (UnknownUIParameterException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return str.toArray(new String[0]);
 	}
 
 	public boolean isActivation1(){
@@ -415,63 +456,9 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		addUIParameter(new StringUIParameter(this, PARAM_ACTIVATION_NAME2, descActivation,"Activation 2"));
 	}
 
-	/*
-	super hacky, don't really have time to rethink but basically this is to make sure that the combobox is reflecting
-	the UIProperty allocations. On top of this, the localization experiments need to select which activation to use,
-	but in the case where only one is mapped, then the localization needs to know that there is only one...
-	 */
 	@Override
 	public void propertyhasChanged(String name, String newvalue) {
-		// check if the two properties have been allocated
-		if(!singelCheckDone_) {
-			boolean propAllocated1 = false, propAllocated2 = false;
-			try {
-				propAllocated1 = this.getUIProperty(LASER_PULSE1).isAssigned();
-				propAllocated2 = this.getUIProperty(LASER_PULSE2).isAssigned();
-			} catch (UnknownUIPropertyException e) {
-				e.printStackTrace();
-			}
-
-			if (!propAllocated1 && !propAllocated2) {
-				singleActivation_ = false;
-				singleActivationName_ = NO_PROP;
-				// deactivate the checkbox and the combobox
-				String[] str = {""};
-				DefaultComboBoxModel<String> model = new DefaultComboBoxModel(str);
-				activationProp_.setModel(model);
-				activationProp_.setEnabled(false);
-				checkBoxActivate_.setSelected(false);
-				checkBoxActivate_.setSelected(false);
-			}
-			if (propAllocated1 && !propAllocated2) {
-				singleActivation_ = true;
-				String[] str;
-				try {
-					str = new String[]{getPropertiesName()[0]};
-					singleActivationName_ = str[0];
-					DefaultComboBoxModel<String> model = new DefaultComboBoxModel(str);
-					activationProp_.setModel(model);
-					activationProp_.setEnabled(false);
-				} catch (UnknownUIParameterException e) {
-					e.printStackTrace();
-				}
-			} else if (!propAllocated1 && propAllocated2) {
-				singleActivation_ = true;
-				String[] str;
-				try {
-					str = new String[]{getPropertiesName()[1]};
-					singleActivationName_ = str[0];
-					DefaultComboBoxModel<String> model = new DefaultComboBoxModel(str);
-					activationProp_.setModel(model);
-					activationProp_.setEnabled(false);
-				} catch (UnknownUIParameterException e) {
-					e.printStackTrace();
-				}
-			} else {
-				singleActivation_ = false;
-			}
-			singelCheckDone_ = true;
-		}
+		// do nothing
 	}
 
 	@Override
@@ -514,12 +501,19 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 				e.printStackTrace();
 			}
 		} else if(PARAM_ACTIVATION_NAME1.equals(label) || PARAM_ACTIVATION_NAME2.equals(label)) {
-			try {
-				DefaultComboBoxModel<String> model = new DefaultComboBoxModel( getPropertiesName() );
-				activationProp_.setModel( model );
-			} catch (UnknownUIParameterException e) {
-				e.printStackTrace();
+			// check if the two properties have been allocated
+			String[] props = getPropertiesName();
+
+			// set choices
+			DefaultComboBoxModel<String> model = new DefaultComboBoxModel( props );
+			activationProp_.setModel( model );
+
+			// disable if not 2 properties
+			if(props.length != 2){
+				activationProp_.setEnabled(false);
 			}
+
+			if(props.length != 0) activationProp_.setSelectedIndex(0);
 		}
 	}
 
@@ -560,9 +554,9 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 				e.printStackTrace();
 			}
 		}
-		if(INTERNAL_MAXPULSE1.equals(label)){
+		if(INTERNAL_MAXPULSE2.equals(label)){
 			try {
-				maxPulse2_ = getIntegerInternalPropertyValue(INTERNAL_MAXPULSE1);
+				maxPulse2_ = getIntegerInternalPropertyValue(INTERNAL_MAXPULSE2);
 			} catch (IncorrectInternalPropertyTypeException | UnknownInternalPropertyException e) {
 				e.printStackTrace();
 			}
@@ -737,9 +731,16 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 
 	@Override
 	public void initializeTask(Double[] input) {
+		core_.logMessage("[activation panel] set initialization index: "+input[0]);
 		int index  = (int) Math.round(input[INPUT_WHICH_ACTIVATION]);
-		activationProp_.setSelectedIndex(index); // on EDT ?? probably not
-		setUIPropertyValue(getProperty(),"0");
+		core_.logMessage("[activation panel] set initialization index: "+index);
+		String[] props = getAllocatedProperties();
+
+		if(props.length == 2){
+			activationProp_.setSelectedIndex(index); // on EDT ?? probably not
+			core_.logMessage("[activation panel] is activation 1: "+useActivation1_);
+			setUIPropertyValue(getProperty(),"0");
+		}
 	}
 
 	@Override

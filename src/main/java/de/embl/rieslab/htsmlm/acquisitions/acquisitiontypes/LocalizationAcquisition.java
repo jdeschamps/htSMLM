@@ -2,15 +2,14 @@ package de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes;
 
 import java.awt.Component;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import javax.swing.*;
 
-import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.htsmlm.ActivationPanel;
+import mmcorej.CMMCore;
 import org.micromanager.Studio;
 import org.micromanager.acquisition.AcquisitionManager;
 import org.micromanager.acquisition.SequenceSettings;
@@ -40,16 +39,21 @@ public class LocalizationAcquisition implements Acquisition {
 	public final static String KEY_USEACT = "Use activation?";
 	public final static String KEY_STOPONMAX = "Stop on max?";
 	public final static String KEY_STOPDELAY = "Stop on max delay";
+	public final static String KEY_ACTIVATION = "Activation:";
 	
 	@SuppressWarnings("rawtypes")
 	private TaskHolder activationTask_;
 	private boolean useactivation_, stoponmax_, nullActivation_;
 	private volatile boolean stopAcq_, running_;
-	private int stoponmaxdelay_, activationIndex_;
+	private int stoponmaxdelay_;
 	private boolean interruptionRequested_;
-	
+	private String activationName_ = "None";
+
+
+	private CMMCore core_;
 	@SuppressWarnings("rawtypes")
-	public LocalizationAcquisition(TaskHolder activationtask, double exposure) {
+	public LocalizationAcquisition(TaskHolder activationtask, double exposure, CMMCore core) {
+		this.core_ = core;
 		
 		if(activationtask == null){
 			nullActivation_ = true;
@@ -65,7 +69,6 @@ public class LocalizationAcquisition implements Acquisition {
 		interruptionRequested_ = false;
 		stoponmax_ = true;
 		stoponmaxdelay_ = 5;
-		activationIndex_ = ((ActivationPanel) activationTask_).isActivation1() ? 0:1;
 
 		params_ = new GenericAcquisitionParameters(AcquisitionType.LOCALIZATION, 
 				exposure, 0, 3, 30000, new HashMap<String,String>(), new HashMap<String,String>());
@@ -120,19 +123,23 @@ public class LocalizationAcquisition implements Acquisition {
 		stoponmaxcheck.setName(LABEL_USESTOPONMAXUV);
 		stoponmaxcheck.setToolTipText("Stop the acquisition after reaching the maximum activationCombo value.");
 
-		String[] acts = {};
-		try {
-			acts = ((ActivationPanel) activationTask_).getPropertiesName();
-		} catch (UnknownUIParameterException e) {
-			e.printStackTrace();
-		}
-
-		final boolean canSwitchActivation = acts.length > 1;
+		final String[] acts = ((ActivationPanel) activationTask_).getPropertiesName();
 		labelActivation = new JLabel(LABEL_ACTIVATION);
 		activationCombo = new JComboBox<>(acts);
-		activatecheck.setName(LABEL_ACTIVATION);
-		if(!canSwitchActivation){
+		activationCombo.setName(LABEL_ACTIVATION);
+		if(acts.length != 2){
 			activationCombo.setEnabled(false);
+
+			if(acts.length == 0){
+				stoponmaxcheck.setEnabled(false);
+				waitonmaxspin.setEnabled(false);
+				activatecheck.setEnabled(false);
+				useactivation_ = false;
+			}
+		} else {
+			if (Arrays.asList(acts).contains(activationName_)) {
+				activationCombo.setSelectedItem(activationName_);
+			}
 		}
 
 		activatecheck.addActionListener(actionEvent -> {
@@ -148,7 +155,7 @@ public class LocalizationAcquisition implements Acquisition {
 				stoponmaxcheck.setEnabled(true);
 				waitonmaxspin.setEnabled(true);
 
-				if(canSwitchActivation)	activationCombo.setEnabled(true);
+				if(acts.length == 2) activationCombo.setEnabled(true);
 			}
 		});
 		
@@ -163,7 +170,7 @@ public class LocalizationAcquisition implements Acquisition {
 				waitonmaxspin.setEnabled(true);
 				waitonmaxspin.setEnabled(true);
 
-				if(canSwitchActivation)	activationCombo.setEnabled(true);
+				if(acts.length == 2) activationCombo.setEnabled(true);
 			}
 		});
 
@@ -217,8 +224,9 @@ public class LocalizationAcquisition implements Acquisition {
 		stoponmaxdelay_ = delay;
 	}
 
-	private void setActivation(int index){
-		activationIndex_ = index;
+	private void setActivation(String act){
+		core_.logMessage("[loc] set activation to "+act);
+		activationName_ = act;
 	}
 
 	@Override
@@ -231,6 +239,8 @@ public class LocalizationAcquisition implements Acquisition {
 					Component[] comp = ((JPanel) pancomp[j]).getComponents();
 					for(int i=0;i<comp.length;i++){
 						if(!(comp[i] instanceof JLabel) && comp[i].getName() != null){
+
+							core_.logMessage("[loc] compo name : "+comp[i].getName());
 							if(comp[i].getName().equals(LABEL_EXPOSURE) && comp[i] instanceof JSpinner){
 								params_.setExposureTime((Double) ((JSpinner) comp[i]).getValue());
 							}else if(comp[i].getName().equals(LABEL_PAUSE) && comp[i] instanceof JSpinner){
@@ -246,7 +256,7 @@ public class LocalizationAcquisition implements Acquisition {
 							}else if(comp[i].getName().equals(LABEL_MAXUVTIME) && comp[i] instanceof JSpinner){
 								this.setUseStopOnMaxUVDelay((Integer) ((JSpinner) comp[i]).getValue());
 							}else if(comp[i].getName().equals(LABEL_ACTIVATION) && comp[i] instanceof JComboBox){
-								this.setActivation(((JComboBox) comp[i]).getSelectedIndex());
+								this.setActivation((String) ((JComboBox<String>) comp[i]).getSelectedItem());
 							}
 						}
 					}
@@ -267,13 +277,10 @@ public class LocalizationAcquisition implements Acquisition {
 		s[1] = "Interval = "+params_.getIntervalMs()+" ms";
 		s[2] = "Number of frames = "+params_.getNumberFrames();
 		s[3] = "Use activation = "+useactivation_;
-		s[4] = "Stop on max UV = "+stoponmax_;
+		s[4] = "Stop on max = "+stoponmax_;
 		s[5] = "Stop on max delay = "+stoponmaxdelay_+" s";
-		try {
-			s[6] = "Activation = "+((ActivationPanel) activationTask_).getPropertiesName()[activationIndex_];
-		} catch (UnknownUIParameterException e) {
-			e.printStackTrace();
-		}
+		s[6] = "Activation = "+activationName_;
+		core_.logMessage("[loc] get human settings: "+activationName_);
 		return s;
 	}
 
@@ -284,7 +291,7 @@ public class LocalizationAcquisition implements Acquisition {
 	
 	@Override
 	public String[][] getAdditionalParameters() {
-		String[][] s = new String[3][2];
+		String[][] s = new String[4][2];
 
 		s[0][0] = KEY_USEACT;
 		s[0][1] = String.valueOf(useactivation_);
@@ -292,20 +299,23 @@ public class LocalizationAcquisition implements Acquisition {
 		s[1][1] = String.valueOf(stoponmax_);
 		s[2][0] = KEY_STOPDELAY;
 		s[2][1] = String.valueOf(stoponmaxdelay_);
+		s[3][0] = KEY_ACTIVATION;
+		s[3][1] = activationName_;
 		
 		return s;
 	}
 	
 	@Override
 	public void setAdditionalParameters(String[][] parameters) {
-		if(parameters.length != 3 || parameters[0].length != 2) {
-			throw new IllegalArgumentException("The parameters array has the wrong size: expected (3,2), got ("
+		if(parameters.length != 4 || parameters[0].length != 2) {
+			throw new IllegalArgumentException("The parameters array has the wrong size: expected (4,2), got ("
 					+ parameters.length + "," + parameters[0].length + ")");
 		}
 		
 		useactivation_ = Boolean.parseBoolean(parameters[0][1]);
 		stoponmax_ = Boolean.parseBoolean(parameters[1][1]);
 		stoponmaxdelay_ = Integer.parseInt(parameters[2][1]);
+		activationName_ = parameters[3][1];
 	}
 
 	@Override
@@ -313,11 +323,23 @@ public class LocalizationAcquisition implements Acquisition {
 		return params_;
 	}
 
+	private int getActivationIndex(){
+		final String[] acts = ((ActivationPanel) activationTask_).getPropertiesName();
+		int counter = 0;
+		for(String act: acts){
+			if(activationName_.equals(act)){
+				return counter;
+			}
+			counter++;
+		}
+		return counter;
+	}
+
 	@Override
 	public void performAcquisition(Studio studio, String name, String path, Datastore.SaveMode savemode) throws IOException, InterruptedException {
 		
 		if(useactivation_){
-			Double[] initialization = {new Double(activationIndex_)};
+			Double[] initialization = {new Double(getActivationIndex())};
 			activationTask_.initializeTask(initialization);
 			activationTask_.resumeTask();
 		}
@@ -372,7 +394,7 @@ public class LocalizationAcquisition implements Acquisition {
 		
 		if(useactivation_){			
 			activationTask_.pauseTask();
-			Double[] initialization = {new Double(activationIndex_)};
+			Double[] initialization = {new Double(getActivationIndex())};
 			activationTask_.initializeTask(initialization);
 		}
 		

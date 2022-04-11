@@ -38,7 +38,7 @@ public class AcquisitionFactory {
 		acqcontroller_ = acqcontroller;
 		controller_ = controller;
 		zdevices_ = getZDevices();
-		acqtypelist_ = getEnabledAcquisitionList();		
+		acqtypelist_ = getEnabledAcquisitionList();
 	}
 	
 	private String[] getZDevices(){
@@ -70,7 +70,8 @@ public class AcquisitionFactory {
 	 
 	public Acquisition getAcquisition(String type){
 		if (type.equals(AcquisitionType.LOCALIZATION.getTypeValue())) {
-			return new LocalizationAcquisition(acqcontroller_.getTaskHolder(ActivationPanel.TASK_NAME), getExposure());
+			return new LocalizationAcquisition(acqcontroller_.getTaskHolder(ActivationPanel.TASK_NAME), getExposure(),
+					controller_.getCore());
 		} else if (type.equals(AcquisitionType.MULTISLICELOC.getTypeValue())) {
 			
 			return new MultiSliceAcquisition(acqcontroller_.getTaskHolder(ActivationPanel.TASK_NAME), getExposure(),
@@ -118,7 +119,7 @@ public class AcquisitionFactory {
 	}
 	
 	private Acquisition getDefaultAcquisition() {
-		return new LocalizationAcquisition(acqcontroller_.getTaskHolder(ActivationPanel.TASK_NAME), getExposure());
+		return new LocalizationAcquisition(acqcontroller_.getTaskHolder(ActivationPanel.TASK_NAME), getExposure(), controller_.getCore());
 	}
 
 	/**

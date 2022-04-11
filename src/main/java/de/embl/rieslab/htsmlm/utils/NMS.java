@@ -42,7 +42,7 @@ public class NMS {
 
 	public ImageProcessor applyCutoff(double cutoff){
 		impresult = (ImageProcessor) imp.clone();
-		impresult.setValue(65535);		// white
+		impresult.setValue(impresult.getStatistics().max);
 
 		ArrayList<Peak> filter_peaks = new ArrayList<>();
 		for(Peak p: peaks){
