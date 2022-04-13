@@ -7,6 +7,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -84,12 +85,7 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 		border_.setTitleFont(border_.getTitleFont().deriveFont(Font.BOLD, 12));
 
 		String[] properties;
-		try {
-			properties = getPropertiesName();
-		} catch (UnknownUIParameterException e) {
-			e.printStackTrace();
-			properties = new String[]{"Activation 1, Activation 2"};
-		}
+		properties = getPropertiesName();
 		pulseCombo_ = new JComboBox(properties);
 		pulseCombo_.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
@@ -209,13 +205,6 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 		}
 	}
 
-	private String[] getPropertiesName() throws UnknownUIParameterException {
-		String[] str = {this.getStringUIParameterValue(PARAM_ACTIVATION_NAME1),
-				this.getStringUIParameterValue(PARAM_ACTIVATION_NAME2)};
-
-		return str;
-	}
-
 
 	@Override
 	protected void initializeProperties() {
@@ -304,6 +293,48 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 		}
 	}
 
+	private String getCorrespondingName(String property){
+		if(LASER_PULSE1.equals(property)){
+			return PARAM_ACTIVATION_NAME1;
+		} else{
+			return PARAM_ACTIVATION_NAME2;
+		}
+	}
+
+	public String[] getAllocatedProperties(){
+		ArrayList<String> str = new ArrayList();
+
+		String[] props = {LASER_PULSE1, LASER_PULSE2};
+		for(String prop: props) {
+			try {
+				String prop1 = this.getUIProperty(prop).isAssigned() ? prop : "";
+				if (prop1.length() > 0) {
+					str.add(prop);
+				}
+			} catch (UnknownUIPropertyException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return str.toArray(new String[0]);
+	}
+
+	public String[] getPropertiesName() {
+		ArrayList<String> str = new ArrayList();
+		String[] props = getAllocatedProperties();
+
+		for(String prop: props) {
+			try {
+				String propName = this.getStringUIParameterValue(getCorrespondingName(prop));
+				str.add(propName);
+			} catch (UnknownUIParameterException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return str.toArray(new String[0]);
+	}
+
 	@Override
 	public void parameterhasChanged(String label) {
 		if(PARAM_TITLE.equals(label)){
@@ -345,6 +376,20 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
+		}  else if(PARAM_ACTIVATION_NAME1.equals(label) || PARAM_ACTIVATION_NAME2.equals(label)) {
+			// check if the two properties have been allocated
+			String[] props = getPropertiesName();
+
+			// set choices
+			DefaultComboBoxModel<String> model = new DefaultComboBoxModel( props );
+			pulseCombo_.setModel( model );
+
+			// disable if not 2 properties
+			if(props.length != 2){
+				pulseCombo_.setEnabled(false);
+			}
+
+			if(props.length != 0) pulseCombo_.setSelectedIndex(0);
 		}
 	}
 
