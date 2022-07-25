@@ -5,13 +5,14 @@ import de.embl.rieslab.htsmlm.utils.Peak;
 import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
+import ij.process.ImageStatistics;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class NMSUtils {
 
-    private final static int sizeRoi=10;
+    protected final static int sizeRoi=10;
     private final static double epsilon = 0.000001d;
 
 
@@ -26,10 +27,13 @@ public class NMSUtils {
         return filtered_peaks;
     }
 
-    public static ImageProcessor applyCutoff(NMS nms, ArrayList<Peak> filteredPeaks, double cutoff){
+    public static ImageProcessor applyCutoff(NMS nms, ArrayList<Peak> filteredPeaks){
         // TODO imglib2
         ImageProcessor impresult = (ImageProcessor) nms.getImageProcessor().clone();
-        impresult.setValue(impresult.getStatistics().max);
+
+        ImageStatistics stat = impresult.getStatistics();
+        double scalingFactor = impresult.maxValue() / ( stat.max - stat.min);
+        impresult.setValue(stat.max);
 
         Roi roi = new Roi(0,0, sizeRoi, sizeRoi);
         for(Peak p: filteredPeaks){
@@ -39,8 +43,8 @@ public class NMSUtils {
             impresult.draw(roi);
         }
 
-        // TODO: change to more clever contrast
-        impresult.multiply(5); // for contrast
+        impresult.subtract(stat.min);
+        impresult.multiply(scalingFactor); // for contrast
 
         return impresult;
     }

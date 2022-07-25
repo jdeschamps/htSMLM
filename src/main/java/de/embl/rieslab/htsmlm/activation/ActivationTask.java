@@ -20,7 +20,6 @@ import javax.swing.SwingWorker;
 import mmcorej.CMMCore;
 import mmcorej.TaggedImage;
 import mmcorej.org.json.JSONException;
-import org.micromanager.internal.utils.imageanalysis.ImageUtils;
 
 // TODO: imglib2 rather than ImageJ1...
 
@@ -157,9 +156,16 @@ public class ActivationTask {
 		ip.setPixels(tagged1.pix);
 		ip2.setPixels(tagged2.pix);
 
+		// TODO: is the value really unsigned?
+		core_.logMessage(String.format("[act] Max value of short img is %.2f", ip.getMax()));
+		core_.logMessage(String.format("[act] Min value of short img is %.2f", ip.getMin()));
+
 		// convert to Float and wrap in ImagePlus
 		ImagePlus imp = new ImagePlus("Image1", ip.convertToFloatProcessor());
 		ImagePlus imp2 = new ImagePlus("Image2", ip2.convertToFloatProcessor());
+
+		core_.logMessage(String.format("[act] Max value of short img is %.2f after float", imp.getStatistics().max));
+		core_.logMessage(String.format("[act] Min value of short img is %.2f after float", imp.getStatistics().min));
 
 		// Subtraction
 		ImageCalculator calculator = new ImageCalculator();
@@ -230,7 +236,7 @@ public class ActivationTask {
 			ArrayList<Peak> peaks = NMSUtils.filterPeaks(nms, newcutoff);
 
 			// apply cutoff
-			ip_ = NMSUtils.applyCutoff(nms, peaks, newcutoff);
+			ip_ = NMSUtils.applyCutoff(nms, peaks);
 
 			// create output
 			output_[OUTPUT_NEWCUTOFF] = newcutoff;

@@ -3,6 +3,7 @@ package de.embl.rieslab.htsmlm.activation;
 import ij.ImagePlus;
 import ij.process.ShortProcessor;
 import org.junit.Test;
+import org.micromanager.internal.utils.imageanalysis.ImageUtils;
 
 import static org.junit.Assert.assertEquals;
 
@@ -22,13 +23,11 @@ public class ActivationTest {
         ShortProcessor sp = new ShortProcessor(size, size);
         sp.setPixels(pixels);
 
-        // check value
-        assertEquals(65535, sp.getMax(), epsilon);
-
         // concert to float and wrap in ImagePlus
         ImagePlus imp = new ImagePlus("Image", sp.convertToFloatProcessor());
 
         // check value
-        assertEquals(pixels[4], imp.getStatistics().max, epsilon);
+        assertEquals(65535, imp.getStatistics().max, epsilon);
+        assertEquals(0, imp.getStatistics().min, epsilon);
     }
 }

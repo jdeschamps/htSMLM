@@ -37,24 +37,6 @@ public class NMS {
 		return image;
 	}
 
-	public long getN(double cutoff){
-		if(!(peaks == null)) {
-			return peaks.stream().filter(p -> p.getValue()>=cutoff).count();
-		}
-
-		return -1;
-	}
-	
-	public int getN(){
-		int N=0;
-		
-		if(!(peaks == null)){
-			N = peaks.size();
-		}
-		
-		return N;
-	}
-	
 	public void process(){
 		int i,j,ii,jj,ll,kk;
 		int mi,mj;
