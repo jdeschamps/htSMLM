@@ -21,6 +21,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import de.embl.rieslab.htsmlm.ActivationPanel;
 import mmcorej.Configuration;
 import mmcorej.PropertySetting;
 import org.micromanager.PropertyMap;
@@ -36,7 +37,6 @@ import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory.A
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.NoPropertyFilter;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.PropertyFilter;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.SinglePropertyFilter;
-import de.embl.rieslab.htsmlm.tasks.TaskHolder;
 import mmcorej.CMMCore;
 import mmcorej.TaggedImage;
 import org.micromanager.internal.MMStudio;
@@ -75,8 +75,8 @@ public class MultiSliceAcquisition implements Acquisition {
 	public final static String KEY_SLICEST = "Slice St";
 	private final static String KEY_ACTATST = "Activation at St";
 
-	@SuppressWarnings("rawtypes")
-	private TaskHolder activationTask_;
+	// TODO replace by controller
+	private ActivationPanel activationTask_;
 	private boolean useactivation_, stoponmax_, nullActivation_;
 	private volatile boolean stopAcq_, running_;
 	private int stoponmaxdelay_;
@@ -89,8 +89,7 @@ public class MultiSliceAcquisition implements Acquisition {
 	private int nSlices, nLoops, sliceSt;
 	private boolean focusLockAtZ0_, disableFocusLock_, actAtSt;
 
-	@SuppressWarnings("rawtypes")
-	public MultiSliceAcquisition(TaskHolder activationtask, double exposure, String[] zdevices, String defaultzdevice,
+	public MultiSliceAcquisition(ActivationPanel activationtask, double exposure, String[] zdevices, String defaultzdevice,
 			TwoStateUIProperty zStabilizationProperty) {
 
 		if (activationtask == null) {

@@ -10,6 +10,7 @@ import de.embl.rieslab.emu.controller.SystemController;
 import de.embl.rieslab.emu.ui.uiparameters.UIPropertyParameter;
 import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 import de.embl.rieslab.htsmlm.AcquisitionPanel;
+import de.embl.rieslab.htsmlm.ActivationPanel;
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory;
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory.AcquisitionType;
@@ -20,10 +21,8 @@ import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.ReadOnlyPropertyFil
 import de.embl.rieslab.htsmlm.acquisitions.utils.AcquisitionInformationPanel;
 import de.embl.rieslab.htsmlm.acquisitions.wrappers.Experiment;
 import de.embl.rieslab.htsmlm.constants.HTSMLMConstants;
-import de.embl.rieslab.htsmlm.tasks.Task;
-import de.embl.rieslab.htsmlm.tasks.TaskHolder;
 
-public class AcquisitionController implements TaskHolder<Integer>{
+public class AcquisitionController{
 
 	private static String TASK_NAME = "Unsupervised acquisitions";
 	
@@ -46,9 +45,7 @@ public class AcquisitionController implements TaskHolder<Integer>{
 	}
 	
 	////////////////////////////////////////////////////////////////////
-	///// Taskholder methods
-	
-	@Override
+
 	public void update(Integer[] output) {
 		if (SwingUtilities.isEventDispatchThread()) {
 		    owner_.updateProgressBar(output[0]);
@@ -63,14 +60,12 @@ public class AcquisitionController implements TaskHolder<Integer>{
 		}
 	}
 
-	@Override
 	public Integer[] retrieveAllParameters() {
 		Integer[] params = new Integer[1];
 		params[0] = exp_.getPauseTime();
 		return params;
 	}
 
-	@Override
 	public boolean startTask() {
 		// this is running on the EDT
 		
@@ -107,49 +102,32 @@ public class AcquisitionController implements TaskHolder<Integer>{
 		return false;
 	}	
 	
-	@Override
 	public void stopTask() {
 		if(task_ != null){
 			task_.stopTask();
 		}
 	}
 
-	@Override
 	public void pauseTask() {
 		// Do nothing		
 	}
 
-	@Override
 	public void resumeTask() {
 		// Do nothing
 	}
 
-	@Override
 	public boolean isTaskRunning() {
 		return task_.isRunning();
 	}
 
-	@Override
 	public String getTaskName() {
 		return TASK_NAME;
 	}
 
-	@Override
 	public boolean isCriterionReached() {
 		return false;
 	}
 
-	@Override
-	public void initializeTask() {
-		// Do nothing
-	}
-
-	@Override
-	public void initializeTask(Integer[] input) {
-		// Do nothing
-	}
-
-	@Override
 	public void taskDone() {
 		if (SwingUtilities.isEventDispatchThread()) {
 			done();
@@ -254,9 +232,8 @@ public class AcquisitionController implements TaskHolder<Integer>{
 		return owner_.getParameterValues(param);
 	}
 
-	@SuppressWarnings("rawtypes")
-	public TaskHolder getTaskHolder(String taskName) {
-		return owner_.getTaskHolders().get(taskName);
+	public ActivationPanel getActivationPanel() {
+		return owner_.getActivationPanel();
 	}
 
 }

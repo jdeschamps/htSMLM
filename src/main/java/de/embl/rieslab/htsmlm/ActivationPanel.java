@@ -32,11 +32,9 @@ import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.htsmlm.activation.ActivationTask;
 import de.embl.rieslab.htsmlm.graph.TimeChart;
-import de.embl.rieslab.htsmlm.tasks.Task;
-import de.embl.rieslab.htsmlm.tasks.TaskHolder;
 import mmcorej.CMMCore;
 
-public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Double> {
+public class ActivationPanel extends ConfigurablePanel {
 
 	private static final long serialVersionUID = 1L;
 
@@ -564,11 +562,6 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 	}
 
 	/////////////////////////////////////////////////////////////////////////////
-	//////
-	////// TaskHolder methods
-	//////
-	
-	@Override
 	public void update(final Double[] output) {
 		graph_.addPoint(output[ActivationTask.OUTPUT_N]);
 		
@@ -603,7 +596,6 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		nmsCounter_++;
 	}
 
-	@Override
 	public Double[] retrieveAllParameters() {
 		params[ActivationTask.PARAM_ACTIVATE] = activate_ ? 1. : 0.; 
 		params[ActivationTask.PARAM_AUTOCUTOFF] = autoCutoff_ ? 1. : 0.;
@@ -633,7 +625,6 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 	 * Called from automated acquisition?
 	 * 
 	 */
-	@Override
 	public boolean startTask() {
 		if(task_.isRunning()){ // if task is running 
 			if(!activate_){ // but not changing the pulse
@@ -682,12 +673,6 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		return true;
 	}
 
-	@Override
-	public void stopTask() {
-		// do nothing
-	}
-
-	@Override
 	public void pauseTask() {
 		if (activate_) {	
 			Runnable checkactivate = new Runnable() {
@@ -704,32 +689,26 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 		}
 	}
 
-	@Override
 	public void resumeTask() {
 		startTask();	
 	}
 
-	@Override
 	public boolean isTaskRunning() {
 		return task_.isRunning();
 	}
 
-	@Override
 	public String getTaskName() {
 		return TASK_NAME;
 	}
 
-	@Override
 	public boolean isCriterionReached() {
 		return isActivationAtMax();
 	}
 
-	@Override
 	public void initializeTask() {
 		setUIPropertyValue(getProperty(),"0");
 	}
 
-	@Override
 	public void initializeTask(Double[] input) {
 		core_.logMessage("[activation panel] set initialization index: "+input[0]);
 		int index  = (int) Math.round(input[INPUT_WHICH_ACTIVATION]);
@@ -744,15 +723,7 @@ public class ActivationPanel extends ConfigurablePanel implements TaskHolder<Dou
 	}
 
 	@Override
-	public void taskDone() {
-		// Do nothing
-	}
-
-	@Override
 	protected void addComponentListeners() {
 		// Do nothing
 	}
-
-	// in order to maintain UV activation during Multislice localization
-	// we need to be able to circumvent Micro-Manager cache 
 }

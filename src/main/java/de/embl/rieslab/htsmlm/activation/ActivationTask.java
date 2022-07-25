@@ -1,13 +1,12 @@
 package de.embl.rieslab.htsmlm.activation;
 
+import de.embl.rieslab.htsmlm.ActivationPanel;
 import ij.ImagePlus;
 import ij.plugin.ImageCalculator;
 import ij.plugin.filter.GaussianBlur;
 import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
 import de.embl.rieslab.htsmlm.constants.HTSMLMConstants;
-import de.embl.rieslab.htsmlm.tasks.Task;
-import de.embl.rieslab.htsmlm.tasks.TaskHolder;
 import de.embl.rieslab.htsmlm.utils.NMS;
 
 import java.util.List;
@@ -17,7 +16,7 @@ import javax.swing.SwingWorker;
 import mmcorej.CMMCore;
 import mmcorej.TaggedImage;
 
-public class ActivationTask implements Task<Double> {
+public class ActivationTask {
 
 	/**
 	 * 
@@ -47,7 +46,7 @@ public class ActivationTask implements Task<Double> {
 	private static double HIGH_QUANTILE = 0.8;
 
 	private CMMCore core_;
-	private TaskHolder<Double> holder_;
+	private ActivationPanel holder_;
 	private int idletime_;
 	private AutomatedActivation worker_;
 	private boolean running_;
@@ -56,13 +55,13 @@ public class ActivationTask implements Task<Double> {
 
 	private double dp;
 	
-	public ActivationTask(TaskHolder<Double> holder, CMMCore core, int idle){
+	public ActivationTask(ActivationPanel holder, CMMCore core, int idle){
 		running_ = false;
 		
 		core_ = core;
 		idletime_ = idle;
 
-		registerHolder(holder);
+		holder_ = holder;
 		
 		dp = 0;
 		
@@ -71,25 +70,17 @@ public class ActivationTask implements Task<Double> {
 		output_[1] = 0.;
 		output_[2] = 0.;
 	}
-	
-	@Override
-	public void registerHolder(TaskHolder<Double> holder) {
-		holder_ = holder;
-	}
 
-	@Override
 	public void startTask() {
 		worker_ = new AutomatedActivation();
 		worker_.execute();
 		running_ = true;
 	}
 
-	@Override
 	public void stopTask() {
 		running_ = false;
 	}
 
-	@Override
 	public boolean isRunning() {
 		return running_;
 	}
@@ -249,7 +240,6 @@ public class ActivationTask implements Task<Double> {
 		output_[OUTPUT_NEWPULSE] = newPulse;
 	}
 
-	@Override
 	public void notifyHolder(Double[] outputs) {
 		holder_.update(outputs);
 	}
@@ -299,20 +289,4 @@ public class ActivationTask implements Task<Double> {
 			}
 		}
 	}
-
-	@Override
-	public boolean isPausable() {
-		return false;
-	}
-
-	@Override
-	public void pauseTask() {
-		// do nothing
-	}
-
-	@Override
-	public void resumeTask() {
-		// do nothing
-	}
-
 }

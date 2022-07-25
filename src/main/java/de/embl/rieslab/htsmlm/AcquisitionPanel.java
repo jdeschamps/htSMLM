@@ -15,7 +15,6 @@ import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.util.HashMap;
 
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
@@ -39,7 +38,6 @@ import de.embl.rieslab.htsmlm.acquisitions.utils.AcquisitionDialogs;
 import de.embl.rieslab.htsmlm.acquisitions.utils.AcquisitionInformationPanel;
 import de.embl.rieslab.htsmlm.acquisitions.utils.ExperimentTreeSummary;
 import de.embl.rieslab.htsmlm.constants.HTSMLMConstants;
-import de.embl.rieslab.htsmlm.tasks.TaskHolder;
 import de.embl.rieslab.htsmlm.uipropertyflags.FocusStabFlag;
 import de.embl.rieslab.htsmlm.uipropertyflags.TwoStateFlag;
 
@@ -508,9 +506,8 @@ public class AcquisitionPanel extends ConfigurablePanel{
 		jToggle_startstop.setText("Start");
 	}
 
-	@SuppressWarnings("rawtypes")
-	public HashMap<String, TaskHolder> getTaskHolders() {
-		return owner_.getTaskHolders();
+	public ActivationPanel getActivationPanel() {
+		return owner_.getActivationPanel();
 	}
 
 	@Override

@@ -17,7 +17,6 @@ import de.embl.rieslab.emu.ui.ConfigurableMainFrame;
 import de.embl.rieslab.emu.utils.settings.BoolSetting;
 import de.embl.rieslab.emu.utils.settings.Setting;
 import de.embl.rieslab.emu.utils.settings.StringSetting;
-import de.embl.rieslab.htsmlm.tasks.TaskHolder;
 
 public class MainFrame extends ConfigurableMainFrame{
 
@@ -50,8 +49,6 @@ public class MainFrame extends ConfigurableMainFrame{
 	private AcquisitionPanel acqPanel;
 	private JPanel lowerpanel;
 	private JTabbedPane tab;
-	@SuppressWarnings("rawtypes")
-	private HashMap<String,TaskHolder> taskholders_;
 
 	
 	public MainFrame(String title, SystemController controller, TreeMap<String, String> pluginSettings) {
@@ -239,11 +236,6 @@ public class MainFrame extends ConfigurableMainFrame{
 
 		this.add(lowerpanel,c2);*/
 		this.add(lowerpanel);
-		
-        // tasks, ignore the acquisition task as it is not supposed to be called by another panel
-        taskholders_ = new HashMap<String,TaskHolder>();
-        taskholders_.put(activationPanel.getTaskName(), activationPanel);
-
     }
     
     public Point getAcquisitionPanelLocation(){
@@ -254,9 +246,8 @@ public class MainFrame extends ConfigurableMainFrame{
     	return loc;
     }
     
-    @SuppressWarnings("rawtypes")
-	public HashMap<String,TaskHolder> getTaskHolders(){
-    	return taskholders_;
+	public ActivationPanel getActivationPanel(){
+    	return activationPanel;
     }
 
 	@SuppressWarnings("rawtypes")

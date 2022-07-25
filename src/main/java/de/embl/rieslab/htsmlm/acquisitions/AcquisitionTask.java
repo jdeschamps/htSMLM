@@ -22,11 +22,9 @@ import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
 import de.embl.rieslab.htsmlm.acquisitions.ui.AcquisitionTab;
 import de.embl.rieslab.htsmlm.acquisitions.wrappers.Experiment;
-import de.embl.rieslab.htsmlm.tasks.Task;
-import de.embl.rieslab.htsmlm.tasks.TaskHolder;
 import mmcorej.CMMCore;
 
-public class AcquisitionTask implements Task<Integer>{
+public class AcquisitionTask{
 
 	private Studio studio_;
 	private CMMCore core_;
@@ -34,12 +32,12 @@ public class AcquisitionTask implements Task<Integer>{
 	private boolean running_ =  false;
 	private SystemController system_;
 	private AcquisitionRun t;
-	private TaskHolder<Integer> holder_;
+	private AcquisitionController holder_;
 	private Experiment exp_;
 	
 	private String expname_, exppath_; 
 	
-	public AcquisitionTask(TaskHolder<Integer> holder, SystemController system, Experiment exp, String expname, String exppath){
+	public AcquisitionTask(AcquisitionController holder, SystemController system, Experiment exp, String expname, String exppath){
 		system_ = system;
 		studio_ = system_.getStudio();
 		core_ = studio_.getCMMCore();
@@ -48,21 +46,14 @@ public class AcquisitionTask implements Task<Integer>{
 		exp_ = exp;
 		expname_ = expname;
 		exppath_ = exppath+File.separator+expname+File.separator;
-		
-		registerHolder(holder);
-	}
-	
-	@Override
-	public void registerHolder(TaskHolder<Integer> holder) {
-		holder_ = holder;		
+
+		holder_ = holder;
 	}
 
-	@Override
 	public void notifyHolder(Integer[] outputs) {
 		holder_.update(outputs);
 	}
 
-	@Override
 	public void startTask() {
 		if(!exp_.getAcquisitionList().isEmpty()){
 			t = new AcquisitionRun(exp_);
@@ -71,32 +62,20 @@ public class AcquisitionTask implements Task<Integer>{
 		}
 	}
 
-	@Override
 	public void stopTask() {
 		if(t != null){
 			t.stop();
 		}
 	}
 
-	@Override
 	public boolean isRunning() {
 		return running_;
 	}
 
-	@Override
 	public boolean isPausable() {
 		return false;
 	}
 
-	@Override
-	public void pauseTask() {
-		// do nothing
-	}
-
-	@Override
-	public void resumeTask() {
-		// do nothin
-	}
 	
 	class AcquisitionRun extends SwingWorker<Integer, Integer> {
 

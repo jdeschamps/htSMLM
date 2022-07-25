@@ -70,11 +70,11 @@ public class AcquisitionFactory {
 	 
 	public Acquisition getAcquisition(String type){
 		if (type.equals(AcquisitionType.LOCALIZATION.getTypeValue())) {
-			return new LocalizationAcquisition(acqcontroller_.getTaskHolder(ActivationPanel.TASK_NAME), getExposure(),
+			return new LocalizationAcquisition(acqcontroller_.getActivationPanel(), getExposure(),
 					controller_.getCore());
 		} else if (type.equals(AcquisitionType.MULTISLICELOC.getTypeValue())) {
 			
-			return new MultiSliceAcquisition(acqcontroller_.getTaskHolder(ActivationPanel.TASK_NAME), getExposure(),
+			return new MultiSliceAcquisition(acqcontroller_.getActivationPanel(), getExposure(),
 					zdevices_, controller_.getCore().getFocusDevice(), (TwoStateUIProperty) controller_
 							.getProperty(acqcontroller_.getAcquisitionParameterValue(AcquisitionPanel.PARAM_LOCKING)));
 			
@@ -119,7 +119,7 @@ public class AcquisitionFactory {
 	}
 	
 	private Acquisition getDefaultAcquisition() {
-		return new LocalizationAcquisition(acqcontroller_.getTaskHolder(ActivationPanel.TASK_NAME), getExposure(), controller_.getCore());
+		return new LocalizationAcquisition(acqcontroller_.getActivationPanel(), getExposure(), controller_.getCore());
 	}
 
 	/**

@@ -20,7 +20,6 @@ import org.micromanager.data.Datastore;
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory.AcquisitionType;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.NoPropertyFilter;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.PropertyFilter;
-import de.embl.rieslab.htsmlm.tasks.TaskHolder;
 
 public class LocalizationAcquisition implements Acquisition {
 	
@@ -41,18 +40,16 @@ public class LocalizationAcquisition implements Acquisition {
 	public final static String KEY_STOPDELAY = "Stop on max delay";
 	public final static String KEY_ACTIVATION = "Activation:";
 	
-	@SuppressWarnings("rawtypes")
-	private TaskHolder activationTask_;
+	private ActivationPanel activationTask_;
 	private boolean useactivation_, stoponmax_, nullActivation_;
 	private volatile boolean stopAcq_, running_;
 	private int stoponmaxdelay_;
 	private boolean interruptionRequested_;
 	private String activationName_ = "None";
 
-
 	private CMMCore core_;
-	@SuppressWarnings("rawtypes")
-	public LocalizationAcquisition(TaskHolder activationtask, double exposure, CMMCore core) {
+
+	public LocalizationAcquisition(ActivationPanel activationtask, double exposure, CMMCore core) {
 		this.core_ = core;
 		
 		if(activationtask == null){
