@@ -1,5 +1,7 @@
-package de.embl.rieslab.htsmlm.utils;
+package de.embl.rieslab.htsmlm.activation;
 
+import de.embl.rieslab.htsmlm.activation.utils.NMSUtils;
+import de.embl.rieslab.htsmlm.utils.Peak;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -20,7 +22,6 @@ public class NMSTest {
             peaks.add(new Peak(i,i,VALS[i]));
         }
 
-        VoidNMS nms = new VoidNMS(peaks);
         double pmin = 0.5/n; // smaller element
         double pmax = (n-0.5)/n; // larger element
         double p = (0.5+1)/n;
@@ -28,15 +29,9 @@ public class NMSTest {
 
         double interpol = VALS[2]+(median-0.375)*(VALS[3]-VALS[2])/(0.625-0.375);
 
-        assertEquals(VALS[0], nms.getQuantile(pmin-0.001), epsilon);
-        assertEquals(VALS[1], nms.getQuantile(pmax+0.001), epsilon);
-        assertEquals(VALS[2], nms.getQuantile(p), epsilon);
-        assertEquals(interpol, nms.getQuantile(median), epsilon);
-    }
-
-    private class VoidNMS extends NMS{
-        public VoidNMS(ArrayList<Peak> peaks){
-            this.peaks = peaks;
-        }
+        assertEquals(VALS[0], NMSUtils.getQuantile(peaks, pmin-0.001), epsilon);
+        assertEquals(VALS[1], NMSUtils.getQuantile(peaks,pmax+0.001), epsilon);
+        assertEquals(VALS[2], NMSUtils.getQuantile(peaks, p), epsilon);
+        assertEquals(interpol, NMSUtils.getQuantile(peaks, median), epsilon);
     }
 }

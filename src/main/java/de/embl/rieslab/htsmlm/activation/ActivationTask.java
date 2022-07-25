@@ -1,6 +1,9 @@
 package de.embl.rieslab.htsmlm.activation;
 
 import de.embl.rieslab.htsmlm.ActivationPanel;
+import de.embl.rieslab.htsmlm.activation.utils.NMSUtils;
+import de.embl.rieslab.htsmlm.utils.Pair;
+import de.embl.rieslab.htsmlm.utils.Peak;
 import ij.ImagePlus;
 import ij.plugin.ImageCalculator;
 import ij.plugin.filter.GaussianBlur;
@@ -9,12 +12,17 @@ import ij.process.ShortProcessor;
 import de.embl.rieslab.htsmlm.constants.HTSMLMConstants;
 import de.embl.rieslab.htsmlm.utils.NMS;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.SwingWorker;
 
 import mmcorej.CMMCore;
 import mmcorej.TaggedImage;
+import mmcorej.org.json.JSONException;
+import org.micromanager.internal.utils.imageanalysis.ImageUtils;
+
+// TODO: imglib2 rather than ImageJ1...
 
 public class ActivationTask {
 
@@ -54,7 +62,7 @@ public class ActivationTask {
 	private ImageProcessor ip_;
 
 	private double dp;
-	
+
 	public ActivationTask(ActivationPanel holder, CMMCore core, int idle){
 		running_ = false;
 		
@@ -89,158 +97,190 @@ public class ActivationTask {
 		idletime_ = idle;
 	}
 
-	private void getN(double sdcoeff, double cutoff, double dT, boolean autocutoff) {
-		if (core_.isSequenceRunning() && core_.getBytesPerPixel() == 2) {
-			int width, height;
-			double tempcutoff;
-			boolean abort = false;
-			int counter1 = 0, counter2 = 0;
+	protected TaggedImage getTaggedImage(int exclude_number) {
+		int counter = 0;
+		boolean abort = false;
+		TaggedImage tagged = null;
 
-			TaggedImage tagged1 = null, tagged2 = null;
-			ShortProcessor ip, ip2;
-			ImagePlus imp, imp2;
-			ImageCalculator calcul = new ImageCalculator();
-			ImagePlus imp3;
-			GaussianBlur gau = new GaussianBlur();
-			NMS nms = new NMS();
-
-			width = (int) core_.getImageWidth();
-			height = (int) core_.getImageHeight();
-						
-			// try to extract two images
-			while(tagged1 == null && abort == false) {
-				//System.out.println("Try tagged 1");
-
-				try {
-					Thread.sleep(2);
-					tagged1 = core_.getLastTaggedImage();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				} catch (Exception e) {
-					counter1++;
-				}
-				
-				if(counter1 > MAX_COUNTER) {
-					abort = true;
-				}
-			}
-			
-			while(tagged2 == null && abort == false) {
-				try {
-					Thread.sleep(2);
-					
-					TaggedImage temp = core_.getLastTaggedImage();
-					if(temp.tags.getInt("ImageNumber") != tagged1.tags.getInt("ImageNumber")) {
-						tagged2 = temp;
-					} else {
-						counter2++;
-					}
-				} catch (InterruptedException e) {
-					//e.printStackTrace();
-				} catch (Exception e) { // buffer empty
-					counter2++;
-					//e.printStackTrace();
-				}
-				
-				if(counter2 > MAX_COUNTER) {
-					abort = true;
-				}
+		// try to extract an image
+		while (tagged == null && !abort) {
+			try {
+				Thread.sleep(2);
+				tagged = core_.getLastTaggedImage();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (Exception e) {
+				counter++;
 			}
 
-			if (!abort) {
-				try {
-					ip = new ShortProcessor(width, height);
-					ip2 = new ShortProcessor(width, height);
+			try {
+				if (tagged.tags.getInt("ImageNumber") == exclude_number) {
+					tagged = null;
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
 
-					ip.setPixels(tagged1.pix);
-					ip2.setPixels(tagged2.pix);
+			if (counter > MAX_COUNTER) {
+				abort = true;
+			}
+		}
+		return tagged;
+	}
 
-					imp = new ImagePlus("", ip.convertToFloatProcessor());
-					imp2 = new ImagePlus("", ip2.convertToFloatProcessor());
+	protected Pair<TaggedImage, TaggedImage> getTwoImages(){
+		TaggedImage tagged1 = getTaggedImage(-1);
 
-					// Subtraction
-					imp3 = calcul.run("Subtract create", imp, imp2);
+		if (tagged1 != null) {
+			try {
+				TaggedImage tagged2 = getTaggedImage(tagged1.tags.getInt("ImageNumber"));
 
-					// Gaussian filter
-					gau.blurGaussian(imp3.getProcessor(),
-							HTSMLMConstants.gaussianMaskSize,
-							HTSMLMConstants.gaussianMaskSize,
-							HTSMLMConstants.gaussianMaskPrecision);
+				return new Pair(tagged1, tagged2);
 
-					// set negative values to 0
-					for(int i=0;i<imp3.getWidth();i++){
-						for(int j=0;j<imp3.getHeight();j++){
-							if(imp3.getProcessor().get(i, j) < 0){
-								imp3.getProcessor().setf(i,j,0.f);
-							}
-						}
-					}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
 
-					// run nms
-					nms.run(imp3, HTSMLMConstants.nmsMaskSize);
+		return null;
+	}
 
-					double q1 = nms.getQuantile(LOW_QUANTILE);
-					double q2 = nms.getQuantile(HIGH_QUANTILE);
-					double median = nms.getQuantile(0.5);
+	protected ImagePlus computeGaussianSubtraction(Pair<TaggedImage, TaggedImage> taggedPair){
+		TaggedImage tagged1 = taggedPair.getFirst();
+		TaggedImage tagged2 = taggedPair.getSecond();
 
-					double slope = (q2 - q1) / (HIGH_QUANTILE - LOW_QUANTILE);
-					tempcutoff = median + slope * sdcoeff; // sdcoeff changed meaning as compared to previous version
+		// create ShortProcessors and copy pixel values from the tagged images
+		int width = (int) core_.getImageWidth();
+		int height = (int) core_.getImageWidth();
+		ShortProcessor ip = new ShortProcessor(width, height);
+		ShortProcessor ip2 = new ShortProcessor(width, height);
+		ip.setPixels(tagged1.pix);
+		ip2.setPixels(tagged2.pix);
 
-					double newcutoff;
-					if (autocutoff) { // <- we never use the non autocutoff, remove?
-						// do you still want a rolling average?
-						newcutoff = (1 - 1 / dT) * cutoff + tempcutoff / dT;
-						newcutoff = Math.floor(10 * newcutoff + 0.5) / 10;
-					} else {
-						newcutoff = cutoff;
-						if (newcutoff == 0) {
-							newcutoff = Math.floor(10 * tempcutoff + 0.5) / 10;
-						}
-					}
+		// convert to Float and wrap in ImagePlus
+		ImagePlus imp = new ImagePlus("Image1", ip.convertToFloatProcessor());
+		ImagePlus imp2 = new ImagePlus("Image2", ip2.convertToFloatProcessor());
 
-					ip_ = nms.applyCutoff(newcutoff); // now this filters the peak list
-					output_[OUTPUT_NEWCUTOFF] = newcutoff;
-					output_[OUTPUT_N] = (double) nms.getN(newcutoff); // and this a second time
-				} catch (Exception e){
-					e.printStackTrace();
+		// Subtraction
+		ImageCalculator calculator = new ImageCalculator();
+		ImagePlus imp3 = calculator.run("Subtract create", imp, imp2);
+
+		// Gaussian filter
+		GaussianBlur gau = new GaussianBlur();
+		gau.blurGaussian(
+				imp3.getProcessor(),
+				HTSMLMConstants.gaussianMaskSize,
+				HTSMLMConstants.gaussianMaskSize,
+				HTSMLMConstants.gaussianMaskPrecision
+		);
+
+		// set negative values to 0
+		for(int i=0;i<imp3.getWidth();i++){
+			for(int j=0;j<imp3.getHeight();j++){
+				if(imp3.getProcessor().get(i, j) < 0){
+					imp3.getProcessor().setf(i,j,0.f);
 				}
 			}
 		}
+
+		return imp3;
+	}
+
+	protected NMS runNMS(ImagePlus image){
+		return new NMS(image, HTSMLMConstants.nmsMaskSize);
+	}
+
+	protected double computeCutOff(NMS nms, double cutoff, double cutoffParameter, double dT){
+		double q1 = NMSUtils.getQuantile(nms.getPeaks(), LOW_QUANTILE);
+		double q2 = NMSUtils.getQuantile(nms.getPeaks(), HIGH_QUANTILE);
+		double median = NMSUtils.getQuantile(nms.getPeaks(), 0.5);
+
+		double slope = (q2 - q1) / (HIGH_QUANTILE - LOW_QUANTILE);
+		double tempcutoff = median + slope * cutoffParameter;
+
+		double newcutoff = (1 - 1 / dT) * cutoff + tempcutoff / dT;
+		newcutoff = Math.floor(10 * newcutoff + 0.5) / 10;
+
+		// TODO inverse transform to original image pixel depth (ShortProc)
+
+		return newcutoff;
+	}
+
+	private void getN(double sdcoeff, double cutoff, double dT, boolean autocutoff) {
+		if (core_.isSequenceRunning() && core_.getBytesPerPixel() == 2) {
+			// grab two images from the circular buffer
+			Pair<TaggedImage, TaggedImage> pairs = getTwoImages();
+
+			// try to extract two images
+			ImagePlus imp = computeGaussianSubtraction(pairs);
+
+			// run nms
+			NMS nms = runNMS(imp);
+
+			// compute cutoff
+			double newcutoff;
+			if(autocutoff){
+				newcutoff = computeCutOff(nms, cutoff, sdcoeff, dT);
+			} else {
+				// TODO scale cutoff to the Float value?
+				newcutoff = cutoff;
+			}
+
+			// filter peak list based on the cutoff
+			ArrayList<Peak> peaks = NMSUtils.filterPeaks(nms, newcutoff);
+
+			// apply cutoff
+			ip_ = NMSUtils.applyCutoff(nms, peaks, newcutoff);
+
+			// create output
+			output_[OUTPUT_NEWCUTOFF] = newcutoff;
+			output_[OUTPUT_N] = (double) peaks.size();
+		}
 	}
 	
-	private void getPulse(double feedback, double N0, double currentPulse, double maxpulse){
+	private void getPulse(double feedbackParameter, double N0, double currentPulse, double maxpulse){
 		double N = output_[OUTPUT_N];
 		double newPulse;
 		
 		if(core_.isSequenceRunning()){		
 			if(N0 > 0) {
-				dp = dp + 0.1 + currentPulse*feedback*(1-N/N0);
 
+				// compute the change in pulse based on N, N0, the current pulse and a feedback parameter
+				// note that we cumulate the changes for small values (see next `if` clause)
+				dp = dp + 0.1 + currentPulse * feedbackParameter * (1-N/N0);
+
+				// compute the new pulse
 				newPulse = currentPulse+dp;
 
+				// if the change in pulse is larger than 1, then we do not remember it for the next iteration
 				if(dp*dp > 1) {
 					dp = 0;
 				}
-				
+
+				// prevent dp from becoming negative when N >> N0
 				if(newPulse == 0 && dp<0) {
 					dp = 0;
 				}
 				
 			} else {
+				// if 0 or negative N, then pulse is set to 0
 				newPulse = 0;
 			}
 		} else {
+			// if the camera is not running, don't change the pulse
 			newPulse = currentPulse;
 		}
 		
 		if(newPulse > maxpulse){
+			// if the new pulse is larger than the maximum one, set it to maximum value
 			newPulse = maxpulse;
 		}		
-		
+
+		// update the output
 		output_[OUTPUT_NEWPULSE] = newPulse;
 	}
 
-	public void notifyHolder(Double[] outputs) {
+	public void update(Double[] outputs) {
 		holder_.update(outputs);
 	}
 
@@ -261,7 +301,7 @@ public class ActivationTask {
 				if(core_.isSequenceRunning()) {
 					params = holder_.retrieveAllParameters();
 									
-					// sanity checks here?
+					// TODO: sanity checks here?
 					if(params[PARAM_AUTOCUTOFF] == 1){
 						getN(params[PARAM_SDCOEFF],params[PARAM_CUTOFF],params[PARAM_dT],true);
 					} else {
@@ -285,7 +325,7 @@ public class ActivationTask {
 		@Override
 		protected void process(List<Double[]> chunks) {
 			for(Double[] result : chunks){
-				notifyHolder(result);
+				update(result);
 			}
 		}
 	}

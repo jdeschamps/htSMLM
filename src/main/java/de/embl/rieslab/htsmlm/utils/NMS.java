@@ -2,13 +2,9 @@ package de.embl.rieslab.htsmlm.utils;
 
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import ij.ImagePlus;
-import ij.gui.ImageWindow;
-import ij.gui.Roi;
 import ij.process.ImageProcessor;
-import mmcorej.CMMCore;
 
 /**
  * Implementation following: Neubeck, A., & Van Gool, L. (2006, August).
@@ -17,96 +13,32 @@ import mmcorej.CMMCore;
  */
 
 public class NMS {
-	ImageProcessor imp, impresult;
-	ImagePlus im_;
-	int width_, height_;
-	int n_;
-	int sizeRoi=10;
-	double epsilon = 0.000001d;
-	ArrayList<Peak> peaks;
+	private ImageProcessor image;
+	private int width_, height_;
+	private int n_;
+	protected ArrayList<Peak> peaks;
 	
-	public NMS(){
+	public NMS(ImagePlus im, int n){
 		peaks = new ArrayList<>();
-	}
-	
-	public void run(ImagePlus im, int n){
-		im_ = im;
+		image = im.getProcessor();
+		n_ = n;
+
 		width_ = im.getWidth();
 		height_ = im.getHeight();
-		imp = im.getProcessor();
-		n_ = n;
-		peaks.clear();
-		
+
 		process();
 	}
 
-	public ImageProcessor applyCutoff(double cutoff){
-		impresult = (ImageProcessor) imp.clone();
-		impresult.setValue(impresult.getStatistics().max);
-
-		ArrayList<Peak> filter_peaks = new ArrayList<>();
-		for(Peak p: peaks){
-			if(p.getValue() >= cutoff){
-				filter_peaks.add(p);
-			}
-		}
-
-		Roi roi = new Roi(0,0,sizeRoi,sizeRoi);
-		for(Peak p: filter_peaks){
-			int mi = p.getX();
-			int mj = p.getY();
-			roi.setLocation(mi-sizeRoi/2, mj-sizeRoi/2);
-			impresult.draw(roi);
-		}
-		impresult.multiply(5); // for contrast
-
-		return impresult;
+	public ArrayList<Peak> getPeaks(){
+		return peaks;
 	}
 
-	// algorithm from
-	// https://www.mathworks.com/help/matlab/ref/quantile.html;jsessionid=62adf577fa8b77dce03112a70ad5#btf91zm
-	// https://www.mathworks.com/help/matlab/ref/quantile.html#btf91wi
-	public double getQuantile(double q){
-		if(q<0 || q>1){
-			throw new IllegalArgumentException("Quantile should be in range [0,1]");
-		}
-
-		// construct array with values
-		double[] vals = peaks.stream().mapToDouble(p -> p.getValue()).toArray();
-		int n = vals.length;
-
-		// sort the array in place
-		Arrays.sort(vals);
-
-		if(q < 0.5/n){
-			return vals[0];
-		} else if(q > (n-0.5)/n){
-			return vals[n-1];
-		} else {
-			// find points to interpolate
-			int counter = 0;
-			double pmin = 0.5/n;
-			double pmax = pmin;
-			double max_val = (n-0.5)/n;
-			while((Math.abs(q-pmax)<epsilon || pmax < q) &&
-					(Math.abs(max_val-pmax)<epsilon || pmax < max_val)){ // account for double precision error
-				pmin = pmax;
-				pmax = (0.5+(++counter))/n;
-			}
-
-			if((Math.abs(q-pmax)<epsilon)){
-				return vals[counter];
-			} else {
-				// linear interpolation
-				double qq =  vals[counter-1]+(q-pmin)*(vals[counter]-vals[counter-1])/(pmax-pmin);
-				return qq;
-			}
-		}
+	public ImageProcessor getImageProcessor(){
+		return image;
 	}
 
 	public long getN(double cutoff){
 		if(!(peaks == null)) {
-			long n = 0;
 			return peaks.stream().filter(p -> p.getValue()>=cutoff).count();
 		}
 
@@ -134,7 +66,7 @@ public class NMS {
 				mj = j;
 				for(ii=i;ii<=i+n_;ii++){	
 					for(jj=j;jj<=j+n_;jj++){
-						if(imp.get(ii,jj) > imp.get(mi,mj)){	
+						if(image.get(ii,jj) > image.get(mi,mj)){
 							mi = ii;
 							mj = jj;
 						}
@@ -147,7 +79,7 @@ public class NMS {
 					for(kk=mj-n_;kk<=mj+n_;kk++){
 						if((ll<i || ll>i+n_) || (kk<j || kk>j+n_)){
 							if(ll<width_ && ll>0 && kk<height_ && kk>0){		
-								if(imp.get(ll,kk)>imp.get(mi,mj) ){
+								if(image.get(ll,kk)> image.get(mi,mj) ){
 									failed = true;
 									break Outer;
 								}
@@ -156,7 +88,7 @@ public class NMS {
 					}
 				}
 				if(!failed){
-					peaks.add(new Peak(mi, mj, imp.get(mi,mj)));
+					peaks.add(new Peak(mi, mj, image.get(mi,mj)));
 				}
 			}			
 		}
