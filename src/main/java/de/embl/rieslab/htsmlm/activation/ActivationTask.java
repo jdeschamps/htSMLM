@@ -7,6 +7,7 @@ import de.embl.rieslab.htsmlm.utils.Peak;
 import ij.ImagePlus;
 import ij.plugin.ImageCalculator;
 import ij.plugin.filter.GaussianBlur;
+import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
 import de.embl.rieslab.htsmlm.constants.HTSMLMConstants;
@@ -144,81 +145,83 @@ public class ActivationTask {
 		return null;
 	}
 
-	protected ImagePlus computeGaussianSubtraction(Pair<TaggedImage, TaggedImage> taggedPair){
-		TaggedImage tagged1 = taggedPair.getFirst();
-		TaggedImage tagged2 = taggedPair.getSecond();
-
-		// create ShortProcessors and copy pixel values from the tagged images
-		int width = (int) core_.getImageWidth();
-		int height = (int) core_.getImageWidth();
-		ShortProcessor ip = new ShortProcessor(width, height);
-		ShortProcessor ip2 = new ShortProcessor(width, height);
-		ip.setPixels(tagged1.pix);
-		ip2.setPixels(tagged2.pix);
-
-		// TODO: is the value really unsigned?
-		core_.logMessage(String.format("[act] Max value of short img is %.2f", ip.getMax()));
-		core_.logMessage(String.format("[act] Min value of short img is %.2f", ip.getMin()));
-
-		// convert to Float and wrap in ImagePlus
-		ImagePlus imp = new ImagePlus("Image1", ip.convertToFloatProcessor());
-		ImagePlus imp2 = new ImagePlus("Image2", ip2.convertToFloatProcessor());
-
-		core_.logMessage(String.format("[act] Max value of short img is %.2f after float", imp.getStatistics().max));
-		core_.logMessage(String.format("[act] Min value of short img is %.2f after float", imp.getStatistics().min));
-
-		// Subtraction
-		ImageCalculator calculator = new ImageCalculator();
-		ImagePlus imp3 = calculator.run("Subtract create", imp, imp2);
-
-		// Gaussian filter
+	static protected void blur(FloatProcessor fp){
 		GaussianBlur gau = new GaussianBlur();
 		gau.blurGaussian(
-				imp3.getProcessor(),
+				fp,
 				HTSMLMConstants.gaussianMaskSize,
 				HTSMLMConstants.gaussianMaskSize,
 				HTSMLMConstants.gaussianMaskPrecision
 		);
-
-		// set negative values to 0
-		for(int i=0;i<imp3.getWidth();i++){
-			for(int j=0;j<imp3.getHeight();j++){
-				if(imp3.getProcessor().get(i, j) < 0){
-					imp3.getProcessor().setf(i,j,0.f);
-				}
-			}
-		}
-
-		return imp3;
 	}
 
-	protected NMS runNMS(ImagePlus image){
+	protected FloatProcessor computeGaussianSubtraction(Pair<TaggedImage, TaggedImage> taggedPair){
+		TaggedImage tagged1 = taggedPair.getFirst();
+		TaggedImage tagged2 = taggedPair.getSecond();
+
+		// get the two pixel arrays
+		short[] pixels1 = (short[]) tagged1.pix;
+		short[] pixels2 = (short[]) tagged2.pix;
+
+
+		float[] pixels_sub = new float[pixels1.length];
+		for(int i=0; i<pixels1.length; i++){
+			float sub = (float) (pixels1[i] - pixels2[i]);
+
+			pixels_sub[i] = sub >= 0f ? sub: 0f;
+		}
+
+		// create FloatProcessor
+		int width = (int) core_.getImageWidth();
+		int height = (int) core_.getImageHeight();
+		FloatProcessor fp = new FloatProcessor(width, height);
+		fp.setPixels(pixels_sub);
+
+		// Gaussian filter
+		blur(fp);
+
+/*		// set negative values to 0
+		for(int i=0;i<fp.getWidth();i++){
+			for(int j=0;j<fp.getHeight();j++){
+				if(fp.getf(i, j) < 0){
+					fp.setf(i,j,0.f);
+				}
+			}
+		}*/
+
+		// TODO make sure that the pixels do not scale with a test
+
+		return fp;
+	}
+
+	static protected NMS runNMS(FloatProcessor image){
 		return new NMS(image, HTSMLMConstants.nmsMaskSize);
 	}
 
-	protected double computeCutOff(NMS nms, double cutoff, double cutoffParameter, double dT){
-		double q1 = NMSUtils.getQuantile(nms.getPeaks(), LOW_QUANTILE);
-		double q2 = NMSUtils.getQuantile(nms.getPeaks(), HIGH_QUANTILE);
-		double median = NMSUtils.getQuantile(nms.getPeaks(), 0.5);
+	static protected double computeCutOff(ArrayList<Peak> peaks, double cutoff, double cutoffParameter, double cutoffFb){
+		// get quantiles
+		double q1 = NMSUtils.getQuantile(peaks, LOW_QUANTILE);
+		double q2 = NMSUtils.getQuantile(peaks, HIGH_QUANTILE);
+		double median = NMSUtils.getQuantile(peaks, 0.5);
 
+		// measure slope
 		double slope = (q2 - q1) / (HIGH_QUANTILE - LOW_QUANTILE);
 		double tempcutoff = median + slope * cutoffParameter;
 
-		double newcutoff = (1 - 1 / dT) * cutoff + tempcutoff / dT;
+		double newcutoff = (1 - cutoffFb) * cutoff + cutoffFb * tempcutoff;
 		newcutoff = Math.floor(10 * newcutoff + 0.5) / 10;
-
-		// TODO inverse transform to original image pixel depth (ShortProc)
 
 		return newcutoff;
 	}
 
 	private void getN(double sdcoeff, double cutoff, double dT, boolean autocutoff) {
+		// TODO why limit the bit depth?
 		if (core_.isSequenceRunning() && core_.getBytesPerPixel() == 2) {
 			// grab two images from the circular buffer
 			Pair<TaggedImage, TaggedImage> pairs = getTwoImages();
 
 			// try to extract two images
-			ImagePlus imp = computeGaussianSubtraction(pairs);
+			FloatProcessor imp = computeGaussianSubtraction(pairs);
 
 			// run nms
 			NMS nms = runNMS(imp);
@@ -226,7 +229,7 @@ public class ActivationTask {
 			// compute cutoff
 			double newcutoff;
 			if(autocutoff){
-				newcutoff = computeCutOff(nms, cutoff, sdcoeff, dT);
+				newcutoff = computeCutOff(nms.getPeaks(), cutoff, sdcoeff, dT);
 			} else {
 				// TODO scale cutoff to the Float value?
 				newcutoff = cutoff;
@@ -235,6 +238,7 @@ public class ActivationTask {
 			// filter peak list based on the cutoff
 			ArrayList<Peak> peaks = NMSUtils.filterPeaks(nms, newcutoff);
 
+			// TODO change how parameters are passed back to UI
 			// apply cutoff
 			ip_ = NMSUtils.applyCutoff(nms, peaks);
 

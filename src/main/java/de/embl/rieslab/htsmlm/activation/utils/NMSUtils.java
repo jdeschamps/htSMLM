@@ -57,6 +57,10 @@ public class NMSUtils {
             throw new IllegalArgumentException("Quantile should be in range [0,1]");
         }
 
+        if(peaks.isEmpty()){
+            return 0.;
+        }
+
         // construct array with values
         double[] vals = peaks.stream().mapToDouble(p -> p.getValue()).toArray();
         int n = vals.length;

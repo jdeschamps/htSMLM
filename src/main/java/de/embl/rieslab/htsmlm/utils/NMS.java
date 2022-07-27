@@ -3,7 +3,7 @@ package de.embl.rieslab.htsmlm.utils;
 
 import java.util.ArrayList;
 
-import ij.ImagePlus;
+import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 
 /**
@@ -15,16 +15,16 @@ import ij.process.ImageProcessor;
 public class NMS {
 	private ImageProcessor image;
 	private int width_, height_;
-	private int n_;
+	private int maskSize_;
 	protected ArrayList<Peak> peaks;
 	
-	public NMS(ImagePlus im, int n){
+	public NMS(FloatProcessor imp, int maskSize){
 		peaks = new ArrayList<>();
-		image = im.getProcessor();
-		n_ = n;
+		image = imp;
+		maskSize_ = maskSize;
 
-		width_ = im.getWidth();
-		height_ = im.getHeight();
+		width_ = imp.getWidth();
+		height_ = imp.getHeight();
 
 		process();
 	}
@@ -42,13 +42,13 @@ public class NMS {
 		int mi,mj;
 		boolean failed = false;
 	
-		for(i=0;i<width_-n_-1;i+=n_+1){	// Loop over (n+1)x(n+1)
-			for(j=0;j<height_-n_-1;j+=n_+1){
+		for(i=0; i<width_- maskSize_ -1; i+= maskSize_ +1){	// Loop over (n+1)x(n+1)
+			for(j=0; j<height_- maskSize_ -1; j+= maskSize_ +1){
 				mi = i;
 				mj = j;
-				for(ii=i;ii<=i+n_;ii++){	
-					for(jj=j;jj<=j+n_;jj++){
-						if(image.get(ii,jj) > image.get(mi,mj)){
+				for(ii=i; ii<=i+ maskSize_; ii++){
+					for(jj=j; jj<=j+ maskSize_; jj++){
+						if(image.getf(ii,jj) > image.getf(mi,mj)){
 							mi = ii;
 							mj = jj;
 						}
@@ -57,11 +57,11 @@ public class NMS {
 				failed = false;
 				
 				Outer:
-				for(ll=mi-n_;ll<=mi+n_;ll++){	
-					for(kk=mj-n_;kk<=mj+n_;kk++){
-						if((ll<i || ll>i+n_) || (kk<j || kk>j+n_)){
+				for(ll=mi- maskSize_; ll<=mi+ maskSize_; ll++){
+					for(kk=mj- maskSize_; kk<=mj+ maskSize_; kk++){
+						if((ll<i || ll>i+ maskSize_) || (kk<j || kk>j+ maskSize_)){
 							if(ll<width_ && ll>0 && kk<height_ && kk>0){		
-								if(image.get(ll,kk)> image.get(mi,mj) ){
+								if(image.getf(ll,kk)> image.getf(mi,mj) ){
 									failed = true;
 									break Outer;
 								}
@@ -70,7 +70,7 @@ public class NMS {
 					}
 				}
 				if(!failed){
-					peaks.add(new Peak(mi, mj, image.get(mi,mj)));
+					peaks.add(new Peak(mi, mj, image.getf(mi,mj)));
 				}
 			}			
 		}

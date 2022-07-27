@@ -39,8 +39,8 @@ public class NMSUtilsTest {
 
         // filter list
         FloatProcessor fp = new FloatProcessor(3, 3);
-        ImagePlus ip = new ImagePlus("", fp);
-        MonkeyPatchNMS nms = new MonkeyPatchNMS(ip, peaks);
+
+        MonkeyPatchNMS nms = new MonkeyPatchNMS(fp, peaks);
         ArrayList<Peak> filteredPeaks = NMSUtils.filterPeaks(nms, 10.);
 
         // test filtering
@@ -53,6 +53,13 @@ public class NMSUtilsTest {
 
     }
 
+
+    @Test
+    public void testQuantileNoPeaks(){
+        ArrayList<Peak> peaks = new ArrayList<>();
+
+        assertEquals(0, NMSUtils.getQuantile(peaks, 0.5), epsilon);
+    }
 
     @Test
     public void testQuantile(){
@@ -110,7 +117,7 @@ public class NMSUtilsTest {
         peaks.add(new Peak(index_max_2D, index_max_2D, pixels[index_max_1D]));
 
         // create MonkeyPatch NMS
-        MonkeyPatchNMS nms = new MonkeyPatchNMS(new ImagePlus("", fp), peaks);
+        MonkeyPatchNMS nms = new MonkeyPatchNMS(fp, peaks);
 
         // apply cutoff
         ImageProcessor ip = NMSUtils.applyCutoff(nms, peaks);
@@ -133,7 +140,7 @@ public class NMSUtilsTest {
 
     protected class MonkeyPatchNMS extends NMS {
 
-        public MonkeyPatchNMS(ImagePlus im, ArrayList<Peak> peaks) {
+        public MonkeyPatchNMS(FloatProcessor im, ArrayList<Peak> peaks) {
             super(im, 1);
 
             this.peaks = peaks;
