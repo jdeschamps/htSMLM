@@ -169,7 +169,9 @@ public class ActivationPanel extends ConfigurablePanel {
 		dT_ = 1.;
 		JTextField textfielddT_ = new JTextField(String.valueOf(dT_));
 		textfielddT_.setToolTipText("Averaging time (in number of frames) of the auto cutoff.");
-		SwingUIListeners.addActionListenerToDoubleAction(val -> dT_ = val, textfielddT_, 1, Double.POSITIVE_INFINITY);
+		SwingUIListeners.addActionListenerToDoubleAction(val -> {
+			dT_ = (val >= 0 && val <= 1) ? val: val > 1 ? 1: 0;
+		}, textfielddT_, 1, Double.POSITIVE_INFINITY);
 
 		c.gridy = 5;
 		pane.add(textfielddT_,c);
