@@ -74,14 +74,13 @@ public class AcquisitionController{
 		final String folderPath = owner_.getExperimentPath();
 		
 		if(!isAcquisitionListEmpty() && folderPath != null && experimentName != null && !folderPath.equals("")){	
-			final AcquisitionFactory factory = new AcquisitionFactory(this,controller_);
 			task_ = new AcquisitionTask(this, controller_, exp_, experimentName, folderPath);
 	
 			Thread t = new Thread("Set-up acquisition") {
 				public void run() {
 
 					// save the acquisition list to the destination folder
-					boolean b = factory.writeAcquisitionList(exp_, folderPath, experimentName);
+					boolean b = AcquisitionFactory.writeAcquisitionList(exp_, folderPath, experimentName);
 	
 					if (!b) {
 						// report problem saving

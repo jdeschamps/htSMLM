@@ -185,9 +185,10 @@ public class AcquisitionFactory {
 			file.close();
 		} catch (JsonIOException | IOException e) {
 			e.printStackTrace();
+			return false;
 		}
 		
-		return false;
+		return true;
 	}
 	
 	private static String incrementAcquisitionFileName(String name) {

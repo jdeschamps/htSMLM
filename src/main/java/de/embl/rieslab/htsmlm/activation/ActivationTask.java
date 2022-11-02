@@ -106,7 +106,7 @@ public class ActivationTask {
 		while (tagged == null && !abort) {
 			try {
 				Thread.sleep(2);
-				tagged = core_.getLastTaggedImage();
+				tagged = (TaggedImage) core_.popNextTaggedImage();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			} catch (Exception e) {
@@ -134,9 +134,8 @@ public class ActivationTask {
 		if (tagged1 != null) {
 			try {
 				TaggedImage tagged2 = getTaggedImage(tagged1.tags.getInt("ImageNumber"));
-
-				return new Pair(tagged1, tagged2);
-
+				
+				return new Pair<TaggedImage, TaggedImage>(tagged1, tagged2);
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}

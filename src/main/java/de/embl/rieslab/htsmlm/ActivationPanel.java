@@ -71,7 +71,6 @@ public class ActivationPanel extends ConfigurablePanel {
 	//////// Misc variables
 	public static int INPUT_WHICH_ACTIVATION = 0;
 	private boolean activate_, showNMS_, autoCutoff_;
-	private String singleActivationName_;
 	private boolean useActivation1_;
 	private double sdCoeff_, feedback_, N0_ = 1, cutoff_ = 100;
 	private int nPos_, idleTime_, maxPulse1_, maxPulse2_;
@@ -713,16 +712,17 @@ public class ActivationPanel extends ConfigurablePanel {
 	}
 
 	public void initializeTask(Double[] input) {
-		core_.logMessage("[activation panel] set initialization index: "+input[0]);
+		// check which activation is selected in the acquisition
 		int index  = (int) Math.round(input[INPUT_WHICH_ACTIVATION]);
-		core_.logMessage("[activation panel] set initialization index: "+index);
+		
+		// select it
 		String[] props = getAllocatedProperties();
-
-		if(props.length == 2){
-			activationProp_.setSelectedIndex(index); // on EDT ?? probably not
-			core_.logMessage("[activation panel] is activation 1: "+useActivation1_);
-			setUIPropertyValue(getProperty(),"0");
-		}
+		activationProp_.setSelectedIndex(index); // on EDT ?? probably not
+		
+		// set it to 0
+		setUIPropertyValue(getProperty(),"0");
+		
+		core_.logMessage("[activation panel] is activation: " + props[index]);
 	}
 
 	@Override
