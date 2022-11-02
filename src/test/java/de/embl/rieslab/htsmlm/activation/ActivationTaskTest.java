@@ -1,12 +1,19 @@
 package de.embl.rieslab.htsmlm.activation;
 
+import de.embl.rieslab.htsmlm.activation.utils.NMSUtils;
+import de.embl.rieslab.htsmlm.utils.NMS;
 import de.embl.rieslab.htsmlm.utils.Peak;
+import ij.ImagePlus;
 import ij.process.FloatProcessor;
+import ij.process.ImageProcessor;
+import ij.process.ShortProcessor;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Random;
 
+import static de.embl.rieslab.htsmlm.activation.ActivationTask.blur;
+import static de.embl.rieslab.htsmlm.activation.ActivationTask.runNMS;
 import static org.junit.Assert.assertEquals;
 
 public class ActivationTaskTest {
@@ -14,6 +21,9 @@ public class ActivationTaskTest {
 
     @Test
     public void testConversion() {
+        /**
+         * Check value of short subtractions converted to floats.
+         */
         int size = 3;
         short[] pixels1 = {
                 Short.MIN_VALUE, Short.MIN_VALUE, Short.MIN_VALUE + 200,
@@ -88,5 +98,48 @@ public class ActivationTaskTest {
         // count peaks
         int n = (int) peaks.stream().filter(p->p.getValue()>new_cutoff).count();
         assertEquals(n_high, n);
+    }
+
+
+    @Test
+    public void testNMSWindow() throws InterruptedException {
+        // create test image
+        short intensity = 20_000;
+        int size = 30;
+        float[] float_pix = new float[size*size];
+
+        for(int i=0; i<size; i++){
+            for(int j=0; j<size; j++){
+                if(i>=size/2-5 && i<=size/2-5 && j>=size/2-5 && j<=size/2-5){
+                    float_pix[i*size+j] = intensity;
+                } else {
+                    float_pix[i*size+j] = 0f;
+                }
+            }
+        }
+
+        // create FloatProcessor
+        FloatProcessor fp = new FloatProcessor(size, size);
+        fp.setPixels(float_pix);
+
+        // Gaussian filter
+        blur(fp);
+
+        // run NMS
+        NMS nms = runNMS(fp);
+
+        // filtered peaks
+        ArrayList<Peak> peaks = NMSUtils.filterPeaks(nms, 0);
+
+        // get image
+        ImageProcessor ip = NMSUtils.applyCutoff(nms, peaks);
+
+        // show result
+        ImagePlus im = new ImagePlus("NMS result");
+        im.setProcessor(ip);
+        im.setDisplayRange(im.getStatistics().min, im.getStatistics().max);
+        im.show();
+
+        Thread.sleep(5_000);
     }
 }

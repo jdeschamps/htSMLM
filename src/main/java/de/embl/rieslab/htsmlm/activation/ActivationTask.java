@@ -154,21 +154,50 @@ public class ActivationTask {
 				HTSMLMConstants.gaussianMaskPrecision
 		);
 	}
+	
 
-	protected FloatProcessor computeGaussianSubtraction(Pair<TaggedImage, TaggedImage> taggedPair){
-		TaggedImage tagged1 = taggedPair.getFirst();
-		TaggedImage tagged2 = taggedPair.getSecond();
-
+	private float[] subtract8bits(TaggedImage image1, TaggedImage image2) {
 		// get the two pixel arrays
-		short[] pixels1 = (short[]) tagged1.pix;
-		short[] pixels2 = (short[]) tagged2.pix;
-
+		byte[] pixels1 = (byte[]) image1.pix;
+		byte[] pixels2 = (byte[]) image2.pix;
 
 		float[] pixels_sub = new float[pixels1.length];
 		for(int i=0; i<pixels1.length; i++){
 			float sub = (float) (pixels1[i] - pixels2[i]);
 
+			// set negative pixels to 0
 			pixels_sub[i] = sub >= 0f ? sub: 0f;
+		}
+		return pixels_sub;
+	}
+	
+	private float[] subtract16bits(TaggedImage image1, TaggedImage image2) {
+		// get the two pixel arrays
+		short[] pixels1 = (short[]) image1.pix;
+		short[] pixels2 = (short[]) image2.pix;
+
+		float[] pixels_sub = new float[pixels1.length];
+		for(int i=0; i<pixels1.length; i++){
+			float sub = (float) (pixels1[i] - pixels2[i]);
+
+			// set negative pixels to 0
+			pixels_sub[i] = sub >= 0f ? sub: 0f;
+		}
+		return pixels_sub;
+	}
+	
+	protected FloatProcessor computeGaussianSubtraction(Pair<TaggedImage, TaggedImage> taggedPair, long bitDepth){
+		TaggedImage tagged1 = taggedPair.getFirst();
+		TaggedImage tagged2 = taggedPair.getSecond();
+
+		// get subtraction
+		float[] pixels_sub;
+		if(bitDepth == 2) {
+			pixels_sub = subtract16bits(tagged1, tagged2);
+		} else if (bitDepth == 1) {
+			pixels_sub = subtract8bits(tagged1, tagged2);
+		} else {
+			throw new IllegalArgumentException("Only 8 and 16 bits are supported.");
 		}
 
 		// create FloatProcessor
@@ -179,17 +208,6 @@ public class ActivationTask {
 
 		// Gaussian filter
 		blur(fp);
-
-/*		// set negative values to 0
-		for(int i=0;i<fp.getWidth();i++){
-			for(int j=0;j<fp.getHeight();j++){
-				if(fp.getf(i, j) < 0){
-					fp.setf(i,j,0.f);
-				}
-			}
-		}*/
-
-		// TODO make sure that the pixels do not scale with a test
 
 		return fp;
 	}
@@ -215,13 +233,12 @@ public class ActivationTask {
 	}
 
 	private void getN(double sdcoeff, double cutoff, double dT, boolean autocutoff) {
-		// TODO why limit the bit depth?
-		if (core_.isSequenceRunning() && core_.getBytesPerPixel() == 2) {
+		if (core_.isSequenceRunning()) {
 			// grab two images from the circular buffer
 			Pair<TaggedImage, TaggedImage> pairs = getTwoImages();
 
-			// try to extract two images
-			FloatProcessor imp = computeGaussianSubtraction(pairs);
+			// compute Gaussian blurred difference
+			FloatProcessor imp = computeGaussianSubtraction(pairs, core_.getBytesPerPixel());
 
 			// run nms
 			NMS nms = runNMS(imp);
@@ -231,7 +248,6 @@ public class ActivationTask {
 			if(autocutoff){
 				newcutoff = computeCutOff(nms.getPeaks(), cutoff, sdcoeff, dT);
 			} else {
-				// TODO scale cutoff to the Float value?
 				newcutoff = cutoff;
 			}
 
@@ -284,7 +300,9 @@ public class ActivationTask {
 		if(newPulse > maxpulse){
 			// if the new pulse is larger than the maximum one, set it to maximum value
 			newPulse = maxpulse;
-		}		
+		} else if (newPulse < 0) {
+			newPulse = 0;
+		}
 
 		// update the output
 		output_[OUTPUT_NEWPULSE] = newPulse;

@@ -577,6 +577,7 @@ public class ActivationPanel extends ConfigurablePanel {
 			if(imp != null && imp.getPixels() != null){
 				ip_ = imp;
 				im_.setProcessor(ip_);
+				im_.setDisplayRange(im_.getStatistics().min, im_.getStatistics().max);
 				im_.updateAndRepaintWindow();
 			}
 		} else if(nmsCounter_ == Integer.MAX_VALUE){
