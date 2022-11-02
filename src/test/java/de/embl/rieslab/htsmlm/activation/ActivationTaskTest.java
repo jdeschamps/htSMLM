@@ -6,11 +6,9 @@ import de.embl.rieslab.htsmlm.utils.Peak;
 import ij.ImagePlus;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
-import ij.process.ShortProcessor;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 import static de.embl.rieslab.htsmlm.activation.ActivationTask.blur;
 import static de.embl.rieslab.htsmlm.activation.ActivationTask.runNMS;

@@ -1,24 +1,28 @@
 package de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
+
+//import com.fasterxml.jackson.core.JsonGenerationException;
+//import com.fasterxml.jackson.databind.JsonMappingException;
+//import com.fasterxml.jackson.databind.ObjectMapper;
+//import com.fasterxml.jackson.databind.SerializationFeature;
 
 import de.embl.rieslab.emu.controller.SystemController;
 import de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
 import de.embl.rieslab.emu.utils.EmuUtils;
 import de.embl.rieslab.htsmlm.AcquisitionPanel;
-import de.embl.rieslab.htsmlm.ActivationPanel;
 import de.embl.rieslab.htsmlm.acquisitions.AcquisitionController;
 import de.embl.rieslab.htsmlm.acquisitions.wrappers.AcquisitionWrapper;
 import de.embl.rieslab.htsmlm.acquisitions.wrappers.Experiment;
@@ -130,7 +134,7 @@ public class AcquisitionFactory {
 	 * @param parentFolder
 	 * @return
 	 */
-	public boolean writeAcquisitionList(Experiment experiment, String parentFolder, String fileName){
+	static public boolean writeAcquisitionList(Experiment experiment, String parentFolder, String fileName){
 		
 		String fullpath, shortname;
 		if(fileName.endsWith("."+HTSMLMConstants.ACQ_EXT)){
@@ -166,27 +170,27 @@ public class AcquisitionFactory {
 			f.mkdirs();
 		}
 		
+		// wrap experiment into object that can be exported to JSON
 		ExperimentWrapper expw = new ExperimentWrapper(shortname, parentFolder, experiment);
 		
-		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+		// gson object
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();	
+        
+		// write experiment to json
 		try {
-			objectMapper.writeValue(new FileOutputStream(fullpath), expw);
+			String json_str = gson.toJson(expw);
 			
-			return true;
-		} catch (JsonGenerationException e) {
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
+			FileWriter file = new FileWriter(fullpath);
+			file.write(json_str);
+			file.close();
+		} catch (JsonIOException | IOException e) {
 			e.printStackTrace();
 		}
+		
 		return false;
 	}
 	
-	private String incrementAcquisitionFileName(String name) {
+	private static String incrementAcquisitionFileName(String name) {
 		String newname = name.substring(0, name.length()-HTSMLMConstants.ACQ_EXT.length()-1);
 		int ind = 0;
 		for(int i=0;i<newname.length();i++){
@@ -209,22 +213,29 @@ public class AcquisitionFactory {
 		return newname;
 	}
 
+	static public ExperimentWrapper readExperiment(String path) throws JsonSyntaxException, JsonIOException, FileNotFoundException {
+		// gson object
+		Gson gson = new Gson();
+				
+		// read experiment
+		return gson.fromJson(new FileReader(path), ExperimentWrapper.class);
+	}
+	
+	
 	public Experiment readAcquisitionList(String path){	
 		ArrayList<Acquisition> acqlist = new ArrayList<Acquisition>();
 		int waitingtime = 3;
 		int numpos = 0;
 		String savemode = Experiment.MULTITIFFS;
 
-		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-		
+		// read experiment
 		try {
-			ExperimentWrapper expw = objectMapper.readValue(new FileInputStream(path), ExperimentWrapper.class);			
-
+			ExperimentWrapper expw = readExperiment(path);
+		
+			// read acquisition list
 			ArrayList<AcquisitionWrapper> acqwlist = expw.acquisitionList;	
 
 			// for the moment ignore name and path Strings
-			
 			waitingtime = expw.pauseTime;
 			numpos = expw.numberPositions;
 			savemode = expw.savemode;
@@ -278,21 +289,14 @@ public class AcquisitionFactory {
 					}
 				}
 			}
-			
-		} catch (JsonGenerationException e) {
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (JsonSyntaxException | JsonIOException | FileNotFoundException e) {
 			e.printStackTrace();
 		}
 		
 		return new Experiment(waitingtime, numpos, Experiment.getSaveModeFromString(savemode), acqlist);
 	}
 	
-	private void configureGeneralAcquistion(Acquisition acq, AcquisitionWrapper acqw){
+	static private void configureGeneralAcquistion(Acquisition acq, AcquisitionWrapper acqw){
 		acq.getAcquisitionParameters().setExposureTime(acqw.exposure);
 		acq.getAcquisitionParameters().setWaitingTime(acqw.waitingTime);
 		
