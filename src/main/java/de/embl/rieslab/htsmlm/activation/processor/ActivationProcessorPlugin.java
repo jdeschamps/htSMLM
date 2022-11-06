@@ -8,6 +8,7 @@ import org.micromanager.data.ProcessorPlugin;
 
 public class ActivationProcessorPlugin implements ProcessorPlugin{
 
+	private PropertyMap configSettings;
 	private static ActivationProcessorPlugin plugin;
 
 	private ActivationProcessorPlugin() {}
@@ -46,7 +47,7 @@ public class ActivationProcessorPlugin implements ProcessorPlugin{
 
 	@Override
 	public ProcessorConfigurator createConfigurator(PropertyMap settings) {
-		return new ActivationProcessorConfigurator();
+		return ActivationProcessorConfigurator.getInstance();
 	}
 
 	@Override

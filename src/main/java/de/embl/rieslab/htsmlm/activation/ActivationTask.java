@@ -2,6 +2,8 @@ package de.embl.rieslab.htsmlm.activation;
 
 import de.embl.rieslab.htsmlm.ActivationPanel;
 import de.embl.rieslab.htsmlm.activation.processor.ActivationProcessor;
+import de.embl.rieslab.htsmlm.activation.processor.ActivationProcessorConfigurator;
+import de.embl.rieslab.htsmlm.activation.processor.ActivationProcessorPlugin;
 import de.embl.rieslab.htsmlm.activation.utils.NMSUtils;
 import de.embl.rieslab.htsmlm.utils.Pair;
 import de.embl.rieslab.htsmlm.utils.Peak;
@@ -18,7 +20,9 @@ import java.util.List;
 
 import javax.swing.SwingWorker;
 
+import org.micromanager.Studio;
 import org.micromanager.data.Image;
+import org.micromanager.data.ProcessorConfigurator;
 
 import mmcorej.CMMCore;
 import mmcorej.TaggedImage;
@@ -55,6 +59,7 @@ public class ActivationTask {
 	private static double LOW_QUANTILE = 0.2;
 	private static double HIGH_QUANTILE = 0.8;
 
+	private Studio studio_;
 	private CMMCore core_;
 	private ActivationPanel holder_;
 	private int idletime_;
@@ -66,10 +71,11 @@ public class ActivationTask {
 	
 	private double dp;
 
-	public ActivationTask(ActivationPanel holder, CMMCore core, int idle){
+	public ActivationTask(ActivationPanel holder, Studio studio, int idle){
 		running_ = false;
 		
-		core_ = core;
+		studio_ = studio;
+		core_ = studio.core();
 		idletime_ = idle;
 
 		holder_ = holder;
@@ -84,7 +90,31 @@ public class ActivationTask {
 		processor_ = ActivationProcessor.getInstance();
 	}
 
+		
 	public void startTask() {
+		// TODO move all this to controller
+		
+		
+		// make sure that the processor plugin is still active
+		List<ProcessorConfigurator> configurator_list = studio_.data().getLivePipelineConfigurators(false);
+		int n_act = 0;
+		int act_hash = ActivationProcessorConfigurator.getInstance().hashCode();
+		for(ProcessorConfigurator o: configurator_list) {
+			// check if it is the activation image processor
+			if(o.hashCode() == act_hash) {
+				n_act++;
+			}
+		}
+		
+		if(n_act == 0) { // if there is no processor plugin
+			studio_.data().addAndConfigureProcessor(ActivationProcessorPlugin.getInstance());
+		} else if(n_act > 1) { //if there are more than one
+			// remove them and only add one
+			studio_.data().clearPipeline();
+			studio_.data().addAndConfigureProcessor(ActivationProcessorPlugin.getInstance());
+		}
+
+		// start activation
 		worker_ = new AutomatedActivation();
 		worker_.execute();
 		running_ = true;
@@ -100,37 +130,6 @@ public class ActivationTask {
 	
 	public void setIdleTime(int idle){
 		idletime_ = idle;
-	}
-
-	protected TaggedImage getTaggedImage(int exclude_number) {
-		int counter = 0;
-		boolean abort = false;
-		TaggedImage tagged = null;
-
-		// try to extract an image
-		while (tagged == null && !abort) {
-			try {
-				Thread.sleep(2);
-				tagged = (TaggedImage) core_.popNextTaggedImage();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				counter++;
-			}
-
-			try {
-				if (tagged.tags.getInt("ImageNumber") == exclude_number) {
-					tagged = null;
-				}
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-
-			if (counter > MAX_COUNTER) {
-				abort = true;
-			}
-		}
-		return tagged;
 	}
 
 	protected Pair<Image, Image> getTwoImages(){
@@ -149,20 +148,6 @@ public class ActivationTask {
 		
 		// return two frames
 		return new Pair<Image, Image>(processor_.poll(), processor_.poll());
-			
-		//TaggedImage tagged1 = getTaggedImage(-1);
-
-		/*if (tagged1 != null) {
-			try {
-				TaggedImage tagged2 = getTaggedImage(tagged1.tags.getInt("ImageNumber"));
-				
-				return new Pair<TaggedImage, TaggedImage>(tagged1, tagged2);
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-		}
-
-		return null;*/
 	}
 
 	static protected void blur(FloatProcessor fp){

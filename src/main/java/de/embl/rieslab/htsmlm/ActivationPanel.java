@@ -90,7 +90,7 @@ public class ActivationPanel extends ConfigurablePanel {
 		setupPanel();
 		
 		core_ = controller.getCore();
-		task_ = new ActivationTask(this, core_, idleTime_);
+		task_ = new ActivationTask(this, controller.getStudio(), idleTime_);
     	ip_ = new ShortProcessor(200,200);
 		im_ = new ImagePlus("NMS result");
 

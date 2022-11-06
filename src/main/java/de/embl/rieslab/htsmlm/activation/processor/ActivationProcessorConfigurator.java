@@ -5,6 +5,17 @@ import org.micromanager.data.ProcessorConfigurator;
 
 public class ActivationProcessorConfigurator implements ProcessorConfigurator {
 
+	private static ActivationProcessorConfigurator configurator;
+
+	private ActivationProcessorConfigurator() {}
+	
+    public static ActivationProcessorConfigurator getInstance() {
+        if (configurator == null) {
+        	configurator = new ActivationProcessorConfigurator();
+        }
+        return configurator;
+    }
+	
 	@Override
 	public void showGUI() {
 	
