@@ -750,10 +750,10 @@ public class MultiSliceAcquisition implements Acquisition {
 
 				// display and coordinate builder
 				DisplayWindow display = studio.displays().createDisplay(store);
-				Builder cb = studio.data().getCoordsBuilder().z(0).c(0).p(0).t(0);
+				Builder cb = studio.data().coordsBuilder().z(0).c(0).p(0).t(0);
 
 				core.startSequenceAcquisition(params_.getNumberFrames(), params_.getIntervalMs(), true);
-				Metadata metadata = studio.data().getMetadataBuilder().build();
+				Metadata metadata = studio.data().metadataBuilder().build();
 
 				int curFrame = 0;
 				try {
@@ -763,7 +763,7 @@ public class MultiSliceAcquisition implements Acquisition {
 							TaggedImage tagged = core.popNextTaggedImage();
 
 							// Convert to an Image at the desired time point
-							Image image = studio.data().convertTaggedImage(tagged, cb.time(curFrame).build(), generateMetadata(studio, metadata));
+							Image image = studio.data().convertTaggedImage(tagged, cb.t(curFrame).build(), generateMetadata(studio, metadata));
 
 							store.putImage(image);
 							curFrame++;

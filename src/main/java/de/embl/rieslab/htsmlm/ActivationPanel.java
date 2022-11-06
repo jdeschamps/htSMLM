@@ -1,5 +1,6 @@
 package de.embl.rieslab.htsmlm;
 
+import de.embl.rieslab.emu.controller.SystemController;
 import de.embl.rieslab.emu.micromanager.mmproperties.MMProperty;
 import de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
 import ij.ImagePlus;
@@ -30,7 +31,9 @@ import de.embl.rieslab.emu.utils.exceptions.IncorrectUIParameterTypeException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownInternalPropertyException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIPropertyException;
+
 import de.embl.rieslab.htsmlm.activation.ActivationTask;
+import de.embl.rieslab.htsmlm.activation.processor.ActivationProcessorPlugin;
 import de.embl.rieslab.htsmlm.graph.TimeChart;
 import mmcorej.CMMCore;
 
@@ -81,15 +84,15 @@ public class ActivationPanel extends ConfigurablePanel {
 	private Double[] params;
 	private CMMCore core_;
 	
-	public ActivationPanel(String label, CMMCore core) {
+	public ActivationPanel(String label, SystemController controller) {
 		super(label);
 		
 		setupPanel();
 		
-		task_ = new ActivationTask(this, core, idleTime_);
+		core_ = controller.getCore();
+		task_ = new ActivationTask(this, core_, idleTime_);
     	ip_ = new ShortProcessor(200,200);
 		im_ = new ImagePlus("NMS result");
-		core_ = core;
 
 		params = new Double[ActivationTask.NUM_PARAMETERS];
 		
@@ -199,7 +202,7 @@ public class ActivationPanel extends ConfigurablePanel {
 		pane.add(textFieldN0_,c);
 
 		String[] properties = {"Activation 1", "Activation 2"};
-		activationProp_ = new JComboBox(properties);
+		activationProp_ = new JComboBox<String>(properties);
 		activationProp_.addActionListener(e -> {
 			try {
 				String propName = this.getStringUIParameterValue(PARAM_ACTIVATION_NAME1);
@@ -363,7 +366,7 @@ public class ActivationPanel extends ConfigurablePanel {
 	}
 
 	public String[] getAllocatedProperties(){
-		ArrayList<String> str = new ArrayList();
+		ArrayList<String> str = new ArrayList<String>();
 
 		String[] props = {LASER_PULSE1, LASER_PULSE2};
 		for(String prop: props) {
@@ -389,7 +392,7 @@ public class ActivationPanel extends ConfigurablePanel {
 	}
 
 	public String[] getPropertiesName() {
-		ArrayList<String> str = new ArrayList();
+		ArrayList<String> str = new ArrayList<String>();
 		String[] props = getAllocatedProperties();
 
 		for(String prop: props) {
@@ -504,7 +507,7 @@ public class ActivationPanel extends ConfigurablePanel {
 			String[] props = getPropertiesName();
 
 			// set choices
-			DefaultComboBoxModel<String> model = new DefaultComboBoxModel( props );
+			DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>( props );
 			activationProp_.setModel( model );
 
 			// disable if not 2 properties
@@ -571,7 +574,7 @@ public class ActivationPanel extends ConfigurablePanel {
 			cutoff_ = output[ActivationTask.OUTPUT_NEWCUTOFF];
 		}
 		
-		if(showNMS_ && nmsCounter_ % 10 == 0){
+		if(showNMS_ && nmsCounter_ % 4 == 0){
 			ImageProcessor imp = task_.getNMSResult();
 			if(imp != null && imp.getPixels() != null){
 				ip_ = imp;

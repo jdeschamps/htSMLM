@@ -184,7 +184,7 @@ public class MainFrame extends ConfigurableMainFrame{
 		}
 		
 		// Activation
-		activationPanel = new ActivationPanel("Activation", getCore());
+		activationPanel = new ActivationPanel("Activation", this.getController());
 		tab.add("Activation", activationPanel);
 		
 		/// laser trigger tab

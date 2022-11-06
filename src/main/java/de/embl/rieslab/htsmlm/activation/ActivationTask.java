@@ -1,15 +1,15 @@
 package de.embl.rieslab.htsmlm.activation;
 
 import de.embl.rieslab.htsmlm.ActivationPanel;
+import de.embl.rieslab.htsmlm.activation.processor.ActivationProcessor;
 import de.embl.rieslab.htsmlm.activation.utils.NMSUtils;
 import de.embl.rieslab.htsmlm.utils.Pair;
 import de.embl.rieslab.htsmlm.utils.Peak;
-import ij.ImagePlus;
-import ij.plugin.ImageCalculator;
+
 import ij.plugin.filter.GaussianBlur;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
-import ij.process.ShortProcessor;
+
 import de.embl.rieslab.htsmlm.constants.HTSMLMConstants;
 import de.embl.rieslab.htsmlm.utils.NMS;
 
@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.SwingWorker;
+
+import org.micromanager.data.Image;
 
 import mmcorej.CMMCore;
 import mmcorej.TaggedImage;
@@ -60,7 +62,8 @@ public class ActivationTask {
 	private boolean running_;
 	private Double[] output_;
 	private ImageProcessor ip_;
-
+	private ActivationProcessor processor_;
+	
 	private double dp;
 
 	public ActivationTask(ActivationPanel holder, CMMCore core, int idle){
@@ -77,6 +80,8 @@ public class ActivationTask {
 		output_[0] = 0.;
 		output_[1] = 0.;
 		output_[2] = 0.;
+		
+		processor_ = ActivationProcessor.getInstance();
 	}
 
 	public void startTask() {
@@ -128,10 +133,26 @@ public class ActivationTask {
 		return tagged;
 	}
 
-	protected Pair<TaggedImage, TaggedImage> getTwoImages(){
-		TaggedImage tagged1 = getTaggedImage(-1);
+	protected Pair<Image, Image> getTwoImages(){
+		processor_.startQueueing();
+		
+		// wait that the queue is full
+		while(processor_.getQueueSize() < 2) {
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}			
+		}
+		
+		processor_.stopQueueing();
+		
+		// return two frames
+		return new Pair<Image, Image>(processor_.poll(), processor_.poll());
+			
+		//TaggedImage tagged1 = getTaggedImage(-1);
 
-		if (tagged1 != null) {
+		/*if (tagged1 != null) {
 			try {
 				TaggedImage tagged2 = getTaggedImage(tagged1.tags.getInt("ImageNumber"));
 				
@@ -141,7 +162,7 @@ public class ActivationTask {
 			}
 		}
 
-		return null;
+		return null;*/
 	}
 
 	static protected void blur(FloatProcessor fp){
@@ -155,10 +176,10 @@ public class ActivationTask {
 	}
 	
 
-	private float[] subtract8bits(TaggedImage image1, TaggedImage image2) {
+	private float[] subtract8bits(Image image1, Image image2) {
 		// get the two pixel arrays
-		byte[] pixels1 = (byte[]) image1.pix;
-		byte[] pixels2 = (byte[]) image2.pix;
+		byte[] pixels1 = (byte[]) image1.getRawPixels();
+		byte[] pixels2 = (byte[]) image2.getRawPixels();
 
 		float[] pixels_sub = new float[pixels1.length];
 		for(int i=0; i<pixels1.length; i++){
@@ -170,10 +191,10 @@ public class ActivationTask {
 		return pixels_sub;
 	}
 	
-	private float[] subtract16bits(TaggedImage image1, TaggedImage image2) {
+	private float[] subtract16bits(Image image1, Image image2) {
 		// get the two pixel arrays
-		short[] pixels1 = (short[]) image1.pix;
-		short[] pixels2 = (short[]) image2.pix;
+		short[] pixels1 = (short[]) image1.getRawPixels();
+		short[] pixels2 = (short[]) image2.getRawPixels();
 
 		float[] pixels_sub = new float[pixels1.length];
 		for(int i=0; i<pixels1.length; i++){
@@ -185,16 +206,16 @@ public class ActivationTask {
 		return pixels_sub;
 	}
 	
-	protected FloatProcessor computeGaussianSubtraction(Pair<TaggedImage, TaggedImage> taggedPair, long bitDepth){
-		TaggedImage tagged1 = taggedPair.getFirst();
-		TaggedImage tagged2 = taggedPair.getSecond();
-
+	protected FloatProcessor computeGaussianSubtraction(Pair<Image, Image> taggedPair, long bitDepth){
+		Image image1 = taggedPair.getFirst();
+		Image image2 = taggedPair.getSecond();
+		
 		// get subtraction
 		float[] pixels_sub;
-		if(bitDepth == 2) {
-			pixels_sub = subtract16bits(tagged1, tagged2);
-		} else if (bitDepth == 1) {
-			pixels_sub = subtract8bits(tagged1, tagged2);
+		if(image1.getBytesPerPixel() == 2) {
+			pixels_sub = subtract16bits(image1, image2);
+		} else if (image1.getBytesPerPixel() == 1) {
+			pixels_sub = subtract8bits(image1, image2);
 		} else {
 			throw new IllegalArgumentException("Only 8 and 16 bits are supported.");
 		}
@@ -234,7 +255,7 @@ public class ActivationTask {
 	private void getN(double sdcoeff, double cutoff, double dT, boolean autocutoff) {
 		if (core_.isSequenceRunning()) {
 			// grab two images from the circular buffer
-			Pair<TaggedImage, TaggedImage> pairs = getTwoImages();
+			Pair<Image, Image> pairs = getTwoImages();
 
 			// compute Gaussian blurred difference
 			FloatProcessor imp = computeGaussianSubtraction(pairs, core_.getBytesPerPixel());
