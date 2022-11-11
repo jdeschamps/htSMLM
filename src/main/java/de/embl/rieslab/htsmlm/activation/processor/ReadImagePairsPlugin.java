@@ -9,7 +9,7 @@ import org.scijava.plugin.Plugin;
 import org.scijava.plugin.SciJavaPlugin;
 
 @Plugin(type = ProcessorPlugin.class)
-public class ActivationProcessorPlugin implements ProcessorPlugin, SciJavaPlugin{
+public class ReadImagePairsPlugin implements ProcessorPlugin, SciJavaPlugin{
 	
 	@Override
 	public void setContext(Studio studio) {
@@ -18,7 +18,7 @@ public class ActivationProcessorPlugin implements ProcessorPlugin, SciJavaPlugin
 
 	@Override
 	public String getName() {
-		return "htSMLM activation";
+		return "htSMLM pairs reader";
 	}
 
 	@Override

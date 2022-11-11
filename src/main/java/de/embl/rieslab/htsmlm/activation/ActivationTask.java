@@ -3,7 +3,7 @@ package de.embl.rieslab.htsmlm.activation;
 import de.embl.rieslab.htsmlm.ActivationPanel;
 import de.embl.rieslab.htsmlm.activation.processor.ActivationProcessor;
 import de.embl.rieslab.htsmlm.activation.processor.ActivationProcessorConfigurator;
-import de.embl.rieslab.htsmlm.activation.processor.ActivationProcessorPlugin;
+import de.embl.rieslab.htsmlm.activation.processor.ReadImagePairsPlugin;
 import de.embl.rieslab.htsmlm.activation.utils.NMSUtils;
 import de.embl.rieslab.htsmlm.utils.Pair;
 import de.embl.rieslab.htsmlm.utils.Peak;
@@ -90,8 +90,7 @@ public class ActivationTask {
 		
 	public void startTask() {
 		// TODO move all this to controller
-		
-		
+		// TODO this will stop working for compiled htSMLM !!
 		// make sure that the processor plugin is still active
 		List<ProcessorConfigurator> configurator_list = studio_.data().getLivePipelineConfigurators(false);
 		int n_act = 0;
@@ -104,11 +103,11 @@ public class ActivationTask {
 		}
 		
 		if(n_act == 0) { // if there is no processor plugin
-			studio_.data().addAndConfigureProcessor(new ActivationProcessorPlugin());
+			studio_.data().addAndConfigureProcessor(new ReadImagePairsPlugin());
 		} else if(n_act > 1) { //if there are more than one
 			// remove them and only add one
 			studio_.data().clearPipeline();
-			studio_.data().addAndConfigureProcessor(new ActivationProcessorPlugin());
+			studio_.data().addAndConfigureProcessor(new ReadImagePairsPlugin());
 		}
 
 		// start activation
