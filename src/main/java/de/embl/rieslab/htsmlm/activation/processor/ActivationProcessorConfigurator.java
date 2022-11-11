@@ -5,13 +5,11 @@ import org.micromanager.PropertyMaps;
 import org.micromanager.data.ProcessorConfigurator;
 
 public class ActivationProcessorConfigurator implements ProcessorConfigurator {
-
-	private final PropertyMap settings_;
 	
 	private static ActivationProcessorConfigurator configurator;
 
 	private ActivationProcessorConfigurator(PropertyMap settings) {
-		settings_ = settings;
+		// do nothing
 	}
 	
     public static ActivationProcessorConfigurator getInstance(PropertyMap settings) {

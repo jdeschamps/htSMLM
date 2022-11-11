@@ -190,7 +190,7 @@ public class AcquisitionController{
 		if (!fileName.endsWith("." + HTSMLMConstants.ACQ_EXT)) {
 			name = fileName + "." + HTSMLMConstants.ACQ_EXT;
 		}
-		(new AcquisitionFactory(this, controller_)).writeAcquisitionList(exp_, parentPath, name);
+		AcquisitionFactory.writeAcquisitionList(exp_, parentPath, name);
 	}
 
 	public Experiment getExperiment() {

@@ -357,7 +357,6 @@ public class LogarithmicJSlider extends JSlider {
      * uses the increment as a log-base.
      *
      */
-    @SuppressWarnings("rawtypes")
 	public Hashtable createStandardLabels(int increment, int start) {
         if (start > getMaximum() || start < getMinimum()) {
             throw new IllegalArgumentException("Slider label start point out of range.");
@@ -367,7 +366,6 @@ public class LogarithmicJSlider extends JSlider {
             throw new IllegalArgumentException("Label incremement must be > 0");
         }
 
-        @SuppressWarnings("serial")
 		class LabelHashtable extends Hashtable implements PropertyChangeListener {
             int increment = 0;
             int start = 0;

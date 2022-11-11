@@ -3,7 +3,6 @@ package de.embl.rieslab.htsmlm.acquisitions.wrappers;
 import java.util.ArrayList;
 
 import org.micromanager.data.Datastore;
-import org.micromanager.data.Datastore.SaveMode;
 
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
 

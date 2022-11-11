@@ -28,7 +28,6 @@ import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.htsmlm.components.TogglePower;
 import de.embl.rieslab.htsmlm.components.ToggleSlider;
-import de.embl.rieslab.htsmlm.uipropertyflags.FocusLockFlag;
 import de.embl.rieslab.htsmlm.uipropertyflags.LaserFlag;
 
 public class IBeamSmartPanel extends ConfigurablePanel {

@@ -366,7 +366,7 @@ public class MultiSliceAcquisition implements Acquisition {
 							} else if (comp[i].getName().equals(LABEL_MAXUVTIME) && comp[i] instanceof JSpinner) {
 								this.setUseStopOnMaxUVDelay((Integer) ((JSpinner) comp[i]).getValue());
 							} else if (comp[i].getName().equals(LABEL_ZDEVICE) && comp[i] instanceof JComboBox) {
-								zdevice_ = ((String) ((JComboBox) comp[i]).getSelectedItem());
+								zdevice_ = ((String) ((JComboBox<String>) comp[i]).getSelectedItem());
 							} else if (comp[i].getName().equals(LABEL_FLATZ0) && comp[i] instanceof JCheckBox) {
 								focusLockAtZ0_ = ((JCheckBox) comp[i]).isSelected();
 							} else if (comp[i].getName().equals(LABEL_DISABLEFL) && comp[i] instanceof JCheckBox) {
@@ -782,6 +782,7 @@ public class MultiSliceAcquisition implements Acquisition {
 
 				// close store
 				store.close();
+				display.close();
 			} catch (Exception e) {
 				e.printStackTrace();
 				System.out.println("[htSMLM] Acquisition failed.");

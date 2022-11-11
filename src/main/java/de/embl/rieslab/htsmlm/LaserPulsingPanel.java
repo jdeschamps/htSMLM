@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 
-import de.embl.rieslab.emu.micromanager.mmproperties.MMProperty;
 import de.embl.rieslab.emu.micromanager.mmproperties.MMProperty.MMPropertyType;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.internalproperties.IntegerInternalProperty;
@@ -86,7 +85,7 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 
 		String[] properties;
 		properties = getPropertiesName();
-		pulseCombo_ = new JComboBox(properties);
+		pulseCombo_ = new JComboBox<String>(properties);
 		pulseCombo_.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				showPulseDuration1_ = pulseCombo_.getSelectedIndex() == 0;
@@ -302,7 +301,7 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 	}
 
 	public String[] getAllocatedProperties(){
-		ArrayList<String> str = new ArrayList();
+		ArrayList<String> str = new ArrayList<String>();
 
 		String[] props = {LASER_PULSE1, LASER_PULSE2};
 		for(String prop: props) {
@@ -320,7 +319,7 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 	}
 
 	public String[] getPropertiesName() {
-		ArrayList<String> str = new ArrayList();
+		ArrayList<String> str = new ArrayList<String>();
 		String[] props = getAllocatedProperties();
 
 		for(String prop: props) {
@@ -381,7 +380,7 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 			String[] props = getPropertiesName();
 
 			// set choices
-			DefaultComboBoxModel<String> model = new DefaultComboBoxModel( props );
+			DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>( props );
 			pulseCombo_.setModel( model );
 
 			// disable if not 2 properties

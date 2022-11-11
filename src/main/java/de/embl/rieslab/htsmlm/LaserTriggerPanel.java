@@ -16,7 +16,6 @@ import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
-import de.embl.rieslab.emu.ui.internalproperties.IntegerInternalProperty;
 import de.embl.rieslab.emu.ui.swinglisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.uiparameters.ColorUIParameter;
 import de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
@@ -24,9 +23,7 @@ import de.embl.rieslab.emu.ui.uiproperties.MultiStateUIProperty;
 import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 import de.embl.rieslab.emu.utils.ColorRepository;
 import de.embl.rieslab.emu.utils.EmuUtils;
-import de.embl.rieslab.emu.utils.exceptions.IncorrectInternalPropertyTypeException;
 import de.embl.rieslab.emu.utils.exceptions.IncorrectUIParameterTypeException;
-import de.embl.rieslab.emu.utils.exceptions.UnknownInternalPropertyException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.htsmlm.uipropertyflags.LaserFlag;

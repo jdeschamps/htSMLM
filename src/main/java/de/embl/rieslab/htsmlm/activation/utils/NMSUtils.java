@@ -2,7 +2,6 @@ package de.embl.rieslab.htsmlm.activation.utils;
 
 import de.embl.rieslab.htsmlm.utils.NMS;
 import de.embl.rieslab.htsmlm.utils.Peak;
-import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
