@@ -25,8 +25,6 @@ import org.micromanager.data.Image;
 import org.micromanager.data.ProcessorConfigurator;
 
 import mmcorej.CMMCore;
-import mmcorej.TaggedImage;
-import mmcorej.org.json.JSONException;
 
 // TODO: imglib2 rather than ImageJ1...
 
@@ -40,7 +38,7 @@ public class ActivationTask {
 	 * them by checking the size of the queue and taking two frames directly.
 	 * 
 	 */
-	public static int PARAM_SDCOEFF = 0;
+	public static int PARAM_DYNFACTOR = 0;
 	public static int PARAM_FEEDBACK = 1;
 	public static int PARAM_CUTOFF = 2;
 	public static int PARAM_AUTOCUTOFF = 3;
@@ -54,7 +52,6 @@ public class ActivationTask {
 	public static int OUTPUT_NEWPULSE = 2;
 	public static int NUM_PARAMETERS = 9;
 	public static int NUM_OUTPUTS = 3;
-	private static int MAX_COUNTER = 200;
 
 	private static double LOW_QUANTILE = 0.2;
 	private static double HIGH_QUANTILE = 0.8;
@@ -221,7 +218,7 @@ public class ActivationTask {
 		return new NMS(image, HTSMLMConstants.nmsMaskSize);
 	}
 
-	static protected double computeCutOff(ArrayList<Peak> peaks, double cutoff, double cutoffParameter, double cutoffFb){
+	static protected double computeCutOff(ArrayList<Peak> peaks, double cutoff, double dynamicFactor, double cutoffWeight){
 		// get quantiles
 		double q1 = NMSUtils.getQuantile(peaks, LOW_QUANTILE);
 		double q2 = NMSUtils.getQuantile(peaks, HIGH_QUANTILE);
@@ -229,15 +226,15 @@ public class ActivationTask {
 
 		// measure slope
 		double slope = (q2 - q1) / (HIGH_QUANTILE - LOW_QUANTILE);
-		double tempcutoff = median + slope * cutoffParameter;
+		double tempcutoff = median + slope * dynamicFactor;
 
-		double newcutoff = (1 - cutoffFb) * cutoff + cutoffFb * tempcutoff;
+		double newcutoff = (1 - cutoffWeight) * cutoff + cutoffWeight * tempcutoff;
 		newcutoff = Math.floor(10 * newcutoff + 0.5) / 10;
 
 		return newcutoff;
 	}
 
-	private void getN(double sdcoeff, double cutoff, double dT, boolean autocutoff) {
+	private void getN(double dynamicFactor, double cutoff, double dT, boolean autocutoff) {
 		if (core_.isSequenceRunning()) {
 			// grab two images from the circular buffer
 			Pair<Image, Image> pairs = getTwoImages();
@@ -251,7 +248,7 @@ public class ActivationTask {
 			// compute cutoff
 			double newcutoff;
 			if(autocutoff){
-				newcutoff = computeCutOff(nms.getPeaks(), cutoff, sdcoeff, dT);
+				newcutoff = computeCutOff(nms.getPeaks(), cutoff, dynamicFactor, dT);
 			} else {
 				newcutoff = cutoff;
 			}
@@ -336,9 +333,9 @@ public class ActivationTask {
 									
 					// TODO: sanity checks here?
 					if(params[PARAM_AUTOCUTOFF] == 1){
-						getN(params[PARAM_SDCOEFF],params[PARAM_CUTOFF],params[PARAM_dT],true);
+						getN(params[PARAM_DYNFACTOR],params[PARAM_CUTOFF],params[PARAM_dT],true);
 					} else {
-						getN(params[PARAM_SDCOEFF],params[PARAM_CUTOFF],params[PARAM_dT],false);
+						getN(params[PARAM_DYNFACTOR],params[PARAM_CUTOFF],params[PARAM_dT],false);
 					}
 					
 					if(params[PARAM_ACTIVATE] == 1){

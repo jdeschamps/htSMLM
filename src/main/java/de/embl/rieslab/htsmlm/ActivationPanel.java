@@ -33,7 +33,6 @@ import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIPropertyException;
 
 import de.embl.rieslab.htsmlm.activation.ActivationTask;
-import de.embl.rieslab.htsmlm.activation.processor.ActivationProcessorPlugin;
 import de.embl.rieslab.htsmlm.graph.TimeChart;
 import mmcorej.CMMCore;
 
@@ -46,7 +45,7 @@ public class ActivationPanel extends ConfigurablePanel {
 
 	private JTextField textFieldCutOff_;
 	private JTextField textFieldN0_;
-	private JTextField textFieldSDCoeff_;
+	private JTextField textFieldDynFactor_;
 	private JTextField textFieldFeedback_;
 	private JToggleButton toggleButtonRun_;
 	private JCheckBox checkBoxActivate_;
@@ -66,7 +65,7 @@ public class ActivationPanel extends ConfigurablePanel {
 	//////// Parameters
 	private static final String PARAM_IDLE = "Idle time (ms)";
 	private static final String PARAM_NPOS = "Number of points";
-	private static final String PARAM_DEF_SD = "Default sd coeff";
+	private static final String PARAM_DEF_DF = "Def. dynamic factor";
 	private static final String PARAM_DEF_FB = "Default feedback";
 	private static final String PARAM_ACTIVATION_NAME1 = "Activation 1 name";
 	private static final String PARAM_ACTIVATION_NAME2 = "Activation 2 name";
@@ -75,7 +74,7 @@ public class ActivationPanel extends ConfigurablePanel {
 	public static int INPUT_WHICH_ACTIVATION = 0;
 	private boolean activate_, showNMS_, autoCutoff_;
 	private boolean useActivation1_;
-	private double sdCoeff_, feedback_, N0_ = 1, cutoff_ = 100;
+	private double dynamicFactor_, feedback_, N0_ = 1, cutoff_ = 100;
 	private int nPos_, idleTime_, maxPulse1_, maxPulse2_;
 	private double dT_;
 	private ImagePlus im_;
@@ -137,21 +136,21 @@ public class ActivationPanel extends ConfigurablePanel {
 		GridBagConstraints c = new GridBagConstraints();
 
 		//////// Components
-		JLabel labelsdcoeff_ = new JLabel("Sd coeff:");
+		JLabel labelDynFactor_ = new JLabel("DynFactor:");
 		c.gridx = 0;
 		c.gridy = 0;
 		c.insets = new Insets(2,6,2,6);
 		c.gridwidth = 1;
 		c.gridheight = 1;
 		c.fill = GridBagConstraints.BOTH;
-		pane.add(labelsdcoeff_,c);
+		pane.add(labelDynFactor_,c);
 		
-		textFieldSDCoeff_ = new JTextField(String.valueOf(sdCoeff_));
-		textFieldSDCoeff_.setToolTipText("The higher the Sd coefficient, the higher the auto cutoff value.");
-		SwingUIListeners.addActionListenerToDoubleAction(val -> sdCoeff_ = val, textFieldSDCoeff_, 0, Double.POSITIVE_INFINITY);
+		textFieldDynFactor_ = new JTextField(String.valueOf(dynamicFactor_));
+		textFieldDynFactor_.setToolTipText("The higher the Factor coefficient, the higher the auto cutoff value.");
+		SwingUIListeners.addActionListenerToDoubleAction(val -> dynamicFactor_ = val, textFieldDynFactor_, 0, Double.POSITIVE_INFINITY);
 
 		c.gridy = 1;
-		pane.add(textFieldSDCoeff_,c);
+		pane.add(textFieldDynFactor_,c);
 
 		JLabel labelfeeback_ = new JLabel("Feedback:");
 		c.gridy = 2;
@@ -170,7 +169,7 @@ public class ActivationPanel extends ConfigurablePanel {
 
 		dT_ = 1.;
 		JTextField textfielddT_ = new JTextField(String.valueOf(dT_));
-		textfielddT_.setToolTipText("Averaging time (in number of frames) of the auto cutoff.");
+		textfielddT_.setToolTipText("Averaging weights (between 0 and 1) of the auto cutoff.");
 		SwingUIListeners.addActionListenerToDoubleAction(val -> {
 			dT_ = (val >= 0 && val <= 1) ? val: val > 1 ? 1: 0;
 		}, textfielddT_, 1, Double.POSITIVE_INFINITY);
@@ -429,12 +428,12 @@ public class ActivationPanel extends ConfigurablePanel {
 
 	@Override
 	protected void initializeParameters() {
-		sdCoeff_ = 1.5;
+		dynamicFactor_ = 1.5;
 		feedback_ = 0.4;
 		idleTime_ = 100;
 		nPos_ = 30;
 
-		String descSd = "Default value of the parameter controlling the auto cut-off level when the Activation script "
+		String descDF = "Default value of the parameter controlling the auto cut-off level when the Activation script "
 				+ "is running. A high value leads to a high cut-off level, which in turns decreases the number of "
 				+ "molecules detected.";
 		
@@ -449,7 +448,7 @@ public class ActivationPanel extends ConfigurablePanel {
 		String descActivation = "Name of the activation property (pulse duration) appearing in the drop-down menu of " +
 				"the activation panel.";
 		
-		addUIParameter(new DoubleUIParameter(this, PARAM_DEF_SD, descSd, sdCoeff_));
+		addUIParameter(new DoubleUIParameter(this, PARAM_DEF_DF, descDF, dynamicFactor_));
 		addUIParameter(new DoubleUIParameter(this, PARAM_DEF_FB, descFb, feedback_));
 		addUIParameter(new IntegerUIParameter(this, PARAM_IDLE, descIdle, idleTime_)); // thread idle time
 		addUIParameter(new IntegerUIParameter(this, PARAM_NPOS, descNPos, nPos_)); // number of point in the graph
@@ -465,10 +464,10 @@ public class ActivationPanel extends ConfigurablePanel {
 
 	@Override
 	public void parameterhasChanged(String label) {
-		if(PARAM_DEF_SD.equals(label)){
+		if(PARAM_DEF_DF.equals(label)){
 			try {
-				sdCoeff_ = getDoubleUIParameterValue(PARAM_DEF_SD);
-				textFieldSDCoeff_.setText(String.valueOf(sdCoeff_));
+				dynamicFactor_ = getDoubleUIParameterValue(PARAM_DEF_DF);
+				textFieldDynFactor_.setText(String.valueOf(dynamicFactor_));
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
@@ -621,7 +620,7 @@ public class ActivationPanel extends ConfigurablePanel {
 			params[ActivationTask.PARAM_PULSE] = 0.;
 		}
 		
-		params[ActivationTask.PARAM_SDCOEFF] = sdCoeff_;
+		params[ActivationTask.PARAM_DYNFACTOR] = dynamicFactor_;
 		
 		return params;
 	}
