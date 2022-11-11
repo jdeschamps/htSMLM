@@ -1,6 +1,5 @@
 package de.embl.rieslab.htsmlm;
 
-import java.util.HashMap;
 import java.util.TreeMap;
 
 import de.embl.rieslab.emu.controller.SystemController;
@@ -12,7 +11,7 @@ public class HTSMLM implements UIPlugin{
 
 	@Override
 	public ConfigurableMainFrame getMainFrame(SystemController controller, TreeMap<String, String> pluginSettings) {
-		controller.getStudio().data().addAndConfigureProcessor(ActivationProcessorPlugin.getInstance());
+		controller.getStudio().data().addAndConfigureProcessor(new ActivationProcessorPlugin());
 
 		return new MainFrame("ht-SMLM control center", controller, pluginSettings);
 	}

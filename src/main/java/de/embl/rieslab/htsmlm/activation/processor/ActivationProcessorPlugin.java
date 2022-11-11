@@ -5,20 +5,11 @@ import org.micromanager.Studio;
 import org.micromanager.data.ProcessorConfigurator;
 import org.micromanager.data.ProcessorFactory;
 import org.micromanager.data.ProcessorPlugin;
+import org.scijava.plugin.Plugin;
+import org.scijava.plugin.SciJavaPlugin;
 
-public class ActivationProcessorPlugin implements ProcessorPlugin{
-
-	private PropertyMap configSettings;
-	private static ActivationProcessorPlugin plugin;
-
-	private ActivationProcessorPlugin() {}
-	
-    public static ActivationProcessorPlugin getInstance() {
-        if (plugin == null) {
-        	plugin = new ActivationProcessorPlugin();
-        }
-        return plugin;
-    }
+@Plugin(type = ProcessorPlugin.class)
+public class ActivationProcessorPlugin implements ProcessorPlugin, SciJavaPlugin{
 	
 	@Override
 	public void setContext(Studio studio) {
@@ -47,7 +38,7 @@ public class ActivationProcessorPlugin implements ProcessorPlugin{
 
 	@Override
 	public ProcessorConfigurator createConfigurator(PropertyMap settings) {
-		return ActivationProcessorConfigurator.getInstance();
+		return ActivationProcessorConfigurator.getInstance(settings);
 	}
 
 	@Override

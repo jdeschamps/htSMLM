@@ -1,34 +1,38 @@
 package de.embl.rieslab.htsmlm.activation.processor;
 
 import org.micromanager.PropertyMap;
+import org.micromanager.PropertyMaps;
 import org.micromanager.data.ProcessorConfigurator;
 
 public class ActivationProcessorConfigurator implements ProcessorConfigurator {
 
+	private final PropertyMap settings_;
+	
 	private static ActivationProcessorConfigurator configurator;
 
-	private ActivationProcessorConfigurator() {}
+	private ActivationProcessorConfigurator(PropertyMap settings) {
+		settings_ = settings;
+	}
 	
-    public static ActivationProcessorConfigurator getInstance() {
+    public static ActivationProcessorConfigurator getInstance(PropertyMap settings) {
         if (configurator == null) {
-        	configurator = new ActivationProcessorConfigurator();
+        	configurator = new ActivationProcessorConfigurator(settings);
         }
         return configurator;
     }
 	
 	@Override
 	public void showGUI() {
-	
+		// do nothing
 	}
 
 	@Override
 	public void cleanup() {
-
+		// do nothing
 	}
 
 	@Override
 	public PropertyMap getSettings() {
-		return new ActivationPropertyMap();
+		return PropertyMaps.builder().build();
 	}
-
 }

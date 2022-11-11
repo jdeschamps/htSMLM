@@ -95,7 +95,7 @@ public class ActivationTask {
 		// make sure that the processor plugin is still active
 		List<ProcessorConfigurator> configurator_list = studio_.data().getLivePipelineConfigurators(false);
 		int n_act = 0;
-		int act_hash = ActivationProcessorConfigurator.getInstance().hashCode();
+		int act_hash = ActivationProcessorConfigurator.getInstance(null).hashCode();
 		for(ProcessorConfigurator o: configurator_list) {
 			// check if it is the activation image processor
 			if(o.hashCode() == act_hash) {
@@ -104,11 +104,11 @@ public class ActivationTask {
 		}
 		
 		if(n_act == 0) { // if there is no processor plugin
-			studio_.data().addAndConfigureProcessor(ActivationProcessorPlugin.getInstance());
+			studio_.data().addAndConfigureProcessor(new ActivationProcessorPlugin());
 		} else if(n_act > 1) { //if there are more than one
 			// remove them and only add one
 			studio_.data().clearPipeline();
-			studio_.data().addAndConfigureProcessor(ActivationProcessorPlugin.getInstance());
+			studio_.data().addAndConfigureProcessor(new ActivationProcessorPlugin());
 		}
 
 		// start activation
