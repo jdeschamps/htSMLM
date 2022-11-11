@@ -20,6 +20,14 @@ import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.htsmlm.uipropertyflags.FilterWheelFlag;
 
+/**
+ * A ConfigurablePanel with a button group, suitable
+ * for filter wheels or any device with discrete/discretized number
+ * of positions/states.
+ * 
+ * @author Joran Deschamps
+ *
+ */
 public class FiltersPanel extends AbstractFiltersPanel {
 
 
@@ -223,7 +231,9 @@ public class FiltersPanel extends AbstractFiltersPanel {
 
 	@Override
 	public String getDescription() {
-		return "The filters panel is meant to control a filterwheel with at most "+NUM_POS+" filters. The filter colors and names can be customized from the configuration menu.";
+		return "The filters panel is meant to control a filterwheel with at "
+				+ "most "+NUM_POS+" filters. The filter colors and names can "
+						+ "be customized from the configuration menu.";
 	}
 
 	@Override

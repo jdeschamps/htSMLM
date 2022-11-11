@@ -20,6 +20,14 @@ import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.htsmlm.uipropertyflags.FilterWheelFlag;
 
+/**
+ * A ConfigurablePanel with two button groups, suitable
+ * for filter wheels or any device with discrete/discretized number
+ * of positions/states.
+ * 
+ * @author Joran Deschamps
+ *
+ */
 public class DualFWPanel extends AbstractFiltersPanel {
 
 	private static final long serialVersionUID = 1L;
@@ -315,7 +323,9 @@ public class DualFWPanel extends AbstractFiltersPanel {
 
 	@Override
 	public String getDescription() {
-		return "The "+getPanelLabel()+" panel is meant to control a dual filterwheel with at most "+NUM_POS+" filters in each filterwheel. The filter colors and names can be customized from the configuration menu.";
+		return "The "+getPanelLabel()+" panel is meant to control a dual filterwheel with at "
+				+ "most "+NUM_POS+" filters in each filterwheel. The filter colors and names "
+						+ "can be customized from the configuration menu.";
 	}
 
 	@Override
