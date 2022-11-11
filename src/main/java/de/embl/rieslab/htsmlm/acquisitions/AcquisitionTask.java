@@ -24,36 +24,50 @@ import de.embl.rieslab.htsmlm.acquisitions.ui.AcquisitionTab;
 import de.embl.rieslab.htsmlm.acquisitions.wrappers.Experiment;
 import mmcorej.CMMCore;
 
+/**
+ * Class performing an experiment by running a set of acquisitions.
+ * 
+ * @author Joran Deschamps
+ *
+ */
 public class AcquisitionTask{
 
 	private Studio studio_;
 	private CMMCore core_;
 	private PositionListManager posmanager_;
 	private boolean running_ =  false;
-	private SystemController system_;
+	private SystemController systemController_;
 	private AcquisitionRun t;
-	private AcquisitionController holder_;
+	private AcquisitionController acqController_;
 	private Experiment exp_;
 	
-	private String expname_, exppath_; 
+	private String expName_, expPath_; 
 	
-	public AcquisitionTask(AcquisitionController holder, SystemController system, Experiment exp, String expname, String exppath){
-		system_ = system;
-		studio_ = system_.getStudio();
+	public AcquisitionTask(AcquisitionController acqController, SystemController systemController, Experiment exp, String expName, String expPath){
+		systemController_ = systemController;
+		studio_ = systemController_.getStudio();
 		core_ = studio_.getCMMCore();
 		posmanager_ = studio_.getPositionListManager();
 				
 		exp_ = exp;
-		expname_ = expname;
-		exppath_ = exppath+File.separator+expname+File.separator;
+		expName_ = expName;
+		expPath_ = expPath+File.separator+expName+File.separator;
 
-		holder_ = holder;
+		acqController_ = acqController;
 	}
 
-	public void notifyHolder(Integer[] outputs) {
-		holder_.update(outputs);
+	/**
+	 * Updates the acquisition controller.
+	 * 
+	 * @param outputs array 
+	 */
+	public void notifyAcquisitionController(int acquisitionNumber) {
+		acqController_.update(acquisitionNumber);
 	}
 
+	/**
+	 * Start acquisitions.
+	 */
 	public void startTask() {
 		if(!exp_.getAcquisitionList().isEmpty()){
 			t = new AcquisitionRun(exp_);
@@ -62,25 +76,34 @@ public class AcquisitionTask{
 		}
 	}
 
+	/**
+	 * Stop acquisitions.
+	 */
 	public void stopTask() {
 		if(t != null){
 			t.stop();
 		}
 	}
 
+	/**
+	 * Check if the acquisitions are running.
+	 * 
+	 * @return True if it is, false otherwise.
+	 */
 	public boolean isRunning() {
 		return running_;
 	}
 
-	public boolean isPausable() {
-		return false;
-	}
-
-	
+	/**
+	 * Worker running the list of acquisitions.
+	 * 
+	 * @author Joran Deschamps
+	 *
+	 */
 	class AcquisitionRun extends SwingWorker<Integer, Integer> {
 
 		private Experiment exp_;
-		private Acquisition currAcq;
+		private Acquisition currentAcq;
 		private boolean stop_ = false;
 
 		public AcquisitionRun(Experiment exp) {
@@ -95,7 +118,7 @@ public class AcquisitionTask{
 
 		private Integer runExperiment() {
 			
-			Integer[] param = holder_.retrieveAllParameters();
+			int pauseTime = acqController_.retrievePauseTime();
 		
 			PositionList poslist = posmanager_.getPositionList();
 			int numPosition = poslist.getNumberOfPositions();
@@ -103,12 +126,13 @@ public class AcquisitionTask{
 			if (numPosition > 0) {
 				MultiStagePosition currPos;
 
-				// retrieve max number of positions
+				// retrieve max number of positions set in the acquisition wizard
 				int maxNumPosition = numPosition;
 				if (exp_.getNumberPositions() > 0) {
 					maxNumPosition = exp_.getNumberPositions();
 				}
 
+				// for each position
 				for (int i = 0; i < maxNumPosition; i++) {
 					// move to next stage position
 					currPos = poslist.getPosition(i);
@@ -125,7 +149,7 @@ public class AcquisitionTask{
 						}
 
 						// let time for the stage to move to position
-						Thread.sleep(param[0] * 1000);
+						Thread.sleep(pauseTime * 1000);
 						
 						if (stop_) {
 							break;
@@ -142,10 +166,10 @@ public class AcquisitionTask{
 						publish(i);
 						
 					} catch (InterruptedException e) {
-						System.out.println("[htSMLM] InterruptedException when performing pos "+i+".");
+						log("[htSMLM] InterruptedException when performing pos "+i+".");
 						e.printStackTrace();
 					} catch (Exception e) {
-						System.out.println("[htSMLM] Exception when performing pos "+i+".");
+						log("[htSMLM] Exception when performing pos "+i+".");
 						e.printStackTrace();
 					}
 				}
@@ -166,72 +190,54 @@ public class AcquisitionTask{
 			// perform each acquisition sequentially
 			for (int k = 0; k < exp_.getAcquisitionList().size(); k++) {
 
-				currAcq = exp_.getAcquisitionList().get(k);
+				currentAcq = exp_.getAcquisitionList().get(k);
 
+				// check for abort
 				if (stop_) {
-					System.out.println("[htSMLM] Acquisition interrupted before carrying out "+currAcq.getShortName()+" and setting config groups.");
+					log("[htSMLM] Acquisition interrupted before carrying out "+currentAcq.getShortName()+" and setting config groups.");
 					break;
 				}
+				
 				// set-up system
-				setUpSystem(currAcq.getAcquisitionParameters().getPropertyValues());
+				setUpSystem(currentAcq.getAcquisitionParameters().getPropertyValues());
 
 				// set preset group settings
-				if (!currAcq.getAcquisitionParameters().getMMConfigurationGroupValues().isEmpty()) {
-					HashMap<String, String> configs = currAcq.getAcquisitionParameters().getMMConfigurationGroupValues();
-					Iterator<String> it = configs.keySet().iterator();
-					while (it.hasNext()) {
-						String group = it.next();
-
-						MMPresetGroup configgroup = system_.getMMPresetGroupRegistry().getMMPresetGroups().get(group);
-						if(configgroup.hasPreset(configs.get(group))) {	// if the preset is known
-							try {
-								core_.setConfig(group, configs.get(group));
-							} catch (Exception e) {
-								System.out.println("[htSMLM] Exception when setting configuration preset group "+group+".");
-								e.printStackTrace();
-							}
-						} else if(!configs.get(group).equals(AcquisitionTab.KEY_IGNORED)) { // else if it is not ignored and a single presets with a single property, try to set it
-							if(configgroup.getGroupSize() == 1 && configgroup.getNumberOfMMProperties() == 1) {
-								configgroup.getAffectedProperties().get(0).setValue(configs.get(group), null);
-							}
-						}
-					}
-				}
+				setUpConfigGroups(currentAcq);
 				
 				// set exposure time
-				setExposure(currAcq.getAcquisitionParameters().getExposureTime());
+				setExposure(currentAcq.getAcquisitionParameters().getExposureTime());
 				
 				// pause time in ms
 				try {
-					Thread.sleep(1000*currAcq.getAcquisitionParameters().getWaitingTime());
+					Thread.sleep(1_000 * currentAcq.getAcquisitionParameters().getWaitingTime());
 				} catch (InterruptedException e) {
-					System.out.println("[htSMLM] InterruptedException when sleeping before acquisition.");
+					log("[htSMLM] InterruptedException when sleeping before acquisition.");
 					e.printStackTrace();
 				}
 				
 				if (stop_) {
-					System.out.println("[htSMLM] Acquisition interrupted before carrying out "+currAcq.getShortName()+".");
+					log("[htSMLM] Acquisition interrupted before carrying out "+currentAcq.getShortName()+".");
 					break;
 				}
 				
 				// build name
-				String name = "Pos"+String.valueOf(pos)+"_"+expname_+"_"+acqShortName[k];
+				String name = "Pos"+String.valueOf(pos)+"_"+expName_+"_"+acqShortName[k];
 				
 				// run acquisition
 				try {
-					currAcq.performAcquisition(studio_, name, exppath_, exp_.getSaveMode());
+					currentAcq.performAcquisition(studio_, name, expPath_, exp_.getSaveMode());
 				} catch (InterruptedException | IOException e) {
-					System.out.println("[htSMLM] Failed to perform "+currAcq.getShortName()+" acquisition.");
+					log("[htSMLM] Failed to perform "+currentAcq.getShortName()+" acquisition.");
 					e.printStackTrace();
 				} 				
 				
 				if (stop_) {
-					System.out.println("[htSMLM] Acquisition interrupted after carrying out "+currAcq.getShortName()+".");
+					log("[htSMLM] Acquisition interrupted after carrying out "+currentAcq.getShortName()+".");
 					break;
 				}
 			}
 		}
-		
+
 		private LinkedHashSet<String> createAcqShortNameSet(ArrayList<Acquisition> acquisitionList) {
 			LinkedHashSet<String> names = new LinkedHashSet<String>();
 			for (int k = 0; k < exp_.getAcquisitionList().size(); k++) {
@@ -262,8 +268,8 @@ public class AcquisitionTask{
 		}
 		
 		private void interruptAcquistion() {
-			if (currAcq != null && currAcq.isRunning()) {
-				currAcq.stopAcquisition();
+			if (currentAcq != null && currentAcq.isRunning()) {
+				currentAcq.stopAcquisition();
 				try {
 					Thread.sleep(500);
 				} catch (InterruptedException e) {
@@ -275,19 +281,24 @@ public class AcquisitionTask{
 		@Override
 		protected void process(List<Integer> chunks) {
 			for(Integer result : chunks){
-				if(result>=0){
-					Integer[] results = {result};
-					notifyHolder(results);
+				if(result >= 0){
+					notifyAcquisitionController(result);
 				} else if(result == -1){
 					running_ = false;
-					holder_.taskDone();
+					acqController_.taskDone();
 				}
 			}
 		}
 	}
 
-	public void setUpSystem(HashMap<String, String> propertyValues) {
-		HashMap<String, UIProperty> uiproperties = system_.getPropertiesMap();
+	/**
+	 * Set the state of all relevant properties to the values in {@code peropertyValues}.
+	 * 
+	 * @param propertyValues Map of the properties and values.
+	 */
+	private void setUpSystem(HashMap<String, String> propertyValues) {
+		// set property values
+		HashMap<String, UIProperty> uiproperties = systemController_.getPropertiesMap();
 		Iterator<String> it = propertyValues.keySet().iterator();
 		String s;
 		while(it.hasNext()){
@@ -296,6 +307,44 @@ public class AcquisitionTask{
 				uiproperties.get(s).setPropertyValue(propertyValues.get(s));
 			}
 		}
+	}
+	
+	/**
+	 * Set the state of the configuration setting groups specified by {@code currentAcquisition}.
+	 * 
+	 * @param currentAcquisition Current acquisition.
+	 */
+	private void setUpConfigGroups(Acquisition currentAcquisition) {
+		// if it has configuration group values
+		if (!currentAcquisition.getAcquisitionParameters().getMMConfigurationGroupValues().isEmpty()) {
+			// extract configuration settings groups
+			HashMap<String, String> configs = currentAcquisition.getAcquisitionParameters().getMMConfigurationGroupValues();
+			
+			// for each configuration settings group
+			Iterator<String> it = configs.keySet().iterator();
+			while (it.hasNext()) {
+				String group = it.next();
+
+				// extract the preset group
+				MMPresetGroup configGroup = systemController_.getMMPresetGroupRegistry().getMMPresetGroups().get(group);
+				if(configGroup.hasPreset(configs.get(group))) {	// if the preset is known
+					try {
+						core_.setConfig(group, configs.get(group));
+					} catch (Exception e) {
+						log("[htSMLM] Exception when setting configuration preset group "+group+".");
+						e.printStackTrace();
+					}
+				} else if(!configs.get(group).equals(AcquisitionTab.KEY_IGNORED)) { // else if it is not ignored and a single preset with a single property, try to set it
+					if(configGroup.getGroupSize() == 1 && configGroup.getNumberOfMMProperties() == 1) {
+						configGroup.getAffectedProperties().get(0).setValue(configs.get(group), null);
+					}
+				}
+			}
+		}
+	}
+	
+	private void log(String message) {
+		studio_.logs().logMessage(message);
 	}
 
 }

@@ -31,6 +31,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import de.embl.rieslab.emu.controller.SystemController;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
+import de.embl.rieslab.emu.ui.swinglisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.uiparameters.UIPropertyParameter;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.htsmlm.acquisitions.AcquisitionController;
@@ -41,12 +42,19 @@ import de.embl.rieslab.htsmlm.constants.HTSMLMConstants;
 import de.embl.rieslab.htsmlm.uipropertyflags.FocusStabFlag;
 import de.embl.rieslab.htsmlm.uipropertyflags.TwoStateFlag;
 
+
+/**
+ * Acquisition panel allowing configuring, saving/loading and running acquisitions.
+ * 
+ * @author Joran Deschamps
+ *
+ */
 public class AcquisitionPanel extends ConfigurablePanel{
 		
 	private static final long serialVersionUID = 1L;
 	private SystemController controller_;
 	private AcquisitionController acqcontroller_;
-    private MainFrame owner_;
+    private MainFrame mainFrame_;
     
     ///// Parameters
     public final static String PARAM_LOCKING = "Focus stabilization";
@@ -70,64 +78,28 @@ public class AcquisitionPanel extends ConfigurablePanel{
     	
 	public AcquisitionPanel(SystemController controller, MainFrame owner){
 		super("Acquisitions");
+		
 		controller_ = controller;
-		
-		initPanel();
-		
-		acqcontroller_ = new AcquisitionController(controller, this, new AcquisitionInformationPanel(jTextPane_progress));
-		
-		// listen to window movement to place the summary panel at the right place
-		owner_ = owner;
-		owner_.addComponentListener(new ComponentAdapter() {
-            public void componentMoved(ComponentEvent evt) {
-				Point newLoc = getSummaryButtonLocation();
-				if (summaryframe_ != null) {
-					summaryframe_.setLocation(newLoc);
-					summaryframe_.toFront();
-					summaryframe_.repaint();
-				}
-            }
-          });
+		mainFrame_ = owner;
 		showSummaryTree_ = false;
 		
-		owner_.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowDeactivated(WindowEvent e) {
-				if (summaryframe_ != null) {
-					summaryframe_.setAlwaysOnTop(false);
-				}
-            }
-
-            @Override
-            public void windowActivated(WindowEvent e) {
-				if (summaryframe_ != null) {
-					summaryframe_.setAlwaysOnTop(true);
-				}
-            }
-            
-            @Override
-            public void windowIconified(WindowEvent e) {
-            	if ((owner_.getExtendedState() & Frame.ICONIFIED) != 0) {
-					if (summaryframe_ != null) {
-						summaryframe_.setAlwaysOnTop(false);
-						summaryframe_.toBack();
-					}
-                  }
-             }
-        });
-       
+		// instantiate panels
+		initPanel();
 		
+		// create acquisition controller
+		acqcontroller_ = new AcquisitionController(controller, 
+												   this, 
+												   new AcquisitionInformationPanel(jTextPane_progress),
+												   mainFrame_.getActivationPanel());		
 	}
 	
 	private void initPanel() {
+		// set path button
 	    jButton_setpath = new JButton("...");
-	    jButton_setpath .addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-            	showSelectPath();
-            }
-        });
 	    jButton_setpath.setToolTipText("Select the folder to save the experiments to.");
+        SwingUIListeners.addActionListenerToUnparametrizedAction(() -> showSelectPath(), jButton_setpath);
 
+	    // start/stop button
 	    jToggle_startstop = new JToggleButton("Start");
 	    jToggle_startstop.setToolTipText("Start/stop the experiments.");
 	    jToggle_startstop.addActionListener(new ActionListener() {
@@ -135,20 +107,25 @@ public class AcquisitionPanel extends ConfigurablePanel{
 				AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
 				boolean selected = abstractButton.getModel().isSelected();
 				if(selected) {
+					// attempt to start acquisitions
 					String path = getExperimentPath();
 					String name = getExperimentName();
 
 					if(path == null || path.equals("")){
+						// invalid path
 						AcquisitionDialogs.showNoPathMessage();
 						jToggle_startstop.setSelected(false);
 					} else if(name == null || name.equals("")){
+						// invalid name
 						AcquisitionDialogs.showNoNameMessage();	
 						jToggle_startstop.setSelected(false);
 					} else if(acqcontroller_.isAcquisitionListEmpty()){
+						// no acquisition
 						AcquisitionDialogs.showNoAcqMessage();
 						jToggle_startstop.setSelected(false);
 					} else {
-						boolean b = acqcontroller_.startTask();
+						// start acquisitions
+						boolean b = acqcontroller_.startAcquisition();
 						if(b){
 							jToggle_startstop.setText("Stop");
 							jProgressBar_progress.setMaximum(acqcontroller_.getNumberOfPositions());
@@ -157,39 +134,29 @@ public class AcquisitionPanel extends ConfigurablePanel{
 						}
 					}
 				} else {
+					// stop acquisitions
 					jToggle_startstop.setText("Start");
-					acqcontroller_.stopTask();
+					acqcontroller_.stopAcquisition();
 				}
 			}
 		});
         
+	    // load an experiment
         jButton_load = new JButton("Load");
         jButton_load.setToolTipText("Load an experiment file (.uiacq).");
-        jButton_load.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				loadAcquisitionList();
-			}
-        });
+        SwingUIListeners.addActionListenerToUnparametrizedAction(() -> loadAcquisitionList(), jButton_load);
         
+        // show configuration wizard window
         jButton_configAcq = new JButton("Configure");
         jButton_configAcq.setToolTipText("Start the acquisition wizard to create a set of acquisitions.");
-        jButton_configAcq.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				showAcquisitionConfiguration();
-			}
-        });
+        SwingUIListeners.addActionListenerToUnparametrizedAction(() -> showAcquisitionConfiguration(), jButton_configAcq);
         
+        // save acquisition button
         jButton_saveAcq = new JButton("Save as");
         jButton_saveAcq.setToolTipText("Save the current acquisition list to a file of your choice.");
-        jButton_saveAcq.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				saveAcquisitionList();
-			}
-        });
+        SwingUIListeners.addActionListenerToUnparametrizedAction(() -> saveAcquisitionList(), jButton_saveAcq);
 
+        // show summary button
         jButton_showSummary = new JToggleButton(">>");        
         jButton_showSummary.setToolTipText("Show the acquisition list summary tree.");
         jButton_showSummary.addItemListener(new ItemListener(){
@@ -205,19 +172,22 @@ public class AcquisitionPanel extends ConfigurablePanel{
 			}
         });
         
+        // labels
         jLabel_path = new JLabel("Path");
         jLabel_expname = new JLabel("Experiment name");
         jLabel_progress = new JLabel("Progress");
 
+        // experiment progress bar
 	    jProgressBar_progress = new JProgressBar();
 	    jProgressBar_progress.setMinimum(0);
         
-
+	    // experiment name and path
 	    jTextField_expname = new JTextField();
-	    jTextField_expname.setToolTipText("Name of the experiment.");
+	    jTextField_expname.setToolTipText("Experiment name.");
 	    jTextField_path = new JTextField();
-	    jTextField_path.setToolTipText("Path of the experiment.");
+	    jTextField_path.setToolTipText("Experiment path.");
 	    
+	    // progress panel, where updates are written
 		jTextPane_progress = new JTextPane();
 	    jTextPane_progress.setBackground(this.getBackground());
 	    
@@ -311,6 +281,8 @@ public class AcquisitionPanel extends ConfigurablePanel{
     	int returnVal = fc.showOpenDialog(this);
     	if(returnVal == JFileChooser.APPROVE_OPTION) {
     	    File folder = fc.getSelectedFile();
+    	    
+    	    // update path
     	    jTextField_path.setText(folder.getAbsolutePath());  
     	}
 	}
@@ -328,6 +300,7 @@ public class AcquisitionPanel extends ConfigurablePanel{
 		    File selectedFile = fileChooser.getSelectedFile();
 		    String path = selectedFile.getAbsolutePath();
 		    
+		    // load
 		    acqcontroller_.loadExperiment(path);
 	    }
 	}
@@ -344,6 +317,8 @@ public class AcquisitionPanel extends ConfigurablePanel{
 				File selectedFile = fileChooser.getSelectedFile();
 				String parentFolder = selectedFile.getParent();
 				String fileName = selectedFile.getName();
+				
+				// save
 				acqcontroller_.saveExperiment(parentFolder, fileName);
 			}
 		}
@@ -353,12 +328,11 @@ public class AcquisitionPanel extends ConfigurablePanel{
 	//////
 	////// Tree summary methods
 	//////
-	
 	private Point getSummaryButtonLocation(){
 		Point newLoc = jButton_showSummary.getLocation();
 
-		newLoc.x += owner_.getAcquisitionPanelLocation().getX()+100;
-		newLoc.y += owner_.getAcquisitionPanelLocation().getY()+48;
+		newLoc.x += mainFrame_.getAcquisitionPanelLocation().getX()+100;
+		newLoc.y += mainFrame_.getAcquisitionPanelLocation().getY()+48;
 		
 		return newLoc;
 	}
@@ -380,6 +354,9 @@ public class AcquisitionPanel extends ConfigurablePanel{
 		}
 	}
 	
+	/**
+	 * Update the summary panel.
+	 */
 	public void updateSummary() {
 		if (showSummaryTree_) {
 			showSummary(false); // this is a quick fix, surely there is a better way
@@ -478,40 +455,100 @@ public class AcquisitionPanel extends ConfigurablePanel{
 				+ "can be saved and loaded.";
 	}
 	
-	public String getParameterValues(String param) {
-		if(PARAM_BFP.equals(param)){
+
+	/**
+	 * Return the property name that corresponds to the {@code parameterName}.
+	 * 
+	 * @param parameterName Parameter name
+	 * @return Property name as a string
+	 */
+	public String getParameterValues(String parameterName) {
+		if(PARAM_BFP.equals(parameterName)){
 			return paramBFP_;
-		} else if(PARAM_LOCKING.equals(param)){
+		} else if(PARAM_LOCKING.equals(parameterName)){
 			return paramLocking_;
-		} else if(PARAM_BRIGHTFIELD.equals(param)){
+		} else if(PARAM_BRIGHTFIELD.equals(parameterName)){
 			return paramBrightField_;
 		}
 		return null;
 	}
 
-	public void updateProgressBar(int integer) {
-		jProgressBar_progress.setValue(integer);
+	/**
+	 * Update the progress bar with a new value.
+	 * 
+	 * @param newValue New value
+	 */
+	public void updateProgressBar(int newValue) {
+		jProgressBar_progress.setValue(newValue);
 	}
 
+	/**
+	 * Get the experiment name from the corresponding text field.
+	 * 
+	 * @return Experiment name as a string.
+	 */
 	public String getExperimentName() {
 		return jTextField_expname.getText();
 	}
 
+	
+	/**
+	 * Get the experiment path from the corresponding text field.
+	 * 
+	 * @return Experiment path as a string.
+	 */
 	public String getExperimentPath() {
 		return jTextField_path.getText();
 	}
 	
-	public void setStateButtonToStop(){
+	/**
+	 * Unselect the start/stop button and set its text to "stop".
+	 */
+	public void showStop(){
 		jToggle_startstop.setSelected(false);
 		jToggle_startstop.setText("Start");
 	}
 
-	public ActivationPanel getActivationPanel() {
-		return owner_.getActivationPanel();
-	}
-
 	@Override
 	protected void addComponentListeners() {
-		// Do nothing
+		/*
+		 * Sync the position of the summary frame with that of the main window.
+		 */
+		mainFrame_.addComponentListener(new ComponentAdapter() {
+            public void componentMoved(ComponentEvent evt) {
+				Point newLoc = getSummaryButtonLocation();
+				if (summaryframe_ != null) {
+					summaryframe_.setLocation(newLoc);
+					summaryframe_.toFront();
+					summaryframe_.repaint();
+				}
+            }
+          });
+		
+		mainFrame_.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+				if (summaryframe_ != null) {
+					summaryframe_.setAlwaysOnTop(false);
+				}
+            }
+
+            @Override
+            public void windowActivated(WindowEvent e) {
+				if (summaryframe_ != null) {
+					summaryframe_.setAlwaysOnTop(true);
+				}
+            }
+            
+            @Override
+            public void windowIconified(WindowEvent e) {
+            	if ((mainFrame_.getExtendedState() & Frame.ICONIFIED) != 0) {
+					if (summaryframe_ != null) {
+						summaryframe_.setAlwaysOnTop(false);
+						summaryframe_.toBack();
+					}
+                  }
+             }
+        });
 	}
 }

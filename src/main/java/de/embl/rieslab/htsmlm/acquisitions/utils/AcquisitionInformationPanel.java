@@ -7,6 +7,12 @@ import javax.swing.JTextPane;
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
 import de.embl.rieslab.htsmlm.acquisitions.wrappers.Experiment;
 
+/**
+ * A class updating a text panel with information concerning the acquisitions.
+ * 
+ * @author Joran Deschamps
+ *
+ */
 public class AcquisitionInformationPanel {
 
     private final static String TEXT_INIT = "No configured acquisition list.\n";
