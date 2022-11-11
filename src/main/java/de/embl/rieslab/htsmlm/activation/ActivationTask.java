@@ -89,31 +89,41 @@ public class ActivationTask {
 
 		
 	public void startTask() {
-		// TODO move all this to controller
-		// TODO this will stop working for compiled htSMLM !!
-		// make sure that the processor plugin is still active
-		List<ProcessorConfigurator> configurator_list = studio_.data().getLivePipelineConfigurators(false);
-		int n_act = 0;
-		int act_hash = ActivationProcessorConfigurator.getInstance(null).hashCode();
-		for(ProcessorConfigurator o: configurator_list) {
-			// check if it is the activation image processor
-			if(o.hashCode() == act_hash) {
-				n_act++;
-			}
-		}
+		// add processor 
+		addReadImagePairsProcessor();
 		
-		if(n_act == 0) { // if there is no processor plugin
-			studio_.data().addAndConfigureProcessor(new ReadImagePairsPlugin());
-		} else if(n_act > 1) { //if there are more than one
-			// remove them and only add one
-			studio_.data().clearPipeline();
-			studio_.data().addAndConfigureProcessor(new ReadImagePairsPlugin());
-		}
-
 		// start activation
 		worker_ = new AutomatedActivation();
 		worker_.execute();
 		running_ = true;
+	}
+	
+	
+	private void addReadImagePairsProcessor() {
+		// TODO move all this to controller
+		// TODO this will stop working for compiled htSMLM !!
+
+		// list processors
+		List<ProcessorConfigurator> configurator_list = studio_.data().getLivePipelineConfigurators(false);
+		int n_act = 0;
+		int act_hash = ActivationProcessorConfigurator.getInstance(null).hashCode();
+		for(ProcessorConfigurator o: configurator_list) {
+			// check if it is the activation processor
+			if(o.hashCode() == act_hash) {
+				// count the number of activation processors
+				n_act++;
+			}
+		}
+		
+		// if there are no processor or multiple
+		if(n_act == 0) { 
+			// add processor
+			studio_.data().addAndConfigureProcessor(new ReadImagePairsPlugin());
+		} else if(n_act > 1) {
+			// remove them and only add one
+			studio_.data().clearPipeline();
+			studio_.data().addAndConfigureProcessor(new ReadImagePairsPlugin());
+		}
 	}
 
 	public void stopTask() {
