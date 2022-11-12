@@ -26,18 +26,13 @@ import org.micromanager.data.ProcessorConfigurator;
 
 import mmcorej.CMMCore;
 
-// TODO: imglib2 rather than ImageJ1...
-
+/**
+ * 
+ * 
+ * @author Joran Deschamps
+ *
+ */
 public class ActivationTask {
-
-	/**
-	 * 
-	 * Now this is super messy as most of the code turned into a hack to work with MM2gamma. Maybe in the future:
-	 * 
-	 * have a separate thread poll frames and place them in a queue, then this thread can (without while loop) poll
-	 * them by checking the size of the queue and taking two frames directly.
-	 * 
-	 */
 	public static int PARAM_DYNFACTOR = 0;
 	public static int PARAM_FEEDBACK = 1;
 	public static int PARAM_CUTOFF = 2;

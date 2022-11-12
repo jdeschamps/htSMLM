@@ -14,11 +14,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 
-//import com.fasterxml.jackson.core.JsonGenerationException;
-//import com.fasterxml.jackson.databind.JsonMappingException;
-//import com.fasterxml.jackson.databind.ObjectMapper;
-//import com.fasterxml.jackson.databind.SerializationFeature;
-
 import de.embl.rieslab.emu.controller.SystemController;
 import de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
 import de.embl.rieslab.emu.utils.EmuUtils;
@@ -33,34 +28,34 @@ import mmcorej.StrVector;
 
 public class AcquisitionFactory {
 	
-	private AcquisitionController acqcontroller_;
-	private SystemController controller_;
-	private String[] acqtypelist_;
-	private String[] zdevices_;
+	private AcquisitionController acqController_;
+	private SystemController systemController_;
+	private String[] acqTypeList_;
+	private String[] zDevices_;
 	
-	public AcquisitionFactory(AcquisitionController acqcontroller, SystemController controller){
-		acqcontroller_ = acqcontroller;
-		controller_ = controller;
-		zdevices_ = getZDevices();
-		acqtypelist_ = getEnabledAcquisitionList();
+	public AcquisitionFactory(AcquisitionController acqController, SystemController systemController){
+		acqController_ = acqController;
+		systemController_ = systemController;
+		zDevices_ = getZDevices();
+		acqTypeList_ = getEnabledAcquisitionList();
 	}
 	
 	private String[] getZDevices(){
-		StrVector devices = controller_.getCore().getLoadedDevicesOfType(DeviceType.StageDevice);
+		StrVector devices = systemController_.getCore().getLoadedDevicesOfType(DeviceType.StageDevice);
 		return devices.toArray();
 	}
 
 	private String[] getEnabledAcquisitionList(){
 		ArrayList<String> list = new ArrayList<>(Arrays.asList(AcquisitionType.getList()));
 				
-		if(!acqcontroller_.isAcquistionPropertyEnabled(AcquisitionType.BF)){
+		if(!acqController_.isAcquistionPropertyEnabled(AcquisitionType.BF)){
 			list.remove(AcquisitionType.BF.getTypeValue());
 		}
-		if(!acqcontroller_.isAcquistionPropertyEnabled(AcquisitionType.BFP)){
+		if(!acqController_.isAcquistionPropertyEnabled(AcquisitionType.BFP)){
 			list.remove(AcquisitionType.BFP.getTypeValue());
 		}
 		
-		if(zdevices_ == null || zdevices_.length == 0) {
+		if(zDevices_ == null || zDevices_.length == 0) {
 			list.remove(AcquisitionType.ZSTACK.getTypeValue());
 			list.remove(AcquisitionType.MULTISLICELOC.getTypeValue());
 		}
@@ -69,18 +64,18 @@ public class AcquisitionFactory {
 	}
 	
 	public String[] getAcquisitionTypeList(){
-		return acqtypelist_;
+		return acqTypeList_;
 	}
 	 
 	public Acquisition getAcquisition(String type){
 		if (type.equals(AcquisitionType.LOCALIZATION.getTypeValue())) {
-			return new LocalizationAcquisition(acqcontroller_.getActivationPanel(), getExposure(),
-					controller_.getCore());
+			return new LocalizationAcquisition(acqController_.getActivationPanel(), getExposure(),
+					systemController_.getCore());
 		} else if (type.equals(AcquisitionType.MULTISLICELOC.getTypeValue())) {
 			
-			return new MultiSliceAcquisition(acqcontroller_.getActivationPanel(), getExposure(),
-					zdevices_, controller_.getCore().getFocusDevice(), (TwoStateUIProperty) controller_
-							.getProperty(acqcontroller_.getAcquisitionParameterValue(AcquisitionPanel.PARAM_LOCKING)));
+			return new MultiSliceAcquisition(acqController_.getActivationPanel(), getExposure(),
+					zDevices_, systemController_.getCore().getFocusDevice(), (TwoStateUIProperty) systemController_
+							.getProperty(acqController_.getAcquisitionParameterValue(AcquisitionPanel.PARAM_LOCKING)));
 			
 		} else if (type.equals(AcquisitionType.TIME.getTypeValue())) {
 			
@@ -92,19 +87,23 @@ public class AcquisitionFactory {
 			
 		} else if (type.equals(AcquisitionType.ZSTACK.getTypeValue())) {
 			
-			return new ZStackAcquisition(getExposure(), zdevices_, controller_.getCore().getFocusDevice(),
-					(TwoStateUIProperty) controller_
-							.getProperty(acqcontroller_.getAcquisitionParameterValue(AcquisitionPanel.PARAM_LOCKING)));
+			return new ZStackAcquisition(getExposure(), zDevices_, systemController_.getCore().getFocusDevice(),
+					(TwoStateUIProperty) systemController_
+							.getProperty(acqController_.getAcquisitionParameterValue(AcquisitionPanel.PARAM_LOCKING)));
 			
 		} else if (type.equals(AcquisitionType.BFP.getTypeValue())) {
 			
-			return new BFPAcquisition(getExposure(), (TwoStateUIProperty) controller_
-					.getProperty(acqcontroller_.getAcquisitionParameterValue(AcquisitionPanel.PARAM_BFP)));
+			return new BFPAcquisition(getExposure(), (TwoStateUIProperty) systemController_
+					.getProperty(acqController_.getAcquisitionParameterValue(AcquisitionPanel.PARAM_BFP)));
 			
 		} else if (type.equals(AcquisitionType.BF.getTypeValue())) {
 			
-			return new BrightFieldAcquisition(getExposure(), (TwoStateUIProperty) controller_
-					.getProperty(acqcontroller_.getAcquisitionParameterValue(AcquisitionPanel.PARAM_BRIGHTFIELD)));
+			return new BrightFieldAcquisition(getExposure(), (TwoStateUIProperty) systemController_
+					.getProperty(acqController_.getAcquisitionParameterValue(AcquisitionPanel.PARAM_BRIGHTFIELD)));
+			
+		} else if (type.equals(AcquisitionType.MANUALINTER.getTypeValue())) {
+			
+			return new ManualInterventionAcquisition(acqController_);
 			
 		}
 			
@@ -115,7 +114,7 @@ public class AcquisitionFactory {
 	private double getExposure(){
 		double i = 0;
 		try {
-			i = controller_.getCore().getExposure();
+			i = systemController_.getCore().getExposure();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -123,7 +122,7 @@ public class AcquisitionFactory {
 	}
 	
 	private Acquisition getDefaultAcquisition() {
-		return new LocalizationAcquisition(acqcontroller_.getActivationPanel(), getExposure(), controller_.getCore());
+		return new LocalizationAcquisition(acqController_.getActivationPanel(), getExposure(), systemController_.getCore());
 	}
 
 	/**
@@ -287,6 +286,11 @@ public class AcquisitionFactory {
 						configureGeneralAcquistion(acq, acqw);		
 						
 						acqlist.add(acq);
+					} else if(acqw.type.equals(AcquisitionType.MANUALINTER.getTypeValue())){
+						ManualInterventionAcquisition acq = (ManualInterventionAcquisition) getAcquisition(acqw.type);
+						configureGeneralAcquistion(acq, acqw);		
+						
+						acqlist.add(acq);
 					}
 				}
 			}
@@ -322,8 +326,14 @@ public class AcquisitionFactory {
 	}
 	
 	public enum AcquisitionType { 
-		TIME("Time"), BFP("BFP"), BF("Bright-field"), SNAP("Snapshot"), LOCALIZATION("Localization"), ZSTACK("Z-stack"),
-		AUTOFOCUS("Autofocus"), ROISELECT("ROI decision"), MULTISLICELOC("Multislice localization");
+		TIME("Time"), 
+		BFP("BFP"), 
+		BF("Bright-field"), 
+		SNAP("Snapshot"), 
+		LOCALIZATION("Localization"), 
+		ZSTACK("Z-stack"),
+		MULTISLICELOC("Multislice localization"),
+		MANUALINTER("Manual intervention");
 		
 		private String value; 
 		
@@ -336,10 +346,14 @@ public class AcquisitionFactory {
 		} 
 		
 		public static String[] getList() {
-			String[] s = { AcquisitionType.LOCALIZATION.getTypeValue(), AcquisitionType.BFP.getTypeValue(),
-					AcquisitionType.BF.getTypeValue(), AcquisitionType.ZSTACK.getTypeValue(),
-					AcquisitionType.SNAP.getTypeValue(), AcquisitionType.TIME.getTypeValue(),
-					AcquisitionType.MULTISLICELOC.getTypeValue() };
+			String[] s = { AcquisitionType.LOCALIZATION.getTypeValue(), 
+						   AcquisitionType.BFP.getTypeValue(),
+						   AcquisitionType.BF.getTypeValue(), 
+						   AcquisitionType.ZSTACK.getTypeValue(),
+						   AcquisitionType.SNAP.getTypeValue(), 
+						   AcquisitionType.TIME.getTypeValue(),
+						   AcquisitionType.MULTISLICELOC.getTypeValue(),
+						   AcquisitionType.MANUALINTER.getTypeValue() };
 			return s;
 		}
 	}; 

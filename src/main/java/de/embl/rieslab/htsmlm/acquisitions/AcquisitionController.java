@@ -284,4 +284,8 @@ public class AcquisitionController{
 		return activationPanel_;
 	}
 
+	public AcquisitionPanel getAcquisitionPanel() {
+		return acquisitionPanel_;
+	}
+
 }
