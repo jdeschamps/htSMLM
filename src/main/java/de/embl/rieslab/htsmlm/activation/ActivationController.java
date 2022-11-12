@@ -163,13 +163,13 @@ public class ActivationController {
 	 * 
 	 * @return
 	 */
-	public boolean startTask() {
+	public void startTask() {
 		if (!isActivationRunning()) { 
 			runActivation(true);
 		}
 
 		// update UI
-		return activationPanel_.startTask();
+		activationPanel_.activationHasStarted();
 	}
 
 	public void pauseTask() {

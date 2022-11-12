@@ -38,6 +38,7 @@ public class ActivationPanel extends ConfigurablePanel {
 	private static final long serialVersionUID = 1L;
 
 	private JTextField textFieldCutOff_;
+	private JTextField textfielddT_;
 	private JTextField textFieldN0_;
 	private JTextField textFieldDynFactor_;
 	private JTextField textFieldFeedback_;
@@ -130,7 +131,6 @@ public class ActivationPanel extends ConfigurablePanel {
 		
 		textFieldDynFactor_ = new JTextField(String.valueOf(dynamicFactor_));
 		textFieldDynFactor_.setToolTipText("The higher the Factor coefficient, the higher the auto cutoff value.");
-		SwingUIListeners.addActionListenerToDoubleAction(val -> dynamicFactor_ = val, textFieldDynFactor_, 0, Double.POSITIVE_INFINITY);
 
 		c.gridy = 1;
 		pane.add(textFieldDynFactor_,c);
@@ -141,7 +141,6 @@ public class ActivationPanel extends ConfigurablePanel {
 		
 		textFieldFeedback_ = new JTextField(String.valueOf(feedback_));
 		textFieldFeedback_.setToolTipText("The higher the Feedback coefficient, the faster the activation ramps up.");
-		SwingUIListeners.addActionListenerToDoubleAction(val -> feedback_ = val, textFieldFeedback_, 0, Double.POSITIVE_INFINITY);
 
 		c.gridy = 3;
 		pane.add(textFieldFeedback_,c);
@@ -151,11 +150,8 @@ public class ActivationPanel extends ConfigurablePanel {
 		pane.add(labeldT_,c);
 
 		dT_ = 1.;
-		JTextField textfielddT_ = new JTextField(String.valueOf(dT_));
+		textfielddT_ = new JTextField(String.valueOf(dT_));
 		textfielddT_.setToolTipText("Averaging weights (between 0 and 1) of the auto cutoff.");
-		SwingUIListeners.addActionListenerToDoubleAction(val -> {
-			dT_ = (val >= 0 && val <= 1) ? val: val > 1 ? 1: 0;
-		}, textfielddT_, 1, Double.POSITIVE_INFINITY);
 
 		c.gridy = 5;
 		pane.add(textfielddT_,c);
@@ -177,7 +173,6 @@ public class ActivationPanel extends ConfigurablePanel {
 		N0_ = 1;
 		textFieldN0_ = new JTextField(String.valueOf(N0_));
 		textFieldN0_.setToolTipText("Target number of emitters.");
-		SwingUIListeners.addActionListenerToDoubleAction(val -> N0_ = val, textFieldN0_, 0, Double.POSITIVE_INFINITY);
 
 		c.gridy = 7;
 		c.insets = new Insets(2,6,2,6);
@@ -200,7 +195,6 @@ public class ActivationPanel extends ConfigurablePanel {
 
 		checkBoxActivate_ = new JCheckBox("Activate");
 		checkBoxActivate_.setToolTipText("Turn on activation.");
-		SwingUIListeners.addActionListenerToBooleanAction(b -> activate_ = b, checkBoxActivate_);
 
 		c.gridy = 9;
 		c.insets = new Insets(15,6,2,6);
@@ -208,7 +202,6 @@ public class ActivationPanel extends ConfigurablePanel {
 		
 		toggleButtonRun_ = new JToggleButton("Run");
 		toggleButtonRun_.setToolTipText("Start/stop the emitter estimation script.");
-		SwingUIListeners.addActionListenerToBooleanAction(b -> activationController_.runActivation(b), toggleButtonRun_);
 
 		toggleButtonRun_.setPreferredSize(new Dimension(40,40));
 		c.gridy = 10;
@@ -621,56 +614,33 @@ public class ActivationPanel extends ConfigurablePanel {
 		}
 	}
 
-	/**
-	 * Called from other threads, e.g. acquisition task.
-	 * 
-	 * @return
-	 */
-	public boolean startTask() {
-		if (activationController_.isActivationRunning()) { // if task is running
-			if (!activate_) { // but not changing the pulse
-				Runnable checkactivate = new Runnable() {
-					public void run() {
-						checkBoxActivate_.setSelected(true);
-					}
-				};
-				if (SwingUtilities.isEventDispatchThread()) {
-					checkactivate.run();
-				} else {
-					EventQueue.invokeLater(checkactivate);
+	public void activationHasStarted() {
+		if (!checkBoxActivate_.isSelected()) {
+			Runnable checkactivate = new Runnable() {
+				public void run() {
+					checkBoxActivate_.setSelected(true);
 				}
-				activate_ = true;
-			}
-		} else { // task not running
-			if (!activate_) { // task not changing the pulse
-				Runnable checkactivate = new Runnable() {
-					public void run() {
-						toggleButtonRun_.setSelected(true);
-						checkBoxActivate_.setSelected(true);
-					}
-				};
-				if (SwingUtilities.isEventDispatchThread()) {
-					checkactivate.run();
-				} else {
-					EventQueue.invokeLater(checkactivate);
-				}
-				activate_ = true;
+			};
+			if (SwingUtilities.isEventDispatchThread()) {
+				checkactivate.run();
 			} else {
-				if (!toggleButtonRun_.isSelected()) {
-					Runnable checkactivate = new Runnable() {
-						public void run() {
-							toggleButtonRun_.setSelected(true);
-						}
-					};
-					if (SwingUtilities.isEventDispatchThread()) {
-						checkactivate.run();
-					} else {
-						EventQueue.invokeLater(checkactivate);
-					}
+				EventQueue.invokeLater(checkactivate);
+			}
+			activate_ = true;
+		}
+
+		if (!toggleButtonRun_.isSelected()) {
+			Runnable checkactivate = new Runnable() {
+				public void run() {
+					toggleButtonRun_.setSelected(true);
 				}
+			};
+			if (SwingUtilities.isEventDispatchThread()) {
+				checkactivate.run();
+			} else {
+				EventQueue.invokeLater(checkactivate);
 			}
 		}
-		return true;
 	}
 
 	public void pauseTask() {
@@ -696,7 +666,14 @@ public class ActivationPanel extends ConfigurablePanel {
 
 	@Override
 	protected void addComponentListeners() {
-		// Do nothing
+		SwingUIListeners.addActionListenerToDoubleAction(val -> {
+			dT_ = (val >= 0 && val <= 1) ? val: val > 1 ? 1: 0;
+		}, textfielddT_, 1, Double.POSITIVE_INFINITY);
+		SwingUIListeners.addActionListenerToDoubleAction(val -> dynamicFactor_ = val, textFieldDynFactor_, 0, Double.POSITIVE_INFINITY);
+		SwingUIListeners.addActionListenerToDoubleAction(val -> feedback_ = val, textFieldFeedback_, 0, Double.POSITIVE_INFINITY);
+		SwingUIListeners.addActionListenerToDoubleAction(val -> N0_ = val, textFieldN0_, 0, Double.POSITIVE_INFINITY);
+		SwingUIListeners.addActionListenerToBooleanAction(b -> activate_ = b, checkBoxActivate_);
+		SwingUIListeners.addActionListenerToBooleanAction(b -> activationController_.runActivation(b), toggleButtonRun_);
 	}
 
 	public ActivationController getActivationController() {

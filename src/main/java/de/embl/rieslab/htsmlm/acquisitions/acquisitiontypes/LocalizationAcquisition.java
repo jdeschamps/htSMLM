@@ -366,7 +366,7 @@ public class LocalizationAcquisition implements Acquisition {
 			
 			// check if reached stop criterion
 			if(useactivation_ && stoponmax_ && activationController_.isCriterionReached()){
-				Thread.sleep(1000*stoponmaxdelay_);
+				Thread.sleep(1_000 * stoponmaxdelay_);
 												
 				interruptAcquisition(studio);
 				interruptionRequested_ = true;

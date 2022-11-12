@@ -596,7 +596,7 @@ public class MultiSliceAcquisition implements Acquisition {
 						// seqBuilder.prefix("L"+i+"S"+j+"_"+name);
 
 						if (stopAcq_) {
-							System.out.println("[htSMLM] Multislice interruption before slice " + j + ".");
+							studio.logs().logDebugMessage("[htSMLM] Multislice interruption before slice " + j + ".");
 							stopAcquisition();
 						}
 
@@ -636,7 +636,7 @@ public class MultiSliceAcquisition implements Acquisition {
 
 							// checks if exit requested
 							if (stopAcq_) {
-								System.out.println("[htSMLM] Multislice interruption during slice " + j + ".");
+								studio.logs().logDebugMessage("[htSMLM] Multislice interruption during slice " + j + ".");
 								break;
 							}
 
@@ -658,18 +658,18 @@ public class MultiSliceAcquisition implements Acquisition {
 
 					} catch (Exception e) {
 						running_ = false;
-						System.out.println("[htSMLM] Failed to move stage or query position after slice " + j + ".");
+						studio.logs().logDebugMessage("[htSMLM] Failed to move stage or query position after slice " + j + ".");
 						e.printStackTrace();
 					}
 
 					if (stopAcq_) {
-						System.out.println("[htSMLM] Multislice interruption after slice " + j + ".");
+						studio.logs().logDebugMessage("[htSMLM] Multislice interruption after slice " + j + ".");
 						break;
 					}
 				}
 
 				if (stopAcq_) {
-					System.out.println("[htSMLM] Multislice interruption after loop " + i + ".");
+					studio.logs().logDebugMessage("[htSMLM] Multislice interruption after loop " + i + ".");
 					break;
 				}
 			}
