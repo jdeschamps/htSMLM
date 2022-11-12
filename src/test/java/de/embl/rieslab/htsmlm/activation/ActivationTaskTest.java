@@ -138,6 +138,6 @@ public class ActivationTaskTest {
         im.setDisplayRange(im.getStatistics().min, im.getStatistics().max);
         im.show();
 
-        Thread.sleep(5_000);
+        Thread.sleep(100);
     }
 }

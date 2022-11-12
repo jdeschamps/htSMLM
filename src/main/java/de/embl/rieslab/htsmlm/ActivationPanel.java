@@ -3,9 +3,6 @@ package de.embl.rieslab.htsmlm;
 import de.embl.rieslab.emu.controller.SystemController;
 import de.embl.rieslab.emu.micromanager.mmproperties.MMProperty;
 import de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
-import ij.ImagePlus;
-import ij.process.ImageProcessor;
-import ij.process.ShortProcessor;
 
 import java.awt.Dimension;
 import java.awt.EventQueue;
@@ -31,17 +28,14 @@ import de.embl.rieslab.emu.utils.exceptions.IncorrectUIParameterTypeException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownInternalPropertyException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIPropertyException;
-
-import de.embl.rieslab.htsmlm.activation.ActivationTask;
+import de.embl.rieslab.htsmlm.activation.ActivationController;
+import de.embl.rieslab.htsmlm.activation.utils.ActivationParameters;
+import de.embl.rieslab.htsmlm.activation.utils.ActivationResults;
 import de.embl.rieslab.htsmlm.graph.TimeChart;
-import mmcorej.CMMCore;
 
 public class ActivationPanel extends ConfigurablePanel {
 
 	private static final long serialVersionUID = 1L;
-
-	//////// Task
-	public final static String TASK_NAME = "Activation task";
 
 	private JTextField textFieldCutOff_;
 	private JTextField textFieldN0_;
@@ -51,7 +45,6 @@ public class ActivationPanel extends ConfigurablePanel {
 	private JCheckBox checkBoxActivate_;
 	private TimeChart graph_;
 	private JPanel graphPanel_;
-	private ActivationTask task_;
 	private JComboBox<String> activationProp_;
 	
 	//////// Properties
@@ -77,24 +70,14 @@ public class ActivationPanel extends ConfigurablePanel {
 	private double dynamicFactor_, feedback_, N0_ = 1, cutoff_ = 100;
 	private int nPos_, idleTime_, maxPulse1_, maxPulse2_;
 	private double dT_;
-	private ImagePlus im_;
-	private ImageProcessor ip_;
-	private int nmsCounter_ = 0;
-	private Double[] params;
-	private CMMCore core_;
 	
-	public ActivationPanel(String label, SystemController controller) {
+	private ActivationController activationController_;
+	
+	public ActivationPanel(String label, SystemController systemController) {
 		super(label);
 		
-		setupPanel();
-		
-		core_ = controller.getCore();
-		task_ = new ActivationTask(this, controller.getStudio(), idleTime_);
-    	ip_ = new ShortProcessor(200,200);
-		im_ = new ImagePlus("NMS result");
-
-		params = new Double[ActivationTask.NUM_PARAMETERS];
-		
+		setupPanel();		
+		activationController_ = new ActivationController(systemController, this);
 	}
 	
 	private void setupPanel() {
@@ -204,6 +187,7 @@ public class ActivationPanel extends ConfigurablePanel {
 		activationProp_ = new JComboBox<String>(properties);
 		activationProp_.addActionListener(e -> {
 			try {
+				// this is also called when calling setSelectedIndex
 				String propName = this.getStringUIParameterValue(PARAM_ACTIVATION_NAME1);
 				useActivation1_ = activationProp_.getSelectedItem().equals(propName);
 			} catch (UnknownUIParameterException ex) {
@@ -224,7 +208,7 @@ public class ActivationPanel extends ConfigurablePanel {
 		
 		toggleButtonRun_ = new JToggleButton("Run");
 		toggleButtonRun_.setToolTipText("Start/stop the emitter estimation script.");
-		SwingUIListeners.addActionListenerToBooleanAction(b -> runActivation(b), toggleButtonRun_);
+		SwingUIListeners.addActionListenerToBooleanAction(b -> activationController_.runActivation(b), toggleButtonRun_);
 
 		toggleButtonRun_.setPreferredSize(new Dimension(40,40));
 		c.gridy = 10;
@@ -289,44 +273,91 @@ public class ActivationPanel extends ConfigurablePanel {
 	//////
 	////// Convenience methods
 	//////
-	protected void runActivation(boolean b){
-		if(b && !task_.isRunning()){
-			task_.startTask();
-		} else if(!b && task_.isRunning()){
-			task_.stopTask();
+	/**
+	 * Update graph, cutoff and pulse.
+	 * 
+	 * @param output Results of the activation.
+	 */
+	public void updateResults(final ActivationResults output) {
+		graph_.addPoint(output.getNewN());
+		
+		if(autoCutoff_){
+			textFieldCutOff_.setText(String.valueOf(output.getNewCutOff()));
+			cutoff_ = output.getNewCutOff();
 		}
-	}
-	
-	protected void showNMS(boolean b){
-		if(b){
-			showNMS_ = true;
-			im_.setProcessor(ip_);
-			im_.setDisplayRange(im_.getStatistics().min, im_.getStatistics().max);
-			im_.show();
-		} else {
-			showNMS_ = false;
-			im_.close();
-		}
-	}
-	
-	private TimeChart newGraph(){
-		return new TimeChart("Number of locs","time","N", nPos_,300,240, true);
-	}
-	
-	public boolean isActivationAtMax(){
-		try {
-			String val = getUIPropertyValue(getProperty());
-			if(EmuUtils.isNumeric(val)){
-				if(Double.parseDouble(val) >= getMaxPulse()){
-					return true;
+		
+		if(activate_){
+			try {
+				if(getMMPropertyType().equals(MMPropertyType.INTEGER)) {
+					setUIPropertyValue(getProperty(), String.valueOf((int) output.getNewPulse()));
+				} else {
+					setUIPropertyValue(getProperty(), String.valueOf(output.getNewPulse()));
 				}
+			} catch (UnknownUIPropertyException e) {
+				e.printStackTrace();
 			}
-		} catch (UnknownUIPropertyException e) {
+		}
+	}
+	
+	/**
+	 * Get the current activation parameters.
+	 * 
+	 * @return Activation parameters
+	 */
+	public ActivationParameters getActivationParameters() {
+		ActivationParameters parameters = new ActivationParameters();
+		
+		// set parameters
+		parameters.setActivate(this.activate_);
+		parameters.setAutoCutoff(this.autoCutoff_);
+		parameters.setCutoff(this.cutoff_);
+		parameters.setdT(this.dT_);
+		parameters.setCurrentPulse( getCurrentPulse());
+		parameters.setFeedbackParameter(this.feedback_);
+		parameters.setMaxPulse((double) getMaxPulse());
+		parameters.setN0(this.N0_);
+		parameters.setDynamicFactor(this.dynamicFactor_);
+		
+		return parameters;
+	}
+	
+	private double getCurrentPulse() {
+		try {
+			if (EmuUtils.isNumeric(getUIProperty(getProperty()).getPropertyValue())) {
+				return Double.parseDouble(getUIProperty(getProperty()).getPropertyValue());
+			} 
+		} catch (NumberFormatException | UnknownUIPropertyException e) {
 			e.printStackTrace();
 		}
-		return false;
+		return 0.;
 	}
-
+	
+	/**
+	 * Return the max pulse for the currently selected activation.
+	 * 
+	 * @return Maximum pulse
+	 */
+	public int getMaxPulse(){
+		if(useActivation1_){
+			return maxPulse1_;
+		} else {
+			return maxPulse2_;
+		}
+	}
+		
+	private TimeChart newGraph(){
+		return new TimeChart("Number of locs","time","N", nPos_, 300, 240, true);
+	}	
+	
+	private void showNMS(boolean b){
+		showNMS_ = b;
+		activationController_.showNMS(showNMS_);
+	}
+	
+	public boolean isNMSSelected() {
+		return showNMS_;
+	}
+	
 	private MMProperty.MMPropertyType getMMPropertyType() throws UnknownUIPropertyException {
 		if(useActivation1_){
 			return this.getUIProperty(LASER_PULSE1).getMMPropertyType();
@@ -342,15 +373,30 @@ public class ActivationPanel extends ConfigurablePanel {
 			return LASER_PULSE2;
 		}
 	}
-
-	private int getMaxPulse(){
-		if(useActivation1_){
-			return maxPulse1_;
-		} else {
-			return maxPulse2_;
-		}
+	
+	/**
+	 * Return the configured idle time.
+	 * 
+	 * @return Idle time of the activation thread.
+	 */
+	public int getIdleTime() {
+		return idleTime_;
 	}
 
+	/**
+	 * Return current activation property value.
+	 * 
+	 * @return
+	 */
+	public String getCurrentActivationValue() {
+		try {
+			return getUIPropertyValue(getProperty());
+		} catch (UnknownUIPropertyException e) {
+			e.printStackTrace();
+		}
+		return "0";
+	}
+	
 	public String getCurrentActivation(){
 		try {
 			if(useActivation1_) {
@@ -414,7 +460,6 @@ public class ActivationPanel extends ConfigurablePanel {
 	//////
 	////// PropertyPanel methods
 	//////
-	
 	@Override
 	protected void initializeProperties() {
 		
@@ -483,7 +528,7 @@ public class ActivationPanel extends ConfigurablePanel {
 				int val = getIntegerUIParameterValue(PARAM_IDLE);
 				if(val != idleTime_){
 					idleTime_ = val;
-					task_.setIdleTime(idleTime_);
+					activationController_.updateIdleTime(idleTime_);
 					}
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
@@ -520,8 +565,7 @@ public class ActivationPanel extends ConfigurablePanel {
 
 	@Override
 	public void shutDown() {
-		task_.stopTask();
-		showNMS(false);
+		activationController_.shutDown();
 	}
 
 	@Override
@@ -564,113 +608,65 @@ public class ActivationPanel extends ConfigurablePanel {
 		}
 	}
 
-	/////////////////////////////////////////////////////////////////////////////
-	public void update(final Double[] output) {
-		graph_.addPoint(output[ActivationTask.OUTPUT_N]);
-		
-		if(autoCutoff_){
-			textFieldCutOff_.setText(String.valueOf(output[ActivationTask.OUTPUT_NEWCUTOFF]));
-			cutoff_ = output[ActivationTask.OUTPUT_NEWCUTOFF];
-		}
-		
-		if(showNMS_ && nmsCounter_ % 4 == 0){
-			ImageProcessor imp = task_.getNMSResult();
-			if(imp != null && imp.getPixels() != null){
-				ip_ = imp;
-				im_.setProcessor(ip_);
-				im_.setDisplayRange(im_.getStatistics().min, im_.getStatistics().max);
-				im_.updateAndRepaintWindow();
+	public void setSelectedActivation(int index) {
+		Runnable selectActivation = new Runnable() {
+			public void run() {
+				activationProp_.setSelectedIndex(index);
 			}
-		} else if(nmsCounter_ == Integer.MAX_VALUE){
-			nmsCounter_ = 0;
+		};
+		if (SwingUtilities.isEventDispatchThread()) {
+			selectActivation.run();
+		} else {
+			EventQueue.invokeLater(selectActivation);
 		}
-		
-		if(activate_){
-			try {
-				if(getMMPropertyType().equals(MMPropertyType.INTEGER)) {
-					setUIPropertyValue(getProperty(),String.valueOf((int) output[ActivationTask.OUTPUT_NEWPULSE].doubleValue()));
-				} else {
-					setUIPropertyValue(getProperty(),String.valueOf(output[ActivationTask.OUTPUT_NEWPULSE]));
-				}
-			} catch (UnknownUIPropertyException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		nmsCounter_++;
-	}
-
-	public Double[] retrieveAllParameters() {
-		params[ActivationTask.PARAM_ACTIVATE] = activate_ ? 1. : 0.; 
-		params[ActivationTask.PARAM_AUTOCUTOFF] = autoCutoff_ ? 1. : 0.;
-		params[ActivationTask.PARAM_CUTOFF] = cutoff_; 
-		params[ActivationTask.PARAM_dT] = dT_; 
-		params[ActivationTask.PARAM_FEEDBACK] = feedback_; 
-		params[ActivationTask.PARAM_MAXPULSE] = (double) getMaxPulse();
-		params[ActivationTask.PARAM_N0] = N0_; 
-		
-		try {
-			if (EmuUtils.isNumeric(getUIProperty(getProperty()).getPropertyValue())) {
-				params[ActivationTask.PARAM_PULSE] = Double.parseDouble(getUIProperty(getProperty()).getPropertyValue());
-			} else {
-				params[ActivationTask.PARAM_PULSE] = 0.;
-			}
-		} catch (NumberFormatException | UnknownUIPropertyException e) {
-			e.printStackTrace();
-			params[ActivationTask.PARAM_PULSE] = 0.;
-		}
-		
-		params[ActivationTask.PARAM_DYNFACTOR] = dynamicFactor_;
-		
-		return params;
 	}
 
 	/**
-	 * Called from automated acquisition?
+	 * Called from other threads, e.g. acquisition task.
 	 * 
+	 * @return
 	 */
 	public boolean startTask() {
-		if(task_.isRunning()){ // if task is running 
-			if(!activate_){ // but not changing the pulse
-				 Runnable checkactivate = new Runnable() {
-					 public void run() {
-						 checkBoxActivate_.setSelected(true);
-					 }
-				 };
-				 if (SwingUtilities.isEventDispatchThread()) {
-					 checkactivate.run();
-				 } else {
-					  EventQueue.invokeLater(checkactivate);
-				 }
-				 activate_ = true;
+		if (activationController_.isActivationRunning()) { // if task is running
+			if (!activate_) { // but not changing the pulse
+				Runnable checkactivate = new Runnable() {
+					public void run() {
+						checkBoxActivate_.setSelected(true);
+					}
+				};
+				if (SwingUtilities.isEventDispatchThread()) {
+					checkactivate.run();
+				} else {
+					EventQueue.invokeLater(checkactivate);
+				}
+				activate_ = true;
 			}
 		} else { // task not running
-			runActivation(true); // then run
-			if(!activate_){ // task not changing the pulse
-				 Runnable checkactivate = new Runnable() {
-					 public void run() {
-						 toggleButtonRun_.setSelected(true);
-						 checkBoxActivate_.setSelected(true);
-					 }
-				 };
-				 if (SwingUtilities.isEventDispatchThread()) {
-					 checkactivate.run();
-				 } else {
-					  EventQueue.invokeLater(checkactivate);
-				 }
-				 activate_ = true;
+			if (!activate_) { // task not changing the pulse
+				Runnable checkactivate = new Runnable() {
+					public void run() {
+						toggleButtonRun_.setSelected(true);
+						checkBoxActivate_.setSelected(true);
+					}
+				};
+				if (SwingUtilities.isEventDispatchThread()) {
+					checkactivate.run();
+				} else {
+					EventQueue.invokeLater(checkactivate);
+				}
+				activate_ = true;
 			} else {
-				if(!toggleButtonRun_.isSelected()) {
-					 Runnable checkactivate = new Runnable() {
-						 public void run() {
-							 toggleButtonRun_.setSelected(true);
-						 }
-					 };
-					 if (SwingUtilities.isEventDispatchThread()) {
-						 checkactivate.run();
-					 } else {
-						  EventQueue.invokeLater(checkactivate);
-					 }
+				if (!toggleButtonRun_.isSelected()) {
+					Runnable checkactivate = new Runnable() {
+						public void run() {
+							toggleButtonRun_.setSelected(true);
+						}
+					};
+					if (SwingUtilities.isEventDispatchThread()) {
+						checkactivate.run();
+					} else {
+						EventQueue.invokeLater(checkactivate);
+					}
 				}
 			}
 		}
@@ -693,42 +689,17 @@ public class ActivationPanel extends ConfigurablePanel {
 		}
 	}
 
-	public void resumeTask() {
-		startTask();	
-	}
 
-	public boolean isTaskRunning() {
-		return task_.isRunning();
-	}
-
-	public String getTaskName() {
-		return TASK_NAME;
-	}
-
-	public boolean isCriterionReached() {
-		return isActivationAtMax();
-	}
-
-	public void initializeTask() {
+	public void zeroProperty() {
 		setUIPropertyValue(getProperty(),"0");
-	}
-
-	public void initializeTask(Double[] input) {
-		// check which activation is selected in the acquisition
-		int index  = (int) Math.round(input[INPUT_WHICH_ACTIVATION]);
-		
-		// select it
-		String[] props = getAllocatedProperties();
-		activationProp_.setSelectedIndex(index); // on EDT ?? probably not
-		
-		// set it to 0
-		setUIPropertyValue(getProperty(),"0");
-		
-		core_.logMessage("[activation panel] is activation: " + props[index]);
 	}
 
 	@Override
 	protected void addComponentListeners() {
 		// Do nothing
+	}
+
+	public ActivationController getActivationController() {
+		return this.activationController_;
 	}
 }

@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -21,7 +22,6 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import de.embl.rieslab.htsmlm.ActivationPanel;
 import mmcorej.Configuration;
 import mmcorej.PropertySetting;
 import org.micromanager.PropertyMap;
@@ -37,6 +37,7 @@ import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory.A
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.NoPropertyFilter;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.PropertyFilter;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.SinglePropertyFilter;
+import de.embl.rieslab.htsmlm.activation.ActivationController;
 import mmcorej.CMMCore;
 import mmcorej.TaggedImage;
 import org.micromanager.internal.MMStudio;
@@ -61,7 +62,8 @@ public class MultiSliceAcquisition implements Acquisition {
 	private final static String LABEL_DISABLEFL = "disable focus-lock";
 	private final static String LABEL_FLATZ0 = "only at Z0";
 	private final static String LABEL_SLICEST = "Slice St";
-	private final static String LABEL_ACTATST = "activate only at slice:";
+	private final static String LABEL_ACTATST = "Only activate at slice:";
+	private final static String LABEL_ACTIVATION = "Activation:";
 
 	public final static String KEY_USEACT = "Use activation?";
 	public final static String KEY_STOPONMAX = "Stop on max?";
@@ -73,10 +75,12 @@ public class MultiSliceAcquisition implements Acquisition {
 	public final static String KEY_DISABLEFL = "Disable focus-lock";
 	public final static String KEY_FLATZ0 = "Use focus-lock at Z0";
 	public final static String KEY_SLICEST = "Slice St";
-	private final static String KEY_ACTATST = "Activation at St";
+	public final static String KEY_ACTATST = "Activation at St";
+	public final static String KEY_ACTIVATION = "Activation:";
+	
+	public final static int NUM_KEYS = 12;
 
-	// TODO replace by controller
-	private ActivationPanel activationTask_;
+	private ActivationController activationController_;
 	private boolean useactivation_, stoponmax_, nullActivation_;
 	private volatile boolean stopAcq_, running_;
 	private int stoponmaxdelay_;
@@ -88,8 +92,9 @@ public class MultiSliceAcquisition implements Acquisition {
 	private double deltaZ;
 	private int nSlices, nLoops, sliceSt;
 	private boolean focusLockAtZ0_, disableFocusLock_, actAtSt;
+	private String activationName_ = "None";
 
-	public MultiSliceAcquisition(ActivationPanel activationtask, double exposure, String[] zdevices, String defaultzdevice,
+	public MultiSliceAcquisition(ActivationController activationtask, double exposure, String[] zdevices, String defaultzdevice,
 			TwoStateUIProperty zStabilizationProperty) {
 
 		if (activationtask == null) {
@@ -98,7 +103,7 @@ public class MultiSliceAcquisition implements Acquisition {
 		} else {
 			nullActivation_ = false;
 			useactivation_ = true;
-			activationTask_ = activationtask;
+			activationController_ = activationtask;
 		}
 
 		stopAcq_ = false;
@@ -135,11 +140,12 @@ public class MultiSliceAcquisition implements Acquisition {
 
 		pane.setName(getPanelName());
 
-		JLabel exposurelab, waitinglab, numframelab, intervallab, waitonmaxlab;
-		JLabel zdevicelabel, numbLabel;
-		JSpinner numberslice, deltaz, numberloops, slicest;
-		JSpinner exposurespin, waitingspin, numframespin, intervalspin, waitonmaxspin;
-		JCheckBox activatecheck, stoponmaxcheck, disablefocuslock, flonlyatz0, activateSt;
+		final JLabel exposurelab, waitinglab, numframelab, intervallab, waitonmaxlab, labelActivation;
+		final JLabel zdevicelabel, numbLabel;
+		final JSpinner numberslice, deltaz, numberloops, slicest;
+		final JSpinner exposurespin, waitingspin, numframespin, intervalspin, waitonmaxspin;
+		final JCheckBox activatecheck, stoponmaxcheck, disablefocuslock, flonlyatz0, activateSt;
+		final JComboBox<String> activationCombo;
 
 		exposurelab = new JLabel(LABEL_EXPOSURE);
 		waitinglab = new JLabel(LABEL_PAUSE);
@@ -192,6 +198,26 @@ public class MultiSliceAcquisition implements Acquisition {
 				}
 			}
 		});
+		
+		// choice of activation
+		final String[] acts = activationController_.getActivationPropertiesName();
+		labelActivation = new JLabel(LABEL_ACTIVATION);
+		activationCombo = new JComboBox<>(acts);
+		activationCombo.setName(LABEL_ACTIVATION);
+		if(acts.length != 2){
+			activationCombo.setEnabled(false);
+
+			if(acts.length == 0){
+				stoponmaxcheck.setEnabled(false);
+				waitonmaxspin.setEnabled(false);
+				activatecheck.setEnabled(false);
+				useactivation_ = false;
+			}
+		} else {
+			if (Arrays.asList(acts).contains(activationName_)) {
+				activationCombo.setSelectedItem(activationName_);
+			}
+		}
 
 		activateSt = new JCheckBox(LABEL_ACTATST);
 		activateSt.setEnabled(!nullActivation_);
@@ -309,6 +335,8 @@ public class MultiSliceAcquisition implements Acquisition {
 		panelHolder[2][2].add(stoponmaxcheck);
 		panelHolder[2][3].add(activatecheck);
 
+		panelHolder[3][0].add(labelActivation);
+		panelHolder[3][1].add(activationCombo);
 		panelHolder[3][2].add(activateSt);
 		panelHolder[3][3].add(slicest);
 
@@ -341,6 +369,10 @@ public class MultiSliceAcquisition implements Acquisition {
 		stoponmaxdelay_ = delay;
 	}
 
+	private void setActivation(String act){
+		activationName_ = act;
+	}
+	
 	@Override
 	public void readOutAcquisitionParameters(JPanel pane) {
 		if (pane.getName().equals(getPanelName())) {
@@ -381,6 +413,8 @@ public class MultiSliceAcquisition implements Acquisition {
 								sliceSt = ((Integer) ((JSpinner) comp[i]).getValue());
 							} else if (comp[i].getName().equals(LABEL_ACTATST) && comp[i] instanceof JCheckBox) {
 								actAtSt = ((JCheckBox) comp[i]).isSelected();
+							} else if(comp[i].getName().equals(LABEL_ACTIVATION) && comp[i] instanceof JComboBox){
+								this.setActivation((String) ((JComboBox<String>) comp[i]).getSelectedItem());
 							}
 						}
 					}
@@ -403,7 +437,7 @@ public class MultiSliceAcquisition implements Acquisition {
 
 	@Override
 	public String[] getHumanReadableSettings() {
-		String[] s = new String[14];
+		String[] s = new String[15];
 		s[0] = "Exposure = " + params_.getExposureTime() + " ms";
 		s[1] = "Interval = " + params_.getIntervalMs() + " ms";
 		s[2] = "Number of frames = " + params_.getNumberFrames();
@@ -418,6 +452,7 @@ public class MultiSliceAcquisition implements Acquisition {
 		s[11] = "Z difference = " + deltaZ + " um";
 		s[12] = "Slice St = " + sliceSt;
 		s[13] = "Activate at St = " + actAtSt;
+		s[14] = "Activation = "+activationName_;
 		return s;
 	}
 
@@ -428,7 +463,7 @@ public class MultiSliceAcquisition implements Acquisition {
 
 	@Override
 	public String[][] getAdditionalParameters() {
-		String[][] parameters = new String[11][2];
+		String[][] parameters = new String[NUM_KEYS][2];
 
 		parameters[0][0] = KEY_USEACT;
 		parameters[0][1] = String.valueOf(useactivation_);
@@ -452,13 +487,15 @@ public class MultiSliceAcquisition implements Acquisition {
 		parameters[9][1] = String.valueOf(sliceSt);
 		parameters[10][0] = KEY_ACTATST;
 		parameters[10][1] = String.valueOf(actAtSt);
+		parameters[11][0] = KEY_ACTIVATION;
+		parameters[11][1] = activationName_;
 
 		return parameters;
 	}
 
 	@Override
 	public void setAdditionalParameters(String[][] parameters) {
-		if (parameters.length != 11 || parameters[0].length != 2) {
+		if (parameters.length != NUM_KEYS || parameters[0].length != 2) {
 			throw new IllegalArgumentException("The parameters array has the wrong size: expected (11,2), got ("
 					+ parameters.length + "," + parameters[0].length + ")");
 		}
@@ -474,6 +511,19 @@ public class MultiSliceAcquisition implements Acquisition {
 		deltaZ = Double.parseDouble(parameters[8][1]);
 		sliceSt = Integer.parseInt(parameters[9][1]);
 		actAtSt = Boolean.parseBoolean(parameters[10][1]);
+		activationName_ = parameters[11][1];
+	}
+
+	private int getActivationIndex(){
+		final String[] acts = activationController_.getActivationPropertiesName();
+		int counter = 0;
+		for(String act: acts){
+			if(activationName_.equals(act)){
+				return counter;
+			}
+			counter++;
+		}
+		return counter;
 	}
 
 	@Override
@@ -507,8 +557,8 @@ public class MultiSliceAcquisition implements Acquisition {
 		}
 
 		if (useactivation_) {
-			activationTask_.initializeTask();
-			activationTask_.pauseTask();
+			activationController_.initializeTask(getActivationIndex());
+			activationController_.resumeTask();
 		}
 
 		double z0 = 0;
@@ -523,8 +573,7 @@ public class MultiSliceAcquisition implements Acquisition {
 			for (int i = 0; i < nLoops; i++) {
 				for (int j = 0; j < nSlices; j++) {
 					if (useactivation_ && ((actAtSt && j == sliceSt) || !actAtSt)) {
-						// activationTask_.initializeTask();
-						activationTask_.resumeTask();
+						activationController_.resumeTask();
 					}
 
 					// set z
@@ -579,7 +628,7 @@ public class MultiSliceAcquisition implements Acquisition {
 
 							// checks if reached stop criterion
 							if (useactivation_ && stoponmax_ && ((actAtSt && j == sliceSt) || !actAtSt)
-									&& activationTask_.isCriterionReached()) {
+									&& activationController_.isCriterionReached()) {
 								Thread.sleep(1000 * stoponmaxdelay_);
 
 								stopAcquisition();
@@ -604,7 +653,7 @@ public class MultiSliceAcquisition implements Acquisition {
 
 						// pause activation
 						if (useactivation_ && ((actAtSt && j == sliceSt) || !actAtSt)) {
-							activationTask_.pauseTask();
+							activationController_.pauseTask();
 						}
 
 					} catch (Exception e) {
@@ -641,7 +690,8 @@ public class MultiSliceAcquisition implements Acquisition {
 		}
 		
 		if (useactivation_) {
-			activationTask_.initializeTask();
+			activationController_.pauseTask();
+			activationController_.initializeTask(getActivationIndex());
 		}
 
 		running_ = false;

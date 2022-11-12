@@ -90,7 +90,7 @@ public class AcquisitionPanel extends ConfigurablePanel{
 		acqcontroller_ = new AcquisitionController(controller, 
 												   this, 
 												   new AcquisitionInformationPanel(jTextPane_progress),
-												   mainFrame_.getActivationPanel());		
+												   mainFrame_.getActivationController());		
 	}
 	
 	private void initPanel() {

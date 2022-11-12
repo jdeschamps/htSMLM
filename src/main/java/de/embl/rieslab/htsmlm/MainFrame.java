@@ -17,6 +17,7 @@ import de.embl.rieslab.emu.ui.ConfigurableMainFrame;
 import de.embl.rieslab.emu.utils.settings.BoolSetting;
 import de.embl.rieslab.emu.utils.settings.Setting;
 import de.embl.rieslab.emu.utils.settings.StringSetting;
+import de.embl.rieslab.htsmlm.activation.ActivationController;
 
 public class MainFrame extends ConfigurableMainFrame{
 
@@ -246,8 +247,8 @@ public class MainFrame extends ConfigurableMainFrame{
     	return loc;
     }
     
-	public ActivationPanel getActivationPanel(){
-    	return activationPanel;
+	public ActivationController getActivationController(){
+    	return activationPanel.getActivationController();
     }
 
 	@SuppressWarnings("rawtypes")

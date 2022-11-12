@@ -11,7 +11,6 @@ import de.embl.rieslab.emu.controller.SystemController;
 import de.embl.rieslab.emu.ui.uiparameters.UIPropertyParameter;
 import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 import de.embl.rieslab.htsmlm.AcquisitionPanel;
-import de.embl.rieslab.htsmlm.ActivationPanel;
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory;
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory.AcquisitionType;
@@ -21,6 +20,7 @@ import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.NonPresetGroupPrope
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.ReadOnlyPropertyFilter;
 import de.embl.rieslab.htsmlm.acquisitions.utils.AcquisitionInformationPanel;
 import de.embl.rieslab.htsmlm.acquisitions.wrappers.Experiment;
+import de.embl.rieslab.htsmlm.activation.ActivationController;
 import de.embl.rieslab.htsmlm.constants.HTSMLMConstants;
 
 
@@ -38,15 +38,15 @@ public class AcquisitionController{
 	private Experiment exp_;
 	private AcquisitionWizard wizard_;
 	private AcquisitionTask task_;
-	private ActivationPanel activationPanel_;
+	private ActivationController activationController_;
 
 	public AcquisitionController(SystemController controller, 
 								 AcquisitionPanel owner, 
 								 AcquisitionInformationPanel infoPanel, 
-								 ActivationPanel activationPanel){
+								 ActivationController activationController){
 		systemController_ = controller;
 		acquisitionPanel_ = owner;
-		activationPanel_ = activationPanel;
+		activationController_ = activationController;
 		
 		// initiate info panel
 		infoPanel_ = infoPanel;
@@ -280,8 +280,8 @@ public class AcquisitionController{
 		return acquisitionPanel_.getParameterValues(param);
 	}
 
-	public ActivationPanel getActivationPanel() {
-		return activationPanel_;
+	public ActivationController getActivationController() {
+		return activationController_;
 	}
 
 	public AcquisitionPanel getAcquisitionPanel() {

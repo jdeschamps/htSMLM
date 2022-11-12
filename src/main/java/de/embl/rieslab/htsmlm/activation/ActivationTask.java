@@ -1,9 +1,8 @@
 package de.embl.rieslab.htsmlm.activation;
 
-import de.embl.rieslab.htsmlm.ActivationPanel;
 import de.embl.rieslab.htsmlm.activation.processor.ActivationProcessor;
-import de.embl.rieslab.htsmlm.activation.processor.ActivationProcessorConfigurator;
-import de.embl.rieslab.htsmlm.activation.processor.ReadImagePairsPlugin;
+import de.embl.rieslab.htsmlm.activation.utils.ActivationParameters;
+import de.embl.rieslab.htsmlm.activation.utils.ActivationResults;
 import de.embl.rieslab.htsmlm.activation.utils.NMSUtils;
 import de.embl.rieslab.htsmlm.utils.Pair;
 import de.embl.rieslab.htsmlm.utils.Peak;
@@ -17,12 +16,12 @@ import de.embl.rieslab.htsmlm.utils.NMS;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.SwingWorker;
 
 import org.micromanager.Studio;
 import org.micromanager.data.Image;
-import org.micromanager.data.ProcessorConfigurator;
 
 import mmcorej.CMMCore;
 
@@ -33,100 +32,49 @@ import mmcorej.CMMCore;
  *
  */
 public class ActivationTask {
-	public static int PARAM_DYNFACTOR = 0;
-	public static int PARAM_FEEDBACK = 1;
-	public static int PARAM_CUTOFF = 2;
-	public static int PARAM_AUTOCUTOFF = 3;
-	public static int PARAM_dT = 4;
-	public static int PARAM_N0 = 5;
-	public static int PARAM_PULSE = 6;
-	public static int PARAM_MAXPULSE = 7;
-	public static int PARAM_ACTIVATE = 8;
-	public static int OUTPUT_NEWCUTOFF = 0;
-	public static int OUTPUT_N = 1;
-	public static int OUTPUT_NEWPULSE = 2;
-	public static int NUM_PARAMETERS = 9;
-	public static int NUM_OUTPUTS = 3;
 
 	private static double LOW_QUANTILE = 0.2;
 	private static double HIGH_QUANTILE = 0.8;
 
-	private Studio studio_;
 	private CMMCore core_;
-	private ActivationPanel holder_;
+	private ActivationController activationController_;
 	private int idletime_;
 	private AutomatedActivation worker_;
-	private boolean running_;
-	private Double[] output_;
+	private AtomicBoolean running_;
+	private ActivationResults output_;
 	private ImageProcessor ip_;
 	private ActivationProcessor processor_;
 	
 	private double dp;
 
-	public ActivationTask(ActivationPanel holder, Studio studio, int idle){
-		running_ = false;
+	public ActivationTask(ActivationController activationController, Studio studio, int idle){
+		running_ = new AtomicBoolean(false);
 		
-		studio_ = studio;
 		core_ = studio.core();
 		idletime_ = idle;
 
-		holder_ = holder;
+		activationController_ = activationController;
 		
 		dp = 0;
-		
-		output_ = new Double[3];
-		output_[0] = 0.;
-		output_[1] = 0.;
-		output_[2] = 0.;
-		
+		output_ = new ActivationResults();
 		processor_ = ActivationProcessor.getInstance();
 	}
 
 		
-	public void startTask() {
-		// add processor 
-		addReadImagePairsProcessor();
-		
+	public void startTask() {		
 		// start activation
 		worker_ = new AutomatedActivation();
 		worker_.execute();
-		running_ = true;
+		running_.set(true);
 	}
 	
-	
-	private void addReadImagePairsProcessor() {
-		// TODO move all this to controller
-		// TODO this will stop working for compiled htSMLM !!
-
-		// list processors
-		List<ProcessorConfigurator> configurator_list = studio_.data().getLivePipelineConfigurators(false);
-		int n_act = 0;
-		int act_hash = ActivationProcessorConfigurator.getInstance(null).hashCode();
-		for(ProcessorConfigurator o: configurator_list) {
-			// check if it is the activation processor
-			if(o.hashCode() == act_hash) {
-				// count the number of activation processors
-				n_act++;
-			}
-		}
-		
-		// if there are no processor or multiple
-		if(n_act == 0) { 
-			// add processor
-			studio_.data().addAndConfigureProcessor(new ReadImagePairsPlugin());
-		} else if(n_act > 1) {
-			// remove them and only add one
-			studio_.data().clearPipeline();
-			studio_.data().addAndConfigureProcessor(new ReadImagePairsPlugin());
-		}
-	}
 
 	public void stopTask() {
-		running_ = false;
+		running_.set(false);
 	}
 
 	public boolean isRunning() {
-		return running_;
+		return running_.get();
 	}
 	
 	public void setIdleTime(int idle){
@@ -260,18 +208,17 @@ public class ActivationTask {
 			// filter peak list based on the cutoff
 			ArrayList<Peak> peaks = NMSUtils.filterPeaks(nms, newcutoff);
 
-			// TODO change how parameters are passed back to UI
 			// apply cutoff
 			ip_ = NMSUtils.applyCutoff(nms, peaks);
 
 			// create output
-			output_[OUTPUT_NEWCUTOFF] = newcutoff;
-			output_[OUTPUT_N] = (double) peaks.size();
+			output_.setNewCutoff(newcutoff);
+			output_.setNewN(peaks.size());
 		}
 	}
 	
 	private void getPulse(double feedbackParameter, double N0, double currentPulse, double maxpulse){
-		double N = output_[OUTPUT_N];
+		double N = output_.getNewN();
 		double newPulse;
 		
 		if(core_.isSequenceRunning()){		
@@ -311,41 +258,38 @@ public class ActivationTask {
 		}
 
 		// update the output
-		output_[OUTPUT_NEWPULSE] = newPulse;
+		output_.setNewPulse(newPulse);
 	}
 
-	public void update(Double[] outputs) {
-		holder_.update(outputs);
+	public void update(ActivationResults output) {
+		activationController_.updateResults(output);
 	}
 
 	public ImageProcessor getNMSResult(){
 		return ip_;
 	}
 
-	private class AutomatedActivation extends SwingWorker<Integer, Double[]> {
+	private class AutomatedActivation extends SwingWorker<Integer, ActivationResults> {
 		
 		@Override
 		protected Integer doInBackground() throws Exception {
 			Thread.currentThread().setName("Activation task");
-			
-			Double[] params;
-			
-			while(running_){
+					
+			while(running_.get()){
 				
 				if(core_.isSequenceRunning()) {
-					params = holder_.retrieveAllParameters();
+					ActivationParameters parameters = activationController_.retrieveAllParameters();
 									
-					// TODO: sanity checks here?
-					if(params[PARAM_AUTOCUTOFF] == 1){
-						getN(params[PARAM_DYNFACTOR],params[PARAM_CUTOFF],params[PARAM_dT],true);
+					if(parameters.getAutoCutoff()){
+						getN(parameters.getDynamicFactor(), parameters.getCutoff(), parameters.getdT(), true);
 					} else {
-						getN(params[PARAM_DYNFACTOR],params[PARAM_CUTOFF],params[PARAM_dT],false);
+						getN(parameters.getDynamicFactor(), parameters.getCutoff(), parameters.getdT(), false);
 					}
 					
-					if(params[PARAM_ACTIVATE] == 1){
-						getPulse(params[PARAM_FEEDBACK],params[PARAM_N0],params[PARAM_PULSE],params[PARAM_MAXPULSE]);
+					if(parameters.getActivate()){
+						getPulse(parameters.getFeedbackParameter(), parameters.getN0(), parameters.getCurrentPulse(), parameters.getMaxPulse());
 					} else {
-						output_[OUTPUT_NEWPULSE] = params[PARAM_PULSE];
+						output_.setNewPulse(parameters.getCurrentPulse());
 					}
 					
 					publish(output_);
@@ -357,8 +301,8 @@ public class ActivationTask {
 		}
 
 		@Override
-		protected void process(List<Double[]> chunks) {
-			for(Double[] result : chunks){
+		protected void process(List<ActivationResults> chunks) {
+			for(ActivationResults result : chunks){
 				update(result);
 			}
 		}
