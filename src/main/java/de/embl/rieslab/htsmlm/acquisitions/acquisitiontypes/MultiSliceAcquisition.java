@@ -38,6 +38,8 @@ import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.NoPropertyFilter;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.PropertyFilter;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.SinglePropertyFilter;
 import de.embl.rieslab.htsmlm.activation.ActivationController;
+import de.embl.rieslab.htsmlm.activation.processor.ActivationContext;
+import de.embl.rieslab.htsmlm.activation.processor.ActivationProcessor;
 import mmcorej.CMMCore;
 import mmcorej.TaggedImage;
 import org.micromanager.internal.MMStudio;
@@ -788,6 +790,9 @@ public class MultiSliceAcquisition implements Acquisition {
 			try {
 				// creates store
 				Datastore store;
+				
+				// get instance of image processor
+				final ActivationProcessor imageProcessor = ActivationProcessor.getInstance();
 
 				// TODO in case users want to generate a metadata.txt, this will not be taken into account here
 				if (Datastore.SaveMode.MULTIPAGE_TIFF == savemode) {
@@ -796,7 +801,10 @@ public class MultiSliceAcquisition implements Acquisition {
 					store = studio.data().createSinglePlaneTIFFSeriesDatastore(path);
 				}
 
-				store.setSummaryMetadata(generateSummaryMetadata(studio, directory, name, params_.getNumberFrames()));
+				// set summary metadata
+				SummaryMetadata summaryMetaData = generateSummaryMetadata(studio, directory, name, params_.getNumberFrames());
+				store.setSummaryMetadata(summaryMetaData);
+				final ActivationContext processorContext = new ActivationContext(summaryMetaData);
 
 				// display and coordinate builder
 				DisplayWindow display = studio.displays().createDisplay(store);
@@ -812,10 +820,16 @@ public class MultiSliceAcquisition implements Acquisition {
 						if (core.getRemainingImageCount() > 0) {
 							TaggedImage tagged = core.popNextTaggedImage();
 
-							// Convert to an Image at the desired time point
+							// convert to an Image at the desired time point
 							Image image = studio.data().convertTaggedImage(tagged, cb.t(curFrame).build(), generateMetadata(studio, metadata));
+							
+							// pass image to the processor for the activation
+							imageProcessor.processImage(image, processorContext);
 
+							// store image
 							store.putImage(image);
+							
+							// increment frame
 							curFrame++;
 						} else {
 							core.sleep(5);
@@ -831,11 +845,11 @@ public class MultiSliceAcquisition implements Acquisition {
 				}
 
 				// close store
-				store.close();
 				display.close();
+				store.close();
 			} catch (Exception e) {
 				e.printStackTrace();
-				System.out.println("[htSMLM] Acquisition failed.");
+				studio.logs().logDebugMessage("[htSMLM] Acquisition failed.");
 			}
 
 			isRunning_ = false;
