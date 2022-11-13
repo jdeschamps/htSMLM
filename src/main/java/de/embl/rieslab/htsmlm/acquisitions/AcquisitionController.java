@@ -108,7 +108,7 @@ public class AcquisitionController{
 	
 					if (!b) {
 						// report problem saving
-						System.out.println("[htSMLM] Error writing acquisition list");
+						systemController_.getStudio().logs().logDebugMessage("[htSMLM] Error writing acquisition list");
 					}
 	
 					task_.startTask();
@@ -140,7 +140,10 @@ public class AcquisitionController{
 	 * @return True if it is, false otherwise.
 	 */
 	public boolean isAcquisitionRunning() {
-		return task_.isRunning();
+		if(task_ != null){
+			return task_.isRunning();
+		}
+		return false;
 	}
 	
 	/**
@@ -248,7 +251,7 @@ public class AcquisitionController{
 		infoPanel_.setSummaryText(exp_);
 		acquisitionPanel_.updateSummary();
 	}
-
+	
 	/**
 	 * Shut down. 
 	 */
@@ -263,6 +266,13 @@ public class AcquisitionController{
 		return systemController_.getStudio().getPositionListManager().getPositionList().getNumberOfPositions();
 	}
 
+	public int getCurrentPositionIndex() {
+		if(task_ != null){
+			return task_.getCurrentPosition();
+		}
+		return -1;
+	}
+	
 	public boolean isAcquisitionListEmpty() {
 		return exp_.getAcquisitionList().isEmpty();
 	}

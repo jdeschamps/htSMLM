@@ -33,6 +33,7 @@ import org.micromanager.display.DisplayWindow;
 
 import de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
 import de.embl.rieslab.emu.utils.EmuUtils;
+import de.embl.rieslab.htsmlm.acquisitions.AcquisitionController;
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory.AcquisitionType;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.NoPropertyFilter;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.PropertyFilter;
@@ -82,7 +83,9 @@ public class MultiSliceAcquisition implements Acquisition {
 	
 	public final static int NUM_KEYS = 12;
 
-	private ActivationController activationController_;
+	private final ActivationController activationController_;
+	private final AcquisitionController acquisitionController_;
+	
 	private boolean useactivation_, stoponmax_, nullActivation_;
 	private volatile boolean stopAcq_, running_;
 	private int stoponmaxdelay_;
@@ -96,17 +99,22 @@ public class MultiSliceAcquisition implements Acquisition {
 	private boolean focusLockAtZ0_, disableFocusLock_, actAtSt;
 	private String activationName_ = "None";
 
-	public MultiSliceAcquisition(ActivationController activationtask, double exposure, String[] zdevices, String defaultzdevice,
+	public MultiSliceAcquisition(AcquisitionController acquisitionController,
+								 double exposure, 
+								 String[] zdevices, 
+								 String defaultzdevice,
 			TwoStateUIProperty zStabilizationProperty) {
 
-		if (activationtask == null) {
+		if (acquisitionController.getActivationController() == null) {
 			nullActivation_ = true;
 			useactivation_ = false;
+			activationController_ = null;
 		} else {
 			nullActivation_ = false;
 			useactivation_ = true;
-			activationController_ = activationtask;
+			activationController_ = acquisitionController.getActivationController();
 		}
+		acquisitionController_ = acquisitionController;
 
 		stopAcq_ = false;
 		running_ = false;
@@ -887,7 +895,8 @@ public class MultiSliceAcquisition implements Acquisition {
 				.xPositionUm(mmstudio.cache().getStageX())
 				.yPositionUm(mmstudio.cache().getStageY())
 				.zPositionUm(mmstudio.cache().getStageZ())
-				.bitDepth(mmstudio.cache().getImageBitDepth());
+				.bitDepth(mmstudio.cache().getImageBitDepth())
+				.positionName("Position "+acquisitionController_.getCurrentPositionIndex());
 
 		try {
 			String binning = studio.core().getPropertyFromCache(camera, "Binning");

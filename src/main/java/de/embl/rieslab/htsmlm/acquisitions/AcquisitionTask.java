@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.SwingWorker;
 
@@ -40,6 +41,7 @@ public class AcquisitionTask{
 	private AcquisitionRun t;
 	private AcquisitionController acqController_;
 	private Experiment exp_;
+	private AtomicInteger currentPositionIndex_;
 	
 	private String expName_, expPath_; 
 	
@@ -54,6 +56,7 @@ public class AcquisitionTask{
 		expPath_ = expPath+File.separator+expName+File.separator;
 
 		acqController_ = acqController;
+		currentPositionIndex_ = new AtomicInteger(0);
 	}
 
 	/**
@@ -92,6 +95,15 @@ public class AcquisitionTask{
 	 */
 	public boolean isRunning() {
 		return running_;
+	}
+	
+	/**
+	 * Get the current stage position index.
+	 * 
+	 * @return Stage position index.
+	 */
+	public int getCurrentPosition() {
+		return currentPositionIndex_.get();
 	}
 
 	/**
@@ -135,6 +147,7 @@ public class AcquisitionTask{
 				// for each position
 				for (int i = 0; i < maxNumPosition; i++) {
 					// move to next stage position
+					currentPositionIndex_.set(i);
 					currPos = poslist.getPosition(i);
 					try {
 						

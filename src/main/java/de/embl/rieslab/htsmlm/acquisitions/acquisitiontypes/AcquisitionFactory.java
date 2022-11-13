@@ -73,7 +73,7 @@ public class AcquisitionFactory {
 					systemController_.getStudio());
 		} else if (type.equals(AcquisitionType.MULTISLICELOC.getTypeValue())) {
 			
-			return new MultiSliceAcquisition(acqController_.getActivationController(), getExposure(),
+			return new MultiSliceAcquisition(acqController_, getExposure(),
 					zDevices_, systemController_.getCore().getFocusDevice(), (TwoStateUIProperty) systemController_
 							.getProperty(acqController_.getAcquisitionParameterValue(AcquisitionPanel.PARAM_LOCKING)));
 			
