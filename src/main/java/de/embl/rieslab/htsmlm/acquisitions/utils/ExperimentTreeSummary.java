@@ -18,7 +18,7 @@ import de.embl.rieslab.htsmlm.acquisitions.wrappers.Experiment;
 
 public class ExperimentTreeSummary {
 
-	public static JPanel getExperiment(SystemController controller, Experiment exp){
+	public static JPanel getExperimentPanel(SystemController controller, Experiment exp){
 		DefaultMutableTreeNode top = new DefaultMutableTreeNode("List of experiments to be performed at each stage position:");
 
 	    DefaultMutableTreeNode expnode = null;

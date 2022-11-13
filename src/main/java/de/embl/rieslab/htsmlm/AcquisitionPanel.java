@@ -1,25 +1,16 @@
 package de.embl.rieslab.htsmlm;
 
-import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
 
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -27,7 +18,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.JToggleButton;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 import de.embl.rieslab.emu.controller.SystemController;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
@@ -37,8 +27,7 @@ import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.htsmlm.acquisitions.AcquisitionController;
 import de.embl.rieslab.htsmlm.acquisitions.utils.AcquisitionDialogs;
 import de.embl.rieslab.htsmlm.acquisitions.utils.AcquisitionInformationPanel;
-import de.embl.rieslab.htsmlm.acquisitions.utils.ExperimentTreeSummary;
-import de.embl.rieslab.htsmlm.constants.HTSMLMConstants;
+import de.embl.rieslab.htsmlm.acquisitions.utils.SummaryTreeController;
 import de.embl.rieslab.htsmlm.uipropertyflags.FocusStabFlag;
 import de.embl.rieslab.htsmlm.uipropertyflags.TwoStateFlag;
 
@@ -52,9 +41,10 @@ import de.embl.rieslab.htsmlm.uipropertyflags.TwoStateFlag;
 public class AcquisitionPanel extends ConfigurablePanel{
 		
 	private static final long serialVersionUID = 1L;
-	private SystemController controller_;
-	private AcquisitionController acqcontroller_;
-    private MainFrame mainFrame_;
+	private final SystemController systemController_;
+	private final AcquisitionController acqcontroller_;
+    private final MainFramehtSMLM mainFrame_;
+    private final SummaryTreeController summaryTree_;
     
     ///// Parameters
     public final static String PARAM_LOCKING = "Focus stabilization";
@@ -63,12 +53,10 @@ public class AcquisitionPanel extends ConfigurablePanel{
 	
     ///// Convenience variables
 	private String paramBFP_, paramLocking_, paramBrightField_;
-    private JFrame summaryframe_;
-    private boolean showSummaryTree_;
     
     ///// UI
     private JButton jButton_setpath;
-    private JToggleButton jToggle_startstop,jButton_showSummary;
+    private JToggleButton jToggle_startstop, jToggle_showSummary;
     private JButton jButton_load,jButton_configAcq,jButton_saveAcq;
     private JLabel jLabel_expname, jLabel_path, jLabel_progress;
     private JProgressBar jProgressBar_progress;
@@ -76,28 +64,29 @@ public class AcquisitionPanel extends ConfigurablePanel{
     private JTextField jTextField_path;
     private JTextPane jTextPane_progress;
     	
-	public AcquisitionPanel(SystemController controller, MainFrame owner){
+	public AcquisitionPanel(SystemController systemController, MainFramehtSMLM mainFrame){
 		super("Acquisitions");
 		
-		controller_ = controller;
-		mainFrame_ = owner;
-		showSummaryTree_ = false;
+		systemController_ = systemController;
+		mainFrame_ = mainFrame;
 		
 		// instantiate panels
 		initPanel();
 		
 		// create acquisition controller
-		acqcontroller_ = new AcquisitionController(controller, 
+		acqcontroller_ = new AcquisitionController(systemController, 
 												   this, 
 												   new AcquisitionInformationPanel(jTextPane_progress),
-												   mainFrame_.getActivationController());		
+												   mainFrame_.getActivationController());	
+		
+		// instantiate the summary tree controller
+		summaryTree_ = new SummaryTreeController(mainFrame_, systemController_, acqcontroller_, this, jToggle_showSummary);
 	}
 	
 	private void initPanel() {
 		// set path button
 	    jButton_setpath = new JButton("...");
 	    jButton_setpath.setToolTipText("Select the folder to save the experiments to.");
-        SwingUIListeners.addActionListenerToUnparametrizedAction(() -> showSelectPath(), jButton_setpath);
 
 	    // start/stop button
 	    jToggle_startstop = new JToggleButton("Start");
@@ -144,33 +133,18 @@ public class AcquisitionPanel extends ConfigurablePanel{
 	    // load an experiment
         jButton_load = new JButton("Load");
         jButton_load.setToolTipText("Load an experiment file (.uiacq).");
-        SwingUIListeners.addActionListenerToUnparametrizedAction(() -> loadAcquisitionList(), jButton_load);
         
         // show configuration wizard window
         jButton_configAcq = new JButton("Configure");
         jButton_configAcq.setToolTipText("Start the acquisition wizard to create a set of acquisitions.");
-        SwingUIListeners.addActionListenerToUnparametrizedAction(() -> showAcquisitionConfiguration(), jButton_configAcq);
         
         // save acquisition button
         jButton_saveAcq = new JButton("Save as");
         jButton_saveAcq.setToolTipText("Save the current acquisition list to a file of your choice.");
-        SwingUIListeners.addActionListenerToUnparametrizedAction(() -> saveAcquisitionList(), jButton_saveAcq);
 
         // show summary button
-        jButton_showSummary = new JToggleButton(">>");        
-        jButton_showSummary.setToolTipText("Show the acquisition list summary tree.");
-        jButton_showSummary.addItemListener(new ItemListener(){
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				if(e.getStateChange()==ItemEvent.SELECTED){
-					showSummary(true);
-					jButton_showSummary.setText("<<");
-				} else if(e.getStateChange()==ItemEvent.DESELECTED){
-					showSummary(false);
-					jButton_showSummary.setText(">>");
-				}
-			}
-        });
+        jToggle_showSummary = new JToggleButton(">>");        
+        jToggle_showSummary.setToolTipText("Show the acquisition list summary tree.");
         
         // labels
         jLabel_path = new JLabel("Path");
@@ -243,7 +217,7 @@ public class AcquisitionPanel extends ConfigurablePanel{
 		c.gridy = 3;
 		c.gridwidth = 1;
 		c.weightx =0.1;
-		this.add(jButton_showSummary, c);	 
+		this.add(jToggle_showSummary, c);	 
 
 		c.gridx = 0;
 		c.gridy = 4;
@@ -287,83 +261,7 @@ public class AcquisitionPanel extends ConfigurablePanel{
     	}
 	}
 
-	private void showAcquisitionConfiguration(){
-		acqcontroller_.startWizard();
-	}
-	
-	private void loadAcquisitionList(){
-		JFileChooser fileChooser = new JFileChooser();
-		FileNameExtensionFilter filter = new FileNameExtensionFilter("Acquisition list", HTSMLMConstants.ACQ_EXT);
-		fileChooser.setFileFilter(filter);
-		int result = fileChooser.showOpenDialog(new JFrame());
-		if (result == JFileChooser.APPROVE_OPTION) {
-		    File selectedFile = fileChooser.getSelectedFile();
-		    String path = selectedFile.getAbsolutePath();
-		    
-		    // load
-		    acqcontroller_.loadExperiment(path);
-	    }
-	}
 
-	private void saveAcquisitionList() {
-		if(acqcontroller_.isAcquisitionListEmpty()){
-			AcquisitionDialogs.showNoAcqMessage();
-		} else {	
-			JFileChooser fileChooser = new JFileChooser();
-			FileNameExtensionFilter filter = new FileNameExtensionFilter("Acquisition list", HTSMLMConstants.ACQ_EXT);
-			fileChooser.setFileFilter(filter);
-			int result = fileChooser.showSaveDialog(new JFrame());
-			if (result == JFileChooser.APPROVE_OPTION) {
-				File selectedFile = fileChooser.getSelectedFile();
-				String parentFolder = selectedFile.getParent();
-				String fileName = selectedFile.getName();
-				
-				// save
-				acqcontroller_.saveExperiment(parentFolder, fileName);
-			}
-		}
-	}
-	
-	/////////////////////////////////////////////////////////////////////////////
-	//////
-	////// Tree summary methods
-	//////
-	private Point getSummaryButtonLocation(){
-		Point newLoc = jButton_showSummary.getLocation();
-
-		newLoc.x += mainFrame_.getAcquisitionPanelLocation().getX()+100;
-		newLoc.y += mainFrame_.getAcquisitionPanelLocation().getY()+48;
-		
-		return newLoc;
-	}
-	
-	private void showSummary(boolean b){
-		if(b){
-			showSummaryTree_ = true;
-			summaryframe_ = new JFrame("Acquisitions summary");
-			summaryframe_.setLocation(getSummaryButtonLocation());
-			summaryframe_.setUndecorated(true);
-			summaryframe_.setContentPane(ExperimentTreeSummary.getExperiment(controller_, acqcontroller_.getExperiment()));
-			summaryframe_.pack();
-			summaryframe_.setVisible(true);
-		} else {
-			showSummaryTree_ = false;
-			if(summaryframe_ != null){
-				summaryframe_.dispose();
-			}
-		}
-	}
-	
-	/**
-	 * Update the summary panel.
-	 */
-	public void updateSummary() {
-		if (showSummaryTree_) {
-			showSummary(false); // this is a quick fix, surely there is a better way
-			showSummary(true);
-		}
-	}
-	
 	/////////////////////////////////////////////////////////////////////////////
 	//////
 	////// PropertyPanel methods
@@ -440,9 +338,7 @@ public class AcquisitionPanel extends ConfigurablePanel{
 	@Override
 	public void shutDown() {
 		acqcontroller_.shutDown();
-		if(summaryframe_ != null){
-			summaryframe_.dispose();
-		}
+		summaryTree_.shutDown();
 	}
 
 	@Override
@@ -508,47 +404,26 @@ public class AcquisitionPanel extends ConfigurablePanel{
 		jToggle_startstop.setSelected(false);
 		jToggle_startstop.setText("Start");
 	}
+	
+	public SummaryTreeController getSummaryTreeController() {
+		return summaryTree_;
+	}
 
 	@Override
 	protected void addComponentListeners() {
-		/*
-		 * Sync the position of the summary frame with that of the main window.
-		 */
-		mainFrame_.addComponentListener(new ComponentAdapter() {
-            public void componentMoved(ComponentEvent evt) {
-				Point newLoc = getSummaryButtonLocation();
-				if (summaryframe_ != null) {
-					summaryframe_.setLocation(newLoc);
-					summaryframe_.toFront();
-					summaryframe_.repaint();
-				}
-            }
-          });
-		
-		mainFrame_.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowDeactivated(WindowEvent e) {
-				if (summaryframe_ != null) {
-					summaryframe_.setAlwaysOnTop(false);
-				}
-            }
-
-            @Override
-            public void windowActivated(WindowEvent e) {
-				if (summaryframe_ != null) {
-					summaryframe_.setAlwaysOnTop(true);
-				}
-            }
-            
-            @Override
-            public void windowIconified(WindowEvent e) {
-            	if ((mainFrame_.getExtendedState() & Frame.ICONIFIED) != 0) {
-					if (summaryframe_ != null) {
-						summaryframe_.setAlwaysOnTop(false);
-						summaryframe_.toBack();
-					}
-                  }
-             }
-        });
+		// select path
+        SwingUIListeners.addActionListenerToUnparametrizedAction(() -> showSelectPath(), jButton_setpath);
+        
+        // load experiment
+        SwingUIListeners.addActionListenerToUnparametrizedAction(() -> acqcontroller_.loadAcquisitionList(), jButton_load);
+        
+        // save experiment
+        SwingUIListeners.addActionListenerToUnparametrizedAction(() -> acqcontroller_.saveAcquisitionList(), jButton_saveAcq);
+        
+        // show configuration wizard
+        SwingUIListeners.addActionListenerToUnparametrizedAction(() -> acqcontroller_.startWizard(), jButton_configAcq);
+        
+        // show/hide summary tree
+        SwingUIListeners.addActionListenerToBooleanAction((b) -> summaryTree_.showSummary(b), jToggle_showSummary);
 	}
 }

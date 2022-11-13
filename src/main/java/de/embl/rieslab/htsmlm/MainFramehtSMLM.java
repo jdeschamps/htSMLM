@@ -19,7 +19,7 @@ import de.embl.rieslab.emu.utils.settings.Setting;
 import de.embl.rieslab.emu.utils.settings.StringSetting;
 import de.embl.rieslab.htsmlm.activation.ActivationController;
 
-public class MainFrame extends ConfigurableMainFrame{
+public class MainFramehtSMLM extends ConfigurableMainFrame{
 
 	private static final long serialVersionUID = 1L;
 
@@ -52,7 +52,7 @@ public class MainFrame extends ConfigurableMainFrame{
 	private JTabbedPane tab;
 
 	
-	public MainFrame(String title, SystemController controller, TreeMap<String, String> pluginSettings) {
+	public MainFramehtSMLM(String title, SystemController controller, TreeMap<String, String> pluginSettings) {
 		super(title, controller, pluginSettings);
 	}
 
@@ -66,13 +66,13 @@ public class MainFrame extends ConfigurableMainFrame{
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainFramehtSMLM.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainFramehtSMLM.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainFramehtSMLM.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainFramehtSMLM.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
         setupPanels();
@@ -211,7 +211,6 @@ public class MainFrame extends ConfigurableMainFrame{
 		acqPanel = new AcquisitionPanel(getController(), this);
 		tab.add("Acquisition", acqPanel);
 		
-		
 		/*c3.gridx = 0;
 		c3.gridy = 0;
 		c3.gridwidth = 3;
@@ -250,6 +249,10 @@ public class MainFrame extends ConfigurableMainFrame{
 	public ActivationController getActivationController(){
     	return activationPanel.getActivationController();
     }
+	
+	public JTabbedPane getTab() {
+		return tab;
+	}
 
 	@SuppressWarnings("rawtypes")
 	@Override

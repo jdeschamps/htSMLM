@@ -1,11 +1,15 @@
 package de.embl.rieslab.htsmlm.acquisitions;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import java.util.HashMap;
 import java.util.Iterator;
 
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import de.embl.rieslab.emu.controller.SystemController;
 import de.embl.rieslab.emu.ui.uiparameters.UIPropertyParameter;
@@ -18,6 +22,7 @@ import de.embl.rieslab.htsmlm.acquisitions.ui.AcquisitionWizard;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.AllocatedPropertyFilter;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.NonPresetGroupPropertyFilter;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.ReadOnlyPropertyFilter;
+import de.embl.rieslab.htsmlm.acquisitions.utils.AcquisitionDialogs;
 import de.embl.rieslab.htsmlm.acquisitions.utils.AcquisitionInformationPanel;
 import de.embl.rieslab.htsmlm.acquisitions.wrappers.Experiment;
 import de.embl.rieslab.htsmlm.activation.ActivationController;
@@ -249,8 +254,42 @@ public class AcquisitionController{
 	public void setExperiment(Experiment exp){
 		exp_ = exp;
 		infoPanel_.setSummaryText(exp_);
-		acquisitionPanel_.updateSummary();
+		acquisitionPanel_.getSummaryTreeController().updateSummary();
 	}
+
+	public void loadAcquisitionList(){
+		JFileChooser fileChooser = new JFileChooser();
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("Acquisition list", HTSMLMConstants.ACQ_EXT);
+		fileChooser.setFileFilter(filter);
+		int result = fileChooser.showOpenDialog(new JFrame());
+		if (result == JFileChooser.APPROVE_OPTION) {
+		    File selectedFile = fileChooser.getSelectedFile();
+		    String path = selectedFile.getAbsolutePath();
+		    
+		    // load
+		    loadExperiment(path);
+	    }
+	}
+
+	public void saveAcquisitionList() {
+		if(isAcquisitionListEmpty()){
+			AcquisitionDialogs.showNoAcqMessage();
+		} else {	
+			JFileChooser fileChooser = new JFileChooser();
+			FileNameExtensionFilter filter = new FileNameExtensionFilter("Acquisition list", HTSMLMConstants.ACQ_EXT);
+			fileChooser.setFileFilter(filter);
+			int result = fileChooser.showSaveDialog(new JFrame());
+			if (result == JFileChooser.APPROVE_OPTION) {
+				File selectedFile = fileChooser.getSelectedFile();
+				String parentFolder = selectedFile.getParent();
+				String fileName = selectedFile.getName();
+				
+				// save
+				saveExperiment(parentFolder, fileName);
+			}
+		}
+	}
+	
 	
 	/**
 	 * Shut down. 
