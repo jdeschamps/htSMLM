@@ -166,7 +166,9 @@ public class SummaryTreeController {
 	 * Dispose of the summary tree window.
 	 */
 	public void shutDown() {
-		summaryFrame_.dispose();		
+		if(summaryFrame_ != null) {
+			summaryFrame_.dispose();
+		}
 	}
 
 }
