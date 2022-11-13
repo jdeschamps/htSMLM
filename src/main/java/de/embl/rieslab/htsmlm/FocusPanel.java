@@ -99,8 +99,7 @@ public class FocusPanel extends ConfigurablePanel {
 			updater_ = new TimeChartUpdater(graph_, getUIProperty(FOCUS_POSITION), idle_);
 		} catch (UnknownUIPropertyException e) {
 			// do nothing
-			// TODO would be more elegant to at least show some user feedback in case of
-			// failure.
+			// TODO would be more elegant to at least show some user feedback in case of failure.
 		}
 
 		// create border

@@ -6,6 +6,12 @@ import de.embl.rieslab.emu.controller.SystemController;
 import de.embl.rieslab.emu.plugin.UIPlugin;
 import de.embl.rieslab.emu.ui.ConfigurableMainFrame;
 
+/**
+ * Main EMU class instantiating the ConfigurableMainFrame.
+ * 
+ * @author Joran Deschamps
+ *
+ */
 public class HTSMLM implements UIPlugin{
 
 	@Override
