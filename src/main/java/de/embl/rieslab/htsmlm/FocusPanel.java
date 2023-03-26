@@ -467,5 +467,13 @@ public class FocusPanel extends ConfigurablePanel {
 		} catch (IncorrectUIPropertyTypeException exception) {
 			exception.printStackTrace();
 		}
+		SwingUIListeners.addActionListenerToBooleanAction(b -> {
+			textfieldPosition_.setEnabled(!b);
+			buttonLargeStepsUp_.setEnabled(!b);
+			buttonSmallStepsUp_.setEnabled(!b);
+			buttonSmallStepsDown_.setEnabled(!b);
+			buttonLargeStepsDown_.setEnabled(!b);
+				}, togglebuttonLock_);
+
 	}
 }
