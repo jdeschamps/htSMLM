@@ -1,0 +1,7 @@
+pluginName = "de.embl.rieslab.emu.EMUPlugin";
+
+mp = mm.plugins().getMenuPlugins();
+plugin = mp.get(pluginName);
+if (plugin != null) {
+	plugin.onPluginSelected();
+}
