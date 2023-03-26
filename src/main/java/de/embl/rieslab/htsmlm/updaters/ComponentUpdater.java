@@ -5,7 +5,6 @@ import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.SwingWorker;
 
-import com.nativelibs4java.opencl.library.IOpenCLLibrary;
 import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 
 /**
