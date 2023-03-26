@@ -70,7 +70,14 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 	private void setupPanel() {
 		// define border
 		this.setLayout(new GridBagLayout());
-		border_ = BorderFactory.createTitledBorder(null, getPanelLabel(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, new Color(0,0,0));
+		border_ = BorderFactory.createTitledBorder(
+				null,
+				getPanelLabel(),
+				TitledBorder.DEFAULT_JUSTIFICATION,
+				TitledBorder.DEFAULT_POSITION,
+				null,
+				new Color(0,0,0)
+		);
 		this.setBorder(border_);
 		border_.setTitleFont(((TitledBorder) this.getBorder()).getTitleFont().deriveFont(Font.BOLD, 12));
 	

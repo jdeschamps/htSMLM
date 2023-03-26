@@ -36,8 +36,8 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 	private static final long serialVersionUID = 1L;
 	
 	//////// Components
-	private JToggleButton[] togglebuttons1_;
-	private JToggleButton[] togglebuttons2_;
+	private JToggleButton[] toggleButtons1_;
+	private JToggleButton[] toggleButtons2_;
 	private TitledBorder border1_;
 	private TitledBorder border2_;
 	
@@ -98,24 +98,24 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 		ButtonGroup group2=new ButtonGroup();
 
 		// add buttons to the first panel
-		togglebuttons1_ = new JToggleButton[NUM_POS];
-		for(int i=0;i<togglebuttons1_.length;i++){
+		toggleButtons1_ = new JToggleButton[NUM_POS];
+		for(int i = 0; i< toggleButtons1_.length; i++){
 			// instantiate button
-			togglebuttons1_[i] = new JToggleButton();
-			togglebuttons1_[i].setToolTipText("Set the first filter property to the "+i+"th position (as defined in the wizard).");
+			toggleButtons1_[i] = new JToggleButton();
+			toggleButtons1_[i].setToolTipText("Set the first filter property to the "+i+"th position (as defined in the wizard).");
 			
 			// add to panel and group
 			c.gridx = i;
-			pane1.add(togglebuttons1_[i], c);
-			group1.add(togglebuttons1_[i]);
+			pane1.add(toggleButtons1_[i], c);
+			group1.add(toggleButtons1_[i]);
 			
 			// set item listener
-			togglebuttons1_[i].addItemListener(new ItemListener(){
+			toggleButtons1_[i].addItemListener(new ItemListener(){
 				@Override
 				public void itemStateChanged(ItemEvent e) {
 					if(e.getStateChange()==ItemEvent.SELECTED){
-						int pos = getSelectedButtonNumber(togglebuttons1_);
-						if(pos>=0 && pos<togglebuttons1_.length){
+						int pos = getSelectedButtonNumber(toggleButtons1_);
+						if(pos>=0 && pos< toggleButtons1_.length){
 							// set the UI property to the corresponding position.
 							setUIPropertyValueByStateIndex(SLIDER1_POSITION,pos);
 						}				
@@ -126,22 +126,22 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 
 		// add buttons to the second panel
 		c.gridy = 1;
-		togglebuttons2_ = new JToggleButton[NUM_POS];
-		for(int i=0;i<togglebuttons2_.length;i++){
-			togglebuttons2_[i] = new JToggleButton();
-			togglebuttons2_[i].setToolTipText("Set the second filter property to the "+i+"th position (as defined in the wizard).");
+		toggleButtons2_ = new JToggleButton[NUM_POS];
+		for(int i = 0; i< toggleButtons2_.length; i++){
+			toggleButtons2_[i] = new JToggleButton();
+			toggleButtons2_[i].setToolTipText("Set the second filter property to the "+i+"th position (as defined in the wizard).");
 			
 			c.gridx = i;
-			pane2.add(togglebuttons2_[i], c);
+			pane2.add(toggleButtons2_[i], c);
 			
-			group2.add(togglebuttons2_[i]);
+			group2.add(toggleButtons2_[i]);
 			
-			togglebuttons2_[i].addItemListener(new ItemListener(){
+			toggleButtons2_[i].addItemListener(new ItemListener(){
 				@Override
 				public void itemStateChanged(ItemEvent e) {
 					if(e.getStateChange()==ItemEvent.SELECTED){
-						int pos = getSelectedButtonNumber(togglebuttons2_);
-						if(pos>=0 && pos<togglebuttons2_.length){
+						int pos = getSelectedButtonNumber(toggleButtons2_);
+						if(pos>=0 && pos< toggleButtons2_.length){
 							// set the UI property to the corresponding position.
 							setUIPropertyValueByStateIndex(SLIDER2_POSITION,pos);
 						}				
@@ -206,9 +206,9 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 	private void setNames(int panelIndex){
 		if(panelIndex == 0){
 			String[] astr = names1_.split(",");
-			int maxind = togglebuttons1_.length > astr.length ? astr.length : togglebuttons1_.length;
+			int maxind = toggleButtons1_.length > astr.length ? astr.length : toggleButtons1_.length;
 			for(int i=0;i<maxind;i++){
-				togglebuttons1_[i].setText(astr[i]);
+				toggleButtons1_[i].setText(astr[i]);
 			}
 			try {
 				((MultiStateUIProperty) getUIProperty(SLIDER1_POSITION)).setStateNames(astr);
@@ -217,9 +217,9 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 			}
 		} else if(panelIndex==1){	
 			String[] astr = names2_.split(",");
-			int maxind = togglebuttons2_.length > astr.length ? astr.length : togglebuttons2_.length;
+			int maxind = toggleButtons2_.length > astr.length ? astr.length : toggleButtons2_.length;
 			for(int i=0;i<maxind;i++){
-				togglebuttons2_[i].setText(astr[i]);
+				toggleButtons2_[i].setText(astr[i]);
 			}
 			try {
 				((MultiStateUIProperty) getUIProperty(SLIDER2_POSITION)).setStateNames(astr);
@@ -237,15 +237,15 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 	private void setColors(int j){
 		if(j == 0){
 			String[] astr = colors1_.split(",");
-			int maxind = togglebuttons1_.length > astr.length ? astr.length : togglebuttons1_.length;
+			int maxind = toggleButtons1_.length > astr.length ? astr.length : toggleButtons1_.length;
 			for(int i=0;i<maxind;i++){
-				togglebuttons1_[i].setForeground(ColorRepository.getColor(astr[i]));
+				toggleButtons1_[i].setForeground(ColorRepository.getColor(astr[i]));
 			}
 		} else if(j==1){	
 			String[] astr = colors2_.split(",");
-			int maxind = togglebuttons2_.length > astr.length ? astr.length : togglebuttons2_.length;
+			int maxind = toggleButtons2_.length > astr.length ? astr.length : toggleButtons2_.length;
 			for(int i=0;i<maxind;i++){
-				togglebuttons2_[i].setForeground(ColorRepository.getColor(astr[i]));
+				toggleButtons2_[i].setForeground(ColorRepository.getColor(astr[i]));
 			}
 		}
 	}
@@ -325,8 +325,8 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 				pos = ((MultiStateUIProperty) getUIProperty(SLIDER1_POSITION)).getStateIndex(newvalue);
 				
 				// select the corresponding button
-				if(pos < togglebuttons1_.length){
-					togglebuttons1_[pos].setSelected(true);
+				if(pos < toggleButtons1_.length){
+					toggleButtons1_[pos].setSelected(true);
 				}
 			} catch (UnknownUIPropertyException e) {
 				e.printStackTrace();
@@ -338,8 +338,8 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 				pos = ((MultiStateUIProperty) getUIProperty(SLIDER2_POSITION)).getStateIndex(newvalue);	
 				
 				// select the corresponding button		
-				if(pos<togglebuttons2_.length){
-					togglebuttons2_[pos].setSelected(true);
+				if(pos< toggleButtons2_.length){
+					toggleButtons2_[pos].setSelected(true);
 				}
 			} catch (UnknownUIPropertyException e) {
 				e.printStackTrace();

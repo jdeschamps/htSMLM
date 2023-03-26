@@ -224,9 +224,9 @@ public class AcquisitionFactory {
 	
 	public Experiment readAcquisitionList(String path){	
 		ArrayList<Acquisition> acqlist = new ArrayList<Acquisition>();
-		int waitingtime = 3;
-		int numpos = 0;
-		String savemode = Experiment.MULTITIFFS;
+		int waitingTime = 3;
+		int numPos = 0;
+		String saveMode = Experiment.MULTITIFFS;
 
 		// read experiment
 		try {
@@ -236,9 +236,9 @@ public class AcquisitionFactory {
 			ArrayList<AcquisitionWrapper> acqwlist = expw.acquisitionList;	
 
 			// for the moment ignore name and path Strings
-			waitingtime = expw.pauseTime;
-			numpos = expw.numberPositions;
-			savemode = expw.savemode;
+			waitingTime = expw.pauseTime;
+			numPos = expw.numberPositions;
+			saveMode = expw.savemode;
 			
 			if(acqwlist != null && !acqwlist.isEmpty()){
 				for(int i=0;i<acqwlist.size();i++){
@@ -298,7 +298,7 @@ public class AcquisitionFactory {
 			e.printStackTrace();
 		}
 		
-		return new Experiment(waitingtime, numpos, Experiment.getSaveModeFromString(savemode), acqlist);
+		return new Experiment(waitingTime, numPos, Experiment.getSaveModeFromString(saveMode), acqlist);
 	}
 	
 	static private void configureGeneralAcquistion(Acquisition acq, AcquisitionWrapper acqw){

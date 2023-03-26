@@ -7,8 +7,8 @@ public class ReadOnlyPropertyFilter extends PropertyFilter {
 	public ReadOnlyPropertyFilter(){
 	}
 
-	public ReadOnlyPropertyFilter(PropertyFilter additionalfilter){
-		super(additionalfilter);
+	public ReadOnlyPropertyFilter(PropertyFilter additionalFilter){
+		super(additionalFilter);
 	}
 
 	

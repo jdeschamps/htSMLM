@@ -4,22 +4,22 @@ import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 
 public class SinglePropertyFilter extends PropertyFilter{
 
-	private String excludedprop_;
+	private String excludedProp_;
 	
-	public SinglePropertyFilter(String excludedproperty){
-		excludedprop_ = excludedproperty;
+	public SinglePropertyFilter(String excludedProperty){
+		excludedProp_ = excludedProperty;
 	}
 	
-	public SinglePropertyFilter(String excludedproperty, PropertyFilter additionalfilter){
-		super(additionalfilter);
+	public SinglePropertyFilter(String excludedProperty, PropertyFilter additionalFilter){
+		super(additionalFilter);
 		
-		excludedprop_ = excludedproperty;
+		excludedProp_ = excludedProperty;
 	}
 
 	
 	@Override
 	public boolean filterOut(UIProperty property) {
-		if(property.getPropertyLabel().equals(excludedprop_)){
+		if(property.getPropertyLabel().equals(excludedProp_)){
 			return true;
 		}
 		return false;

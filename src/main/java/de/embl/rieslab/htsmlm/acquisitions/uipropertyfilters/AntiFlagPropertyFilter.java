@@ -11,8 +11,8 @@ public class AntiFlagPropertyFilter extends PropertyFilter {
 		flag_ = flag;
 	}
 
-	public AntiFlagPropertyFilter(PropertyFlag flag, PropertyFilter additionalfilter){
-		super(additionalfilter);
+	public AntiFlagPropertyFilter(PropertyFlag flag, PropertyFilter additionalFilter){
+		super(additionalFilter);
 		
 		flag_ = flag;
 	}

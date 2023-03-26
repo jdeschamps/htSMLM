@@ -4,8 +4,8 @@ import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 
 public class NonPresetGroupPropertyFilter extends PropertyFilter {
 
-	public NonPresetGroupPropertyFilter(PropertyFilter additionalfilter){
-		super(additionalfilter);
+	public NonPresetGroupPropertyFilter(PropertyFilter additionalFilter){
+		super(additionalFilter);
 	}
 	
 	@Override

@@ -399,7 +399,7 @@ public class LocalizationAcquisition implements Acquisition {
 				// not pretty but I could not find any other way to stop the acquisition without getting a JDialog popping up and requesting user input
 				((DefaultAcquisitionManager) studio.acquisitions()).getAcquisitionEngine().stop(true);
 				
-				//((DefaultAcquisitionManager) studio.acquisitions()).haltAcquisition();
+				//studio.acquisitions().haltAcquisition();
 				//((DefaultAcquisitionManager) studio.acquisitions()).getAcquisitionEngine().abortRequested();
 			} catch (Exception e) {
 				e.printStackTrace();

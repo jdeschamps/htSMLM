@@ -41,8 +41,10 @@ import de.embl.rieslab.htsmlm.uipropertyflags.TwoStateFlag;
 public class AcquisitionPanel extends ConfigurablePanel{
 		
 	private static final long serialVersionUID = 1L;
+
+
 	private final SystemController systemController_;
-	private final AcquisitionController acqcontroller_;
+	private final AcquisitionController acqController_;
     private final MainFramehtSMLM mainFrame_;
     private final SummaryTreeController summaryTree_;
     
@@ -55,12 +57,12 @@ public class AcquisitionPanel extends ConfigurablePanel{
 	private String paramBFP_, paramLocking_, paramBrightField_;
     
     ///// UI
-    private JButton jButton_setpath;
-    private JToggleButton jToggle_startstop, jToggle_showSummary;
+    private JButton jButton_setPath;
+    private JToggleButton jToggle_startStop, jToggle_showSummary;
     private JButton jButton_load,jButton_configAcq,jButton_saveAcq;
-    private JLabel jLabel_expname, jLabel_path, jLabel_progress;
+    private JLabel jLabel_expName, jLabel_path, jLabel_progress;
     private JProgressBar jProgressBar_progress;
-    private JTextField jTextField_expname;
+    private JTextField jTextField_expName;
     private JTextField jTextField_path;
     private JTextPane jTextPane_progress;
     	
@@ -74,24 +76,24 @@ public class AcquisitionPanel extends ConfigurablePanel{
 		initPanel();
 		
 		// create acquisition controller
-		acqcontroller_ = new AcquisitionController(systemController, 
+		acqController_ = new AcquisitionController(systemController,
 												   this, 
 												   new AcquisitionInformationPanel(jTextPane_progress),
 												   mainFrame_.getActivationController());	
 		
 		// instantiate the summary tree controller
-		summaryTree_ = new SummaryTreeController(mainFrame_, systemController_, acqcontroller_, this, jToggle_showSummary);
+		summaryTree_ = new SummaryTreeController(mainFrame_, systemController_, acqController_, this, jToggle_showSummary);
 	}
 	
 	private void initPanel() {
 		// set path button
-	    jButton_setpath = new JButton("...");
-	    jButton_setpath.setToolTipText("Select the folder to save the experiments to.");
+	    jButton_setPath = new JButton("...");
+	    jButton_setPath.setToolTipText("Select the folder to save the experiments to.");
 
 	    // start/stop button
-	    jToggle_startstop = new JToggleButton("Start");
-	    jToggle_startstop.setToolTipText("Start/stop the experiments.");
-	    jToggle_startstop.addActionListener(new ActionListener() {
+	    jToggle_startStop = new JToggleButton("Start");
+	    jToggle_startStop.setToolTipText("Start/stop the experiments.");
+	    jToggle_startStop.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
 				AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
 				boolean selected = abstractButton.getModel().isSelected();
@@ -103,29 +105,29 @@ public class AcquisitionPanel extends ConfigurablePanel{
 					if(path == null || path.equals("")){
 						// invalid path
 						AcquisitionDialogs.showNoPathMessage();
-						jToggle_startstop.setSelected(false);
+						jToggle_startStop.setSelected(false);
 					} else if(name == null || name.equals("")){
 						// invalid name
 						AcquisitionDialogs.showNoNameMessage();	
-						jToggle_startstop.setSelected(false);
-					} else if(acqcontroller_.isAcquisitionListEmpty()){
+						jToggle_startStop.setSelected(false);
+					} else if(acqController_.isAcquisitionListEmpty()){
 						// no acquisition
 						AcquisitionDialogs.showNoAcqMessage();
-						jToggle_startstop.setSelected(false);
+						jToggle_startStop.setSelected(false);
 					} else {
 						// start acquisitions
-						boolean b = acqcontroller_.startAcquisition();
+						boolean b = acqController_.startAcquisition();
 						if(b){
-							jToggle_startstop.setText("Stop");
-							jProgressBar_progress.setMaximum(acqcontroller_.getNumberOfPositions());
+							jToggle_startStop.setText("Stop");
+							jProgressBar_progress.setMaximum(acqController_.getNumberOfPositions());
 						} else {
-							jToggle_startstop.setSelected(false);
+							jToggle_startStop.setSelected(false);
 						}
 					}
 				} else {
 					// stop acquisitions
-					jToggle_startstop.setText("Start");
-					acqcontroller_.stopAcquisition();
+					jToggle_startStop.setText("Start");
+					acqController_.stopAcquisition();
 				}
 			}
 		});
@@ -148,7 +150,7 @@ public class AcquisitionPanel extends ConfigurablePanel{
         
         // labels
         jLabel_path = new JLabel("Path");
-        jLabel_expname = new JLabel("Experiment name");
+        jLabel_expName = new JLabel("Experiment name");
         jLabel_progress = new JLabel("Progress");
 
         // experiment progress bar
@@ -156,8 +158,8 @@ public class AcquisitionPanel extends ConfigurablePanel{
 	    jProgressBar_progress.setMinimum(0);
         
 	    // experiment name and path
-	    jTextField_expname = new JTextField();
-	    jTextField_expname.setToolTipText("Experiment name.");
+	    jTextField_expName = new JTextField();
+	    jTextField_expName.setToolTipText("Experiment name.");
 	    jTextField_path = new JTextField();
 	    jTextField_path.setToolTipText("Experiment path.");
 	    
@@ -186,7 +188,7 @@ public class AcquisitionPanel extends ConfigurablePanel{
 
 		c.gridx = 0;
 		c.gridy = 2;
-		this.add(jLabel_expname, c);
+		this.add(jLabel_expName, c);
 
 		c.gridx = 1;
 		c.gridy = 1;
@@ -195,13 +197,13 @@ public class AcquisitionPanel extends ConfigurablePanel{
 		
 		c.gridx = 1;
 		c.gridy = 2;
-		this.add(jTextField_expname, c);
+		this.add(jTextField_expName, c);
 
 		c.gridx = 3;
 		c.gridy = 0;
 		c.gridwidth = 1;
 		c.weightx =0.1;
-		this.add(jButton_setpath, c);	
+		this.add(jButton_setPath, c);
 		
 		// progress 
 		c.gridx = 0;
@@ -233,7 +235,7 @@ public class AcquisitionPanel extends ConfigurablePanel{
 		GridLayout gridlayout = new GridLayout(0,4);
 		lower.setLayout(gridlayout);
 
-		lower.add(jToggle_startstop);
+		lower.add(jToggle_startStop);
 		lower.add(jButton_configAcq);
 		lower.add(jButton_saveAcq);
 		lower.add(jButton_load);
@@ -337,7 +339,7 @@ public class AcquisitionPanel extends ConfigurablePanel{
 
 	@Override
 	public void shutDown() {
-		acqcontroller_.shutDown();
+		acqController_.shutDown();
 		summaryTree_.shutDown();
 	}
 
@@ -384,7 +386,7 @@ public class AcquisitionPanel extends ConfigurablePanel{
 	 * @return Experiment name as a string.
 	 */
 	public String getExperimentName() {
-		return jTextField_expname.getText();
+		return jTextField_expName.getText();
 	}
 
 	
@@ -401,8 +403,8 @@ public class AcquisitionPanel extends ConfigurablePanel{
 	 * Unselect the start/stop button and set its text to "stop".
 	 */
 	public void showStop(){
-		jToggle_startstop.setSelected(false);
-		jToggle_startstop.setText("Start");
+		jToggle_startStop.setSelected(false);
+		jToggle_startStop.setText("Start");
 	}
 	
 	public SummaryTreeController getSummaryTreeController() {
@@ -412,16 +414,16 @@ public class AcquisitionPanel extends ConfigurablePanel{
 	@Override
 	protected void addComponentListeners() {
 		// select path
-        SwingUIListeners.addActionListenerToUnparametrizedAction(() -> showSelectPath(), jButton_setpath);
+        SwingUIListeners.addActionListenerToUnparametrizedAction(() -> showSelectPath(), jButton_setPath);
         
         // load experiment
-        SwingUIListeners.addActionListenerToUnparametrizedAction(() -> acqcontroller_.loadAcquisitionList(), jButton_load);
+        SwingUIListeners.addActionListenerToUnparametrizedAction(() -> acqController_.loadAcquisitionList(), jButton_load);
         
         // save experiment
-        SwingUIListeners.addActionListenerToUnparametrizedAction(() -> acqcontroller_.saveAcquisitionList(), jButton_saveAcq);
+        SwingUIListeners.addActionListenerToUnparametrizedAction(() -> acqController_.saveAcquisitionList(), jButton_saveAcq);
         
         // show configuration wizard
-        SwingUIListeners.addActionListenerToUnparametrizedAction(() -> acqcontroller_.startWizard(), jButton_configAcq);
+        SwingUIListeners.addActionListenerToUnparametrizedAction(() -> acqController_.startWizard(), jButton_configAcq);
         
         // show/hide summary tree
         SwingUIListeners.addActionListenerToBooleanAction((b) -> summaryTree_.showSummary(b), jToggle_showSummary);

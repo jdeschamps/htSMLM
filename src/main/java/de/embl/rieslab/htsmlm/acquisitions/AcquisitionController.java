@@ -42,7 +42,7 @@ public class AcquisitionController{
 	private AcquisitionInformationPanel infoPanel_;
 	private Experiment exp_;
 	private AcquisitionWizard wizard_;
-	private AcquisitionTask task_;
+	private AcquisitionTask acquisitionTask_;
 	private ActivationController activationController_;
 
 	public AcquisitionController(SystemController controller, 
@@ -53,11 +53,11 @@ public class AcquisitionController{
 		acquisitionPanel_ = owner;
 		activationController_ = activationController;
 		
-		// initiate info panel
+		// instantiate info panel
 		infoPanel_ = infoPanel;
 		infoPanel_.setInitialText();
 		
-		// placeholder experiment
+		// place-holder experiment
 		exp_ = new Experiment(0, 0, systemController_.getStudio().data().getPreferredSaveMode(), new ArrayList<Acquisition>());
 	}
 	
@@ -103,7 +103,7 @@ public class AcquisitionController{
 		final String folderPath = acquisitionPanel_.getExperimentPath();
 		
 		if(!isAcquisitionListEmpty() && folderPath != null && experimentName != null && !folderPath.equals("")){	
-			task_ = new AcquisitionTask(this, systemController_, exp_, experimentName, folderPath);
+			acquisitionTask_ = new AcquisitionTask(this, systemController_, exp_, experimentName, folderPath);
 	
 			Thread t = new Thread("Run acquisitions") {
 				public void run() {
@@ -116,7 +116,7 @@ public class AcquisitionController{
 						systemController_.getStudio().logs().logDebugMessage("[htSMLM] Error writing acquisition list");
 					}
 	
-					task_.startTask();
+					acquisitionTask_.startTask();
 				}
 	
 			};
@@ -134,8 +134,8 @@ public class AcquisitionController{
 	 * Stop acquisition.
 	 */
 	public void stopAcquisition() {
-		if(task_ != null){
-			task_.stopTask();
+		if(acquisitionTask_ != null){
+			acquisitionTask_.stopTask();
 		}
 	}
 	
@@ -145,8 +145,8 @@ public class AcquisitionController{
 	 * @return True if it is, false otherwise.
 	 */
 	public boolean isAcquisitionRunning() {
-		if(task_ != null){
-			return task_.isRunning();
+		if(acquisitionTask_ != null){
+			return acquisitionTask_.isRunning();
 		}
 		return false;
 	}
@@ -183,16 +183,19 @@ public class AcquisitionController{
 	public void startWizard() {
 		// first, let's grab all the current property values
 		// create a filter: no read only -> only allocated -> non preset group
-		NonPresetGroupPropertyFilter filteredProperties = new NonPresetGroupPropertyFilter(new AllocatedPropertyFilter(new ReadOnlyPropertyFilter()));
+		NonPresetGroupPropertyFilter filteredProperties =
+				new NonPresetGroupPropertyFilter(
+						new AllocatedPropertyFilter(
+								new ReadOnlyPropertyFilter()
+						)
+				);
 		HashMap<String, UIProperty> props = filteredProperties.filterProperties(systemController_.getPropertiesMap());
 		
 		// create map of all property values
 		HashMap<String, String> propValues = new HashMap<String, String>();
-		Iterator<String> it = props.keySet().iterator();
-		while(it.hasNext()) {
-			String s = it.next();
-			propValues.put(s, props.get(s).getPropertyValue());
-		}
+		props.keySet().stream().forEach(
+				k -> propValues.put(k, props.get(k).getPropertyValue())
+		);
 		
 		// start the acquisition wizard
 		if(!isAcquisitionListEmpty()){
@@ -215,7 +218,7 @@ public class AcquisitionController{
 			infoPanel_.setAcquisitionLoaded();	
 			infoPanel_.setSummaryText(exp_);
 		
-			// for the moment there is no mechanism to get the expname and exppath
+			// TODO for the moment there is no mechanism to get the expname and exppath
 		}
 	}
 	
@@ -249,7 +252,7 @@ public class AcquisitionController{
 	/**
 	 * Set experiment and update the UI.
 	 * 
-	 * @param exp
+	 * @param exp Experiment
 	 */
 	public void setExperiment(Experiment exp){
 		exp_ = exp;
@@ -257,6 +260,9 @@ public class AcquisitionController{
 		acquisitionPanel_.getSummaryTreeController().updateSummary();
 	}
 
+	/**
+	 * Load acquisition list from a file.
+	 */
 	public void loadAcquisitionList(){
 		JFileChooser fileChooser = new JFileChooser();
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("Acquisition list", HTSMLMConstants.ACQ_EXT);
@@ -306,8 +312,8 @@ public class AcquisitionController{
 	}
 
 	public int getCurrentPositionIndex() {
-		if(task_ != null){
-			return task_.getCurrentPosition();
+		if(acquisitionTask_ != null){
+			return acquisitionTask_.getCurrentPosition();
 		}
 		return -1;
 	}

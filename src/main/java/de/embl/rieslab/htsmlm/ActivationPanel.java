@@ -92,7 +92,7 @@ public class ActivationPanel extends ConfigurablePanel {
 		c.weightx = 0.2;
 		c.weighty = 0.9;
 		c.fill = GridBagConstraints.VERTICAL;
-		this.add(getleftpanel(),c);  
+		this.add(getLeftPanel(),c);
 		
 		c.gridx = 1;
 		c.gridy = 0;
@@ -101,7 +101,7 @@ public class ActivationPanel extends ConfigurablePanel {
 		c.weightx = 0.8;
 		c.weighty = 0.8;
 		c.fill = GridBagConstraints.BOTH;
-		this.add(getgraphpanel(),c);
+		this.add(getGraphPanel(),c);
 		
 		c.gridx = 1;
 		c.gridy = 3;
@@ -109,11 +109,11 @@ public class ActivationPanel extends ConfigurablePanel {
 		c.gridheight = 1;
 		c.weighty = 0.03;
 		c.fill = GridBagConstraints.HORIZONTAL;
-		this.add(getlowerpanel(),c);
+		this.add(getLowerPanel(),c);
 		
 	}
 	
-	public JPanel getleftpanel() {
+	public JPanel getLeftPanel() {
 		JPanel pane = new JPanel();
 		pane.setLayout(new GridBagLayout());
 
@@ -212,14 +212,14 @@ public class ActivationPanel extends ConfigurablePanel {
 		return pane;	
 	}
 	
-	public JPanel getgraphpanel(){
+	public JPanel getGraphPanel(){
 		graphPanel_ = new JPanel();
 		graph_ = newGraph();
 		graphPanel_.add(graph_.getChart());
 		return graphPanel_;
 	}
 	
-	public JPanel getlowerpanel(){
+	public JPanel getLowerPanel(){
 		JPanel pane = new JPanel();
 		pane.setLayout(new GridBagLayout());
 				
