@@ -10,9 +10,10 @@ htSMLM is an [EMU]( https://github.com/jdeschamps/EMU ) plugin, and as such, it 
 
 Here is a brief overview of the GUI and what can be parameterized in the configuration:
 
-- Laser pulse/power panel with logarithmic scale, aimed at finely tuning an activation laser for localization microscopy. 
+- Laser pulse/power panel with logarithmic scale, aimed at finely tuning an activation laser for localization microscopy.
   - Text and color of the title
   - Default value for the maximum pulse/power
+  - Names of the two laser activation one can choose from
 - Control for the power of four independent lasers, with on/off and power percentage.
   - Text and color of the title
   - Enable/disable the On/Off button
@@ -40,5 +41,5 @@ Here is a brief overview of the GUI and what can be parameterized in the configu
   - Linear transformation parameters
   - Wavelengths (for display purposes)
   - Monitoring parameters
-- An activation tab to perform UV activation in localization microscopy
+- An activation tab to perform activation in localization microscopy
 - An automated acquisition tool compatible with localization microscopy

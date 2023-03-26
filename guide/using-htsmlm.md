@@ -29,7 +29,7 @@ This section assumes that htSMLM has been properly [configured](configuration.md
 
 The activation laser panel displays a logarithmic scale with a user-defined maximum value. It corresponds to a two GUI properties: "**Pulse duration # (main frame)**" (where # is 1 or 2). While it is intended for pulse durations in us, it can be used with absolute laser power or power percentage, albeit with reduced dynamical range.
 
-- Activation 1/2: allows switching between two activations.
+- Activation 1 or 2: allows switching between two activations.
 - Slider: change the laser pulse / power up to the maximum value.
 - Top text field (gray background): change the maximum value allowed for the laser pulse / power. The value must be an integer.
 - Bottom text field: change the laser pulse / power up to the maximum value. Decimals are accepted.
@@ -55,7 +55,7 @@ htSMLM has four main laser control panels. Each laser control panel interacts wi
     - User-defined percentage button: selecting the button sets the GUI property to the displayed percentage.
     - Text field: choose the user-defined percentage. Note that by changing the user-defined percentage, the GUI property is only change if the button is currently selected.
 
-The laser name and color are GUI parameters. Additionally, Laser 0 name and color are linked to the activation laser panel.
+The laser name and color are GUI parameters.
 
 Note that the laser percentage GUI property can be mapped to an absolute laser power, as long as the slope parameter (properties tab in the EMU configuration wizard) rescales the power to the range 0-100.
 
@@ -135,7 +135,7 @@ In case Micro-Manager has trouble with refreshing an image display during acquis
 
 The laser trigger tab was meant to be used with [MicroFPGA](https://github.com/jdeschamps/MicroFPGA), an electronic platform that allows flexible laser triggering, among other things. Refer to MicroFPGA to understand the different triggering parameters and how to set-up the system.
 
-Since this panel is specific for the MicroFPGA project, the device properties are named exactly as the GUI properties, although you don't have to match the numbers: the device property "Mode0" should be mapped to one of the **Laser # trigger mode** GUI properties, and likewise for pulse duration and sequence.
+Since this panel is specific for the MicroFPGA project, the device properties are named exactly as the GUI properties, although you don't have to match the numbers: the device property "Mode0" should be mapped to one of the **Laser trigger # mode** GUI properties, and likewise for pulse duration and sequence.
 
 Here is a short summary of the panel's function:
 
@@ -150,7 +150,6 @@ Here is a short summary of the panel's function:
 
 The trigger sequence turns red if a digit other than 0 or 1 is entered. It turns blue if there are too many or too few digits.
 
-**Note**: The slider of the first laser ("activation laser" in the example) is linked to the slider in the activation laser panel (see the default panels section). In particular, they obey the same maximum.
 
 #### Powermeter tab
 
@@ -200,7 +199,7 @@ htSMLM provides an activation script that can be used to increase the activation
   <img height="280" src="img/activation.png">
 </p>
 
-The activation script estimates the number of molecules at each cycle, compare it to a user-defined target number and increase/decrease the activation laser pulse duration (**UV pulse duration (activation)**) to bring the estimated number of molecules closer to the target number.
+The activation script estimates the number of molecules at each cycle, compare it to a user-defined target number and increase/decrease the activation laser pulse duration (**Pulse duration # (activation)**) to bring the estimated number of molecules closer to the target number.
 
 ### GUI
 
@@ -213,7 +212,7 @@ Here are the GUI functionalities:
 - **Get N**: by clicking on the button, the N text field is updated with the most recent estimated number of molecules.
 - **N text field**: target number of molecules.
 - **Activate**: when the checkbox is selected, the pulse duration is updated. If the checkbox is not selected, then the script can run without updating the pulse duration. This allows setting the parameters without causing uncontrolled changes of the pulse duration.
-- **Activation 1/2**: selects the activation laser.
+- **Activation 1/2**: selects the activation laser. Note: the names can be changed in the parameters section of the configuration wizard.
 - **Run**: start/stop the activation script. Note that starting the activation will open the On-the-fly processor pipeline. The activation processor is used to extract the frames necessary to the number of emitters estimation.
 - **Cut-off field**: users can enter here a cut-off value. If **auto** is selected, the cut-off field is updated with the automatically calculated cut-off. We recommend always using this option.
 - **Auto**: select to automatically calculate the cut-off at every cycle.
@@ -244,7 +243,6 @@ The number of points shown in the graph, as well as the time between two updates
    6. If the new pulse is larger than the **maximum pulse** (set in the GUI, in the activation laser pulse panel), then *p(t+1)* = **maximum pulse**.
 3. Finally, the activation laser pulse length is updated.
 
-> **Note**: the activation script has been written for 16 bits depth cameras, and will not work for 8 bits one. This would be quite simple to fix, if this is your case, please open an issue on Github.
 
 ------
 
