@@ -106,7 +106,7 @@ public class MainFramehtSMLM extends ConfigurableMainFrame{
 		c2.gridheight = 3;
 		c2.weightx = 0.2;
 		c2.weighty = 0.8;
-		pulsePanel = new LaserPulsingPanel("Laser 0");
+		pulsePanel = new LaserPulsingPanel("Pulsing");
 		upperpane.add(pulsePanel,c2);
 
 		c2.gridx = 1;
@@ -189,7 +189,7 @@ public class MainFramehtSMLM extends ConfigurableMainFrame{
 			lasertrigg.setLayout(new GridLayout(2,2));
 			triggerPanels = new LaserTriggerPanel[4];
 			for(int i=0;i<triggerPanels.length;i++){
-				triggerPanels[i] = new LaserTriggerPanel("Laser "+i+" trigger");
+				triggerPanels[i] = new LaserTriggerPanel("Laser trigger "+i);
 				lasertrigg.add(triggerPanels[i]);
 			}
 			tab.add("Trigger", lasertrigg);

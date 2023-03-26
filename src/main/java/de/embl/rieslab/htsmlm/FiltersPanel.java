@@ -34,7 +34,7 @@ public class FiltersPanel extends AbstractFiltersPanel {
 	private static final long serialVersionUID = 1L;
 
 	//////// Components
-	private JToggleButton[] togglebuttons_;
+	private JToggleButton[] toggleButtons_;
 	private TitledBorder border_;
 	
 	//////// Properties
@@ -74,22 +74,22 @@ public class FiltersPanel extends AbstractFiltersPanel {
 
 		ButtonGroup group=new ButtonGroup();
 
-		togglebuttons_ = new JToggleButton[NUM_POS];
-		for(int i=0;i<togglebuttons_.length;i++){
-			togglebuttons_[i] = new JToggleButton();
-			togglebuttons_[i].setToolTipText("Set the filter property to the "+i+"th position (as defined in the wizard).");
+		toggleButtons_ = new JToggleButton[NUM_POS];
+		for(int i = 0; i< toggleButtons_.length; i++){
+			toggleButtons_[i] = new JToggleButton();
+			toggleButtons_[i].setToolTipText("Set the filter property to the "+i+"th position (as defined in the wizard).");
 			
 			c.gridx = i;
-			this.add(togglebuttons_[i], c);
+			this.add(toggleButtons_[i], c);
 			
-			group.add(togglebuttons_[i]);
+			group.add(toggleButtons_[i]);
 			
-			togglebuttons_[i].addItemListener(new ItemListener(){
+			toggleButtons_[i].addItemListener(new ItemListener(){
 				@Override
 				public void itemStateChanged(ItemEvent e) {
 					if(e.getStateChange()==ItemEvent.SELECTED){
 						int pos = getSelectedButtonNumber();
-						if(pos>=0 && pos<togglebuttons_.length){
+						if(pos>=0 && pos< toggleButtons_.length){
 							setUIPropertyValueByStateIndex(FW_POSITION,pos);
 						}				
 					} 
@@ -103,8 +103,8 @@ public class FiltersPanel extends AbstractFiltersPanel {
 	protected int getSelectedButtonNumber() {
 		int val=-1;
 		
-		for(int i=0;i<togglebuttons_.length;i++){
-			if(togglebuttons_[i].isSelected()){
+		for(int i = 0; i< toggleButtons_.length; i++){
+			if(toggleButtons_[i].isSelected()){
 				return i;
 			}
 		}
@@ -112,23 +112,32 @@ public class FiltersPanel extends AbstractFiltersPanel {
 	}
 	
 	private void setNames(){
-		String[] astr = names_.split(",");
-		int maxind = togglebuttons_.length > astr.length ? astr.length : togglebuttons_.length; 
-		for(int i=0;i<maxind;i++){
-			togglebuttons_[i].setText(astr[i]);
+		String[] nameList = names_.split(",");
+		int maxInd = toggleButtons_.length > nameList.length ? nameList.length : toggleButtons_.length;
+		for(int i=0;i<maxInd;i++){
+			toggleButtons_[i].setText(nameList[i]);
 		}
 		try {
-			((MultiStateUIProperty) getUIProperty(FW_POSITION)).setStateNames(astr);
+			((MultiStateUIProperty) getUIProperty(FW_POSITION)).setStateNames(nameList);
 		} catch (UnknownUIPropertyException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	private void setColors(){
-		String[] astr = colors_.split(",");
-		int maxind = togglebuttons_.length > astr.length ? astr.length : togglebuttons_.length;
-		for(int i=0;i<maxind;i++){
-			togglebuttons_[i].setForeground(ColorRepository.getColor(astr[i]));
+		String[] colorList = colors_.split(",");
+
+		// remove leading spaces
+		for(int i=0; i<colorList.length; i++){
+			if(colorList[i].charAt(0) == ' '){
+				colorList[i] = colorList[i].substring(1);
+			}
+		}
+
+		// apply colors
+		int maxInd = Math.min(toggleButtons_.length, colorList.length);
+		for(int i=0;i<maxInd;i++){
+			toggleButtons_[i].setForeground(ColorRepository.getColor(colorList[i]));
 		}
 	}
 	
@@ -184,12 +193,12 @@ public class FiltersPanel extends AbstractFiltersPanel {
 	}
 
 	@Override
-	public void propertyhasChanged(String name, String newvalue) {
+	public void propertyhasChanged(String name, String V) {
 		if(FW_POSITION.equals(name)){
 			try {
-				int pos = ((MultiStateUIProperty) getUIProperty(FW_POSITION)).getStateIndex(newvalue);
-				if(pos<togglebuttons_.length){
-					togglebuttons_[pos].setSelected(true);
+				int pos = ((MultiStateUIProperty) getUIProperty(FW_POSITION)).getStateIndex(V);
+				if(pos< toggleButtons_.length){
+					toggleButtons_[pos].setSelected(true);
 				}
 			} catch (UnknownUIPropertyException e) {
 				e.printStackTrace();
