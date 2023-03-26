@@ -43,15 +43,15 @@ public class IBeamSmartPanel extends ConfigurablePanel {
 	private static final long serialVersionUID = 1L;
 
 	//////// Components
-	private JTextField textfieldUserPower_;
+	private JTextField textFieldUserPower_;
 	private JSlider sliderPower_;
 	private JSlider sliderFinea_;
 	private JSlider sliderFineb_;
 	private JToggleButton togglebuttonLaserOnOff_;
 	private ToggleSlider togglebuttonExternalTrigger_;
 	private ToggleSlider togglesliderenableFine_;
-	private JLabel fineaperc_;
-	private JLabel finebperc_;
+	private JLabel fineaPerc_;
+	private JLabel finebPerc_;
 
 	//////// Properties
 	private static final String LASER_OPERATION = "operation";
@@ -81,9 +81,9 @@ public class IBeamSmartPanel extends ConfigurablePanel {
 	private void setupPanel() {
 		///////////////////////////////////// set-up components
 		// Power text field
-		textfieldUserPower_ = new JTextField(String.valueOf(max_power));
-		textfieldUserPower_.setPreferredSize(new Dimension(35,20));
-		textfieldUserPower_.setToolTipText("Sets the power of the laser.");
+		textFieldUserPower_ = new JTextField(String.valueOf(max_power));
+		textFieldUserPower_.setPreferredSize(new Dimension(35,20));
+		textFieldUserPower_.setToolTipText("Sets the power of the laser.");
 
 		
 		// slider channel 1
@@ -113,8 +113,8 @@ public class IBeamSmartPanel extends ConfigurablePanel {
 		togglesliderenableFine_ = new ToggleSlider();
 		togglesliderenableFine_.setToolTipText("Turn fine on/off.");	
 		
-		fineaperc_ = new JLabel("100 %");
-		finebperc_ = new JLabel("100 %");
+		fineaPerc_ = new JLabel("100 %");
+		finebPerc_ = new JLabel("100 %");
 
 		// others
 		JLabel fineAperc = new JLabel("a");
@@ -139,7 +139,7 @@ public class IBeamSmartPanel extends ConfigurablePanel {
 		panelOperation.add(power, c2);
 
 		c2.gridx = 2;
-		panelOperation.add(textfieldUserPower_, c2);
+		panelOperation.add(textFieldUserPower_, c2);
 		
 
 		c2.gridx = 3;
@@ -208,11 +208,11 @@ public class IBeamSmartPanel extends ConfigurablePanel {
 		cfine.ipadx = 5;
 		cfine.gridwidth = 1;
 		cfine.insets = new Insets(2,35,2,2);
-		panelFine.add(fineaperc_, cfine);
+		panelFine.add(fineaPerc_, cfine);
 		
 		cfine.gridy = 2;
 		cfine.insets = new Insets(2,35,2,2);
-		panelFine.add(finebperc_, cfine);
+		panelFine.add(finebPerc_, cfine);
 		
 		cardFine.add(panelFine, ENABLED);
 		cardFine.add(new JPanel(), DISABLED);
@@ -285,7 +285,7 @@ public class IBeamSmartPanel extends ConfigurablePanel {
 				// update the text field and slider
 				double val = Double.parseDouble(newvalue);
 				if(val>=0 && val<=max_power){
-					textfieldUserPower_.setText(String.valueOf(val));
+					textFieldUserPower_.setText(String.valueOf(val));
 					sliderPower_.setValue((int) val);	
 				}
 			}
@@ -295,9 +295,9 @@ public class IBeamSmartPanel extends ConfigurablePanel {
 				double val = Double.parseDouble(newvalue);
 				if(val>=0 && val<=100){
 					if(val < 100){
-						fineaperc_.setText("  "+String.valueOf(val)+" %");				
+						fineaPerc_.setText("  "+String.valueOf(val)+" %");
 					} else {
-						fineaperc_.setText(String.valueOf(val)+" %");		
+						fineaPerc_.setText(String.valueOf(val)+" %");
 					}	
 					sliderFinea_.setValue((int) val);	
 				}
@@ -308,9 +308,9 @@ public class IBeamSmartPanel extends ConfigurablePanel {
 				double val = Double.parseDouble(newvalue);
 				if(val>=0 && val<=100){	
 					if(val < 100){
-						finebperc_.setText("  "+String.valueOf(val)+" %");				
+						finebPerc_.setText("  "+String.valueOf(val)+" %");
 					} else {
-						finebperc_.setText(String.valueOf(val)+" %");		
+						finebPerc_.setText(String.valueOf(val)+" %");
 					}	
 					sliderFineb_.setValue((int) val);	
 				}
@@ -421,18 +421,18 @@ public class IBeamSmartPanel extends ConfigurablePanel {
 	@Override
 	protected void addComponentListeners() {		
 		// text field changes power and updates the slider
-		SwingUIListeners.addActionListenerOnIntegerValue(this, getPropertyName(LASER_POWER), textfieldUserPower_, sliderPower_);
+		SwingUIListeners.addActionListenerOnIntegerValue(this, getPropertyName(LASER_POWER), textFieldUserPower_, sliderPower_);
 
 		// slider changes power and updates the text field  
-		SwingUIListeners.addActionListenerOnIntegerValue(this, getPropertyName(LASER_POWER), sliderPower_, textfieldUserPower_);
+		SwingUIListeners.addActionListenerOnIntegerValue(this, getPropertyName(LASER_POWER), sliderPower_, textFieldUserPower_);
 
 		// slider fine a changes percentage of the fine a
 		SwingUIListeners.addActionListenerOnIntegerValue(this, getPropertyName(LASER_PERCFINEA), sliderFinea_,
-				fineaperc_, "", " %");
+				fineaPerc_, "", " %");
 
 		// slider fine b changes percentage of the fine b
 		SwingUIListeners.addActionListenerOnIntegerValue(this, getPropertyName(LASER_PERCFINEA), sliderFineb_,
-				finebperc_, "", " %");
+				finebPerc_, "", " %");
 		
 		// toggle laser operation on/off
 		try {

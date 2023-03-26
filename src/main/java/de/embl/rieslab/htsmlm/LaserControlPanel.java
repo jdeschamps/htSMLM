@@ -337,12 +337,11 @@ public class LaserControlPanel extends ConfigurablePanel {
 			try {
 				// hide/show the slider card panel
 				useSlider_ = getBoolUIParameterValue(PARAM_SLIDER);
+				CardLayout cl = (CardLayout)(cardpanel_.getLayout());
 				if(useSlider_) {
-				    CardLayout cl = (CardLayout)(cardpanel_.getLayout());
-				    cl.show(cardpanel_, CARD_SLIDER);
+					cl.show(cardpanel_, CARD_SLIDER);
 				} else {
-				    CardLayout cl = (CardLayout)(cardpanel_.getLayout());
-				    cl.show(cardpanel_, CARD_BUTTONS);
+					cl.show(cardpanel_, CARD_BUTTONS);
 				}
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
@@ -353,7 +352,7 @@ public class LaserControlPanel extends ConfigurablePanel {
 	/**
 	 * Format the property label to the correct string.
 	 * 
-	 * @param propertyLabel Base of the property label
+	 * @param label Base of the property label
 	 * @return Correct property label including the panel label
 	 */
 	private String getPropertylabel(String label) {

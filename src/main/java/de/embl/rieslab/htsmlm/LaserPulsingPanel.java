@@ -262,7 +262,7 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 				}
 			} else if(EmuUtils.isFloat(newvalue)){
 				int val = Math.round(Float.parseFloat(newvalue));
-				double dval = Math.round(100.*Float.parseFloat(newvalue))/100;
+				double dval = Math.round(100.*Float.parseFloat(newvalue))/100.;
 
 				if(val > logSlider1_.getMaxWithin()){
 					logSlider1_.setValueWithin(logSlider1_.getMaxWithin());
@@ -287,7 +287,7 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 				}
 			} else if(EmuUtils.isFloat(newvalue)){
 				int val = Math.round(Float.parseFloat(newvalue));
-				double dval = Math.round(100.*Float.parseFloat(newvalue))/100;
+				double dval = Math.round(100.*Float.parseFloat(newvalue))/100.;
 
 				if(val > logSlider2_.getMaxWithin()){
 					logSlider2_.setValueWithin(logSlider2_.getMaxWithin());
