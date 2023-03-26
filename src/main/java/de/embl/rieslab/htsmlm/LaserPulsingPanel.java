@@ -227,14 +227,14 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 
 	@Override
 	protected void initializeParameters() {
-		title_ = "UV";	
+		title_ = "Activation";
 		color_ = Color.black;
 		maxPulse1_ = 10000;
 		maxPulse2_ = 10000;
 
-		addUIParameter(new StringUIParameter(this, PARAM_TITLE,"Laser name displayed on top of the laser "
-				+ "control panel in the GUI.",title_));
-		addUIParameter(new ColorUIParameter(this, PARAM_COLOR,"Color of the laser name as shown in the GUI.",color_));
+		addUIParameter(new StringUIParameter(this, PARAM_TITLE,"Name displayed on top of the pulse "
+				+ "control panel in the GUI (top left, with logarithmic scale).",title_));
+		addUIParameter(new ColorUIParameter(this, PARAM_COLOR,"Color of the activation section name as shown in the GUI (top left).",color_));
 				
 		String desc = "Default maximum value for the activation laser pulse length (or power). This default "
 				+ "value appears in the grey box at the top-left corner of the GUI. The value must be an integer.";

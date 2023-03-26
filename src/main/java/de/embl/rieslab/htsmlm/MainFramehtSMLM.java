@@ -106,7 +106,7 @@ public class MainFramehtSMLM extends ConfigurableMainFrame{
 		c2.gridheight = 3;
 		c2.weightx = 0.2;
 		c2.weighty = 0.8;
-		pulsePanel = new LaserPulsingPanel("Pulsing");
+		pulsePanel = new LaserPulsingPanel("Activation");
 		upperpane.add(pulsePanel,c2);
 
 		c2.gridx = 1;
