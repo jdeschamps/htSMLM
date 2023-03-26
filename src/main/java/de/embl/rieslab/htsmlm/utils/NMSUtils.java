@@ -1,4 +1,4 @@
-package de.embl.rieslab.htsmlm.activation.utils;
+package de.embl.rieslab.htsmlm.utils;
 
 import de.embl.rieslab.htsmlm.utils.NMS;
 import de.embl.rieslab.htsmlm.utils.Peak;

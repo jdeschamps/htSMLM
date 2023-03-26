@@ -3,7 +3,7 @@ package de.embl.rieslab.htsmlm.activation;
 import de.embl.rieslab.htsmlm.activation.processor.ActivationProcessor;
 import de.embl.rieslab.htsmlm.activation.utils.ActivationParameters;
 import de.embl.rieslab.htsmlm.activation.utils.ActivationResults;
-import de.embl.rieslab.htsmlm.activation.utils.NMSUtils;
+import de.embl.rieslab.htsmlm.utils.NMSUtils;
 import de.embl.rieslab.htsmlm.utils.Pair;
 import de.embl.rieslab.htsmlm.utils.Peak;
 

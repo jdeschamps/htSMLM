@@ -1,6 +1,6 @@
 package de.embl.rieslab.htsmlm.activation;
 
-import de.embl.rieslab.htsmlm.activation.utils.NMSUtils;
+import de.embl.rieslab.htsmlm.utils.NMSUtils;
 import de.embl.rieslab.htsmlm.utils.NMS;
 import de.embl.rieslab.htsmlm.utils.Peak;
 import ij.ImagePlus;

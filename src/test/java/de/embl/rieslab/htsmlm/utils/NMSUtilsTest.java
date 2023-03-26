@@ -1,11 +1,8 @@
-package de.embl.rieslab.htsmlm.activation.utils;
+package de.embl.rieslab.htsmlm.utils;
 
-import de.embl.rieslab.htsmlm.activation.ActivationTask;
-import de.embl.rieslab.htsmlm.constants.HTSMLMConstants;
 import de.embl.rieslab.htsmlm.utils.NMS;
+import de.embl.rieslab.htsmlm.utils.NMSUtils;
 import de.embl.rieslab.htsmlm.utils.Peak;
-import ij.ImageJ;
-import ij.ImagePlus;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import org.junit.Test;
