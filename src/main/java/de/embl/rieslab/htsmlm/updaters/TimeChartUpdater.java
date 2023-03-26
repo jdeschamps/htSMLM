@@ -15,10 +15,10 @@ public class TimeChartUpdater {
 	private UIProperty property_;
 	private volatile boolean running_ = false;
 	private boolean initialised_ = false;
-	private UIupdater task_;
-	private int idletime_;
+	private UIUpdater task_;
+	private int idleTime_;
 	
-	public TimeChartUpdater(TimeChart chart, UIProperty prop, int idletime){
+	public TimeChartUpdater(TimeChart chart, UIProperty prop, int idleTime){
 		
 		if(chart == null || prop == null) {
 			throw new NullPointerException();
@@ -26,7 +26,7 @@ public class TimeChartUpdater {
 		
 		chart_ = chart;
 		property_ = prop;
-		idletime_ = idletime;
+		idleTime_ = idleTime;
 	}
 	
 	public boolean isInitialised(){
@@ -47,7 +47,7 @@ public class TimeChartUpdater {
 		
 		if(!running_ && initialised_){
 			running_ = true;
-			task_ = new UIupdater( );
+			task_ = new UIUpdater( );
 			task_.execute();
 		}
 	}
@@ -56,15 +56,15 @@ public class TimeChartUpdater {
 		running_ = false;
 	}
 
-	public void changeIdleTime(int newtime){
-		idletime_ = newtime;
+	public void changeIdleTime(int newTime){
+		idleTime_ = newTime;
 	}
 
-	public void changeChart(TimeChart newchart){
-		chart_ = newchart;
+	public void changeChart(TimeChart newChart){
+		chart_ = newChart;
 	}
 	
-	private class UIupdater extends SwingWorker<Integer, Double> {
+	private class UIUpdater extends SwingWorker<Integer, Double> {
 
 		@Override
 		protected Integer doInBackground() throws Exception {
@@ -78,7 +78,7 @@ public class TimeChartUpdater {
 
 				publish(value);
 
-				Thread.sleep(idletime_);
+				Thread.sleep(idleTime_);
 			}
 			return 1;
 		}

@@ -9,6 +9,9 @@ import ij.process.ImageStatistics;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * Convenience methods used in the NMS or activation script.
+ */
 public class NMSUtils {
 
     protected final static int sizeRoi=10;

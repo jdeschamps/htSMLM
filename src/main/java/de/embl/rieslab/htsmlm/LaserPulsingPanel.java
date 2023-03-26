@@ -28,6 +28,15 @@ import de.embl.rieslab.emu.utils.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.htsmlm.components.LogarithmicJSlider;
 import de.embl.rieslab.htsmlm.uipropertyflags.CameraExpFlag;
 
+/**
+ * A panel controlling laser pulse of two activation lasers.
+ *
+ * The panel shows the pulse (or power) in logarithmic scale and
+ * includes the possibility to set a maximum value.
+ *
+ * The maximum value can be used as stopping criteria for
+ * acquisitions.
+ */
 public class LaserPulsingPanel extends ConfigurablePanel {
 	
 	private static final long serialVersionUID = 1L;
@@ -64,7 +73,7 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 	public final static String INTERNAL_MAXPULSE2 = "Maximum pulse 2";
 	
 	//////// Convenience variables
-	private int maxpulse1_, maxpulse2_;
+	private int maxPulse1_, maxPulse2_;
 	private boolean showPulseDuration1_;
 
 	private static final String[] CARDS_NAME = {"0", "1"};
@@ -220,8 +229,8 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 	protected void initializeParameters() {
 		title_ = "UV";	
 		color_ = Color.black;
-		maxpulse1_  = 10000;
-		maxpulse2_  = 10000;
+		maxPulse1_ = 10000;
+		maxPulse2_ = 10000;
 
 		addUIParameter(new StringUIParameter(this, PARAM_TITLE,"Laser name displayed on top of the laser "
 				+ "control panel in the GUI.",title_));
@@ -229,7 +238,7 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 				
 		String desc = "Default maximum value for the activation laser pulse length (or power). This default "
 				+ "value appears in the grey box at the top-left corner of the GUI. The value must be an integer.";
-		addUIParameter(new IntegerUIParameter(this, PARAM_DEFAULT_MAX, desc, maxpulse1_));
+		addUIParameter(new IntegerUIParameter(this, PARAM_DEFAULT_MAX, desc, maxPulse1_));
 
 		String descActivation = "Name of the activation property (pulse duration) appearing in the drop-down menu of " +
 				"the activation panel.";
@@ -354,24 +363,24 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 			}
 		} else if(PARAM_DEFAULT_MAX.equals(label)){
 			try {
-				maxpulse1_ = getIntegerUIParameterValue(PARAM_DEFAULT_MAX);
-				logSlider1_.setMaxWithin(maxpulse1_);
+				maxPulse1_ = getIntegerUIParameterValue(PARAM_DEFAULT_MAX);
+				logSlider1_.setMaxWithin(maxPulse1_);
 				if (logSlider1_.getValue() > logSlider1_.getMaxWithin()) {
 					logSlider1_.setValueWithin(logSlider1_.getMaxWithin());
 					textFieldValue1_.setText(String.valueOf(logSlider1_.getValue()));
 					setUIPropertyValue(LASER_PULSE1,String.valueOf(logSlider1_.getValue()));
 				}
-				textFieldMax1_.setText(String.valueOf(maxpulse1_));
-				changeMaxPulseProperty(maxpulse1_, 0);
+				textFieldMax1_.setText(String.valueOf(maxPulse1_));
+				changeMaxPulseProperty(maxPulse1_, 0);
 
-				logSlider2_.setMaxWithin(maxpulse2_);
+				logSlider2_.setMaxWithin(maxPulse2_);
 				if (logSlider2_.getValue() > logSlider2_.getMaxWithin()) {
 					logSlider2_.setValueWithin(logSlider2_.getMaxWithin());
 					textFieldValue2_.setText(String.valueOf(logSlider2_.getValue()));
 					setUIPropertyValue(LASER_PULSE2,String.valueOf(logSlider2_.getValue()));
 				}
-				textFieldMax2_.setText(String.valueOf(maxpulse2_));
-				changeMaxPulseProperty(maxpulse2_, 1);
+				textFieldMax2_.setText(String.valueOf(maxPulse2_));
+				changeMaxPulseProperty(maxPulse2_, 1);
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
@@ -406,35 +415,35 @@ public class LaserPulsingPanel extends ConfigurablePanel {
 
 	@Override
 	protected void initializeInternalProperties() {
-		addInternalProperty(new IntegerInternalProperty(this, INTERNAL_MAXPULSE1, maxpulse1_));
-		addInternalProperty(new IntegerInternalProperty(this, INTERNAL_MAXPULSE2, maxpulse2_));
+		addInternalProperty(new IntegerInternalProperty(this, INTERNAL_MAXPULSE1, maxPulse1_));
+		addInternalProperty(new IntegerInternalProperty(this, INTERNAL_MAXPULSE2, maxPulse2_));
 	}
 
 	@Override
 	public void internalpropertyhasChanged(String label) {
 		if(INTERNAL_MAXPULSE1.equals(label)){
 			try {
-				maxpulse1_ = getIntegerInternalPropertyValue(INTERNAL_MAXPULSE1);
-				logSlider1_.setMaxWithin(maxpulse1_);
+				maxPulse1_ = getIntegerInternalPropertyValue(INTERNAL_MAXPULSE1);
+				logSlider1_.setMaxWithin(maxPulse1_);
 				if (logSlider1_.getValue() > logSlider1_.getMaxWithin()) {
 					logSlider1_.setValueWithin(logSlider1_.getMaxWithin());
 					textFieldValue1_.setText(String.valueOf(logSlider1_.getValue()));
 					setUIPropertyValue(LASER_PULSE1,String.valueOf(logSlider1_.getValue()));
 				}
-				textFieldMax1_.setText(String.valueOf(maxpulse1_));
+				textFieldMax1_.setText(String.valueOf(maxPulse1_));
 			} catch (IncorrectInternalPropertyTypeException | UnknownInternalPropertyException e) {
 				e.printStackTrace();
 			}
 		} else if(INTERNAL_MAXPULSE2.equals(label)){
 			try {
-				maxpulse2_ = getIntegerInternalPropertyValue(INTERNAL_MAXPULSE2);
-				logSlider2_.setMaxWithin(maxpulse2_);
+				maxPulse2_ = getIntegerInternalPropertyValue(INTERNAL_MAXPULSE2);
+				logSlider2_.setMaxWithin(maxPulse2_);
 				if (logSlider2_.getValue() > logSlider2_.getMaxWithin()) {
 					logSlider2_.setValueWithin(logSlider2_.getMaxWithin());
 					textFieldValue2_.setText(String.valueOf(logSlider2_.getValue()));
 					setUIPropertyValue(LASER_PULSE2,String.valueOf(logSlider2_.getValue()));
 				}
-				textFieldMax2_.setText(String.valueOf(maxpulse2_));
+				textFieldMax2_.setText(String.valueOf(maxPulse2_));
 			} catch (IncorrectInternalPropertyTypeException | UnknownInternalPropertyException e) {
 				e.printStackTrace();
 			}

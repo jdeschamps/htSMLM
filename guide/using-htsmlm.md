@@ -207,7 +207,7 @@ The activation script estimates the number of molecules at each cycle, compare i
 Here are the GUI functionalities:
 
 
-- **DynFactor**: determines the cut-off used to estimate the number of molecules. For the same images, a higher DynFactor coeff yields a higher cut-off and thus a lower estimated number of molecules.
+- **DynFactor**: determines the cut-off used to estimate the number of molecules. For the same images, a higher dynamic Factor coefficient yields a higher cut-off and thus a lower estimated number of molecules.
 - **Feedback**: control the speed of the pulse length increase or decrease. A higher value causes the pulse duration to change more rapidly (technically, the steps are bigger in between each update).
 - **Averaging weight**: weight given to new cutoff in a rolling average (value between 0 and 1). A lower value yields a more stable cut-off, and thus smoother changes of pulse duration.
 - **Get N**: by clicking on the button, the N text field is updated with the most recent estimated number of molecules.
@@ -217,20 +217,23 @@ Here are the GUI functionalities:
 - **Cut-off field**: users can enter here a cut-off value. If **auto** is selected, the cut-off field is updated with the automatically calculated cut-off. We recommend always using this option.
 - **Auto**: select to automatically calculate the cut-off at every cycle.
 - **Clear**: clears the graph.
-- **NMS**: when selecting the checkbox, a window is open showing the result of the molecule number estimation algorithm. This can be used to choose the right Sd coefficient.
+- **NMS**: when selecting the checkbox, a window is open showing the result of the molecule number estimation algorithm. This can be used to choose the right DynFactor coefficient.
 
 The number of points shown in the graph, as well as the time between two updates can be set in the parameters tab of the configuration.
 
 ### Algorithm
 
 1. If the camera is currently live, the algorithm estimates the number of molecules that are activated:
-   1. Two images are extracted from the Micro-Manager circular buffer. Since the circular buffer is emptied rapidly, the images are probably not consecutive.
-   2. The two images are converted to ImageJ ImagePlus and then subtracted from each other, giving *Is*.
-   3. The resulting imaged is Gaussian blurred (*Ig*) with the following parameters: X,Y standard deviations of **3** pixels and kernel accuracy of **0.02**. See [blurGaussian](https://github.com/imagej/imagej1/blob/master/ij/plugin/filter/GaussianBlur.java) for the specific implementation.
-   4. A temporary cutoff is estimated as: *tcutoff* = mean(*Ig*) + **Sd** x std(*Ig*), where **Sd** is defined in the GUI.
-   5. If **auto cutoff** is selected (see GUI), the cutoff is set to *c*(t) = (1-1/**dT**) x *c(t-1)* + *tcutoff* / **dT**, where **dT** and the **auto cutoff** are set in the GUI, and *c(t)* is the cutoff at time *t*.
+   1. Two consecutive images are taken from the processing pipeline.
+   2. The two images are converted to float images and then subtracted from each other, giving *Is*.
+   3. The resulting image is Gaussian blurred (*Ig*) with the following parameters: X,Y standard deviations of **3** pixels and kernel accuracy of **0.02**. See [blurGaussian](https://github.com/imagej/imagej1/blob/master/ij/plugin/filter/GaussianBlur.java) for the specific implementation.
+   4. A non-maximum suppression (NMS) algorithm is run on the blurred image *Ig*. See [Neubeck, A., & Van Gool, L., IEEE. (2006)](https://ieeexplore.ieee.org/abstract/document/1699659) for reference implementation.
+   5. From the list of peaks and their intensity, we measure the *median*, 0.2 and 0.8 quantile intensities.
+   6. We compute the *slope* between the lower and higher quantiles (0.2 and 0.8) intensities (intensity vs quantile).
+   7. A temporary cutoff is estimated as: *tcutoff* = *median* + *slope* x *dynFactor*, where *dynFactor* is user-defined in the interface.   
+   8. If **auto cutoff** is selected (see GUI), the cutoff is set to *c*(t) = (1-*avWeight*) x *c(t-1)* + *tcutoff* x *avWeight*, where *avWeight* and the **auto cutoff** are set in the GUI, and *c(t)* is the cutoff at time *t*.
       If the **auto cutoff** is not selected, then *c*(t) = *tcutoff*.
-   6. Finally, the *c(t)* and *Is* are passed to a non-maximum suppression (NMS) algorithm. See [Neubeck, A., & Van Gool, L., IEEE. (2006)](https://ieeexplore.ieee.org/abstract/document/1699659) for reference implementation. The NMS algorithm returns the number of estimated molecules, *N*.
+   9. Finally, *c(t)* is used to filter the list of peaks obtained from the NMS.
 2. Then, the updated pulse duration of the activation laser is computed:
    1. The current pulse, *p(t)*, is retrieved.
    2. A delta pulse, stored in memory, is updated: *dp(t)* = 0.1+ *dp(t-1)* + **Fd** x *p(t)* x (1-*N*/**N0**), where *N* was estimated in the previous steps and **Fd** (feedback) and **N0** (under "get N") are set by the user in the GUI.
@@ -346,6 +349,7 @@ Each acquisition type has specific parameters.
 - **Stop on max delay (s)**: delay in seconds after which to stop the acquisition once the maximum pulse duration value (defined in the activation laser panel) is reached. This value has no effect if "stop on max" or "use activation" are not selected.
 - **Stop on max**: stop when the maximum pulse duration value (defined in the activation laser panel) is reached.
 - **Use activation**: use the activation script with the parameters set in the GUI (activation tab) if the checkbox is selected.
+- **activation**: Selects which activation property to use.
 
 A localization experiment resembles a time experiment, albeit with the activation script running in the background and capable of stopping the acquisition if the maximum activation pulse is reached. Note that the activation parameters are set directly in the activation panel.
 
@@ -423,8 +427,9 @@ See the definition of each parameter below, plus some more details on the activa
 - **Stop on max delay (s)**: delay in seconds after which to stop the acquisition once the maximum pulse duration value (defined in the activation laser panel) is reached. This value has no effect if "stop on max" or "use activation" are not selected. Note that the delay only works within the same slice.
 - **Stop on max**: stop when the maximum pulse duration value (defined in the activation laser panel) is reached.
 - **Use activation**: use the activation script with the parameters set in the GUI (activation tab) if the checkbox is selected.
-- **Activate only at slice**: only use activation at a pre-determined slice (see next bullet point).
-- **Slice Zs**: slice at which to activate (counting is 0 based).
+- **activation**: Selects which activation property to use.
+- **Activate only at slice Sa**: only use activation at a pre-determined slice (see next bullet point).
+- **Slice Sa**: slice at which to activate (counting is 0 based).
 - **Moving device**: z-stage used to move the focus.
 - **Disable focus-lock**: if checked, the focus stabilization is disabled throughout the entire acquisition. If unchecked, then the focus stabilization is maintained. This means that in such case, the moving device must be chosen to be the stage carrying the sensor used in the feedback loop to the objective stage. For more details, see QPD in the [Ries lab focus stabilization system](https://github.com/ries-lab/RiesPieces/tree/master/Microscopy/Focus-locking). Selecting the sensor stage and keeping the focus-lock active means that the experiment can be performed by moving the sensor stage only.
 - **Only at Z0**: if checked, the focus stabilization is only enabled at Z0 (the starting Z) and not while imaging the other slices. This allows readjusting the Z range every time the acquisition moves to the Z0 slice. If unchecked, the focus stabilization is kept throughout the slices.

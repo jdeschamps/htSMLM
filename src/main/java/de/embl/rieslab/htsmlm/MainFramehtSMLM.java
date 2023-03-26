@@ -8,9 +8,7 @@ import java.awt.Point;
 import java.util.HashMap;
 import java.util.TreeMap;
 
-import javax.swing.BoxLayout;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
+import javax.swing.*;
 
 import de.embl.rieslab.emu.controller.SystemController;
 import de.embl.rieslab.emu.ui.ConfigurableMainFrame;
@@ -19,6 +17,9 @@ import de.embl.rieslab.emu.utils.settings.Setting;
 import de.embl.rieslab.emu.utils.settings.StringSetting;
 import de.embl.rieslab.htsmlm.activation.ActivationController;
 
+/**
+ * Main frame.
+ */
 public class MainFramehtSMLM extends ConfigurableMainFrame{
 
 	private static final long serialVersionUID = 1L;
@@ -40,7 +41,7 @@ public class MainFramehtSMLM extends ConfigurableMainFrame{
 	private FocusPanel focusPanel;
 	private QPDPanel qpdPanel;
 	private PowerMeterPanel powerPanel;
-	private IBeamSmartPanel focuslockpanel, focuslockpanel2;
+	private IBeamSmartPanel focusLockPanel, focusLockPanel2;
 	private AbstractFiltersPanel filterPanel;
 	private LaserControlPanel[] controlPanels;
 	private LaserPulsingPanel pulsePanel;
@@ -65,17 +66,11 @@ public class MainFramehtSMLM extends ConfigurableMainFrame{
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MainFramehtSMLM.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MainFramehtSMLM.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MainFramehtSMLM.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(MainFramehtSMLM.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
-        setupPanels();
+		setupPanels();
  
         this.pack(); 
         this.setResizable(false);
@@ -166,15 +161,15 @@ public class MainFramehtSMLM extends ConfigurableMainFrame{
 		/// iBeamSmart 1
 		if(((BoolSetting) settings.get(SETTING_USE_IBS1)).getValue()) {
 			String name = settings.get(SETTING_NAME_IBS1).getStringValue();
-			focuslockpanel = new IBeamSmartPanel(name);
-			tab.add(name, focuslockpanel);
+			focusLockPanel = new IBeamSmartPanel(name);
+			tab.add(name, focusLockPanel);
 		}
 
 		/// iBeamSmart 2
 		if(((BoolSetting) settings.get(SETTING_USE_IBS2)).getValue()) {
 			String name = settings.get(SETTING_NAME_IBS2).getStringValue();
-			focuslockpanel2 = new IBeamSmartPanel(name);
-			tab.add(name, focuslockpanel2);
+			focusLockPanel2 = new IBeamSmartPanel(name);
+			tab.add(name, focusLockPanel2);
 		}
 		
 		/// powermeter

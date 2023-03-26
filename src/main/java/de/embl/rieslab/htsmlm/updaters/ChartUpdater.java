@@ -8,26 +8,29 @@ import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 import de.embl.rieslab.emu.utils.EmuUtils;
 import de.embl.rieslab.htsmlm.graph.Chart;
 
+/**
+ * A class updating a 2D chart with the values of two device properties.
+ */
 public class ChartUpdater {
 
 	private Chart chart_;
 	private UIProperty propertyX_, propertyY_;
 	private volatile boolean running_ = false;
 	private boolean initialised_ = false;
-	private UIupdater task_;
-	private int idletime_;
+	private UIUpdater task_;
+	private int idleTime_;
 	
-	public ChartUpdater(Chart chart, UIProperty xprop, UIProperty yprop, int idletime){
+	public ChartUpdater(Chart chart, UIProperty xProp, UIProperty yProp, int idleTime){
 		
-		if(chart == null || xprop == null || yprop == null) {
+		if(chart == null || xProp == null || yProp == null) {
 			throw new NullPointerException();
 		}
 		
 		chart_ = chart;
-		propertyX_ = xprop;
-		propertyY_ = yprop;
+		propertyX_ = xProp;
+		propertyY_ = yProp;
 		
-		idletime_ = idletime;
+		idleTime_ = idleTime;
 	}
 	
 	public boolean isInitialised(){
@@ -49,7 +52,7 @@ public class ChartUpdater {
 		
 		if(!running_ && initialised_){
 			running_ = true;
-			task_ = new UIupdater( );
+			task_ = new UIUpdater( );
 			task_.execute();
 		}
 	}
@@ -58,15 +61,15 @@ public class ChartUpdater {
 		running_ = false;
 	}
 	
-	public void changeIdleTime(int newtime){
-		idletime_ = newtime;
+	public void changeIdleTime(int newTime){
+		idleTime_ = newTime;
 	}
 
-	public void changeChart(Chart newchart){
-		chart_ = newchart;
+	public void changeChart(Chart newChart){
+		chart_ = newChart;
 	}
 	
-	private class UIupdater extends SwingWorker<Integer, Double[]> {
+	private class UIUpdater extends SwingWorker<Integer, Double[]> {
 
 		@Override
 		protected Integer doInBackground() throws Exception {
@@ -77,7 +80,7 @@ public class ChartUpdater {
 				value[1] = Double.parseDouble(propertyY_.getPropertyValue());
 				publish(value);
 				
-				Thread.sleep(idletime_);
+				Thread.sleep(idleTime_);
 			}
 			return 1;
 		}
