@@ -74,7 +74,7 @@ public class ActivationPanel extends ConfigurablePanel {
 	public static int INPUT_WHICH_ACTIVATION = 0;
 	private boolean activate_, showNMS_, autoCutoff_;
 	private boolean useActivation1_;
-	private double dynamicFactor_, feedback_, N0_ = 1, cutoff_ = 100;
+	private double dynamicFactor_, feedback_, N0_, cutoff_;
 	private int nPos_, idleTime_, maxPulse1_, maxPulse2_;
 	private double averagingWeight_;
 	
@@ -82,8 +82,12 @@ public class ActivationPanel extends ConfigurablePanel {
 	
 	public ActivationPanel(String label, SystemController systemController) {
 		super(label);
-		
-		setupPanel();		
+
+		N0_ = 1;
+		cutoff_ = 100;
+
+		setupPanel();
+		useActivation1_ = true;
 		activationController_ = new ActivationController(systemController, this);
 	}
 	
@@ -157,7 +161,8 @@ public class ActivationPanel extends ConfigurablePanel {
 
 		averagingWeight_ = 1.;
 		textFieldAverage_ = new JTextField(String.valueOf(averagingWeight_));
-		textFieldAverage_.setToolTipText("Averaging weights (between 0 and 1) of the auto cutoff.");
+		textFieldAverage_.setToolTipText("Weight (between 0 and 1) of the auto cutoff running average. " +
+				"The higher the weight the more responsive to changes is the cutoff.");
 
 		c.gridy = 5;
 		pane.add(textFieldAverage_,c);
@@ -179,6 +184,7 @@ public class ActivationPanel extends ConfigurablePanel {
 
 		String[] properties = {"Activation 1", "Activation 2"};
 		activationProp_ = new JComboBox<String>(properties);
+
 
 		c.gridy = 8;
 		c.insets = new Insets(15,6,15,6);
@@ -718,8 +724,8 @@ public class ActivationPanel extends ConfigurablePanel {
 		activationProp_.addActionListener(e -> {
 			try {
 				// this is also called when calling setSelectedIndex
-				String propName = this.getStringUIParameterValue(PARAM_ACTIVATION_NAME1);
-				useActivation1_ = activationProp_.getSelectedItem().equals(propName);
+				String activation1Name = this.getStringUIParameterValue(PARAM_ACTIVATION_NAME1);
+				useActivation1_ = activationProp_.getSelectedItem().equals(activation1Name);
 			} catch (UnknownUIParameterException ex) {
 				ex.printStackTrace();
 			}
