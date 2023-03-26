@@ -213,7 +213,8 @@ Here are the GUI functionalities:
 - **Get N**: by clicking on the button, the N text field is updated with the most recent estimated number of molecules.
 - **N text field**: target number of molecules.
 - **Activate**: when the checkbox is selected, the pulse duration is updated. If the checkbox is not selected, then the script can run without updating the pulse duration. This allows setting the parameters without causing uncontrolled changes of the pulse duration.
-- **Run**: start/stop the activation script.
+- **Activation 1/2**: selects the activation laser.
+- **Run**: start/stop the activation script. Note that starting the activation will open the On-the-fly processor pipeline. The activation processor is used to extract the frames necessary to the number of emitters estimation.
 - **Cut-off field**: users can enter here a cut-off value. If **auto** is selected, the cut-off field is updated with the automatically calculated cut-off. We recommend always using this option.
 - **Auto**: select to automatically calculate the cut-off at every cycle.
 - **Clear**: clears the graph.
