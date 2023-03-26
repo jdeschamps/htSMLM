@@ -1,19 +1,22 @@
 package de.embl.rieslab.htsmlm.utils;
 
+/**
+ * A peak described by its x and y position, and intensity.
+ */
 public class Peak {
 	private int x_,y_;
-	private double value_;
+	private double intensity_;
 	
-	public Peak(int x, int y, double value){
+	public Peak(int x, int y, double intensity){
 		x_ = x;
 		y_ = y;
-		value_ = value;
+		intensity_ = intensity;
 	}
 	
-	public void set(int x, int y, int value){
+	public void set(int x, int y, int intensity){
 		x_ = x;
 		y_ = y;
-		value_ = value;
+		intensity_ = intensity;
 	}
 
 	public int getX(){
@@ -25,15 +28,11 @@ public class Peak {
 	}
 	
 	public double getValue(){
-		return value_;
-	}
-
-	public void print(){
-		System.out.println("["+x_+","+y_+","+value_+"]");
+		return intensity_;
 	}
 	
 	public String toString(){
-		String s = "["+x_+","+y_+","+value_+"]";
+		String s = "["+x_+","+y_+","+ intensity_ +"]";
 		return s;
 	}
 	

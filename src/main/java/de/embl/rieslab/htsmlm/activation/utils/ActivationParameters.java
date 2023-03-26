@@ -1,11 +1,15 @@
 package de.embl.rieslab.htsmlm.activation.utils;
 
+/**
+ * User parameters used to configure an activation iteration.
+ */
 public class ActivationParameters {
+    // default values
     private double dynamicFactor_ = 0.05;
     private double feedbackParameter_ = 0.2;
     private boolean autoCutoff_ = true;
     private double cutoff_ = 0;
-    private double dT_ = 1.;
+    private double averagingWeight = 1.;
     private double N0_ = 0;
     private double currentPulse_ = 0;
     private double maximumPulse_ = 10000;
@@ -43,12 +47,12 @@ public class ActivationParameters {
     	return this.cutoff_;
     }
     
-    public void setdT(double dT) {
-    	this.dT_ = dT;
+    public void setAveragingWeight(double averagingWeight) {
+    	this.averagingWeight = averagingWeight;
     }
     
-    public double getdT() {
-    	return this.dT_;
+    public double getAveragingWeight() {
+    	return this.averagingWeight;
     }
     
     public void setN0(double N0) {

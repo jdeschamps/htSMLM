@@ -1,13 +1,19 @@
 package de.embl.rieslab.htsmlm.activation.utils;
 
-import ij.process.ImageProcessor;
 
+/**
+ * Class holding the results of an activation script iteration.
+ */
 public class ActivationResults {
 
+    // cutoff
     private double newCutoff = 0.;
+
+    // number of detected molecules
     private int N = 0;
+
+    // new pulse
     private double newPulse = 0;
-    private ImageProcessor filteredImage = null;
     
     public void setNewCutoff(double newCutoff) {
     	this.newCutoff = newCutoff;
@@ -32,13 +38,4 @@ public class ActivationResults {
     public double getNewPulse() {
     	return this.newPulse;
     }
-    
-    public void setFilteredImage(ImageProcessor filteredImage) {
-    	this.filteredImage = filteredImage;
-    }
-    
-    public ImageProcessor getFilteredImage() {
-    	return this.filteredImage;
-    }
-    
 }

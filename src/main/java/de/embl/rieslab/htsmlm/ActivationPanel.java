@@ -38,12 +38,18 @@ public class ActivationPanel extends ConfigurablePanel {
 	private static final long serialVersionUID = 1L;
 
 	private JTextField textFieldCutOff_;
-	private JTextField textfielddT_;
+	private JTextField textFieldAverage_;
 	private JTextField textFieldN0_;
 	private JTextField textFieldDynFactor_;
 	private JTextField textFieldFeedback_;
 	private JToggleButton toggleButtonRun_;
 	private JCheckBox checkBoxActivate_;
+	private JButton buttonGetN_;
+
+	private JToggleButton toggleButtonAutoCutoff_;
+	private JButton buttonClear_;
+	private JCheckBox checkboxNMS_;
+
 	private TimeChart graph_;
 	private JPanel graphPanel_;
 	private JComboBox<String> activationProp_;
@@ -70,7 +76,7 @@ public class ActivationPanel extends ConfigurablePanel {
 	private boolean useActivation1_;
 	private double dynamicFactor_, feedback_, N0_ = 1, cutoff_ = 100;
 	private int nPos_, idleTime_, maxPulse1_, maxPulse2_;
-	private double dT_;
+	private double averagingWeight_;
 	
 	private ActivationController activationController_;
 	
@@ -135,9 +141,9 @@ public class ActivationPanel extends ConfigurablePanel {
 		c.gridy = 1;
 		pane.add(textFieldDynFactor_,c);
 
-		JLabel labelfeeback_ = new JLabel("Feedback:");
+		JLabel labelFeedback_ = new JLabel("Feedback:");
 		c.gridy = 2;
-		pane.add(labelfeeback_,c);
+		pane.add(labelFeedback_,c);
 		
 		textFieldFeedback_ = new JTextField(String.valueOf(feedback_));
 		textFieldFeedback_.setToolTipText("The higher the Feedback coefficient, the faster the activation ramps up.");
@@ -145,30 +151,23 @@ public class ActivationPanel extends ConfigurablePanel {
 		c.gridy = 3;
 		pane.add(textFieldFeedback_,c);
 
-		JLabel labeldT_ = new JLabel("Average:");
+		JLabel labelAverage = new JLabel("Average:");
 		c.gridy = 4;
-		pane.add(labeldT_,c);
+		pane.add(labelAverage,c);
 
-		dT_ = 1.;
-		textfielddT_ = new JTextField(String.valueOf(dT_));
-		textfielddT_.setToolTipText("Averaging weights (between 0 and 1) of the auto cutoff.");
+		averagingWeight_ = 1.;
+		textFieldAverage_ = new JTextField(String.valueOf(averagingWeight_));
+		textFieldAverage_.setToolTipText("Averaging weights (between 0 and 1) of the auto cutoff.");
 
 		c.gridy = 5;
-		pane.add(textfielddT_,c);
+		pane.add(textFieldAverage_,c);
 
-		JButton buttongetN_ = new JButton("Get N:");
-		buttongetN_.setToolTipText("Sets N0 to the last measured number of emitters.");
+		buttonGetN_ = new JButton("Get N:");
+		buttonGetN_.setToolTipText("Sets N0 to the last measured number of emitters.");
 
-		buttongetN_.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-            	String val = String.valueOf(graph_.getLastPoint());
-            	textFieldN0_.setText(val);
-            	N0_ = graph_.getLastPoint();
-            }
-        });
 		c.gridy = 6;
 		c.insets = new Insets(20,6,2,6);
-		pane.add(buttongetN_,c);	
+		pane.add(buttonGetN_,c);
 		
 		N0_ = 1;
 		textFieldN0_ = new JTextField(String.valueOf(N0_));
@@ -180,15 +179,7 @@ public class ActivationPanel extends ConfigurablePanel {
 
 		String[] properties = {"Activation 1", "Activation 2"};
 		activationProp_ = new JComboBox<String>(properties);
-		activationProp_.addActionListener(e -> {
-			try {
-				// this is also called when calling setSelectedIndex
-				String propName = this.getStringUIParameterValue(PARAM_ACTIVATION_NAME1);
-				useActivation1_ = activationProp_.getSelectedItem().equals(propName);
-			} catch (UnknownUIParameterException ex) {
-				ex.printStackTrace();
-			}
-		});
+
 		c.gridy = 8;
 		c.insets = new Insets(15,6,15,6);
 		pane.add(activationProp_,c);
@@ -222,27 +213,23 @@ public class ActivationPanel extends ConfigurablePanel {
 	public JPanel getLowerPanel(){
 		JPanel pane = new JPanel();
 		pane.setLayout(new GridBagLayout());
-				
+
+		// cutoff text field
 		textFieldCutOff_ = new JTextField(String.valueOf(cutoff_));
-		toggleButtonRun_.setToolTipText("Cutoff of the detected peak pixel value.");
-		SwingUIListeners.addActionListenerToDoubleAction(val -> cutoff_ = val, textFieldCutOff_, 0., Double.POSITIVE_INFINITY);
+		textFieldCutOff_.setToolTipText("Cutoff of the detected peak pixel value.");
 
-		JToggleButton togglebuttonautocutoff_ = new JToggleButton("Auto");
-		togglebuttonautocutoff_.setToolTipText("Turn on automated cutoff.");
-		SwingUIListeners.addActionListenerToBooleanAction(b -> autoCutoff_ = b, togglebuttonautocutoff_);
+		// auto cutoff button
+		toggleButtonAutoCutoff_ = new JToggleButton("Auto");
+		toggleButtonAutoCutoff_.setToolTipText("Turn on automated cutoff.");
 
-		JButton buttonclear_ = new JButton("Clear");
-		buttonclear_.setToolTipText("Clear the graph.");
-		buttonclear_.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-            	graph_.clearChart();
-            }  
-        });
+		// clear graph button
+		buttonClear_ = new JButton("Clear");
+		buttonClear_.setToolTipText("Clear the graph.");
 
-		JCheckBox checkboxnms_ = new JCheckBox("NMS");
-		checkboxnms_.setToolTipText("Show/hide the last image with the detected emitters.");
-		SwingUIListeners.addActionListenerToBooleanAction(b -> showNMS(b), checkboxnms_);
-		
+		// show NMS checkbox
+		checkboxNMS_ = new JCheckBox("NMS");
+		checkboxNMS_.setToolTipText("Show/hide the last image with the detected emitters.");
+
 		//////////////////////////////// grid bag setup
 		GridBagConstraints c = new GridBagConstraints();
 		c.insets = new Insets(2,4,2,4);
@@ -251,13 +238,13 @@ public class ActivationPanel extends ConfigurablePanel {
 		
 		c.gridx = 1;
 		c.ipadx = 0;
-		pane.add(togglebuttonautocutoff_,c);	
+		pane.add(toggleButtonAutoCutoff_,c);
 		
 		c.gridx = 2;
-		pane.add(buttonclear_,c);	
+		pane.add(buttonClear_,c);
 		
 		c.gridx = 3;
-		pane.add(checkboxnms_,c);	
+		pane.add(checkboxNMS_,c);
 
 		return pane;
 	}
@@ -304,7 +291,7 @@ public class ActivationPanel extends ConfigurablePanel {
 		parameters.setActivate(this.activate_);
 		parameters.setAutoCutoff(this.autoCutoff_);
 		parameters.setCutoff(this.cutoff_);
-		parameters.setdT(this.dT_);
+		parameters.setAveragingWeight(this.averagingWeight_);
 		parameters.setCurrentPulse( getCurrentPulse());
 		parameters.setFeedbackParameter(this.feedback_);
 		parameters.setMaxPulse((double) getMaxPulse());
@@ -312,17 +299,6 @@ public class ActivationPanel extends ConfigurablePanel {
 		parameters.setDynamicFactor(this.dynamicFactor_);
 		
 		return parameters;
-	}
-	
-	private double getCurrentPulse() {
-		try {
-			if (EmuUtils.isNumeric(getUIProperty(getProperty()).getPropertyValue())) {
-				return Double.parseDouble(getUIProperty(getProperty()).getPropertyValue());
-			} 
-		} catch (NumberFormatException | UnknownUIPropertyException e) {
-			e.printStackTrace();
-		}
-		return 0.;
 	}
 	
 	/**
@@ -346,7 +322,12 @@ public class ActivationPanel extends ConfigurablePanel {
 		showNMS_ = b;
 		activationController_.showNMS(showNMS_);
 	}
-	
+
+	/**
+	 * Return the state of the NMS checkbox.
+	 *
+	 * @return True if it is
+	 */
 	public boolean isNMSSelected() {
 		return showNMS_;
 	}
@@ -389,28 +370,29 @@ public class ActivationPanel extends ConfigurablePanel {
 		}
 		return "0";
 	}
-	
-	public String getCurrentActivation(){
+
+	private double getCurrentPulse() {
 		try {
-			if(useActivation1_) {
-				return this.getStringUIParameterValue(PARAM_ACTIVATION_NAME1);
-			} else if(getAllocatedProperties().length == 1) {
-				return this.getStringUIParameterValue(PARAM_ACTIVATION_NAME2);
+			if (EmuUtils.isNumeric(getUIProperty(getProperty()).getPropertyValue())) {
+				return Double.parseDouble(getUIProperty(getProperty()).getPropertyValue());
 			}
-		} catch (UnknownUIParameterException e) {
-				e.printStackTrace();
+		} catch (NumberFormatException | UnknownUIPropertyException e) {
+			e.printStackTrace();
 		}
-		return "None";
+		return 0.;
 	}
 
+	/**
+	 * Return the properties allocated to the activation laser pulses.
+	 * @return List of UIProperty names
+	 */
 	public String[] getAllocatedProperties(){
 		ArrayList<String> str = new ArrayList<String>();
 
 		String[] props = {LASER_PULSE1, LASER_PULSE2};
 		for(String prop: props) {
 			try {
-				String prop1 = this.getUIProperty(prop).isAssigned() ? prop : "";
-				if (prop1.length() > 0) {
+				if(this.getUIProperty(prop).isAssigned()){
 					str.add(prop);
 				}
 			} catch (UnknownUIPropertyException e) {
@@ -421,7 +403,14 @@ public class ActivationPanel extends ConfigurablePanel {
 		return str.toArray(new String[0]);
 	}
 
-	private String getCorrespondingName(String property){
+	/**
+	 * Return the parameter corresponding to the friendly activation
+	 * property's name (user defined).
+	 *
+	 * @param property Activation laser property
+	 * @return Parameter name corresponding to the user-defined activation laser's name
+	 */
+	private String getCorrespondingParameterName(String property){
 		if(LASER_PULSE1.equals(property)){
 			return PARAM_ACTIVATION_NAME1;
 		} else{
@@ -429,13 +418,22 @@ public class ActivationPanel extends ConfigurablePanel {
 		}
 	}
 
-	public String[] getPropertiesName() {
+	/**
+	 * Return the list of user-defined names for the activation properties.
+	 *
+	 * The names are defined through the panel parameters.
+	 *
+	 * @return List of friendly names
+	 */
+	public String[] getFriendlyActivationNames() {
 		ArrayList<String> str = new ArrayList<String>();
-		String[] props = getAllocatedProperties();
 
+		// get list of allocated properties (activation pulses)
+		String[] props = getAllocatedProperties();
 		for(String prop: props) {
 			try {
-				String propName = this.getStringUIParameterValue(getCorrespondingName(prop));
+				// retrieve the user-defined name for the activation laser property
+				String propName = this.getStringUIParameterValue(getCorrespondingParameterName(prop));
 				str.add(propName);
 			} catch (UnknownUIParameterException e) {
 				e.printStackTrace();
@@ -443,10 +441,6 @@ public class ActivationPanel extends ConfigurablePanel {
 		}
 
 		return str.toArray(new String[0]);
-	}
-
-	public boolean isActivation1(){
-		return useActivation1_;
 	}
 
 	/////////////////////////////////////////////////////////////////////////////
@@ -541,7 +535,7 @@ public class ActivationPanel extends ConfigurablePanel {
 			}
 		} else if(PARAM_ACTIVATION_NAME1.equals(label) || PARAM_ACTIVATION_NAME2.equals(label)) {
 			// check if the two properties have been allocated
-			String[] props = getPropertiesName();
+			String[] props = getFriendlyActivationNames();
 
 			// set choices
 			DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>( props );
@@ -567,11 +561,11 @@ public class ActivationPanel extends ConfigurablePanel {
 				+ "Start the script using the \"run\" button. Then set a cutoff or use the auto cutoff feature (\"Auto\" button). The results of the "
 				+ "spot detection algorithm can be displayed by checking the \"NMS\" checkbox. The \"Get N\" extracts the last measured value and sets "
 				+ "it as the target number of molecules. This number can be changed manually in the corresponding text area. The script can then update "
-				+ "the activation laser pulse length or power by checking the \"Activate\" checkbox. The script has three parameters: Sd coeff, Feedback "
-				+ "and Average. The Sd coeff is used in the auto-cutoff feature, the higher the value, the higher the cutoff. The feedback parameter "
+				+ "the activation laser pulse length or power by checking the \"Activate\" checkbox. The script has three parameters: DynamicFactor, Feedback "
+				+ "and Average. The DynamicFactor is used in the auto-cutoff feature, the higher the value, the higher the cutoff. The feedback parameter "
 				+ "impacts the strength of the feedback to the activation pulse. The stronger the feedback, the faster the pulse will increase. Note that "
-				+ "the algorithm struggles to go over 1-2, then can increase rapidly. Finally, the average parameter is the number of cycle on which to "
-				+ "average the cutoff, in order to provide more stable sport number estimations.";
+				+ "the algorithm is slow to go over 1-2, then can increase rapidly. Finally, the average parameter is the weight of new cutoffs in the rolling "
+				+ "cutoff average. Its value is between 0 and 1 and lower value provide more stable cutoffs.";
 	}
 
 	@Override
@@ -601,81 +595,150 @@ public class ActivationPanel extends ConfigurablePanel {
 		}
 	}
 
-	public void setSelectedActivation(int index) {
-		Runnable selectActivation = new Runnable() {
-			public void run() {
-				activationProp_.setSelectedIndex(index);
+	/**
+	 * Set the activation property to the required index.
+	 * @param activationIndex Index of activation property to select
+	 */
+	public void setSelectedActivation(int activationIndex) {
+		if (activationIndex == 0 || activationIndex == 1) {
+			Runnable selectActivation = new Runnable() {
+				public void run() {
+					activationProp_.setSelectedIndex(activationIndex);
+				}
+			};
+			if (SwingUtilities.isEventDispatchThread()) {
+				selectActivation.run();
+			} else {
+				EventQueue.invokeLater(selectActivation);
 			}
-		};
-		if (SwingUtilities.isEventDispatchThread()) {
-			selectActivation.run();
-		} else {
-			EventQueue.invokeLater(selectActivation);
 		}
 	}
 
+	/**
+	 * Update the UI to reflect the fact that the activation
+	 * script has been started.
+	 *
+	 * Can be called from the acquisition controller.
+	 */
 	public void activationHasStarted() {
+		// if the activate checkbox is not checked, check it.
 		if (!checkBoxActivate_.isSelected()) {
-			Runnable checkactivate = new Runnable() {
+			Runnable checkActivate = new Runnable() {
 				public void run() {
 					checkBoxActivate_.setSelected(true);
 				}
 			};
 			if (SwingUtilities.isEventDispatchThread()) {
-				checkactivate.run();
+				checkActivate.run();
 			} else {
-				EventQueue.invokeLater(checkactivate);
+				EventQueue.invokeLater(checkActivate);
 			}
 			activate_ = true;
 		}
 
+		// if the run button is not selected, select it.
 		if (!toggleButtonRun_.isSelected()) {
-			Runnable checkactivate = new Runnable() {
+			Runnable checkActivate = new Runnable() {
 				public void run() {
 					toggleButtonRun_.setSelected(true);
 				}
 			};
 			if (SwingUtilities.isEventDispatchThread()) {
-				checkactivate.run();
+				checkActivate.run();
 			} else {
-				EventQueue.invokeLater(checkactivate);
+				EventQueue.invokeLater(checkActivate);
 			}
 		}
 	}
 
-	public void pauseTask() {
+	/**
+	 * Stop update of the activation laser property.
+	 */
+	public void stopActivationUpdate() {
 		if (activate_) {	
-			Runnable checkactivate = new Runnable() {
+			Runnable checkActivate = new Runnable() {
 				public void run() {
 					checkBoxActivate_.setSelected(false);
 				}
 			};
 			if (SwingUtilities.isEventDispatchThread()) {
-				checkactivate.run();
+				checkActivate.run();
 			} else {
-				EventQueue.invokeLater(checkactivate);
+				EventQueue.invokeLater(checkActivate);
 			}
 			activate_ = false;
 		}
 	}
 
-
+	/**
+	 * Set the activation laser property to 0.
+	 */
 	public void zeroProperty() {
 		setUIPropertyValue(getProperty(),"0");
 	}
 
 	@Override
 	protected void addComponentListeners() {
-		SwingUIListeners.addActionListenerToDoubleAction(val -> {
-			dT_ = (val >= 0 && val <= 1) ? val: val > 1 ? 1: 0;
-		}, textfielddT_, 1, Double.POSITIVE_INFINITY);
+		// store averaging value weight in a variable only if it is between 0 and 1
+		SwingUIListeners.addActionListenerToDoubleAction(
+				val -> {
+						if(val <= 1){
+							averagingWeight_ = Math.max(val, 0);
+						} else {
+							averagingWeight_ = 1;
+						}
+					},
+				textFieldAverage_,
+				0, // min
+				Double.POSITIVE_INFINITY // max
+		);
+
+		// store positive value of the parameters in member variables
 		SwingUIListeners.addActionListenerToDoubleAction(val -> dynamicFactor_ = val, textFieldDynFactor_, 0, Double.POSITIVE_INFINITY);
 		SwingUIListeners.addActionListenerToDoubleAction(val -> feedback_ = val, textFieldFeedback_, 0, Double.POSITIVE_INFINITY);
 		SwingUIListeners.addActionListenerToDoubleAction(val -> N0_ = val, textFieldN0_, 0, Double.POSITIVE_INFINITY);
+		SwingUIListeners.addActionListenerToBooleanAction(b -> autoCutoff_ = b, toggleButtonAutoCutoff_);
+		SwingUIListeners.addActionListenerToDoubleAction(val -> cutoff_ = val, textFieldCutOff_, 0., Double.POSITIVE_INFINITY);
 		SwingUIListeners.addActionListenerToBooleanAction(b -> activate_ = b, checkBoxActivate_);
+
+		// start/stop the activation script
 		SwingUIListeners.addActionListenerToBooleanAction(b -> activationController_.runActivation(b), toggleButtonRun_);
+
+		// show/hide NMS result
+		SwingUIListeners.addActionListenerToBooleanAction(b -> showNMS(b), checkboxNMS_);
+
+		// clear graph
+		buttonClear_.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				graph_.clearChart();
+			}
+		});
+
+		// select activation
+		activationProp_.addActionListener(e -> {
+			try {
+				// this is also called when calling setSelectedIndex
+				String propName = this.getStringUIParameterValue(PARAM_ACTIVATION_NAME1);
+				useActivation1_ = activationProp_.getSelectedItem().equals(propName);
+			} catch (UnknownUIParameterException ex) {
+				ex.printStackTrace();
+			}
+		});
+
+		// get the latest estimated N and set it as target N0
+		buttonGetN_.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				String val = String.valueOf(graph_.getLastPoint());
+				textFieldN0_.setText(val);
+				N0_ = graph_.getLastPoint();
+			}
+		});
 	}
 
+	/**
+	 * Return the activation controller.
+	 * @return Activation controller
+	 */
 	public ActivationController getActivationController() {
 		return this.activationController_;
 	}

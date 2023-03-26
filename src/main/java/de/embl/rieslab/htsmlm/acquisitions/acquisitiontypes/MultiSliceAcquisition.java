@@ -210,7 +210,7 @@ public class MultiSliceAcquisition implements Acquisition {
 		});
 		
 		// choice of activation
-		final String[] acts = activationController_.getActivationPropertiesName();
+		final String[] acts = activationController_.getActivationPropertiesFriendlyName();
 		labelActivation = new JLabel(LABEL_ACTIVATION);
 		activationCombo = new JComboBox<>(acts);
 		activationCombo.setName(LABEL_ACTIVATION);
@@ -525,7 +525,7 @@ public class MultiSliceAcquisition implements Acquisition {
 	}
 
 	private int getActivationIndex(){
-		final String[] acts = activationController_.getActivationPropertiesName();
+		final String[] acts = activationController_.getActivationPropertiesFriendlyName();
 		int counter = 0;
 		for(String act: acts){
 			if(activationName_.equals(act)){
@@ -562,13 +562,13 @@ public class MultiSliceAcquisition implements Acquisition {
 
 		if (disableFocusLock_ || (!disableFocusLock_ && focusLockAtZ0_)) {
 			stabilizeFocus(false);
-		} else if (!disableFocusLock_) {
+		} else {
 			stabilizeFocus(true);
 		}
 
 		if (useactivation_) {
 			activationController_.initializeTask(getActivationIndex());
-			activationController_.resumeTask();
+			activationController_.startTask();
 		}
 
 		double z0 = 0;
@@ -583,7 +583,7 @@ public class MultiSliceAcquisition implements Acquisition {
 			for (int i = 0; i < nLoops; i++) {
 				for (int j = 0; j < nSlices; j++) {
 					if (useactivation_ && ((actAtSt && j == sliceSt) || !actAtSt)) {
-						activationController_.resumeTask();
+						activationController_.startTask();
 					}
 
 					// set z

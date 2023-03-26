@@ -4,6 +4,9 @@ import org.micromanager.data.Image;
 import org.micromanager.data.ProcessorContext;
 import org.micromanager.data.SummaryMetadata;
 
+/**
+ * Context for the ActivationProcessor.
+ */
 public class ActivationContext implements ProcessorContext{
 
 	private final SummaryMetadata summaryMetaData; // useless

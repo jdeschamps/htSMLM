@@ -13,7 +13,7 @@ This section assumes that htSMLM has been properly [configured](configuration.md
 ## General tips
 
 - To validate what is entered in a text field, either press **enter** or click away from the field.
-- All monitoring threads can be turned on/off (see "monitoring" button). During imaging, and depending on your workstation, the updating of graphical components in Java and Micro-Manager can be stalling. This includes the refreshment of the acquisition window. In order to reduce the number of actions the main graphical thread (EDT) has to perform, turn off the various htSMLM monitoring (except the activation or acquisition if your are using them). 
+- All monitoring threads can be turned on/off (see "monitoring" button). During imaging, and depending on your workstation, the updating of graphical components in Java and Micro-Manager can be stalling. This includes the refreshment of the acquisition window. In order to reduce the number of actions the main graphical thread (EDT) has to perform, turn off the various htSMLM monitoring (except the activation or acquisition if your are using them).
 
 
 
@@ -27,9 +27,9 @@ This section assumes that htSMLM has been properly [configured](configuration.md
   <img height="200" src="img/pulse.png">
 </p>
 
-The activation laser panel displays a logarithmic scale with a user-defined maximum value. It corresponds to a single GUI property: "**UV pulse duration (main frame)**". While it is intended for a pulse duration in us, it can be used with an absolute laser power or power percentage, albeit with reduced dynamical range.
+The activation laser panel displays a logarithmic scale with a user-defined maximum value. It corresponds to a two GUI properties: "**Pulse duration # (main frame)**" (where # is 1 or 2). While it is intended for pulse durations in us, it can be used with absolute laser power or power percentage, albeit with reduced dynamical range.
 
-
+- Activation 1/2: allows switching between two activations.
 - Slider: change the laser pulse / power up to the maximum value.
 - Top text field (gray background): change the maximum value allowed for the laser pulse / power. The value must be an integer.
 - Bottom text field: change the laser pulse / power up to the maximum value. Decimals are accepted.
@@ -79,7 +79,7 @@ All texts and colors, as well as the panel title, can be set in the properties t
 The focus panel allows moving and monitoring the position of your focusing device ("**Z stage position**" GUI property). It also includes a button to enable or disable focus stabilization, if this feature is present on your microscope (see examples such as [pgFocus](https://github.com/ries-lab/RiesPieces/tree/master/Microscopy/Focus-locking) or the [Ries lab solution]( https://github.com/ries-lab/RiesPieces/tree/master/Microscopy/Focus-locking )).
 
 
-- Position: set the GUI property to the requested value (up to two decimals). 
+- Position: set the GUI property to the requested value (up to two decimals).
 - Monitor: toggle the monitoring of the focus position, updating the graph.
 - Lock: switch the "**Z stage focus-locking**" GUI property between it's ON and OFF states.
 - "^^" and "vv": move the stage up or down by the value indicated in the ">>" text field.
@@ -93,7 +93,7 @@ Two parameters can be set: the number of points shown in the graph and the graph
   <img height="200" src="img/controls.png">
 </p>
 
-The controls panel contain a few toggle buttons that can be used to switch certain devices between two states. This can for instance be in/out elements (lenses, single filters, laser stops), on/off (bright-field light) or simply between two positions. Each button corresponds to a "**Two-state device #**" GUI property, and their text can be customized in the parameters. Finally, unused buttons can be disabled (parameters). 
+The controls panel contain a few toggle buttons that can be used to switch certain devices between two states. This can for instance be in/out elements (lenses, single filters, laser stops), on/off (bright-field light) or simply between two positions. Each button corresponds to a "**Two-state device #**" GUI property, and their text can be customized in the parameters. Finally, unused buttons can be disabled (parameters).
 
 
 
@@ -121,7 +121,7 @@ All titles, including the tab title, names and filter colors can be set in the p
   <img height="250" src="img/qpd.png">
 </p>
 
-The QPD tab was designed to monitor a quadrant photodiode used in a [home-made focus stabilization system](https://github.com/ries-lab/RiesPieces/tree/master/Microscopy/Focus-locking). It has three GUI properties: X, Y and Z (**QPD #**). When the monitor button is selected, the panel continuously updates with the values of the device properties mapped to X, Y and Z. The graph plots Y vs X, while the progress bar shows the value of Z as a percentage of filling. 
+The QPD tab was designed to monitor a quadrant photodiode used in a [home-made focus stabilization system](https://github.com/ries-lab/RiesPieces/tree/master/Microscopy/Focus-locking). It has three GUI properties: X, Y and Z (**QPD #**). When the monitor button is selected, the panel continuously updates with the values of the device properties mapped to X, Y and Z. The graph plots Y vs X, while the progress bar shows the value of Z as a percentage of filling.
 
 The maximum values for X and Y (same for both), and for Z can be set in the parameters, as well as the time in between two updates.
 
@@ -133,7 +133,7 @@ In case Micro-Manager has trouble with refreshing an image display during acquis
   <img height="250" src="img/trigger.png">
 </p>
 
-The laser trigger tab was meant to be used with [MicroFPGA](https://github.com/jdeschamps/MicroFPGA), an electronic platform that allows flexible laser triggering, among other things. Refer to MicroFPGA to understand the different triggering parameters and how to set-up the system. 
+The laser trigger tab was meant to be used with [MicroFPGA](https://github.com/jdeschamps/MicroFPGA), an electronic platform that allows flexible laser triggering, among other things. Refer to MicroFPGA to understand the different triggering parameters and how to set-up the system.
 
 Since this panel is specific for the MicroFPGA project, the device properties are named exactly as the GUI properties, although you don't have to match the numbers: the device property "Mode0" should be mapped to one of the **Laser # trigger mode** GUI properties, and likewise for pulse duration and sequence.
 
@@ -179,7 +179,7 @@ The iBeamSmart laser tab is also a specialized panel, tailored to Toptica iBeamS
 - Power:
 
   - The slider and the text field are linked an modify the same GUI property (**[Name] laser power**). The maximum power can be set in the parameters. Set it to 100 if your laser only has a laser power percentage device property.
-  - The on/off button switches **[Name] operation** between its on and off states. 
+  - The on/off button switches **[Name] operation** between its on and off states.
 - (Optional) Fine:
 
   - This sub-panel can be hidden by unselecting  **[Name] - fine available** in the parameters.
@@ -200,16 +200,16 @@ htSMLM provides an activation script that can be used to increase the activation
   <img height="280" src="img/activation.png">
 </p>
 
-The activation script estimates the number of molecules at each cycle, compare it to a user-defined target number and increase/decrease the activation laser pulse duration (**UV pulse duration (activation)**) to bring the estimated number of molecules closer to the target number. 
+The activation script estimates the number of molecules at each cycle, compare it to a user-defined target number and increase/decrease the activation laser pulse duration (**UV pulse duration (activation)**) to bring the estimated number of molecules closer to the target number.
 
 ### GUI
 
 Here are the GUI functionalities:
 
 
-- **Sd coeff**: determines the cut-off used to estimate the number of molecules. For the same images, a higher Sd coeff yields a higher cut-off and thus a lower estimated number of molecules.
-- **Feedback**: control the speed of the pulse length increase or decrease. A higher value causes the pulse duration to change more rapidly (technically, the steps are bigger in between each update). 
-- **Average**: length of the rolling window average of the cut-off. A higher value yields a more stable cut-off, and thus smoother changes of pulse duration.
+- **DynFactor**: determines the cut-off used to estimate the number of molecules. For the same images, a higher DynFactor coeff yields a higher cut-off and thus a lower estimated number of molecules.
+- **Feedback**: control the speed of the pulse length increase or decrease. A higher value causes the pulse duration to change more rapidly (technically, the steps are bigger in between each update).
+- **Averaging weight**: weight given to new cutoff in a rolling average (value between 0 and 1). A lower value yields a more stable cut-off, and thus smoother changes of pulse duration.
 - **Get N**: by clicking on the button, the N text field is updated with the most recent estimated number of molecules.
 - **N text field**: target number of molecules.
 - **Activate**: when the checkbox is selected, the pulse duration is updated. If the checkbox is not selected, then the script can run without updating the pulse duration. This allows setting the parameters without causing uncontrolled changes of the pulse duration.
@@ -250,7 +250,7 @@ The native Micro-Manager acquisition tool (MDA plugin) acquires the different di
 
 Therefore, htSMLM uses Micro-Manager acquisition engine to perform complex experiments allowing sequential acquisitions, including localization microscopy. Through the acquisition wizard, users design a set of acquisitions, each with the possibility to choose the state of the microscope (each device property linked to the interface). Using the stage position list from Micro-Manager, they can also choose a number of positions on which to run the acquisitions. Finally, after starting the script, each acquisition is run one after the other on each position. The acquisition lists is automatically saved and can be reused later on.
 
-Note that the acquisitions are intended to work with a [focus stabilization system](https://github.com/ries-lab/RiesPieces/tree/master/Microscopy/Focus-locking) and a [pulsed activation laser](https://github.com/jdeschamps/MicroFPGA). The acquisitions can be run without these features but will not be used to their full potential. 
+Note that the acquisitions are intended to work with a [focus stabilization system](https://github.com/ries-lab/RiesPieces/tree/master/Microscopy/Focus-locking) and a [pulsed activation laser](https://github.com/jdeschamps/MicroFPGA). The acquisitions can be run without these features but will not be used to their full potential.
 
 ### Acquisition tab
 
@@ -313,7 +313,7 @@ All acquisition settings are described in the Acquisition types section.
 
 The microscope state is a list, arranged by type, of the different device properties known to htSMLM. They usually are named as in the EMU configuration wizard, to the exception of some GUI properties that bear their friendly names (e.g. lasers).
 
-For each acquisition, the microscope state is applied before acquiring. 
+For each acquisition, the microscope state is applied before acquiring.
 
 The following sections are available:
 
@@ -327,7 +327,7 @@ The following sections are available:
 
 - **Two-state**: all two-state (on/off) GUI properties that have been set.
 
-  
+
 
 #### Acquisition types
 
@@ -361,7 +361,7 @@ All BPF, Bright-field and Snap acquisitions are similar. BFP or Bright-field acq
 
 - **Pause (s)**: pause before starting the acquisition.
 
-  
+
 
 ##### Z-stack
 
@@ -370,7 +370,7 @@ All BPF, Bright-field and Snap acquisitions are similar. BFP or Bright-field acq
 </p>
 
 - **Z stage**: select which z-stage to use to perform the z-stack.
-- **Disable focus-lock**: if a focus stabilization system is present, selecting the checkbox causes the focus-lock to be off during the z-stack. It is turned back on again at the end of the acquisition. 
+- **Disable focus-lock**: if a focus stabilization system is present, selecting the checkbox causes the focus-lock to be off during the z-stack. It is turned back on again at the end of the acquisition.
 - **Exposure (ms)**: camera exposure.
 - **Pause (s)**: pause before starting the acquisition.
 - **Z start**: z position (um) at which to start the stack.
@@ -394,17 +394,17 @@ All BPF, Bright-field and Snap acquisitions are similar. BFP or Bright-field acq
 
 ##### Multislice localization
 
-This acquisition type is quite complex, in particular due to the activation and focus stabilization options. 
+This acquisition type is quite complex, in particular due to the activation and focus stabilization options.
 
 The main principle of this acquisition is to perform localization microscopy at different heights, and loop several time through the slices. For instance by choosing **N loops / N slices / dZ (um)** = (2,3,0.3), then the acquisition will process as follow:
 
-1st loop: 
+1st loop:
 
 1. image slice 0 at Z0
 2. image slice 1 at Z0+0.3
 3. image slice 2 at Z0+0.6
 
-2nd loop: 
+2nd loop:
 
 1. image slice 0 at Z0
 2. image slice 1 at Z0+0.3
@@ -432,7 +432,7 @@ See the definition of each parameter below, plus some more details on the activa
 - **N slices**: number of slices to image during a single loop.
 - **dZ (um)**: z step (um) between each slice. Note that the z step refers to movements of the z-stage selected above.
 
-**Activation**: 
+**Activation**:
 
 Only working if there is a device property mapped to the **UV pulse duration (activation)** GUI property.
 
@@ -478,7 +478,7 @@ This section describes the acquisition process:
 Each acquisition type might proceed differently, here we describe only the more complex or exotic acquisition types (see previous point **e** in acquisition):
 
 - **Localization**:
-  
+
   1. If **use activation**, reinitialize the activation (pulse = 0) and activation running.
   2. Start time acquisition.
   3. In parallel, if **use activation** and **stop on max**:
@@ -486,11 +486,11 @@ Each acquisition type might proceed differently, here we describe only the more 
      2. If yes, stop acquisition after **stop on max delay** seconds
      3. if not, wait 1 s and check again.
   4. After the experiment stopped (enough frames acquired or stopped on max), pause the activation task and reinitialize it.
-  
+
 - **Multislice localization**:
-  
+
   This one is complex and still experimental.
-  
+
   1. if the **focus stabilization is disabled** or it **is enabled** but **only at Z0**, turn off the focus stabilization. If the **focus stabilization is enabled for all slices**, then turn it on.
   2. if **use activation**, reinitialize the activation and pause it.
   3. Save Z0 position (starting position).
@@ -498,14 +498,14 @@ Each acquisition type might proceed differently, here we describe only the more 
      1. For each slice:
         1. if **use activation**, and either it **only activates at slice Zs**  and **this is the current slice** or it **always activates**, then (re)start activation.
         2. Set new position: z = Z0 + **dZ** * slice_number
-        3. if **the focus stabilization is not disabled** but it is **only enabled at Z0** and **this is Z0**, then switch on the focus stabilization. 
+        3. if **the focus stabilization is not disabled** but it is **only enabled at Z0** and **this is Z0**, then switch on the focus stabilization.
         4. Start the acquisition of N n**umber of frames** at this slice.
         5. While the acquisition is running, if we **use the activation** and the **acquisition should be stopped on max activation**, and either **we activate only at Zs** and **this is Zs**, or we **always activate**, then stop the acquisition after the **stop on max delay** if the activation pulse reached its maximum.
         6. After the slice acquisition, if the focus stabilization is enabled but **only at Z0** and this is **Z0**, then update the Z0 position in memory, then switch off the focus stabilization.
         7. if **use activation**, and either it **only activates at slice Zs**  and **this is the current slice** or it **always activates**, then pause activation.
   5. At the end, switches on the focus stabilization if it was off.
   6. Reinitialize the activation.
-  
+
 - **BFP acquisition**:
 
   - Turn on the BFP property

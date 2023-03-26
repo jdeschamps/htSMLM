@@ -8,6 +8,9 @@ import org.micromanager.data.ProcessorPlugin;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.SciJavaPlugin;
 
+/**
+ * Plugin used to add the ActivationProcessor.
+ */
 @Plugin(type = ProcessorPlugin.class)
 public class ReadImagePairsPlugin implements ProcessorPlugin, SciJavaPlugin{
 	

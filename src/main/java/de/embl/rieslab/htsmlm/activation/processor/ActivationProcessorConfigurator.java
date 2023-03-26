@@ -4,6 +4,9 @@ import org.micromanager.PropertyMap;
 import org.micromanager.PropertyMaps;
 import org.micromanager.data.ProcessorConfigurator;
 
+/**
+ * Configurator for the ActivationProcessor.
+ */
 public class ActivationProcessorConfigurator implements ProcessorConfigurator {
 	
 	private static ActivationProcessorConfigurator configurator;
