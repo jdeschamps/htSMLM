@@ -36,12 +36,12 @@ public class AcquisitionWizard {
 	private AcquisitionController owner_;
 	private JFrame frame_;
 	private ArrayList<AcquisitionTab> tabs_;
-	private JTabbedPane tabbedpane_;
-	private JTextField waitfield;
-	private JTextField numposfield;
+	private JTabbedPane tabbedPane_;
+	private JTextField waitField;
+	private JTextField numPosField;
 	private JRadioButton single;
 	private JRadioButton multi;
-	private SystemController controller_;
+	private final SystemController controller_;
 	private HashMap<String, String> propertyValues_;
 	
 	public AcquisitionWizard(SystemController controller, AcquisitionController owner, HashMap<String, String> propertyValues){
@@ -50,8 +50,8 @@ public class AcquisitionWizard {
 		propertyValues_ = propertyValues;
 		tabs_ = new ArrayList<AcquisitionTab>();
 		
-		Datastore.SaveMode savemode = controller_.getStudio().data().getPreferredSaveMode();
-		setUpFrame(3, 0, savemode, new ArrayList<Acquisition>());
+		Datastore.SaveMode saveMode = controller_.getStudio().data().getPreferredSaveMode();
+		setUpFrame(3, 0, saveMode, new ArrayList<Acquisition>());
 	}
 	
 	public AcquisitionWizard(SystemController controller, AcquisitionController owner, HashMap<String, String> propertyValues, Experiment exp) {
@@ -97,13 +97,13 @@ public class AcquisitionWizard {
 		save.setToolTipText("Save the acquisition list.");
 		
 		JLabel wait = new JLabel("Waiting (s)");
-		waitfield = new JTextField(String.valueOf(waitingtime));
-		waitfield.setPreferredSize(new Dimension(30,20));
-		waitfield.setToolTipText("Waiting time (s) before starting the experiment (this waiting period occurs only once for each position).");
+		waitField = new JTextField(String.valueOf(waitingtime));
+		waitField.setPreferredSize(new Dimension(30,20));
+		waitField.setToolTipText("Waiting time (s) before starting the experiment (this waiting period occurs only once for each position).");
 		
 		JLabel pos = new JLabel("Pos number");
-		numposfield = new JTextField(String.valueOf(numpos));
-		numposfield.setToolTipText("Number of positions to use from the position list (0 = use all).");
+		numPosField = new JTextField(String.valueOf(numpos));
+		numPosField.setToolTipText("Number of positions to use from the position list (0 = use all).");
 		
 		add.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -191,7 +191,7 @@ public class AcquisitionWizard {
 		c.gridx = 1;
 		c.gridy = 5;
 		c.gridwidth = 2;
-		pane.add(waitfield, c);	
+		pane.add(waitField, c);
 
 		c.gridx = 0;
 		c.gridy = 6;
@@ -200,7 +200,7 @@ public class AcquisitionWizard {
 		c.gridx = 1;
 		c.gridy = 6;
 		c.gridwidth = 2;
-		pane.add(numposfield, c);	
+		pane.add(numPosField, c);
 
 		c.gridx = 0;
 		c.gridy = 7;
@@ -222,70 +222,70 @@ public class AcquisitionWizard {
 	}
 
 	private JTabbedPane setUpRightPanel(ArrayList<Acquisition> acqlist) {
-		tabbedpane_ = new JTabbedPane();
+		tabbedPane_ = new JTabbedPane();
 		
 		if(acqlist.size() == 0) { // if empty acquisition list
 			AcquisitionTab acqtab = new AcquisitionTab(this, new AcquisitionFactory(owner_, controller_), propertyValues_);
-			tabbedpane_.add(acqtab.getTypeName(), acqtab);
+			tabbedPane_.add(acqtab.getTypeName(), acqtab);
 			tabs_.add(acqtab);
 		} else {
 			for(int i=0;i<acqlist.size();i++){
 				tabs_.add(new AcquisitionTab(this, new AcquisitionFactory(owner_, controller_), propertyValues_, acqlist.get(i)));
-		        tabbedpane_.add(tabs_.get(i), i);
+		        tabbedPane_.add(tabs_.get(i), i);
 			}
-			tabbedpane_.setSelectedIndex(0);		
+			tabbedPane_.setSelectedIndex(0);
 		}
 		
-		return tabbedpane_;
+		return tabbedPane_;
 	}
 	
 	protected void moveTabLeft() {
     	if(tabs_.size()>1){
-    		int i = tabbedpane_.getSelectedIndex();
+    		int i = tabbedPane_.getSelectedIndex();
 
     		if(i>0){
         		AcquisitionTab tab = tabs_.get(i);
 
-        		tabbedpane_.remove(i);
+        		tabbedPane_.remove(i);
         		tabs_.remove(i);
         		
         		tabs_.add(i-1, tab);
-        		tabbedpane_.add(tab, i-1);
-        		tabbedpane_.setSelectedIndex(i-1);
+        		tabbedPane_.add(tab, i-1);
+        		tabbedPane_.setSelectedIndex(i-1);
     		}
     	} 		
 	}
 
 	protected void moveTabRight() {
     	if(tabs_.size()>1){
-    		int i = tabbedpane_.getSelectedIndex();
+    		int i = tabbedPane_.getSelectedIndex();
 
     		if(i<tabs_.size()-1){
     			AcquisitionTab tab = tabs_.get(i);
 
-    			tabbedpane_.remove(i);
+    			tabbedPane_.remove(i);
         		tabs_.remove(i);
         		
         		tabs_.add(i+1, tab);
-        		tabbedpane_.add(tab, i+1);
-        		tabbedpane_.setSelectedIndex(i+1);
+        		tabbedPane_.add(tab, i+1);
+        		tabbedPane_.setSelectedIndex(i+1);
     		}
     	} 
 	}
 
 	protected void removeTab() {
     	if(tabs_.size()>1){
-    		int i = tabbedpane_.getSelectedIndex();
+    		int i = tabbedPane_.getSelectedIndex();
 
-    		tabbedpane_.remove(i);
+    		tabbedPane_.remove(i);
     		tabs_.remove(i);
     	} 
 	}
 
 	protected void createNewTab() {
        	tabs_.add(new AcquisitionTab(this, new AcquisitionFactory(owner_, controller_), propertyValues_));
-        tabbedpane_.add(tabs_.get(tabs_.size()-1), tabs_.size()-1);
-        tabbedpane_.setSelectedIndex(tabs_.size()-1);	
+        tabbedPane_.add(tabs_.get(tabs_.size()-1), tabs_.size()-1);
+        tabbedPane_.setSelectedIndex(tabs_.size()-1);
 	}
 
 	public void changeName(AcquisitionTab acquisitionTab) {
@@ -293,9 +293,9 @@ public class AcquisitionWizard {
 	}
 	
     private void setNameTab(String name){
-       	int i = tabbedpane_.getSelectedIndex();
-       	if(i>=0 && i<tabbedpane_.getTabCount()){
-           	tabbedpane_.setTitleAt(i, name);
+       	int i = tabbedPane_.getSelectedIndex();
+       	if(i>=0 && i< tabbedPane_.getTabCount()){
+           	tabbedPane_.setTitleAt(i, name);
        	}
     }
     	
@@ -305,7 +305,7 @@ public class AcquisitionWizard {
 	}
     
 	private int getWaitingTime() {
-		String s = waitfield.getText();
+		String s = waitField.getText();
 		if(EmuUtils.isInteger(s)){
 			return Integer.parseInt(s); 
 		}
@@ -313,7 +313,7 @@ public class AcquisitionWizard {
 	}  
 	
 	private int getNumberPositions() {
-		String s = numposfield.getText();
+		String s = numPosField.getText();
 		if(EmuUtils.isInteger(s)){
 			return Integer.parseInt(s); 
 		}

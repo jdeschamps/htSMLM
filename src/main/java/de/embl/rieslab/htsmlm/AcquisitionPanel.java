@@ -18,6 +18,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.JToggleButton;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import de.embl.rieslab.emu.controller.SystemController;
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
@@ -414,18 +416,29 @@ public class AcquisitionPanel extends ConfigurablePanel{
 	@Override
 	protected void addComponentListeners() {
 		// select path
-        SwingUIListeners.addActionListenerToUnparametrizedAction(() -> showSelectPath(), jButton_setPath);
+        SwingUIListeners.addActionListenerToUnparametrizedAction(this::showSelectPath, jButton_setPath);
         
         // load experiment
-        SwingUIListeners.addActionListenerToUnparametrizedAction(() -> acqController_.loadAcquisitionList(), jButton_load);
+        SwingUIListeners.addActionListenerToUnparametrizedAction(acqController_::loadAcquisitionList, jButton_load);
         
         // save experiment
-        SwingUIListeners.addActionListenerToUnparametrizedAction(() -> acqController_.saveAcquisitionList(), jButton_saveAcq);
+        SwingUIListeners.addActionListenerToUnparametrizedAction(acqController_::saveAcquisitionList, jButton_saveAcq);
         
         // show configuration wizard
-        SwingUIListeners.addActionListenerToUnparametrizedAction(() -> acqController_.startWizard(), jButton_configAcq);
+        SwingUIListeners.addActionListenerToUnparametrizedAction(acqController_::startWizard, jButton_configAcq);
         
         // show/hide summary tree
-        SwingUIListeners.addActionListenerToBooleanAction((b) -> summaryTree_.showSummary(b), jToggle_showSummary);
+        SwingUIListeners.addActionListenerToBooleanAction(summaryTree_::showSummary, jToggle_showSummary);
+
+		jToggle_showSummary.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent event) {
+				if (jToggle_showSummary.isSelected()){
+					jToggle_showSummary.setText("<<");
+				} else {
+					jToggle_showSummary.setText(">>");
+				}
+			}
+		});
 	}
 }

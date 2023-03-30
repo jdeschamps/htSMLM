@@ -73,8 +73,8 @@ public class MultiSliceAcquisition implements Acquisition {
 	private final static String LABEL_ZDEVICE = "Moving device:";
 	private final static String LABEL_DISABLE_FL = "disable focus-lock";
 	private final static String LABEL_FL_AT_Z0 = "only at Z0";
-	private final static String LABEL_SLICEST = "Slice St";
-	private final static String LABEL_ACTATST = "Only activate at slice:";
+	private final static String LABEL_SLICESA = "Slice St";
+	private final static String LABEL_ACTATSA = "Only activate at slice:";
 	private final static String LABEL_ACTIVATION = "Activation:";
 
 	public final static String KEY_USEACT = "Use activation?";
@@ -104,7 +104,7 @@ public class MultiSliceAcquisition implements Acquisition {
 	private String zDevice_;
 	private String[] zDevicesName_;
 	private double deltaZ;
-	private int nSlices, nLoops, sliceSt;
+	private int nSlices, nLoops, sliceSa;
 	private boolean focusLockAtZ0_, disableFocusLock_, actAtSa;
 	private String activationName_ = "None";
 
@@ -135,7 +135,7 @@ public class MultiSliceAcquisition implements Acquisition {
 		deltaZ = 0.3;
 		nSlices = 4;
 		nLoops = 5;
-		sliceSt = 0;
+		sliceSa = 0;
 
 		// z stabilization related
 		if (zStabilizationProperty != null && zStabilizationProperty.isAssigned()) {
@@ -219,11 +219,11 @@ public class MultiSliceAcquisition implements Acquisition {
 		});
 
 		// activate at slice Sa
-		activateAtSa = new JCheckBox(LABEL_ACTATST);
-		activateAtSa.setName(LABEL_ACTATST);
+		activateAtSa = new JCheckBox(LABEL_ACTATSA);
+		activateAtSa.setName(LABEL_ACTATSA);
 		activateAtSa.setSelected(actAtSa);
-		sliceSaSpin = new JSpinner(new SpinnerNumberModel(sliceSt, 0, nSlices - 1, 1));
-		sliceSaSpin.setName(LABEL_SLICEST);
+		sliceSaSpin = new JSpinner(new SpinnerNumberModel(sliceSa, 0, nSlices - 1, 1));
+		sliceSaSpin.setName(LABEL_SLICESA);
 
 		// choice of activation
 		final String[] activationPropertiesName = activationController_.getActivationPropertiesFriendlyName();
@@ -439,9 +439,9 @@ public class MultiSliceAcquisition implements Acquisition {
 								nLoops = ((Integer) ((JSpinner) comp[i]).getValue());
 							} else if (comp[i].getName().equals(LABEL_DELTAZ) && comp[i] instanceof JSpinner) {
 								deltaZ = ((Double) ((JSpinner) comp[i]).getValue());
-							} else if (comp[i].getName().equals(LABEL_SLICEST) && comp[i] instanceof JSpinner) {
-								sliceSt = ((Integer) ((JSpinner) comp[i]).getValue());
-							} else if (comp[i].getName().equals(LABEL_ACTATST) && comp[i] instanceof JCheckBox) {
+							} else if (comp[i].getName().equals(LABEL_SLICESA) && comp[i] instanceof JSpinner) {
+								sliceSa = ((Integer) ((JSpinner) comp[i]).getValue());
+							} else if (comp[i].getName().equals(LABEL_ACTATSA) && comp[i] instanceof JCheckBox) {
 								actAtSa = ((JCheckBox) comp[i]).isSelected();
 							} else if(comp[i].getName().equals(LABEL_ACTIVATION) && comp[i] instanceof JComboBox){
 								this.setActivation((String) ((JComboBox<String>) comp[i]).getSelectedItem());
@@ -452,8 +452,8 @@ public class MultiSliceAcquisition implements Acquisition {
 			}
 		}
 
-		if (sliceSt >= nSlices) {
-			sliceSt = nSlices - 1;
+		if (sliceSa >= nSlices) {
+			sliceSa = nSlices - 1;
 		}
 	}
 
@@ -480,7 +480,7 @@ public class MultiSliceAcquisition implements Acquisition {
 		s[9] = "Number of loops = " + nLoops;
 		s[10] = "Number of slices = " + nSlices;
 		s[11] = "Z difference = " + deltaZ + " um";
-		s[12] = "Slice St = " + sliceSt;
+		s[12] = "Slice St = " + sliceSa;
 		s[13] = "Activate at St = " + actAtSa;
 		s[14] = "Activation = "+activationName_;
 		return s;
@@ -514,7 +514,7 @@ public class MultiSliceAcquisition implements Acquisition {
 		parameters[8][0] = KEY_DELTAZ;
 		parameters[8][1] = String.valueOf(deltaZ);
 		parameters[9][0] = KEY_SLICE_SA;
-		parameters[9][1] = String.valueOf(sliceSt);
+		parameters[9][1] = String.valueOf(sliceSa);
 		parameters[10][0] = KEY_ACT_AT_SA;
 		parameters[10][1] = String.valueOf(actAtSa);
 		parameters[11][0] = KEY_ACTIVATION;
@@ -539,7 +539,7 @@ public class MultiSliceAcquisition implements Acquisition {
 		nLoops = Integer.parseInt(parameters[6][1]);
 		nSlices = Integer.parseInt(parameters[7][1]);
 		deltaZ = Double.parseDouble(parameters[8][1]);
-		sliceSt = Integer.parseInt(parameters[9][1]);
+		sliceSa = Integer.parseInt(parameters[9][1]);
 		actAtSa = Boolean.parseBoolean(parameters[10][1]);
 		activationName_ = parameters[11][1];
 	}
@@ -588,7 +588,6 @@ public class MultiSliceAcquisition implements Acquisition {
 
 		if (useActivation_) {
 			activationController_.initializeTask(getActivationIndex());
-			activationController_.startTask();
 		}
 
 		double z0 = 0;
@@ -602,7 +601,7 @@ public class MultiSliceAcquisition implements Acquisition {
 		if (running_) {
 			for (int i = 0; i < nLoops; i++) {
 				for (int j = 0; j < nSlices; j++) {
-					if (useActivation_ && ((actAtSa && j == sliceSt) || !actAtSa)) {
+					if (useActivation_ && (!actAtSa || j == sliceSa)) {
 						activationController_.startTask();
 					}
 
@@ -657,7 +656,7 @@ public class MultiSliceAcquisition implements Acquisition {
 						while (acqThread.isRunning()) {
 
 							// checks if reached stop criterion
-							if (useActivation_ && stopOnMax_ && (!actAtSa || j == sliceSt)
+							if (useActivation_ && stopOnMax_ && (!actAtSa || j == sliceSa)
 									&& activationController_.isCriterionReached()) {
 								Thread.sleep(1_000L * stopOnMaxDelay_);
 
@@ -682,7 +681,7 @@ public class MultiSliceAcquisition implements Acquisition {
 						}
 
 						// pause activation
-						if (useActivation_ && ((actAtSa && j == sliceSt) || !actAtSa)) {
+						if (useActivation_ && (!actAtSa || j == sliceSa)) {
 							activationController_.pauseTask();
 						}
 

@@ -71,14 +71,14 @@ public class ActivationPanel extends ConfigurablePanel {
 	private static final String PARAM_ACTIVATION_NAME2 = "Activation 2 name";
 
 	//////// Misc variables
-	public static int INPUT_WHICH_ACTIVATION = 0;
-	private boolean activate_, showNMS_, autoCutoff_;
+	private boolean showNMS_, autoCutoff_;
 	private boolean useActivation1_;
 	private double dynamicFactor_, feedback_, N0_, cutoff_;
 	private int nPos_, idleTime_, maxPulse1_, maxPulse2_;
 	private double averagingWeight_;
 	
 	private ActivationController activationController_;
+	private SystemController systemController_;
 	
 	public ActivationPanel(String label, SystemController systemController) {
 		super(label);
@@ -88,6 +88,7 @@ public class ActivationPanel extends ConfigurablePanel {
 
 		setupPanel();
 		useActivation1_ = true;
+		systemController_ = systemController;
 		activationController_ = new ActivationController(systemController, this);
 	}
 	
@@ -272,7 +273,7 @@ public class ActivationPanel extends ConfigurablePanel {
 			cutoff_ = output.getNewCutOff();
 		}
 		
-		if(activate_){
+		if(checkBoxActivate_.isSelected()){
 			try {
 				if(getMMPropertyType().equals(MMPropertyType.INTEGER)) {
 					setUIPropertyValue(getProperty(), String.valueOf((int) output.getNewPulse()));
@@ -294,13 +295,13 @@ public class ActivationPanel extends ConfigurablePanel {
 		ActivationParameters parameters = new ActivationParameters();
 		
 		// set parameters
-		parameters.setActivate(this.activate_);
+		parameters.setActivate(checkBoxActivate_.isSelected());
 		parameters.setAutoCutoff(this.autoCutoff_);
 		parameters.setCutoff(this.cutoff_);
 		parameters.setAveragingWeight(this.averagingWeight_);
 		parameters.setCurrentPulse( getCurrentPulse());
 		parameters.setFeedbackParameter(this.feedback_);
-		parameters.setMaxPulse((double) getMaxPulse());
+		parameters.setMaxPulse(getMaxPulse());
 		parameters.setN0(this.N0_);
 		parameters.setDynamicFactor(this.dynamicFactor_);
 		
@@ -639,7 +640,6 @@ public class ActivationPanel extends ConfigurablePanel {
 			} else {
 				EventQueue.invokeLater(checkActivate);
 			}
-			activate_ = true;
 		}
 
 		// if the run button is not selected, select it.
@@ -661,7 +661,7 @@ public class ActivationPanel extends ConfigurablePanel {
 	 * Stop update of the activation laser property.
 	 */
 	public void stopActivationUpdate() {
-		if (activate_) {	
+		if (checkBoxActivate_.isSelected()) {
 			Runnable checkActivate = new Runnable() {
 				public void run() {
 					checkBoxActivate_.setSelected(false);
@@ -672,7 +672,6 @@ public class ActivationPanel extends ConfigurablePanel {
 			} else {
 				EventQueue.invokeLater(checkActivate);
 			}
-			activate_ = false;
 		}
 	}
 
@@ -705,13 +704,13 @@ public class ActivationPanel extends ConfigurablePanel {
 		SwingUIListeners.addActionListenerToDoubleAction(val -> N0_ = val, textFieldN0_, 0, Double.POSITIVE_INFINITY);
 		SwingUIListeners.addActionListenerToBooleanAction(b -> autoCutoff_ = b, toggleButtonAutoCutoff_);
 		SwingUIListeners.addActionListenerToDoubleAction(val -> cutoff_ = val, textFieldCutOff_, 0., Double.POSITIVE_INFINITY);
-		SwingUIListeners.addActionListenerToBooleanAction(b -> activate_ = b, checkBoxActivate_);
+		//SwingUIListeners.addActionListenerToBooleanAction(b -> activate_ = b, checkBoxActivate_);
 
 		// start/stop the activation script
 		SwingUIListeners.addActionListenerToBooleanAction(b -> activationController_.runActivation(b), toggleButtonRun_);
 
 		// show/hide NMS result
-		SwingUIListeners.addActionListenerToBooleanAction(b -> showNMS(b), checkboxNMS_);
+		SwingUIListeners.addActionListenerToBooleanAction(this::showNMS, checkboxNMS_);
 
 		// clear graph
 		buttonClear_.addActionListener(new java.awt.event.ActionListener() {

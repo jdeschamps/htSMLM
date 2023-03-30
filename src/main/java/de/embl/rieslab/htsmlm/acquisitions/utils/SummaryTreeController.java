@@ -131,17 +131,15 @@ public class SummaryTreeController {
 			summaryFrame_.setContentPane(getExperimentPanel());
 			summaryFrame_.pack();
 			summaryFrame_.setVisible(true);
-			button_.setText("<<");
+			button_.setSelected(true);
+			//button_.setText("<<");
 		} else {
 			showSummaryTree_ = false;
 			if(summaryFrame_ != null){
 				summaryFrame_.dispose();
 			}
-			button_.setText(">>");
-			
-			if(button_.isSelected()) {
-				button_.setSelected(false);
-			}
+			//button_.setText(">>");
+			button_.setSelected(false);
 		}
 	}
 	

@@ -21,7 +21,7 @@ public class ReadImagePairsPlugin implements ProcessorPlugin, SciJavaPlugin{
 
 	@Override
 	public String getName() {
-		return "htSMLM pairs reader";
+		return "htSMLM activation";
 	}
 
 	@Override
