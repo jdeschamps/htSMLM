@@ -32,6 +32,7 @@ import de.embl.rieslab.htsmlm.activation.ActivationController;
 import de.embl.rieslab.htsmlm.activation.utils.ActivationParameters;
 import de.embl.rieslab.htsmlm.activation.utils.ActivationResults;
 import de.embl.rieslab.htsmlm.graph.TimeChart;
+import de.embl.rieslab.htsmlm.utils.EDTRunner;
 
 public class ActivationPanel extends ConfigurablePanel {
 
@@ -628,51 +629,27 @@ public class ActivationPanel extends ConfigurablePanel {
 	 * Can be called from the acquisition controller.
 	 */
 	public void activationHasStarted() {
-		// if the activate checkbox is not checked, check it.
-		if (!checkBoxActivate_.isSelected()) {
-			Runnable checkActivate = new Runnable() {
-				public void run() {
-					checkBoxActivate_.setSelected(true);
-				}
-			};
-			if (SwingUtilities.isEventDispatchThread()) {
-				checkActivate.run();
-			} else {
-				EventQueue.invokeLater(checkActivate);
-			}
-		}
+		 Runnable checkActivate = new Runnable() {
+			 public void run() {
+				 checkBoxActivate_.setSelected(true);
+				 toggleButtonRun_.setSelected(true);
+			 }
+		 };
 
-		// if the run button is not selected, select it.
-		if (!toggleButtonRun_.isSelected()) {
-			Runnable checkActivate = new Runnable() {
-				public void run() {
-					toggleButtonRun_.setSelected(true);
-				}
-			};
-			if (SwingUtilities.isEventDispatchThread()) {
-				checkActivate.run();
-			} else {
-				EventQueue.invokeLater(checkActivate);
-			}
-		}
+		 EDTRunner.runOnEDT(checkActivate);
 	}
 
 	/**
 	 * Stop update of the activation laser property.
 	 */
 	public void stopActivationUpdate() {
-		if (checkBoxActivate_.isSelected()) {
-			Runnable checkActivate = new Runnable() {
-				public void run() {
-					checkBoxActivate_.setSelected(false);
-				}
-			};
-			if (SwingUtilities.isEventDispatchThread()) {
-				checkActivate.run();
-			} else {
-				EventQueue.invokeLater(checkActivate);
+		Runnable deselectActivate = new Runnable() {
+			public void run() {
+				checkBoxActivate_.setSelected(false);
 			}
-		}
+		};
+
+		EDTRunner.runOnEDT(deselectActivate);
 	}
 
 	/**

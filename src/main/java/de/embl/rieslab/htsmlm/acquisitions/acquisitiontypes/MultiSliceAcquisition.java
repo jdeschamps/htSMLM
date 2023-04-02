@@ -22,6 +22,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import de.embl.rieslab.htsmlm.utils.EDTRunner;
 import mmcorej.Configuration;
 import mmcorej.PropertySetting;
 import org.micromanager.PropertyMap;
@@ -612,13 +613,13 @@ public class MultiSliceAcquisition implements Acquisition {
 						// moves the stage
 						core.setPosition(zDevice_, z);
 
-						Thread.sleep(1000);
+						Thread.sleep(1_000);
 
 						if (j == 0 && !disableFocusLock_ && focusLockAtZ0_) {
 							stabilizeFocus(true);
 
 							// wait to give time for the stabilization to settle
-							Thread.sleep(3000);
+							Thread.sleep(3_000);
 						}
 
 						// sets-up name
@@ -650,7 +651,7 @@ public class MultiSliceAcquisition implements Acquisition {
 						new Thread(acqThread).start();
 
 						// wait 1sec to make sure we don't miss the start of the experiment
-						Thread.sleep(1000);
+						Thread.sleep(1_000);
 
 						// loops to check if needs to be stopped or not
 						while (acqThread.isRunning()) {
@@ -669,7 +670,7 @@ public class MultiSliceAcquisition implements Acquisition {
 								break;
 							}
 
-							Thread.sleep(1_000);
+							Thread.sleep(100);
 						}
 
 						// disable focus-lock and update z0
@@ -850,7 +851,7 @@ public class MultiSliceAcquisition implements Acquisition {
 							// convert to an Image at the desired time point
 							Image image = studio.data().convertTaggedImage(tagged, cb.t(curFrame).build(), generateMetadata(studio, metadata));
 							
-							// pass image to the processor for the activation
+							// pass image to the processor the activation
 							imageProcessor.processImage(image, processorContext);
 
 							// store image
@@ -871,8 +872,6 @@ public class MultiSliceAcquisition implements Acquisition {
 					e.printStackTrace();
 				}
 
-				// close store
-				display.close();
 				store.close();
 			} catch (Exception e) {
 				e.printStackTrace();
