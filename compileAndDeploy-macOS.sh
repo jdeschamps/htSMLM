@@ -15,7 +15,6 @@ else
 	# tests if the Micro-Manager jars are present and deploy them
 	MMJ="$MM2_HOME/plugins/Micro-Manager/MMJ_.jar"
 	MMAcqEngine="$MM2_HOME/plugins/Micro-Manager/MMAcqEngine.jar"
-	AcqEngJ="$MM2_HOME/plugins/Micro-Manager/AcqEngJ-0.12.0.jar"
 	MMCoreJ="$MM2_HOME/plugins/Micro-Manager/MMCoreJ.jar"
 	EMU="$MM2_HOME/mmplugins/Emu.jar"
 	MM2_PLUGINS_HOME="$MM2_HOME/mmplugins"
@@ -24,7 +23,6 @@ else
 		# deploy MM2 jars
 		mvn install:install-file -Dfile="$MMJ" -DgroupId=org.micromanager  -DartifactId=MMJ_ -Dversion=2.0.0-SNAPSHOT -Dpackaging=jar
 		mvn install:install-file -Dfile="$MMAcqEngine" -DgroupId=org.micromanager  -DartifactId=MMAcqEngine -Dversion=2.0.0-SNAPSHOT -Dpackaging=jar
-		mvn install:install-file -Dfile="$AcqEngJ" -DgroupId=org.micromanager  -DartifactId=acqj -Dversion=0.8.0-SNAPSHOT -Dpackaging=jar
 		mvn install:install-file -Dfile="$MMCoreJ" -DgroupId=org.micromanager  -DartifactId=MMCoreJ -Dversion=2.0.0-SNAPSHOT -Dpackaging=jar
 		mvn install:install-file -Dfile="$EMU" -DgroupId=de.embl.rieslab  -DartifactId=EMU -Dversion=$EMU_VERSION -Dpackaging=jar
 		
@@ -36,7 +34,7 @@ else
 		mkdir -p "$MM2_EMU"
 	
 		# deploy to MM2
-		cp "target/htsmlm-2.0-SNAPSHOT.jar" "$MM2_HOME/EMU/htsmlm-2.0.jar"
+		cp "target/htsmlm-2.0.0-SNAPSHOT.jar" "$MM2_HOME/EMU/htsmlm-2.0.0.jar"
 	else
 		echo "Could not find MMJ_.jar, MMAcqEngine.jar, MMCoreJ.jar or Emu.jar. Did you input the correct directory?"
 	fi
