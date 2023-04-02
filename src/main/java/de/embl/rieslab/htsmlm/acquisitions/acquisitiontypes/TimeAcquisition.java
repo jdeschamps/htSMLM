@@ -205,7 +205,10 @@ public class TimeAcquisition implements Acquisition{
 	private void interruptAcquisition(Studio studio) {
 		try {
 			// not pretty but I could not find any other way to stop the acquisition without getting a JDialog popping up and requesting user input
-			((DefaultAcquisitionManager) studio.acquisitions()).getAcquisitionEngine().stop(true);
+			// ((DefaultAcquisitionManager) studio.acquisitions()).getAcquisitionEngine().stop(true);
+
+			// currently only options in recent MM2.0.1
+			studio.acquisitions().haltAcquisition();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
