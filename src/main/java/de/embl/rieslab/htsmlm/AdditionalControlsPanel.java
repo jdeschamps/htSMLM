@@ -21,10 +21,18 @@ import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.htsmlm.uipropertyflags.TwoStateFlag;
 
+
+/**
+ * A ConfigurablePanel offering multiple toggle buttons.
+ * 
+ * @author Joran Deschamps
+ *
+ */
 public class AdditionalControlsPanel extends ConfigurablePanel{
 	
 
 	private static final long serialVersionUID = 1L;
+	
 	//////// Components
 	private JToggleButton[] togglebuttons_;
 	private TitledBorder border_;
@@ -60,11 +68,20 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 	}
 	
 	private void setupPanel() {
+		// define border
 		this.setLayout(new GridBagLayout());
-		border_ = BorderFactory.createTitledBorder(null, getPanelLabel(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, new Color(0,0,0));
+		border_ = BorderFactory.createTitledBorder(
+				null,
+				getPanelLabel(),
+				TitledBorder.DEFAULT_JUSTIFICATION,
+				TitledBorder.DEFAULT_POSITION,
+				null,
+				new Color(0,0,0)
+		);
 		this.setBorder(border_);
 		border_.setTitleFont(((TitledBorder) this.getBorder()).getTitleFont().deriveFont(Font.BOLD, 12));
 	
+		// create an array of buttons
 		togglebuttons_ = new JToggleButton[PARAM_NPOS];
 		
 		GridBagConstraints c = new GridBagConstraints();
@@ -74,6 +91,7 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 		c.ipady = 10;
 		c.weightx = 0.2;
 		
+		// create buttons
 		String[] devices = {DEVICE_1, DEVICE_2, DEVICE_3, DEVICE_4, DEVICE_5, DEVICE_6};
 		for(int i=0;i<togglebuttons_.length;i++){
 			togglebuttons_[i] = new JToggleButton();
@@ -86,6 +104,7 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 			c.gridy = i;
 			this.add(togglebuttons_[i], c);
 			
+			// add swing UI listener
 			try {
 				SwingUIListeners.addActionListenerToTwoState(this, devices[i], togglebuttons_[i]);
 			} catch (IncorrectUIPropertyTypeException e) {
@@ -143,6 +162,7 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 	public void propertyhasChanged(String name, String newvalue) {
 		if(DEVICE_1.equals(name)){
 			try {
+				// select if the corresponding TwoStateUIProperty is in "on state"
 				togglebuttons_[0].setSelected(((TwoStateUIProperty) getUIProperty(DEVICE_1)).isOnState(newvalue));
 			} catch (UnknownUIPropertyException e) {
 				e.printStackTrace();
@@ -184,8 +204,13 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 	public void parameterhasChanged(String label) {
 		if(PARAM_NAME1.equals(label)){
 			try {
+				// retrieve parameter value as a string
 				String s = getStringUIParameterValue(PARAM_NAME1);
+				
+				// update button
 				togglebuttons_[0].setText(s);
+				
+				// update the UI property friendly name
 				getUIProperty(DEVICE_1).setFriendlyName(s);
 			} catch (UnknownUIParameterException | UnknownUIPropertyException e) {
 				e.printStackTrace();
@@ -284,12 +309,13 @@ public class AdditionalControlsPanel extends ConfigurablePanel{
 
 	@Override
 	public void shutDown() {
-		// do nothing
+		// Do nothing
 	}
 
 	@Override
 	public String getDescription() {
-		return "The "+getPanelLabel()+" panel makes use of toggle buttons to control devices with only two states (e.g.: flip mirrors, servos with in/out positions..etc..).";
+		return "The "+getPanelLabel()+" panel makes use of toggle buttons to control devices "
+				+ "with only two states (e.g.: flip mirrors, servos with in/out positions..etc..).";
 	}
 
 	@Override

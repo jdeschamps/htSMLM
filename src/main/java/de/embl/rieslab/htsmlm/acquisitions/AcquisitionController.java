@@ -1,10 +1,15 @@
 package de.embl.rieslab.htsmlm.acquisitions;
 
+import java.io.File;
 import java.util.ArrayList;
+
 import java.util.HashMap;
 import java.util.Iterator;
 
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import de.embl.rieslab.emu.controller.SystemController;
 import de.embl.rieslab.emu.ui.uiparameters.UIPropertyParameter;
@@ -17,145 +22,138 @@ import de.embl.rieslab.htsmlm.acquisitions.ui.AcquisitionWizard;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.AllocatedPropertyFilter;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.NonPresetGroupPropertyFilter;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.ReadOnlyPropertyFilter;
+import de.embl.rieslab.htsmlm.acquisitions.utils.AcquisitionDialogs;
 import de.embl.rieslab.htsmlm.acquisitions.utils.AcquisitionInformationPanel;
 import de.embl.rieslab.htsmlm.acquisitions.wrappers.Experiment;
+import de.embl.rieslab.htsmlm.activation.ActivationController;
 import de.embl.rieslab.htsmlm.constants.HTSMLMConstants;
-import de.embl.rieslab.htsmlm.tasks.Task;
-import de.embl.rieslab.htsmlm.tasks.TaskHolder;
 
-public class AcquisitionController implements TaskHolder<Integer>{
 
-	private static String TASK_NAME = "Unsupervised acquisitions";
+/**
+ * Class controlling the acquisitions.
+ * 
+ * @author Joran Deschamps
+ *
+ */
+public class AcquisitionController{
 	
-	private AcquisitionPanel owner_;
-	private SystemController controller_;
-	private AcquisitionInformationPanel infopanel_;
+	private AcquisitionPanel acquisitionPanel_;
+	private SystemController systemController_;
+	private AcquisitionInformationPanel infoPanel_;
 	private Experiment exp_;
 	private AcquisitionWizard wizard_;
-	private AcquisitionTask task_;
+	private AcquisitionTask acquisitionTask_;
+	private ActivationController activationController_;
 
-	public AcquisitionController(SystemController controller, AcquisitionPanel owner, AcquisitionInformationPanel infopane){
-		controller_ = controller;
-		owner_ = owner;
-		infopanel_ = infopane;
+	public AcquisitionController(SystemController controller, 
+								 AcquisitionPanel owner, 
+								 AcquisitionInformationPanel infoPanel, 
+								 ActivationController activationController){
+		systemController_ = controller;
+		acquisitionPanel_ = owner;
+		activationController_ = activationController;
 		
-		infopanel_.setInitialText();
+		// instantiate info panel
+		infoPanel_ = infoPanel;
+		infoPanel_.setInitialText();
 		
-		// placeholder experiment
-		exp_ = new Experiment(0, 0, controller_.getStudio().data().getPreferredSaveMode(), new ArrayList<Acquisition>());
+		// place-holder experiment
+		exp_ = new Experiment(0, 0, systemController_.getStudio().data().getPreferredSaveMode(), new ArrayList<Acquisition>());
 	}
 	
-	////////////////////////////////////////////////////////////////////
-	///// Taskholder methods
-	
-	@Override
-	public void update(Integer[] output) {
+
+	/**
+	 * Update the acquisition step.
+	 * 
+	 * @param acquisitionStep
+	 */
+	public void update(int acquisitionStep) {
 		if (SwingUtilities.isEventDispatchThread()) {
-		    owner_.updateProgressBar(output[0]);
-		    infopanel_.setPositionDoneText(output[0]);
+		    acquisitionPanel_.updateProgressBar(acquisitionStep);
+		    infoPanel_.setPositionDoneText(acquisitionStep);
 		} else {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-				    owner_.updateProgressBar(output[0]);
-				    infopanel_.setPositionDoneText(output[0]);
+				    acquisitionPanel_.updateProgressBar(acquisitionStep);
+				    infoPanel_.setPositionDoneText(acquisitionStep);
 				}
 			});
 		}
 	}
 
-	@Override
-	public Integer[] retrieveAllParameters() {
-		Integer[] params = new Integer[1];
-		params[0] = exp_.getPauseTime();
-		return params;
+	/**
+	 * Get pause time between acquisitions.
+	 * 
+	 * @return Pause time in seconds.
+	 */
+	public int retrievePauseTime() {
+		return exp_.getPauseTime();
 	}
 
-	@Override
-	public boolean startTask() {
+	/**
+	 * Start acquisition.
+	 * 
+	 * @return True if the acquisition started, false if the path or name were invalid.
+	 */
+	public boolean startAcquisition() {
 		// this is running on the EDT
 		
-		// set path and experiment name in acquisition
-		final String experimentName = owner_.getExperimentName();
-		final String folderPath = owner_.getExperimentPath();
+		// get path and experiment name
+		final String experimentName = acquisitionPanel_.getExperimentName();
+		final String folderPath = acquisitionPanel_.getExperimentPath();
 		
 		if(!isAcquisitionListEmpty() && folderPath != null && experimentName != null && !folderPath.equals("")){	
-			final AcquisitionFactory factory = new AcquisitionFactory(this,controller_);
-			task_ = new AcquisitionTask(this, controller_, exp_, experimentName, folderPath);
+			acquisitionTask_ = new AcquisitionTask(this, systemController_, exp_, experimentName, folderPath);
 	
-			Thread t = new Thread("Set-up acquisition") {
+			Thread t = new Thread("Run acquisitions") {
 				public void run() {
 
 					// save the acquisition list to the destination folder
-					boolean b = factory.writeAcquisitionList(exp_, folderPath, experimentName);
+					boolean b = AcquisitionFactory.writeAcquisitionList(exp_, folderPath, experimentName);
 	
 					if (!b) {
 						// report problem saving
-						System.out.println("[htSMLM] Error writting acquisition list");
+						systemController_.getStudio().logs().logDebugMessage("[htSMLM] Error writing acquisition list");
 					}
 	
-					task_.startTask();
+					acquisitionTask_.startTask();
 				}
 	
 			};
 			t.start();
 	
-			infopanel_.setStartText();
-			owner_.updateProgressBar(0);
+			infoPanel_.setStartText();
+			acquisitionPanel_.updateProgressBar(0);
 			
 			return true;
 		}
 		return false;
 	}	
 	
-	@Override
-	public void stopTask() {
-		if(task_ != null){
-			task_.stopTask();
+	/**
+	 * Stop acquisition.
+	 */
+	public void stopAcquisition() {
+		if(acquisitionTask_ != null){
+			acquisitionTask_.stopTask();
 		}
 	}
-
-	@Override
-	public boolean isPausable() {
+	
+	/**
+	 * Check if acquisition thread is running.
+	 * 
+	 * @return True if it is, false otherwise.
+	 */
+	public boolean isAcquisitionRunning() {
+		if(acquisitionTask_ != null){
+			return acquisitionTask_.isRunning();
+		}
 		return false;
-	}
-
-	@Override
-	public void pauseTask() {
-		// Do nothing		
-	}
-
-	@Override
-	public void resumeTask() {
-		// Do nothing
-	}
-
-	@Override
-	public boolean isTaskRunning() {
-		return task_.isRunning();
-	}
-
-	@Override
-	public String getTaskName() {
-		return TASK_NAME;
-	}
-
-	@Override
-	public boolean isCriterionReached() {
-		return false;
-	}
-
-	@Override
-	public void initializeTask() {
-		// Do nothing
-	}
-
-	@SuppressWarnings("rawtypes")
-	@Override
-	public Task getTask() {
-		return task_;
 	}
 	
-	@Override
+	/**
+	 * Notify the controller that the acquisition is done.
+	 */
 	public void taskDone() {
 		if (SwingUtilities.isEventDispatchThread()) {
 			done();
@@ -169,100 +167,180 @@ public class AcquisitionController implements TaskHolder<Integer>{
 	}
 
 	private void done(){
-		if(!isTaskRunning()){		
-			owner_.updateProgressBar(getNumberOfPositions());
-			owner_.setStateButtonToStop();
-			infopanel_.setStopText();
+		if(!isAcquisitionRunning()){		
+			acquisitionPanel_.updateProgressBar(getNumberOfPositions());
+			acquisitionPanel_.showStop();
+			infoPanel_.setStopText();
 			
-			// refresh all properties to make sure things are synchronized
-			controller_.forceUpdate();
+			// refresh all properties to make sure things are synchronised
+			systemController_.forceUpdate();
 		}
 	}
 
+	/**
+	 * Start the acquisition wizard.
+	 */
 	public void startWizard() {
 		// first, let's grab all the current property values
-		HashMap<String, UIProperty> props = (new NonPresetGroupPropertyFilter(new AllocatedPropertyFilter(new ReadOnlyPropertyFilter())))
-				.filterProperties(controller_.getPropertiesMap());
+		// create a filter: no read only -> only allocated -> non preset group
+		NonPresetGroupPropertyFilter filteredProperties =
+				new NonPresetGroupPropertyFilter(
+						new AllocatedPropertyFilter(
+								new ReadOnlyPropertyFilter()
+						)
+				);
+		HashMap<String, UIProperty> props = filteredProperties.filterProperties(systemController_.getPropertiesMap());
+		
+		// create map of all property values
 		HashMap<String, String> propValues = new HashMap<String, String>();
+		props.keySet().stream().forEach(
+				k -> propValues.put(k, props.get(k).getPropertyValue())
+		);
 		
-		Iterator<String> it = props.keySet().iterator();
-		while(it.hasNext()) {
-			String s = it.next();
-			propValues.put(s, props.get(s).getPropertyValue());
-		}
-		
+		// start the acquisition wizard
 		if(!isAcquisitionListEmpty()){
-			wizard_ = new AcquisitionWizard(controller_, this, propValues, exp_);
+			wizard_ = new AcquisitionWizard(systemController_, this, propValues, exp_);
 		} else {
-			wizard_ = new AcquisitionWizard(controller_, this, propValues);	
+			wizard_ = new AcquisitionWizard(systemController_, this, propValues);	
 		}
 	}
 
+	/**
+	 * Load experiment from json file.
+	 * 
+	 * @param path Path to file.
+	 */
 	public void loadExperiment(String path) {
-		Experiment exp = loadAcquisitionList(path);	// maybe try catch? to get the exception of null acquitisionlist
+		Experiment exp = loadAcquisitionList(path);
 
 		if(exp.getAcquisitionList() != null){
 			exp_ = exp;
-			infopanel_.setAcquisitionLoaded();	
-			infopanel_.setSummaryText(exp_);
+			infoPanel_.setAcquisitionLoaded();	
+			infoPanel_.setSummaryText(exp_);
 		
-			// for the moment there is no mechanism to get the expname and exppath
+			// TODO for the moment there is no mechanism to get the expname and exppath
 		}
 	}
 	
 	private Experiment loadAcquisitionList(String path) {		
-    	return (new AcquisitionFactory(this, controller_)).readAcquisitionList(path);
+    	return (new AcquisitionFactory(this, systemController_)).readAcquisitionList(path);
 	}
 
+	/**
+	 * Save experiment to json file.
+	 * 
+	 * @param parentPath Path to parent folder
+	 * @param fileName File name
+	 */
 	public void saveExperiment(String parentPath, String fileName) {
 		String name = fileName;
 		if (!fileName.endsWith("." + HTSMLMConstants.ACQ_EXT)) {
 			name = fileName + "." + HTSMLMConstants.ACQ_EXT;
 		}
-		(new AcquisitionFactory(this, controller_)).writeAcquisitionList(exp_, parentPath, name);
+		AcquisitionFactory.writeAcquisitionList(exp_, parentPath, name);
 	}
 
+	/**
+	 * Get current experiment.
+	 * 
+	 * @return Experiment
+	 */
 	public Experiment getExperiment() {
 		return exp_;
 	}
 	
+	/**
+	 * Set experiment and update the UI.
+	 * 
+	 * @param exp Experiment
+	 */
 	public void setExperiment(Experiment exp){
 		exp_ = exp;
-		infopanel_.setSummaryText(exp_);
-		owner_.updateSummary();
+		infoPanel_.setSummaryText(exp_);
+		acquisitionPanel_.getSummaryTreeController().updateSummary();
 	}
 
+	/**
+	 * Load acquisition list from a file.
+	 */
+	public void loadAcquisitionList(){
+		JFileChooser fileChooser = new JFileChooser();
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("Acquisition list", HTSMLMConstants.ACQ_EXT);
+		fileChooser.setFileFilter(filter);
+		int result = fileChooser.showOpenDialog(new JFrame());
+		if (result == JFileChooser.APPROVE_OPTION) {
+		    File selectedFile = fileChooser.getSelectedFile();
+		    String path = selectedFile.getAbsolutePath();
+		    
+		    // load
+		    loadExperiment(path);
+	    }
+	}
+
+	public void saveAcquisitionList() {
+		if(isAcquisitionListEmpty()){
+			AcquisitionDialogs.showNoAcqMessage();
+		} else {	
+			JFileChooser fileChooser = new JFileChooser();
+			FileNameExtensionFilter filter = new FileNameExtensionFilter("Acquisition list", HTSMLMConstants.ACQ_EXT);
+			fileChooser.setFileFilter(filter);
+			int result = fileChooser.showSaveDialog(new JFrame());
+			if (result == JFileChooser.APPROVE_OPTION) {
+				File selectedFile = fileChooser.getSelectedFile();
+				String parentFolder = selectedFile.getParent();
+				String fileName = selectedFile.getName();
+				
+				// save
+				saveExperiment(parentFolder, fileName);
+			}
+		}
+	}
+	
+	
+	/**
+	 * Shut down. 
+	 */
 	public void shutDown() {
-		stopTask();
+		stopAcquisition();
 		if(wizard_ != null){
 			wizard_.shutDown();
 		}
 	}
 
 	public int getNumberOfPositions() {
-		return controller_.getStudio().getPositionListManager().getPositionList().getNumberOfPositions();
+		return systemController_.getStudio().getPositionListManager().getPositionList().getNumberOfPositions();
 	}
 
+	public int getCurrentPositionIndex() {
+		if(acquisitionTask_ != null){
+			return acquisitionTask_.getCurrentPosition();
+		}
+		return -1;
+	}
+	
 	public boolean isAcquisitionListEmpty() {
 		return exp_.getAcquisitionList().isEmpty();
 	}
 
 	public boolean isAcquistionPropertyEnabled(AcquisitionType type) {
-		if(type.equals(AcquisitionType.BFP) && !owner_.getParameterValues(AcquisitionPanel.PARAM_BFP).equals(UIPropertyParameter.NO_PROPERTY)){
+		if(type.equals(AcquisitionType.BFP) && !acquisitionPanel_.getParameterValues(AcquisitionPanel.PARAM_BFP).equals(UIPropertyParameter.NO_PROPERTY)){
 			return true;
-		} else if(type.equals(AcquisitionType.BF) && !owner_.getParameterValues(AcquisitionPanel.PARAM_BRIGHTFIELD).equals(UIPropertyParameter.NO_PROPERTY)){
+		} else if(type.equals(AcquisitionType.BF) && !acquisitionPanel_.getParameterValues(AcquisitionPanel.PARAM_BRIGHTFIELD).equals(UIPropertyParameter.NO_PROPERTY)){
 			return true;
 		}
 		return false;  
 	}
 	
 	public String getAcquisitionParameterValue(String param){
-		return owner_.getParameterValues(param);
+		return acquisitionPanel_.getParameterValues(param);
 	}
 
-	@SuppressWarnings("rawtypes")
-	public TaskHolder getTaskHolder(String taskName) {
-		return owner_.getTaskHolders().get(taskName);
+	public ActivationController getActivationController() {
+		return activationController_;
+	}
+
+	public AcquisitionPanel getAcquisitionPanel() {
+		return acquisitionPanel_;
 	}
 
 }

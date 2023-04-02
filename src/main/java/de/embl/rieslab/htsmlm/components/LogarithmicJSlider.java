@@ -1,8 +1,6 @@
 package de.embl.rieslab.htsmlm.components;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Enumeration;
@@ -43,6 +41,7 @@ public class LogarithmicJSlider extends JSlider {
 
 	public LogarithmicJSlider(int orientation) {
         super(orientation);
+
         SliderUI ui = new LogSliderUI(this);
         this.setUI(ui);
     }
@@ -61,6 +60,10 @@ public class LogarithmicJSlider extends JSlider {
 
     public LogarithmicJSlider(int orientation, int min, int max, int value) {
         super(orientation, min, max, value);
+
+        // prevent logarithmic JSlider collapse (to a certain extent)
+        this.setMinimumSize(new Dimension(30, 200));
+
         SliderUI ui = new LogSliderUI(this);
         this.setUI(ui);
     }
@@ -357,7 +360,6 @@ public class LogarithmicJSlider extends JSlider {
      * uses the increment as a log-base.
      *
      */
-    @SuppressWarnings("rawtypes")
 	public Hashtable createStandardLabels(int increment, int start) {
         if (start > getMaximum() || start < getMinimum()) {
             throw new IllegalArgumentException("Slider label start point out of range.");
@@ -367,7 +369,6 @@ public class LogarithmicJSlider extends JSlider {
             throw new IllegalArgumentException("Label incremement must be > 0");
         }
 
-        @SuppressWarnings("serial")
 		class LabelHashtable extends Hashtable implements PropertyChangeListener {
             int increment = 0;
             int start = 0;

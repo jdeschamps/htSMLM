@@ -8,18 +8,19 @@ import java.awt.Point;
 import java.util.HashMap;
 import java.util.TreeMap;
 
-import javax.swing.BoxLayout;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
+import javax.swing.*;
 
 import de.embl.rieslab.emu.controller.SystemController;
 import de.embl.rieslab.emu.ui.ConfigurableMainFrame;
 import de.embl.rieslab.emu.utils.settings.BoolSetting;
 import de.embl.rieslab.emu.utils.settings.Setting;
 import de.embl.rieslab.emu.utils.settings.StringSetting;
-import de.embl.rieslab.htsmlm.tasks.TaskHolder;
+import de.embl.rieslab.htsmlm.activation.ActivationController;
 
-public class MainFrame extends ConfigurableMainFrame{
+/**
+ * Main frame.
+ */
+public class MainFramehtSMLM extends ConfigurableMainFrame{
 
 	private static final long serialVersionUID = 1L;
 
@@ -34,13 +35,14 @@ public class MainFrame extends ConfigurableMainFrame{
 	private static final String SETTING_NAME_IBS2 = "iBeamSmart #2 name";
 	private static final String SETTING_NAME_IBS1 = "iBeamSmart #1 name";
 	private static final String SETTING_NAME_ADDFILT = "Additional FW tab title";
+	private static final String SETTING_SET_RESIZABLE = "Resizable";
 	
 	// configurable panels and other components
 	private AdditionalFiltersPanel addFiltersPanel;
 	private FocusPanel focusPanel;
 	private QPDPanel qpdPanel;
 	private PowerMeterPanel powerPanel;
-	private IBeamSmartPanel focuslockpanel, focuslockpanel2;
+	private IBeamSmartPanel focusLockPanel, focusLockPanel2;
 	private AbstractFiltersPanel filterPanel;
 	private LaserControlPanel[] controlPanels;
 	private LaserPulsingPanel pulsePanel;
@@ -50,11 +52,9 @@ public class MainFrame extends ConfigurableMainFrame{
 	private AcquisitionPanel acqPanel;
 	private JPanel lowerpanel;
 	private JTabbedPane tab;
-	@SuppressWarnings("rawtypes")
-	private HashMap<String,TaskHolder> taskholders_;
 
 	
-	public MainFrame(String title, SystemController controller, TreeMap<String, String> pluginSettings) {
+	public MainFramehtSMLM(String title, SystemController controller, TreeMap<String, String> pluginSettings) {
 		super(title, controller, pluginSettings);
 	}
 
@@ -67,20 +67,11 @@ public class MainFrame extends ConfigurableMainFrame{
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(MainFramehtSMLM.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
-        setupPanels();
- 
-        this.pack(); 
-        this.setResizable(false);
+		setupPanels();
     }
 
     @SuppressWarnings("rawtypes")
@@ -113,7 +104,7 @@ public class MainFrame extends ConfigurableMainFrame{
 		c2.gridheight = 3;
 		c2.weightx = 0.2;
 		c2.weighty = 0.8;
-		pulsePanel = new LaserPulsingPanel("Laser 0");
+		pulsePanel = new LaserPulsingPanel("Activation");
 		upperpane.add(pulsePanel,c2);
 
 		c2.gridx = 1;
@@ -168,15 +159,15 @@ public class MainFrame extends ConfigurableMainFrame{
 		/// iBeamSmart 1
 		if(((BoolSetting) settings.get(SETTING_USE_IBS1)).getValue()) {
 			String name = settings.get(SETTING_NAME_IBS1).getStringValue();
-			focuslockpanel = new IBeamSmartPanel(name);
-			tab.add(name, focuslockpanel);
+			focusLockPanel = new IBeamSmartPanel(name);
+			tab.add(name, focusLockPanel);
 		}
 
 		/// iBeamSmart 2
 		if(((BoolSetting) settings.get(SETTING_USE_IBS2)).getValue()) {
 			String name = settings.get(SETTING_NAME_IBS2).getStringValue();
-			focuslockpanel2 = new IBeamSmartPanel(name);
-			tab.add(name, focuslockpanel2);
+			focusLockPanel2 = new IBeamSmartPanel(name);
+			tab.add(name, focusLockPanel2);
 		}
 		
 		/// powermeter
@@ -187,7 +178,7 @@ public class MainFrame extends ConfigurableMainFrame{
 		}
 		
 		// Activation
-		activationPanel = new ActivationPanel("Activation", getCore());
+		activationPanel = new ActivationPanel("Activation", this.getController());
 		tab.add("Activation", activationPanel);
 		
 		/// laser trigger tab
@@ -196,7 +187,7 @@ public class MainFrame extends ConfigurableMainFrame{
 			lasertrigg.setLayout(new GridLayout(2,2));
 			triggerPanels = new LaserTriggerPanel[4];
 			for(int i=0;i<triggerPanels.length;i++){
-				triggerPanels[i] = new LaserTriggerPanel("Laser "+i+" trigger"); 
+				triggerPanels[i] = new LaserTriggerPanel("Laser trigger "+i);
 				lasertrigg.add(triggerPanels[i]);
 			}
 			tab.add("Trigger", lasertrigg);
@@ -212,7 +203,6 @@ public class MainFrame extends ConfigurableMainFrame{
 		/// Acquisition tab
 		acqPanel = new AcquisitionPanel(getController(), this);
 		tab.add("Acquisition", acqPanel);
-		
 		
 		/*c3.gridx = 0;
 		c3.gridy = 0;
@@ -239,11 +229,10 @@ public class MainFrame extends ConfigurableMainFrame{
 
 		this.add(lowerpanel,c2);*/
 		this.add(lowerpanel);
-		
-        // tasks, ignore the acquisition task as it is not supposed to be called by another panel
-        taskholders_ = new HashMap<String,TaskHolder>();
-        taskholders_.put(activationPanel.getTaskName(), activationPanel);
 
+		// set resizable
+		this.pack();
+		this.setResizable(((BoolSetting) settings.get(SETTING_SET_RESIZABLE)).getValue());
     }
     
     public Point getAcquisitionPanelLocation(){
@@ -254,10 +243,13 @@ public class MainFrame extends ConfigurableMainFrame{
     	return loc;
     }
     
-    @SuppressWarnings("rawtypes")
-	public HashMap<String,TaskHolder> getTaskHolders(){
-    	return taskholders_;
+	public ActivationController getActivationController(){
+    	return activationPanel.getActivationController();
     }
+	
+	public JTabbedPane getTab() {
+		return tab;
+	}
 
 	@SuppressWarnings("rawtypes")
 	@Override
@@ -292,7 +284,7 @@ public class MainFrame extends ConfigurableMainFrame{
 				+ "corresponding properties and parameters will bear the same name.";
 		String descNIB1 = "Name of iBeamSmart #1 tab, if the \"iBeamSmart #1\" setting is selected. The "
 				+ "corresponding properties and parameters will bear the same name.";
-		
+		String descResize = "Set the GUI resizable.";
 		
 		defaultSettings.put(SETTING_USE_POWERMETER, new BoolSetting(SETTING_USE_POWERMETER, descPow, true));
 		defaultSettings.put(SETTING_USE_TRIGGER, new BoolSetting(SETTING_USE_TRIGGER, descTri, true));
@@ -304,6 +296,7 @@ public class MainFrame extends ConfigurableMainFrame{
 		defaultSettings.put(SETTING_USE_IBS1, new BoolSetting(SETTING_USE_IBS1, descUseIB1, true));
 		defaultSettings.put(SETTING_NAME_IBS2, new StringSetting(SETTING_NAME_IBS2, descNIB2, "iBeamSmart #2"));
 		defaultSettings.put(SETTING_NAME_IBS1, new StringSetting(SETTING_NAME_IBS1, descNIB1, "iBeamSmart #1"));
+		defaultSettings.put(SETTING_SET_RESIZABLE, new BoolSetting(SETTING_SET_RESIZABLE, descResize, false));
 		
 		return defaultSettings;
 	}

@@ -1,0 +1,1 @@
+{"class":"de.embl.rieslab.htsmlm.activation.processor.ReadImagePairsPlugin","values":{"description":"A Processor used by htSMLM to channel frames to the activation script in order to count molecules during acquisition.","name":"ReadImagePairs","priority":0.0,"type":"org.micromanager.data.ProcessorPlugin"}}

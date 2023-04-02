@@ -197,7 +197,6 @@ public class TimeAcquisition implements Acquisition{
 		}
 		
 		studio.displays().closeDisplaysFor(store);
-
 		store.close();
 		
 		running_ = false;

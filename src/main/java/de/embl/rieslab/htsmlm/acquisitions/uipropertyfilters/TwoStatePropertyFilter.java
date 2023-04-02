@@ -8,8 +8,8 @@ public class TwoStatePropertyFilter extends PropertyFilter {
 	public TwoStatePropertyFilter(){
 	}
 
-	public TwoStatePropertyFilter(PropertyFilter additionalfilter){
-		super(additionalfilter);
+	public TwoStatePropertyFilter(PropertyFilter propertyFilter){
+		super(propertyFilter);
 	}
 	
 	@Override

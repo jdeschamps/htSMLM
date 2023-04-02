@@ -29,14 +29,14 @@ else
 		mvn install:install-file -Dfile="$EMU" -DgroupId=de.embl.rieslab  -DartifactId=EMU -Dversion=$EMU_VERSION -Dpackaging=jar
 		
 		# compile project
-		mvn clean package shade:shade
+		mvn clean package shade:shade -Dmaven.test.skip=true
 	
 		# test if the EMU folder exist, otherwise create it
 		MM2_EMU="$MM2_HOME/EMU"
 		mkdir -p "$MM2_EMU"
 	
 		# deploy to MM2
-		cp "target/htsmlm-1.0-SNAPSHOT.jar" "$MM2_HOME/EMU/htsmlm-1.0.jar"
+		cp "target/htsmlm-2.0-SNAPSHOT.jar" "$MM2_HOME/EMU/htsmlm-2.0.jar"
 	else
 		echo "Could not find MMJ_.jar, MMAcqEngine.jar, MMCoreJ.jar or Emu.jar. Did you input the correct directory?"
 	fi

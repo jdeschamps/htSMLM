@@ -4,8 +4,8 @@ import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 
 public class AllocatedPropertyFilter extends PropertyFilter {
 	
-	public AllocatedPropertyFilter(PropertyFilter additionalfilter){
-		super(additionalfilter);
+	public AllocatedPropertyFilter(PropertyFilter additionalFilter){
+		super(additionalFilter);
 	}
 
 	

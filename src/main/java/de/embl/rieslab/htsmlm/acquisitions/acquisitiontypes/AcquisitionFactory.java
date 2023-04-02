@@ -1,24 +1,23 @@
 package de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 
 import de.embl.rieslab.emu.controller.SystemController;
 import de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
 import de.embl.rieslab.emu.utils.EmuUtils;
 import de.embl.rieslab.htsmlm.AcquisitionPanel;
-import de.embl.rieslab.htsmlm.ActivationPanel;
 import de.embl.rieslab.htsmlm.acquisitions.AcquisitionController;
 import de.embl.rieslab.htsmlm.acquisitions.wrappers.AcquisitionWrapper;
 import de.embl.rieslab.htsmlm.acquisitions.wrappers.Experiment;
@@ -29,34 +28,34 @@ import mmcorej.StrVector;
 
 public class AcquisitionFactory {
 	
-	private AcquisitionController acqcontroller_;
-	private SystemController controller_;
-	private String[] acqtypelist_;
-	private String[] zdevices_;
+	private AcquisitionController acqController_;
+	private SystemController systemController_;
+	private String[] acqTypeList_;
+	private String[] zDevices_;
 	
-	public AcquisitionFactory(AcquisitionController acqcontroller, SystemController controller){
-		acqcontroller_ = acqcontroller;
-		controller_ = controller;
-		zdevices_ = getZDevices();
-		acqtypelist_ = getEnabledAcquisitionList();		
+	public AcquisitionFactory(AcquisitionController acqController, SystemController systemController){
+		acqController_ = acqController;
+		systemController_ = systemController;
+		zDevices_ = getZDevices();
+		acqTypeList_ = getEnabledAcquisitionList();
 	}
 	
 	private String[] getZDevices(){
-		StrVector devices = controller_.getCore().getLoadedDevicesOfType(DeviceType.StageDevice);
+		StrVector devices = systemController_.getCore().getLoadedDevicesOfType(DeviceType.StageDevice);
 		return devices.toArray();
 	}
 
 	private String[] getEnabledAcquisitionList(){
 		ArrayList<String> list = new ArrayList<>(Arrays.asList(AcquisitionType.getList()));
 				
-		if(!acqcontroller_.isAcquistionPropertyEnabled(AcquisitionType.BF)){
+		if(!acqController_.isAcquistionPropertyEnabled(AcquisitionType.BF)){
 			list.remove(AcquisitionType.BF.getTypeValue());
 		}
-		if(!acqcontroller_.isAcquistionPropertyEnabled(AcquisitionType.BFP)){
+		if(!acqController_.isAcquistionPropertyEnabled(AcquisitionType.BFP)){
 			list.remove(AcquisitionType.BFP.getTypeValue());
 		}
 		
-		if(zdevices_ == null || zdevices_.length == 0) {
+		if(zDevices_ == null || zDevices_.length == 0) {
 			list.remove(AcquisitionType.ZSTACK.getTypeValue());
 			list.remove(AcquisitionType.MULTISLICELOC.getTypeValue());
 		}
@@ -65,17 +64,18 @@ public class AcquisitionFactory {
 	}
 	
 	public String[] getAcquisitionTypeList(){
-		return acqtypelist_;
+		return acqTypeList_;
 	}
 	 
 	public Acquisition getAcquisition(String type){
 		if (type.equals(AcquisitionType.LOCALIZATION.getTypeValue())) {
-			return new LocalizationAcquisition(acqcontroller_.getTaskHolder(ActivationPanel.TASK_NAME), getExposure());
+			return new LocalizationAcquisition(acqController_.getActivationController(), getExposure(),
+					systemController_.getStudio());
 		} else if (type.equals(AcquisitionType.MULTISLICELOC.getTypeValue())) {
 			
-			return new MultiSliceAcquisition(acqcontroller_.getTaskHolder(ActivationPanel.TASK_NAME), getExposure(),
-					zdevices_, controller_.getCore().getFocusDevice(), (TwoStateUIProperty) controller_
-							.getProperty(acqcontroller_.getAcquisitionParameterValue(AcquisitionPanel.PARAM_LOCKING)));
+			return new MultiSliceAcquisition(acqController_, getExposure(),
+					zDevices_, systemController_.getCore().getFocusDevice(), (TwoStateUIProperty) systemController_
+							.getProperty(acqController_.getAcquisitionParameterValue(AcquisitionPanel.PARAM_LOCKING)));
 			
 		} else if (type.equals(AcquisitionType.TIME.getTypeValue())) {
 			
@@ -87,19 +87,23 @@ public class AcquisitionFactory {
 			
 		} else if (type.equals(AcquisitionType.ZSTACK.getTypeValue())) {
 			
-			return new ZStackAcquisition(getExposure(), zdevices_, controller_.getCore().getFocusDevice(),
-					(TwoStateUIProperty) controller_
-							.getProperty(acqcontroller_.getAcquisitionParameterValue(AcquisitionPanel.PARAM_LOCKING)));
+			return new ZStackAcquisition(getExposure(), zDevices_, systemController_.getCore().getFocusDevice(),
+					(TwoStateUIProperty) systemController_
+							.getProperty(acqController_.getAcquisitionParameterValue(AcquisitionPanel.PARAM_LOCKING)));
 			
 		} else if (type.equals(AcquisitionType.BFP.getTypeValue())) {
 			
-			return new BFPAcquisition(getExposure(), (TwoStateUIProperty) controller_
-					.getProperty(acqcontroller_.getAcquisitionParameterValue(AcquisitionPanel.PARAM_BFP)));
+			return new BFPAcquisition(getExposure(), (TwoStateUIProperty) systemController_
+					.getProperty(acqController_.getAcquisitionParameterValue(AcquisitionPanel.PARAM_BFP)));
 			
 		} else if (type.equals(AcquisitionType.BF.getTypeValue())) {
 			
-			return new BrightFieldAcquisition(getExposure(), (TwoStateUIProperty) controller_
-					.getProperty(acqcontroller_.getAcquisitionParameterValue(AcquisitionPanel.PARAM_BRIGHTFIELD)));
+			return new BrightFieldAcquisition(getExposure(), (TwoStateUIProperty) systemController_
+					.getProperty(acqController_.getAcquisitionParameterValue(AcquisitionPanel.PARAM_BRIGHTFIELD)));
+			
+		} else if (type.equals(AcquisitionType.MANUALINTER.getTypeValue())) {
+			
+			return new ManualInterventionAcquisition(acqController_);
 			
 		}
 			
@@ -110,7 +114,7 @@ public class AcquisitionFactory {
 	private double getExposure(){
 		double i = 0;
 		try {
-			i = controller_.getCore().getExposure();
+			i = systemController_.getCore().getExposure();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -118,7 +122,7 @@ public class AcquisitionFactory {
 	}
 	
 	private Acquisition getDefaultAcquisition() {
-		return new LocalizationAcquisition(acqcontroller_.getTaskHolder(ActivationPanel.TASK_NAME), getExposure());
+		return new LocalizationAcquisition(acqController_.getActivationController(), getExposure(), systemController_.getStudio());
 	}
 
 	/**
@@ -129,7 +133,7 @@ public class AcquisitionFactory {
 	 * @param parentFolder
 	 * @return
 	 */
-	public boolean writeAcquisitionList(Experiment experiment, String parentFolder, String fileName){
+	static public boolean writeAcquisitionList(Experiment experiment, String parentFolder, String fileName){
 		
 		String fullpath, shortname;
 		if(fileName.endsWith("."+HTSMLMConstants.ACQ_EXT)){
@@ -165,27 +169,28 @@ public class AcquisitionFactory {
 			f.mkdirs();
 		}
 		
+		// wrap experiment into object that can be exported to JSON
 		ExperimentWrapper expw = new ExperimentWrapper(shortname, parentFolder, experiment);
 		
-		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+		// gson object
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();	
+        
+		// write experiment to json
 		try {
-			objectMapper.writeValue(new FileOutputStream(fullpath), expw);
+			String json_str = gson.toJson(expw);
 			
-			return true;
-		} catch (JsonGenerationException e) {
+			FileWriter file = new FileWriter(fullpath);
+			file.write(json_str);
+			file.close();
+		} catch (JsonIOException | IOException e) {
 			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+			return false;
 		}
-		return false;
+		
+		return true;
 	}
 	
-	private String incrementAcquisitionFileName(String name) {
+	private static String incrementAcquisitionFileName(String name) {
 		String newname = name.substring(0, name.length()-HTSMLMConstants.ACQ_EXT.length()-1);
 		int ind = 0;
 		for(int i=0;i<newname.length();i++){
@@ -208,25 +213,32 @@ public class AcquisitionFactory {
 		return newname;
 	}
 
+	static public ExperimentWrapper readExperiment(String path) throws JsonSyntaxException, JsonIOException, FileNotFoundException {
+		// gson object
+		Gson gson = new Gson();
+				
+		// read experiment
+		return gson.fromJson(new FileReader(path), ExperimentWrapper.class);
+	}
+	
+	
 	public Experiment readAcquisitionList(String path){	
 		ArrayList<Acquisition> acqlist = new ArrayList<Acquisition>();
-		int waitingtime = 3;
-		int numpos = 0;
-		String savemode = Experiment.MULTITIFFS;
+		int waitingTime = 3;
+		int numPos = 0;
+		String saveMode = Experiment.MULTITIFFS;
 
-		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-		
+		// read experiment
 		try {
-			ExperimentWrapper expw = objectMapper.readValue(new FileInputStream(path), ExperimentWrapper.class);			
-
+			ExperimentWrapper expw = readExperiment(path);
+		
+			// read acquisition list
 			ArrayList<AcquisitionWrapper> acqwlist = expw.acquisitionList;	
 
 			// for the moment ignore name and path Strings
-			
-			waitingtime = expw.pauseTime;
-			numpos = expw.numberPositions;
-			savemode = expw.savemode;
+			waitingTime = expw.pauseTime;
+			numPos = expw.numberPositions;
+			saveMode = expw.savemode;
 			
 			if(acqwlist != null && !acqwlist.isEmpty()){
 				for(int i=0;i<acqwlist.size();i++){
@@ -274,24 +286,22 @@ public class AcquisitionFactory {
 						configureGeneralAcquistion(acq, acqw);		
 						
 						acqlist.add(acq);
+					} else if(acqw.type.equals(AcquisitionType.MANUALINTER.getTypeValue())){
+						ManualInterventionAcquisition acq = (ManualInterventionAcquisition) getAcquisition(acqw.type);
+						configureGeneralAcquistion(acq, acqw);		
+						
+						acqlist.add(acq);
 					}
 				}
 			}
-			
-		} catch (JsonGenerationException e) {
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (JsonSyntaxException | JsonIOException | FileNotFoundException e) {
 			e.printStackTrace();
 		}
 		
-		return new Experiment(waitingtime, numpos, Experiment.getSaveModeFromString(savemode), acqlist);
+		return new Experiment(waitingTime, numPos, Experiment.getSaveModeFromString(saveMode), acqlist);
 	}
 	
-	private void configureGeneralAcquistion(Acquisition acq, AcquisitionWrapper acqw){
+	static private void configureGeneralAcquistion(Acquisition acq, AcquisitionWrapper acqw){
 		acq.getAcquisitionParameters().setExposureTime(acqw.exposure);
 		acq.getAcquisitionParameters().setWaitingTime(acqw.waitingTime);
 		
@@ -316,8 +326,14 @@ public class AcquisitionFactory {
 	}
 	
 	public enum AcquisitionType { 
-		TIME("Time"), BFP("BFP"), BF("Bright-field"), SNAP("Snapshot"), LOCALIZATION("Localization"), ZSTACK("Z-stack"),
-		AUTOFOCUS("Autofocus"), ROISELECT("ROI decision"), MULTISLICELOC("Multislice localization");
+		TIME("Time"), 
+		BFP("BFP"), 
+		BF("Bright-field"), 
+		SNAP("Snapshot"), 
+		LOCALIZATION("Localization"), 
+		ZSTACK("Z-stack"),
+		MULTISLICELOC("Multislice localization"),
+		MANUALINTER("Manual intervention");
 		
 		private String value; 
 		
@@ -330,10 +346,14 @@ public class AcquisitionFactory {
 		} 
 		
 		public static String[] getList() {
-			String[] s = { AcquisitionType.LOCALIZATION.getTypeValue(), AcquisitionType.BFP.getTypeValue(),
-					AcquisitionType.BF.getTypeValue(), AcquisitionType.ZSTACK.getTypeValue(),
-					AcquisitionType.SNAP.getTypeValue(), AcquisitionType.TIME.getTypeValue(),
-					AcquisitionType.MULTISLICELOC.getTypeValue() };
+			String[] s = { AcquisitionType.LOCALIZATION.getTypeValue(), 
+						   AcquisitionType.BFP.getTypeValue(),
+						   AcquisitionType.BF.getTypeValue(), 
+						   AcquisitionType.ZSTACK.getTypeValue(),
+						   AcquisitionType.SNAP.getTypeValue(), 
+						   AcquisitionType.TIME.getTypeValue(),
+						   AcquisitionType.MULTISLICELOC.getTypeValue(),
+						   AcquisitionType.MANUALINTER.getTypeValue() };
 			return s;
 		}
 	}; 

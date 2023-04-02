@@ -7,8 +7,8 @@ public class NoPropertyFilter extends PropertyFilter {
 	public NoPropertyFilter(){
 	}
 
-	public NoPropertyFilter(PropertyFilter additionalfilter){
-		super(additionalfilter);
+	public NoPropertyFilter(PropertyFilter additionalFilter){
+		super(additionalFilter);
 	}
 	
 	@Override

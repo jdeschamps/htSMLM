@@ -8,32 +8,31 @@ import javax.swing.JProgressBar;
 import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 import de.embl.rieslab.emu.utils.EmuUtils;
 
-public class JProgressBarUpdater extends ComponentUpdater<JProgressBar>{
+/**
+ * Updates a progress bar with the value of a device property.
+ */
+public class ProgressBarUpdater extends ComponentUpdater<JProgressBar>{
 
 	
-	public JProgressBarUpdater(JProgressBar component, UIProperty prop,
-			int idletime) {
-		super(component, prop, idletime);
+	public ProgressBarUpdater(JProgressBar component, UIProperty prop,
+							  int idleTime) {
+		super(component, prop, idleTime);
 	}
 
 	@Override
 	public boolean sanityCheck(UIProperty prop) {
-		// performs sanity check
-		if(prop.isAssigned() && EmuUtils.isNumeric(prop.getPropertyValue())) {
-			return true;
-		}
-
-		return false;
+		return prop.isAssigned() && EmuUtils.isNumeric(prop.getPropertyValue());
 	}
 
 	@Override
 	public void updateComponent(String val) {
 		if(EmuUtils.isNumeric(val)){
 			int value = (int) Double.parseDouble(val);
-			component_.setValue(value);
+			this.getComponent().setValue(value);
 		}
 	}
 
+	// TODO does not belong here
 	public double round(double value, int places) {
 	    if (places < 0) throw new IllegalArgumentException();
 

@@ -27,16 +27,21 @@ import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.htsmlm.graph.TimeChart;
 
+/**
+ * A panel showing device properties value (laser power) over time.
+ *
+ * The values can be scaled using a linear calibration (panel parameter).
+ */
 public class PowerMeterPanel extends ConfigurablePanel{
 
 	private static final long serialVersionUID = 1L;
 
 	// components
 	private TimeChart graph_;
-	private JLabel label_;
-	private JComboBox<String> combobox_;
-	private JToggleButton togglebutton_;
-	private JPanel panelGraph_;
+	private final JLabel label_;
+	private final JComboBox<String> comboBox_;
+	private final JToggleButton toggleButton_;
+	private final JPanel panelGraph_;
 	
 	// parameters and properties
 	public static final String PARAM_WAVELENGTHS = "wavelengths";
@@ -45,8 +50,9 @@ public class PowerMeterPanel extends ConfigurablePanel{
 	public static final String PARAM_IDLE = "idle time (ms)";
 	public static final String PARAM_NPOS = "number of points";
 	
-	private ArrayList<Double> slopes, offsets; 
-	private int idle_, npos_;
+	private final ArrayList<Double> slopes;
+	private final ArrayList<Double> offsets;
+	private int idleTime_, nPos_;
 	private boolean monitoring_ = false;
 	private Processor monitorThread;
 	private int selectedWavelength_;
@@ -68,15 +74,13 @@ public class PowerMeterPanel extends ConfigurablePanel{
 		label_.setFont(f.deriveFont(f.getStyle() | Font.BOLD));
 		
 		selectedWavelength_ = 0;
-		combobox_ = new JComboBox<String>(temp);
-		combobox_.addActionListener (new ActionListener () {
+		comboBox_ = new JComboBox<String>(temp);
+		comboBox_.addActionListener (new ActionListener () {
 		    public void actionPerformed(ActionEvent e) {
-		    	if(e.getModifiers() == ActionEvent.MOUSE_EVENT_MASK) {
-		    		selectedWavelength_ = combobox_.getSelectedIndex();
-		    	}
+	    		selectedWavelength_ = comboBox_.getSelectedIndex();
 		    }
 		});
-		togglebutton_ = new JToggleButton("Monitor");
+		toggleButton_ = new JToggleButton("Monitor");
 		
 		panelGraph_ = new JPanel();
 		graph_ = getNewGraph();
@@ -91,7 +95,7 @@ public class PowerMeterPanel extends ConfigurablePanel{
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.insets = new Insets(5,10,2,10);
 		c.gridwidth = 1;	
-		this.add(combobox_,c);
+		this.add(comboBox_,c);
 		
 		c.gridx = 1;
 		c.insets = new Insets(5,25,2,10);
@@ -110,11 +114,11 @@ public class PowerMeterPanel extends ConfigurablePanel{
 		c.gridwidth = 1;
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.insets = new Insets(20,10,2,10);
-		this.add(togglebutton_,c);	
+		this.add(toggleButton_,c);
 	}
 
 	private TimeChart getNewGraph() {
-		return new TimeChart("power","time","power",npos_,350,200,false);
+		return new TimeChart("power","time","power", nPos_,350,200,false);
 	}
 	
 	private void setLabel(String value) {
@@ -128,11 +132,11 @@ public class PowerMeterPanel extends ConfigurablePanel{
 	}
 
 	@Override
-	protected void propertyhasChanged(String propertyName, String newvalue) {
+	protected void propertyhasChanged(String propertyName, String newValue) {
 		if(PROP_POWER.equals(propertyName)) {
-			if(EmuUtils.isNumeric(newvalue)){
+			if(EmuUtils.isNumeric(newValue)){
 				// round
-				double value = (Math.floor(Double.parseDouble(newvalue) * 100) / 100);
+				double value = (Math.floor(Double.parseDouble(newValue) * 100) / 100);
 				setLabel(String.valueOf(convertPower(value)));
 			}
 		}
@@ -140,7 +144,7 @@ public class PowerMeterPanel extends ConfigurablePanel{
 
 	@Override
 	protected void addComponentListeners() {
-		SwingUIListeners.addActionListenerToBooleanAction(b -> monitorPower(b), togglebutton_);
+		SwingUIListeners.addActionListenerToBooleanAction(b -> monitorPower(b), toggleButton_);
 	}
 
 	@Override
@@ -170,10 +174,10 @@ public class PowerMeterPanel extends ConfigurablePanel{
 		addUIParameter(new StringUIParameter(this, PARAM_OFFSETS, descOf, offset));
 		
 
-		idle_ = 1000;
-		npos_ = 100; 
-		addUIParameter(new IntegerUIParameter(this, PARAM_IDLE, descId,idle_)); 
-		addUIParameter(new IntegerUIParameter(this, PARAM_NPOS, descN,npos_));
+		idleTime_ = 1000;
+		nPos_ = 100;
+		addUIParameter(new IntegerUIParameter(this, PARAM_IDLE, descId, idleTime_));
+		addUIParameter(new IntegerUIParameter(this, PARAM_NPOS, descN, nPos_));
 	}
 
 	@Override
@@ -183,8 +187,8 @@ public class PowerMeterPanel extends ConfigurablePanel{
 				String s = getStringUIParameterValue(PARAM_WAVELENGTHS);
 				String[] vals = s.split(",");
 				DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>(vals);
-				combobox_.removeAllItems();
-				combobox_.setModel(model);
+				comboBox_.removeAllItems();
+				comboBox_.setModel(model);
 			} catch (UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
@@ -229,8 +233,8 @@ public class PowerMeterPanel extends ConfigurablePanel{
 		}else if(PARAM_IDLE.equals(parameterName)){
 			try {
 				int val = getIntegerUIParameterValue(PARAM_IDLE);
-				if(val != idle_){
-					idle_ = val;
+				if(val != idleTime_){
+					idleTime_ = val;
 				}
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
@@ -238,8 +242,8 @@ public class PowerMeterPanel extends ConfigurablePanel{
 		}else if(PARAM_NPOS.equals(parameterName)){
 			try {
 				int val = getIntegerUIParameterValue(PARAM_NPOS);
-				if(val != npos_){
-					npos_ = val;
+				if(val != nPos_){
+					nPos_ = val;
 					panelGraph_.remove(graph_.getChart());
 					graph_ = getNewGraph();
 					panelGraph_.add(graph_.getChart());
@@ -322,7 +326,7 @@ public class PowerMeterPanel extends ConfigurablePanel{
 				value = Double.parseDouble(property_.getPropertyValue());
 				publish(convertPower(value));
 
-				Thread.sleep(idle_);
+				Thread.sleep(idleTime_);
 			}
 			return 1;
 		}

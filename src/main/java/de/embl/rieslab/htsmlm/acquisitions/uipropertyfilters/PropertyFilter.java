@@ -8,21 +8,21 @@ import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 
 public abstract class PropertyFilter {
 	
-	private PropertyFilter additionalfilter_;
+	private PropertyFilter additionalFilter_;
 	
 	public PropertyFilter(){
 	}
 	
-	public PropertyFilter(PropertyFilter additionalfilter){
-		additionalfilter_ = additionalfilter;
+	public PropertyFilter(PropertyFilter additionalFilter){
+		additionalFilter_ = additionalFilter;
 	}
 
 	public HashMap<String, UIProperty> filterProperties(HashMap<String, UIProperty> properties){
-		HashMap<String, UIProperty> filteredproperties = new HashMap<String, UIProperty>();
+		HashMap<String, UIProperty> filteredProperties = new HashMap<String, UIProperty>();
 		
 		Iterator<String> it;
-		if(additionalfilter_ != null){
-			it = additionalfilter_.filterProperties(properties).keySet().iterator();
+		if(additionalFilter_ != null){
+			it = additionalFilter_.filterProperties(properties).keySet().iterator();
 		} else {
 			it = properties.keySet().iterator();
 		}
@@ -31,20 +31,20 @@ public abstract class PropertyFilter {
 		while(it.hasNext()){
 			s = it.next();
 			if(!filterOut(properties.get(s))){
-				filteredproperties.put(s, properties.get(s));
+				filteredProperties.put(s, properties.get(s));
 			}
 		}
 		
-		return filteredproperties;
+		return filteredProperties;
 	}
 	
 
 	public String[] filterStringProperties(HashMap<String, UIProperty> properties){
-		HashMap<String, UIProperty> filteredproperties = new HashMap<String, UIProperty>();
+		HashMap<String, UIProperty> filteredProperties = new HashMap<String, UIProperty>();
 		
 		Iterator<String> it;
-		if(additionalfilter_ != null){
-			it = additionalfilter_.filterProperties(properties).keySet().iterator();
+		if(additionalFilter_ != null){
+			it = additionalFilter_.filterProperties(properties).keySet().iterator();
 		} else {
 			it = properties.keySet().iterator();
 		}
@@ -53,22 +53,22 @@ public abstract class PropertyFilter {
 		while(it.hasNext()){
 			s = it.next();
 			if(!filterOut(properties.get(s))){
-				filteredproperties.put(s, properties.get(s));
+				filteredProperties.put(s, properties.get(s));
 			}
 		}
 		
-		String[] stringprop = filteredproperties.keySet().toArray(new String[0]);
-		Arrays.sort(stringprop);
+		String[] stringProp = filteredProperties.keySet().toArray(new String[0]);
+		Arrays.sort(stringProp);
 		
-		return stringprop;
+		return stringProp;
 	}
 	
 	public HashMap<String, UIProperty> filteredProperties(HashMap<String, UIProperty> properties){
-		HashMap<String, UIProperty> filteredproperties = new HashMap<String, UIProperty>();
+		HashMap<String, UIProperty> filteredProperties = new HashMap<String, UIProperty>();
 		
 		Iterator<String> it;
-		if(additionalfilter_ != null){
-			it = additionalfilter_.filterProperties(properties).keySet().iterator();
+		if(additionalFilter_ != null){
+			it = additionalFilter_.filterProperties(properties).keySet().iterator();
 		} else {
 			it = properties.keySet().iterator();
 		}
@@ -77,11 +77,11 @@ public abstract class PropertyFilter {
 		while(it.hasNext()){
 			s = it.next();
 			if(filterOut(properties.get(s))){
-				filteredproperties.put(s, properties.get(s));
+				filteredProperties.put(s, properties.get(s));
 			}
 		}
 		
-		return filteredproperties;
+		return filteredProperties;
 	}
 
 	/**

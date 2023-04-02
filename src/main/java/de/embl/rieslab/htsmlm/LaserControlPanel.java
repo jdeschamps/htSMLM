@@ -23,6 +23,7 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
+import javax.swing.text.PlainDocument;
 
 import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.swinglisteners.SwingUIListeners;
@@ -38,7 +39,24 @@ import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.htsmlm.components.TogglePower;
 import de.embl.rieslab.htsmlm.uipropertyflags.LaserFlag;
+import de.embl.rieslab.htsmlm.utils.BoundIntegerDocumentFilter;
 
+/**
+ * A ConfigurablePanel controlling a single laser.
+ * 
+ * Properties:
+ * - Laser percentage (RescaledUIProperty): absolute power or power percentage of the laser.
+ * - Laser operation (TwoStateUIProperty): on/off or enable/disable property of a laser. 
+ * 
+ * Parameters:
+ * - Title (String): title of the panel displayed on its top. 
+ * - Color (Color): color of the title.
+ * - Use On/Off (Bool): whether to use the on/off button.
+ * - Use Slider (Bool): whether to use sliders or buttons for power adjustment.
+ * 
+ * @author Joran Deschamps
+ *
+ */
 public class LaserControlPanel extends ConfigurablePanel {
 
 	private static final long serialVersionUID = 1L;
@@ -66,13 +84,13 @@ public class LaserControlPanel extends ConfigurablePanel {
 
 	private static final String CARD_SLIDER = "slider";
 	private static final String CARD_BUTTONS = "buttons";
-	
+
+	/////// Convenience variables
 	private String title_;	
 	private Color color_;
 	private boolean useOnOff_;
 	private boolean useSlider_;
 	
-	/////// Convenience variables
 	
 	public LaserControlPanel(String label) {
 		super(label);
@@ -104,6 +122,10 @@ public class LaserControlPanel extends ConfigurablePanel {
 		///////////////////////////////////////////////////////////////////////// User input text field
 		textfieldUser_ = new JTextField("50");
 		textfieldUser_.setToolTipText("Sets the power percentage and the value of the user-defined button.");
+
+		// set document filter to prevent entering illegal characters
+		//PlainDocument doc = (PlainDocument) textfieldUser_.getDocument();
+		//doc.setDocumentFilter(new BoundIntegerDocumentFilter(0, 100));
 
         
 		///////////////////////////////////////////////////////////////////////// Percentage buttons
@@ -141,11 +163,6 @@ public class LaserControlPanel extends ConfigurablePanel {
        
         togglebuttonOnOff_ = new TogglePower();
         togglebuttonOnOff_.setToolTipText("Turn on/off the laser.");
-        try {
-			SwingUIListeners.addActionListenerToTwoState(this, getPropertylabel(LASER_OPERATION), togglebuttonOnOff_);
-		} catch (IncorrectUIPropertyTypeException e1) {
-			e1.printStackTrace();
-		}
         
 		/*
 		 * Buttons panel
@@ -254,6 +271,7 @@ public class LaserControlPanel extends ConfigurablePanel {
 			if(EmuUtils.isNumeric(newvalue)){
 				int val = (int) Double.parseDouble(newvalue);
 				
+				// if we use the buttons, then detect which button to select
 				if(!useSlider_) {
 					if(val == 100){
 						togglebutton100_.setSelected(true);
@@ -262,6 +280,7 @@ public class LaserControlPanel extends ConfigurablePanel {
 					} else if(val == 1){
 						togglebutton1_.setSelected(true);
 					} else {
+						// otherwise set the custom button and text field to the value
 						if(val>=0 && val<100){
 							togglebuttonUser_.setSelected(true);
 							togglebuttonUser_.setText(String.valueOf(val)+"%");
@@ -269,12 +288,14 @@ public class LaserControlPanel extends ConfigurablePanel {
 						} 
 					}
 				} else {
+					// if we use the slider, simply update slider and text field.
 					slider_.setValue(val);
 					textfieldUser_.setText(String.valueOf(val));
 				}
 			}
 		} else if(getPropertylabel(LASER_OPERATION).equals(name)){
 			try {
+				// update the toggle button
 				togglebuttonOnOff_.setSelected(((TwoStateUIProperty) getUIProperty(getPropertylabel(LASER_OPERATION))).isOnState(newvalue));
 			} catch (UnknownUIPropertyException e) {
 				e.printStackTrace();
@@ -286,6 +307,7 @@ public class LaserControlPanel extends ConfigurablePanel {
 	public void parameterhasChanged(String label) {
 		if(PARAM_TITLE.equals(label)){
 			try {
+				// update title
 				title_ = getStringUIParameterValue(PARAM_TITLE);
 				border_.setTitle(title_);
 				this.repaint();
@@ -296,6 +318,7 @@ public class LaserControlPanel extends ConfigurablePanel {
 			}
 		} else if(PARAM_COLOR.equals(label)){
 			try {
+				// update title color
 				color_ = getColorUIParameterValue(PARAM_COLOR);
 				border_.setTitleColor(color_);
 				this.repaint();
@@ -304,6 +327,7 @@ public class LaserControlPanel extends ConfigurablePanel {
 			}
 		} else if(PARAM_ONOFF.equals(label)){
 			try {
+				// enable/disable the on/off button
 				useOnOff_ = getBoolUIParameterValue(PARAM_ONOFF);
 				togglebuttonOnOff_.setEnabled(useOnOff_);
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
@@ -311,13 +335,13 @@ public class LaserControlPanel extends ConfigurablePanel {
 			}
 		} else if(PARAM_SLIDER.equals(label)){
 			try {
+				// hide/show the slider card panel
 				useSlider_ = getBoolUIParameterValue(PARAM_SLIDER);
+				CardLayout cl = (CardLayout)(cardpanel_.getLayout());
 				if(useSlider_) {
-				    CardLayout cl = (CardLayout)(cardpanel_.getLayout());
-				    cl.show(cardpanel_, CARD_SLIDER);
+					cl.show(cardpanel_, CARD_SLIDER);
 				} else {
-				    CardLayout cl = (CardLayout)(cardpanel_.getLayout());
-				    cl.show(cardpanel_, CARD_BUTTONS);
+					cl.show(cardpanel_, CARD_BUTTONS);
 				}
 			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
 				e.printStackTrace();
@@ -325,6 +349,12 @@ public class LaserControlPanel extends ConfigurablePanel {
 		}
 	}
 	
+	/**
+	 * Format the property label to the correct string.
+	 * 
+	 * @param label Base of the property label
+	 * @return Correct property label including the panel label
+	 */
 	private String getPropertylabel(String label) {
 		return getPanelLabel()+" "+label;
 	}
@@ -357,9 +387,17 @@ public class LaserControlPanel extends ConfigurablePanel {
 
 	@Override
 	protected void addComponentListeners() {
+		// on/off button triggers the corresponding property
+        try {
+			SwingUIListeners.addActionListenerToTwoState(this, getPropertylabel(LASER_OPERATION), togglebuttonOnOff_);
+		} catch (IncorrectUIPropertyTypeException e1) {
+			e1.printStackTrace();
+		}
+		
+        // slider percentage updates power percentage
 		SwingUIListeners.addActionListenerOnIntegerValue(this, getPropertylabel(LASER_PERCENTAGE), slider_, textfieldUser_);
 		
-		/////////////////////////////////////////////////////////////// textfield
+		// custom text field updates power percentage as well as the slider and the user custom button
 		textfieldUser_.addFocusListener(new FocusListener() {
 			@Override
 			public void focusGained(FocusEvent arg0) {}
@@ -412,7 +450,7 @@ public class LaserControlPanel extends ConfigurablePanel {
         	}
         });
 
-		/////////////////////////////////////////////////////////////// buttons
+		// toggle buttons update directly the laser percentage
 		togglebutton100_.addItemListener(new ItemListener(){
 			@Override
 			public void itemStateChanged(ItemEvent e) {

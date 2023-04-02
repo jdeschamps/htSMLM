@@ -319,7 +319,7 @@ public class ZStackAcquisition implements Acquisition {
 							} else if(comp[i].getName().equals(LABEL_ZSTEP) && comp[i] instanceof JSpinner){
 								zstep = ((Double) ((JSpinner) comp[i]).getValue());
 							} else if(comp[i].getName().equals(LABEL_ZDEVICE) && comp[i] instanceof JComboBox){
-								zdevice_ = ((String) ((JComboBox) comp[i]).getSelectedItem());
+								zdevice_ = (String) ((JComboBox<String>) comp[i]).getSelectedItem();
 							}else if(comp[i].getName().equals(LABEL_CHECK) && comp[i] instanceof JCheckBox){
 								disableZStab_ = ((JCheckBox) comp[i]).isSelected();
 							}

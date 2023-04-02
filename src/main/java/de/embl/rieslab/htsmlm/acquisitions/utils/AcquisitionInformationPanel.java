@@ -7,6 +7,12 @@ import javax.swing.JTextPane;
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.Acquisition;
 import de.embl.rieslab.htsmlm.acquisitions.wrappers.Experiment;
 
+/**
+ * A class updating a text panel with information concerning the acquisitions.
+ * 
+ * @author Joran Deschamps
+ *
+ */
 public class AcquisitionInformationPanel {
 
     private final static String TEXT_INIT = "No configured acquisition list.\n";
@@ -39,24 +45,20 @@ public class AcquisitionInformationPanel {
 		addText(TEXT_LOADED);
 	}
 
-	public void setFinishedText(){
-		addText(TEXT_FINISHED);
-	}
-	
 	public void setPositionDoneText(int i){
 		addText(TEXT_NEWPOS+i+".\n");
 	}
 	
 	public void setSummaryText(Experiment exp){
 		if(exp.getAcquisitionList().size() > 0){
-			ArrayList<Acquisition> acqlist = exp.getAcquisitionList();
-			if(acqlist.size()>0){
+			ArrayList<Acquisition> acqList = exp.getAcquisitionList();
+			if(acqList.size()>0){
 				String s = TEXT_SUMMARY;
 				s += "Acquisitions: ";
-				for(int i=0;i<acqlist.size()-1;i++){
-					s = s+acqlist.get(i).getType()+", ";
+				for(int i=0;i<acqList.size()-1;i++){
+					s = s+acqList.get(i).getType()+", ";
 				}
-				s = s+acqlist.get(acqlist.size()-1).getType()+".\n";
+				s = s+acqList.get(acqList.size()-1).getType()+".\n";
 				panel_.setText(s);
 			}
 		}

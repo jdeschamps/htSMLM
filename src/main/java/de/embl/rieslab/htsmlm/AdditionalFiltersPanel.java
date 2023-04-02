@@ -22,13 +22,22 @@ import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.htsmlm.uipropertyflags.FilterWheelFlag;
 
+
+/**
+ * A ConfigurablePanel with two toggle button groups, suitable
+ * for filter wheels or any device with discrete/discretized number
+ * of positions/states.
+ * 
+ * @author Joran Deschamps
+ *
+ */
 public class AdditionalFiltersPanel extends ConfigurablePanel {
 
 	private static final long serialVersionUID = 1L;
 	
 	//////// Components
-	private JToggleButton[] togglebuttons1_;
-	private JToggleButton[] togglebuttons2_;
+	private JToggleButton[] toggleButtons1_;
+	private JToggleButton[] toggleButtons2_;
 	private TitledBorder border1_;
 	private TitledBorder border2_;
 	
@@ -58,6 +67,7 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 	}
 	
 	private void setupPanel() {
+		// instantiate the two panels
 		JPanel pane1 = new JPanel();
 		pane1.setLayout(new GridBagLayout());
 		
@@ -67,6 +77,7 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 		pane1.setLayout(new GridBagLayout());
 		pane2.setLayout(new GridBagLayout());
 
+		// set borders
 		border1_ = BorderFactory.createTitledBorder(null, title1_, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, Color.black);
 		pane1.setBorder(border1_);
 		border1_.setTitleFont(border1_.getTitleFont().deriveFont(Font.BOLD, 12));
@@ -75,6 +86,7 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 		pane2.setBorder(border2_);
 		border2_.setTitleFont(border2_.getTitleFont().deriveFont(Font.BOLD, 12));
 		
+		// create button groups
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
 		c.weighty = 0.9;
@@ -85,22 +97,26 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 		ButtonGroup group1=new ButtonGroup();
 		ButtonGroup group2=new ButtonGroup();
 
-		togglebuttons1_ = new JToggleButton[NUM_POS];
-		for(int i=0;i<togglebuttons1_.length;i++){
-			togglebuttons1_[i] = new JToggleButton();
-			togglebuttons1_[i].setToolTipText("Set the first filter property to the "+i+"th position (as defined in the wizard).");
+		// add buttons to the first panel
+		toggleButtons1_ = new JToggleButton[NUM_POS];
+		for(int i = 0; i< toggleButtons1_.length; i++){
+			// instantiate button
+			toggleButtons1_[i] = new JToggleButton();
+			toggleButtons1_[i].setToolTipText("Set the first filter property to the "+i+"th position (as defined in the wizard).");
 			
+			// add to panel and group
 			c.gridx = i;
-			pane1.add(togglebuttons1_[i], c);
+			pane1.add(toggleButtons1_[i], c);
+			group1.add(toggleButtons1_[i]);
 			
-			group1.add(togglebuttons1_[i]);
-			
-			togglebuttons1_[i].addItemListener(new ItemListener(){
+			// set item listener
+			toggleButtons1_[i].addItemListener(new ItemListener(){
 				@Override
 				public void itemStateChanged(ItemEvent e) {
 					if(e.getStateChange()==ItemEvent.SELECTED){
-						int pos = getSelectedButtonNumber(togglebuttons1_);
-						if(pos>=0 && pos<togglebuttons1_.length){
+						int pos = getSelectedButtonNumber(toggleButtons1_);
+						if(pos>=0 && pos< toggleButtons1_.length){
+							// set the UI property to the corresponding position.
 							setUIPropertyValueByStateIndex(SLIDER1_POSITION,pos);
 						}				
 					} 
@@ -108,23 +124,25 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 	        });
 		}  
 
+		// add buttons to the second panel
 		c.gridy = 1;
-		togglebuttons2_ = new JToggleButton[NUM_POS];
-		for(int i=0;i<togglebuttons2_.length;i++){
-			togglebuttons2_[i] = new JToggleButton();
-			togglebuttons2_[i].setToolTipText("Set the second filter property to the "+i+"th position (as defined in the wizard).");
+		toggleButtons2_ = new JToggleButton[NUM_POS];
+		for(int i = 0; i< toggleButtons2_.length; i++){
+			toggleButtons2_[i] = new JToggleButton();
+			toggleButtons2_[i].setToolTipText("Set the second filter property to the "+i+"th position (as defined in the wizard).");
 			
 			c.gridx = i;
-			pane2.add(togglebuttons2_[i], c);
+			pane2.add(toggleButtons2_[i], c);
 			
-			group2.add(togglebuttons2_[i]);
+			group2.add(toggleButtons2_[i]);
 			
-			togglebuttons2_[i].addItemListener(new ItemListener(){
+			toggleButtons2_[i].addItemListener(new ItemListener(){
 				@Override
 				public void itemStateChanged(ItemEvent e) {
 					if(e.getStateChange()==ItemEvent.SELECTED){
-						int pos = getSelectedButtonNumber(togglebuttons2_);
-						if(pos>=0 && pos<togglebuttons2_.length){
+						int pos = getSelectedButtonNumber(toggleButtons2_);
+						if(pos>=0 && pos< toggleButtons2_.length){
+							// set the UI property to the corresponding position.
 							setUIPropertyValueByStateIndex(SLIDER2_POSITION,pos);
 						}				
 					} 
@@ -132,12 +150,13 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 	        });
 		}  
 
+		// set names and colors
 		setNames(0);
 		setColors(0);
 		setNames(1);
 		setColors(1);
 
-		////////////////////////////////////////////////////////////////////////////Main panel
+		// set up the two panels
 		this.setLayout(new GridBagLayout());
 		c = new GridBagConstraints();
 		c.fill = GridBagConstraints.HORIZONTAL;
@@ -162,6 +181,12 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 		this.add(new JPanel(),c);
 	}
 
+	/**
+	 * Return the position of the first selected button in the array.
+	 * 
+	 * @param togglebuttons Array of buttons
+	 * @return Index of the first selected button
+	 */
 	protected int getSelectedButtonNumber(JToggleButton[] togglebuttons) {
 		int val=-1;
 		
@@ -173,23 +198,28 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 		return val;
 	}
 	
-	private void setNames(int j){
-		if(j == 0){
+	/**
+	 * Set the names and states of the buttons of group 0 or 1.
+	 * 
+	 * @param panelIndex Button group index
+	 */
+	private void setNames(int panelIndex){
+		if(panelIndex == 0){
 			String[] astr = names1_.split(",");
-			int maxind = togglebuttons1_.length > astr.length ? astr.length : togglebuttons1_.length;
+			int maxind = toggleButtons1_.length > astr.length ? astr.length : toggleButtons1_.length;
 			for(int i=0;i<maxind;i++){
-				togglebuttons1_[i].setText(astr[i]);
+				toggleButtons1_[i].setText(astr[i]);
 			}
 			try {
 				((MultiStateUIProperty) getUIProperty(SLIDER1_POSITION)).setStateNames(astr);
 			} catch (UnknownUIPropertyException e) {
 				e.printStackTrace();
 			}
-		} else if(j==1){	
+		} else if(panelIndex==1){	
 			String[] astr = names2_.split(",");
-			int maxind = togglebuttons2_.length > astr.length ? astr.length : togglebuttons2_.length;
+			int maxind = toggleButtons2_.length > astr.length ? astr.length : toggleButtons2_.length;
 			for(int i=0;i<maxind;i++){
-				togglebuttons2_[i].setText(astr[i]);
+				toggleButtons2_[i].setText(astr[i]);
 			}
 			try {
 				((MultiStateUIProperty) getUIProperty(SLIDER2_POSITION)).setStateNames(astr);
@@ -199,18 +229,23 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 		}
 	}
 	
+	/**
+	 * Set the color of the buttons of group 0 or 1.
+	 * 
+	 * @param panelIndex Button group index
+	 */
 	private void setColors(int j){
 		if(j == 0){
 			String[] astr = colors1_.split(",");
-			int maxind = togglebuttons1_.length > astr.length ? astr.length : togglebuttons1_.length;
+			int maxind = toggleButtons1_.length > astr.length ? astr.length : toggleButtons1_.length;
 			for(int i=0;i<maxind;i++){
-				togglebuttons1_[i].setForeground(ColorRepository.getColor(astr[i]));
+				toggleButtons1_[i].setForeground(ColorRepository.getColor(astr[i]));
 			}
 		} else if(j==1){	
 			String[] astr = colors2_.split(",");
-			int maxind = togglebuttons2_.length > astr.length ? astr.length : togglebuttons2_.length;
+			int maxind = toggleButtons2_.length > astr.length ? astr.length : toggleButtons2_.length;
 			for(int i=0;i<maxind;i++){
-				togglebuttons2_[i].setForeground(ColorRepository.getColor(astr[i]));
+				toggleButtons2_[i].setForeground(ColorRepository.getColor(astr[i]));
 			}
 		}
 	}
@@ -286,9 +321,12 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 		if(SLIDER1_POSITION.equals(name)){
 			int pos;
 			try {
+				// retrieve current property value
 				pos = ((MultiStateUIProperty) getUIProperty(SLIDER1_POSITION)).getStateIndex(newvalue);
-				if(pos<togglebuttons1_.length){
-					togglebuttons1_[pos].setSelected(true);
+				
+				// select the corresponding button
+				if(pos < toggleButtons1_.length){
+					toggleButtons1_[pos].setSelected(true);
 				}
 			} catch (UnknownUIPropertyException e) {
 				e.printStackTrace();
@@ -296,9 +334,12 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 		} else if(SLIDER2_POSITION.equals(name)){
 			int pos;
 			try {
-				pos = ((MultiStateUIProperty) getUIProperty(SLIDER2_POSITION)).getStateIndex(newvalue);			
-				if(pos<togglebuttons2_.length){
-					togglebuttons2_[pos].setSelected(true);
+				// retrieve current property value
+				pos = ((MultiStateUIProperty) getUIProperty(SLIDER2_POSITION)).getStateIndex(newvalue);	
+				
+				// select the corresponding button		
+				if(pos< toggleButtons2_.length){
+					toggleButtons2_[pos].setSelected(true);
 				}
 			} catch (UnknownUIPropertyException e) {
 				e.printStackTrace();
@@ -363,7 +404,9 @@ public class AdditionalFiltersPanel extends ConfigurablePanel {
 
 	@Override
 	public String getDescription() {
-		return "The "+getPanelLabel()+" is meant to control a dual filterwheel/slider with at most "+NUM_POS+" filter in each filter wheel. The filter colors and names can be customized from the configuration menu.";
+		return "The "+getPanelLabel()+" is meant to control a dual filterwheel/slider"
+				+ " with at most "+NUM_POS+" filter in each filter wheel. The filter "
+						+ "colors and names can be customized from the configuration menu.";
 	}
 
 	@Override

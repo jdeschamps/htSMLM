@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -21,6 +22,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import de.embl.rieslab.htsmlm.utils.EDTRunner;
 import mmcorej.Configuration;
 import mmcorej.PropertySetting;
 import org.micromanager.PropertyMap;
@@ -32,15 +34,27 @@ import org.micromanager.display.DisplayWindow;
 
 import de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
 import de.embl.rieslab.emu.utils.EmuUtils;
+import de.embl.rieslab.htsmlm.acquisitions.AcquisitionController;
 import de.embl.rieslab.htsmlm.acquisitions.acquisitiontypes.AcquisitionFactory.AcquisitionType;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.NoPropertyFilter;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.PropertyFilter;
 import de.embl.rieslab.htsmlm.acquisitions.uipropertyfilters.SinglePropertyFilter;
-import de.embl.rieslab.htsmlm.tasks.TaskHolder;
+import de.embl.rieslab.htsmlm.activation.ActivationController;
+import de.embl.rieslab.htsmlm.activation.processor.ActivationContext;
+import de.embl.rieslab.htsmlm.activation.processor.ActivationProcessor;
 import mmcorej.CMMCore;
 import mmcorej.TaggedImage;
 import org.micromanager.internal.MMStudio;
 
+/**
+ * Multi-slice localization acquisition.
+ *
+ * This acquisition performs times series at multiple z positions, one
+ * after the other, following a user-defined number of z-steps and loops.
+ * At each slice, the acquisition can run the activation script in parallel.
+ * The activation script can also be run solely on a specific step.
+ *
+ */
 public class MultiSliceAcquisition implements Acquisition {
 
 	private GenericAcquisitionParameters params_;
@@ -56,12 +70,13 @@ public class MultiSliceAcquisition implements Acquisition {
 	private final static String LABEL_NLOOPS = "Number of loops";
 	private final static String LABEL_NSLICES = "Number of slices";
 	private final static String LABEL_DELTAZ = "Z difference (um)";
-	private final static String LABEL_NUMB = "N loops / N slices / \u0394Z (um)";
+	private final static String LABEL_LOOPS = "N loops / N slices / \u0394Z (um)";
 	private final static String LABEL_ZDEVICE = "Moving device:";
-	private final static String LABEL_DISABLEFL = "disable focus-lock";
-	private final static String LABEL_FLATZ0 = "only at Z0";
-	private final static String LABEL_SLICEST = "Slice St";
-	private final static String LABEL_ACTATST = "activate only at slice:";
+	private final static String LABEL_DISABLE_FL = "disable focus-lock";
+	private final static String LABEL_FL_AT_Z0 = "only at Z0";
+	private final static String LABEL_SLICESA = "Slice St";
+	private final static String LABEL_ACTATSA = "Only activate at slice:";
+	private final static String LABEL_ACTIVATION = "Activation:";
 
 	public final static String KEY_USEACT = "Use activation?";
 	public final static String KEY_STOPONMAX = "Stop on max?";
@@ -70,61 +85,72 @@ public class MultiSliceAcquisition implements Acquisition {
 	public final static String KEY_NSLICES = "N slices";
 	public final static String KEY_DELTAZ = "Delta z";
 	public final static String KEY_ZDEVICE = "Z stage";
-	public final static String KEY_DISABLEFL = "Disable focus-lock";
+	public final static String KEY_DISABLE_FL = "Disable focus-lock";
 	public final static String KEY_FLATZ0 = "Use focus-lock at Z0";
-	public final static String KEY_SLICEST = "Slice St";
-	private final static String KEY_ACTATST = "Activation at St";
+	public final static String KEY_SLICE_SA = "Slice Sa";
+	public final static String KEY_ACT_AT_SA = "Activation at Sa";
+	public final static String KEY_ACTIVATION = "Activation:";
+	
+	public final static int NUM_KEYS = 12;
 
-	@SuppressWarnings("rawtypes")
-	private TaskHolder activationTask_;
-	private boolean useactivation_, stoponmax_, nullActivation_;
+	private final ActivationController activationController_;
+	private final AcquisitionController acquisitionController_;
+	
+	private boolean useActivation_, stopOnMax_, noActivation_;
 	private volatile boolean stopAcq_, running_;
-	private int stoponmaxdelay_;
+	private int stopOnMaxDelay_;
 
 	// UI property
-	private TwoStateUIProperty zstabProperty_;
-	private String zdevice_;
-	private String[] zdevices_;
+	private TwoStateUIProperty zStabilizationProperty_;
+	private String zDevice_;
+	private String[] zDevicesName_;
 	private double deltaZ;
-	private int nSlices, nLoops, sliceSt;
-	private boolean focusLockAtZ0_, disableFocusLock_, actAtSt;
+	private int nSlices, nLoops, sliceSa;
+	private boolean focusLockAtZ0_, disableFocusLock_, actAtSa;
+	private String activationName_ = "None";
 
-	@SuppressWarnings("rawtypes")
-	public MultiSliceAcquisition(TaskHolder activationtask, double exposure, String[] zdevices, String defaultzdevice,
+	public MultiSliceAcquisition(AcquisitionController acquisitionController,
+								 double exposure, 
+								 String[] zdevices, 
+								 String defaultzdevice,
 			TwoStateUIProperty zStabilizationProperty) {
 
-		if (activationtask == null) {
-			nullActivation_ = true;
-			useactivation_ = false;
-		} else {
-			nullActivation_ = false;
-			useactivation_ = true;
-			activationTask_ = activationtask;
+		if (acquisitionController.getActivationController() == null) {
+			throw new IllegalArgumentException("Activation controller cannot be null.");
 		}
+		activationController_ = acquisitionController.getActivationController();
+		acquisitionController_ = acquisitionController;
 
+		// if no activation property is allocated
+		noActivation_ = activationController_.getActivationPropertiesFriendlyName().length == 0;
+
+		// state booleans
 		stopAcq_ = false;
 		running_ = false;
-		actAtSt = false;
-		stoponmax_ = true;
-		stoponmaxdelay_ = 5;
 
+		// default values
+		actAtSa = false;
+		useActivation_ = true;
+		stopOnMax_ = true;
+		stopOnMaxDelay_ = 5;
+		deltaZ = 0.3;
+		nSlices = 4;
+		nLoops = 5;
+		sliceSa = 0;
+
+		// z stabilization related
 		if (zStabilizationProperty != null && zStabilizationProperty.isAssigned()) {
-			zstabProperty_ = zStabilizationProperty;
+			zStabilizationProperty_ = zStabilizationProperty;
 			disableFocusLock_ = true;
 		} else {
-			zstabProperty_ = null;
+			zStabilizationProperty_ = null;
 			disableFocusLock_ = false;
 		}
 		focusLockAtZ0_ = false;
 
-		// default values
-		deltaZ = 0.3;
-		nSlices = 4;
-		nLoops = 5;
-		sliceSt = 0;
-
-		zdevice_ = defaultzdevice;
-		zdevices_ = zdevices;
+		// z devices
+		zDevice_ = defaultzdevice;
+		zDevicesName_ = zdevices;
 
 		params_ = new GenericAcquisitionParameters(AcquisitionType.MULTISLICELOC, exposure, 0, 3, 50000,
 				new HashMap<String, String>(), new HashMap<String, String>());
@@ -136,153 +162,175 @@ public class MultiSliceAcquisition implements Acquisition {
 
 		pane.setName(getPanelName());
 
-		JLabel exposurelab, waitinglab, numframelab, intervallab, waitonmaxlab;
-		JLabel zdevicelabel, numbLabel;
-		JSpinner numberslice, deltaz, numberloops, slicest;
-		JSpinner exposurespin, waitingspin, numframespin, intervalspin, waitonmaxspin;
-		JCheckBox activatecheck, stoponmaxcheck, disablefocuslock, flonlyatz0, activateSt;
+		final JLabel exposureLabel, waitingLabel, numFrameLabel, intervalLabel, waitOnMaxLabel, activationLabel;
+		final JLabel zDeviceLabel, loopLabel;
+		final JSpinner numberSlice, deltaZ, numberLoops, sliceSaSpin;
+		final JSpinner exposureSpin, waitingSpin, numFrameSpin, intervalSpin, waitOnMaxSpin;
+		final JCheckBox activateCheck, stopOnMaxCheck, disableFocusLock, flOnlyAtZ0, activateAtSa;
+		final JComboBox<String> activationCombo;
 
-		exposurelab = new JLabel(LABEL_EXPOSURE);
-		waitinglab = new JLabel(LABEL_PAUSE);
-		numframelab = new JLabel(LABEL_NUMFRAME);
-		intervallab = new JLabel(LABEL_INTERVAL);
-		waitonmaxlab = new JLabel(LABEL_MAXUVTIME);
+		exposureLabel = new JLabel(LABEL_EXPOSURE);
+		waitingLabel = new JLabel(LABEL_PAUSE);
+		numFrameLabel = new JLabel(LABEL_NUMFRAME);
+		intervalLabel = new JLabel(LABEL_INTERVAL);
+		waitOnMaxLabel = new JLabel(LABEL_MAXUVTIME);
 
-		exposurespin = new JSpinner(new SpinnerNumberModel(Math.max(params_.getExposureTime(), 1), 1, 10000000, 1));
-		exposurespin.setName(LABEL_EXPOSURE);
-		exposurespin.setToolTipText("Camera exposure (ms).");
+		exposureSpin = new JSpinner(new SpinnerNumberModel(Math.max(params_.getExposureTime(), 1), 1, 10000000, 1));
+		exposureSpin.setName(LABEL_EXPOSURE);
+		exposureSpin.setToolTipText("Camera exposure (ms).");
 
-		waitingspin = new JSpinner(new SpinnerNumberModel(params_.getWaitingTime(), 0, 10000000, 1));
-		waitingspin.setName(LABEL_PAUSE);
-		waitingspin.setToolTipText("Waiting time (s) to allow device state changes before this acquisition.");
+		waitingSpin = new JSpinner(new SpinnerNumberModel(params_.getWaitingTime(), 0, 10000000, 1));
+		waitingSpin.setName(LABEL_PAUSE);
+		waitingSpin.setToolTipText("Waiting time (s) to allow device state changes before this acquisition.");
 
-		numframespin = new JSpinner(new SpinnerNumberModel(params_.getNumberFrames(), 1, 10000000, 1));
-		numframespin.setName(LABEL_NUMFRAME);
-		numframespin.setToolTipText("Number of frames per slice.");
+		numFrameSpin = new JSpinner(new SpinnerNumberModel(params_.getNumberFrames(), 1, 10000000, 1));
+		numFrameSpin.setName(LABEL_NUMFRAME);
+		numFrameSpin.setToolTipText("Number of frames per slice.");
 
-		intervalspin = new JSpinner(new SpinnerNumberModel(params_.getIntervalMs(), 0, 10000000, 1));
-		intervalspin.setName(LABEL_INTERVAL);
-		intervalspin.setToolTipText("Interval between frames (ms).");
+		intervalSpin = new JSpinner(new SpinnerNumberModel(params_.getIntervalMs(), 0, 10000000, 1));
+		intervalSpin.setName(LABEL_INTERVAL);
+		intervalSpin.setToolTipText("Interval between frames (ms).");
 
-		waitonmaxspin = new JSpinner(new SpinnerNumberModel(stoponmaxdelay_, 0, 10000, 1));
-		waitonmaxspin.setName(LABEL_MAXUVTIME);
-		waitonmaxspin.setToolTipText(
+		waitOnMaxSpin = new JSpinner(new SpinnerNumberModel(stopOnMaxDelay_, 0, 10000, 1));
+		waitOnMaxSpin.setName(LABEL_MAXUVTIME);
+		waitOnMaxSpin.setToolTipText(
 				"Time (s) before stopping the acquisition after reaching the maximum activation value.");
 
 		//// activation
-		activatecheck = new JCheckBox(LABEL_USEACTIVATION);
-		activatecheck.setSelected(useactivation_);
-		activatecheck.setEnabled(!nullActivation_);
-		activatecheck.setName(LABEL_USEACTIVATION);
-		activatecheck.setToolTipText("Use activation during the acquisition.");
+		activateCheck = new JCheckBox(LABEL_USEACTIVATION);
+		activateCheck.setSelected(useActivation_);
+		activateCheck.setName(LABEL_USEACTIVATION);
+		activateCheck.setToolTipText("Use activation during the acquisition.");
 
-		stoponmaxcheck = new JCheckBox(LABEL_USESTOPONMAXUV);
-		stoponmaxcheck.setSelected(stoponmax_);
-		stoponmaxcheck.setEnabled(!nullActivation_);
-		stoponmaxcheck.setName(LABEL_USESTOPONMAXUV);
-		stoponmaxcheck.setToolTipText("Stop the acquisition after reaching the maximum activation value.");
-		stoponmaxcheck.addActionListener(new ActionListener() {
+		stopOnMaxCheck = new JCheckBox(LABEL_USESTOPONMAXUV);
+		stopOnMaxCheck.setSelected(stopOnMax_);
+		stopOnMaxCheck.setName(LABEL_USESTOPONMAXUV);
+		stopOnMaxCheck.setToolTipText("Stop the acquisition after reaching the maximum activation value.");
+		stopOnMaxCheck.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
 				AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
 				boolean selected = abstractButton.getModel().isSelected();
 				if (!selected) {
-					waitonmaxspin.setValue(0);
-					waitonmaxspin.setEnabled(false);
+					waitOnMaxSpin.setValue(0);
+					waitOnMaxSpin.setEnabled(false);
 				} else {
-					waitonmaxspin.setEnabled(true);
+					waitOnMaxSpin.setEnabled(true);
 				}
 			}
 		});
 
-		activateSt = new JCheckBox(LABEL_ACTATST);
-		activateSt.setEnabled(!nullActivation_);
-		activateSt.setName(LABEL_ACTATST);
-		activateSt.setSelected(actAtSt);
-		slicest = new JSpinner(new SpinnerNumberModel(sliceSt, 0, nSlices - 1, 1));
-		slicest.setEnabled(!nullActivation_);
-		slicest.setName(LABEL_SLICEST);
+		// activate at slice Sa
+		activateAtSa = new JCheckBox(LABEL_ACTATSA);
+		activateAtSa.setName(LABEL_ACTATSA);
+		activateAtSa.setSelected(actAtSa);
+		sliceSaSpin = new JSpinner(new SpinnerNumberModel(sliceSa, 0, nSlices - 1, 1));
+		sliceSaSpin.setName(LABEL_SLICESA);
 
-		activatecheck.addActionListener(new ActionListener() {
+		// choice of activation
+		final String[] activationPropertiesName = activationController_.getActivationPropertiesFriendlyName();
+		activationLabel = new JLabel(LABEL_ACTIVATION);
+		activationCombo = new JComboBox<>(activationPropertiesName);
+		activationCombo.setName(LABEL_ACTIVATION);
+		if(activationPropertiesName.length != 2){
+			// either 0 or 1
+			activationCombo.setEnabled(false); // no need for combobox
+
+			// if none, then disable all related parameters
+			if(activationPropertiesName.length == 0){
+				stopOnMaxCheck.setEnabled(false);
+				waitOnMaxSpin.setEnabled(false);
+				activateCheck.setEnabled(false);
+				activateAtSa.setEnabled(false);
+				sliceSaSpin.setEnabled(false);
+
+				useActivation_ = false;
+			}
+		} else {
+			if (Arrays.asList(activationPropertiesName).contains(activationName_)) {
+				activationCombo.setSelectedItem(activationName_);
+			}
+		}
+
+		// activate
+		activateCheck.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
 				AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
 				boolean selected = abstractButton.getModel().isSelected();
 				if (!selected) {
-					stoponmaxcheck.setEnabled(false);
-					stoponmaxcheck.setSelected(false);
-					waitonmaxspin.setValue(0);
-					waitonmaxspin.setEnabled(false);
-					activateSt.setEnabled(false);
-					activateSt.setSelected(false);
-					slicest.setEnabled(false);
+					stopOnMaxCheck.setEnabled(false);
+					stopOnMaxCheck.setSelected(false);
+					waitOnMaxSpin.setValue(0);
+					waitOnMaxSpin.setEnabled(false);
+					activateAtSa.setEnabled(false);
+					activateAtSa.setSelected(false);
+					sliceSaSpin.setEnabled(false);
 				} else {
-					stoponmaxcheck.setEnabled(true);
-					activateSt.setEnabled(true);
-					slicest.setEnabled(true);
+					stopOnMaxCheck.setEnabled(true);
+					activateAtSa.setEnabled(true);
+					sliceSaSpin.setEnabled(true);
 				}
 			}
 		});
 
 		//// z part
-		zdevicelabel = new JLabel(LABEL_ZDEVICE);
-		numbLabel = new JLabel(LABEL_NUMB);
+		zDeviceLabel = new JLabel(LABEL_ZDEVICE);
+		loopLabel = new JLabel(LABEL_LOOPS);
 
-		numberloops = new JSpinner(new SpinnerNumberModel(nLoops, 1, 100, 1));
-		numberloops.setName(LABEL_NLOOPS);
-		numberloops.setToolTipText("Number of loops through the slices.");
+		numberLoops = new JSpinner(new SpinnerNumberModel(nLoops, 1, 100, 1));
+		numberLoops.setName(LABEL_NLOOPS);
+		numberLoops.setToolTipText("Number of loops through the slices.");
 
-		numberslice = new JSpinner(new SpinnerNumberModel(nSlices, 2, 100, 1));
-		numberslice.setName(LABEL_NSLICES);
-		numberslice.setToolTipText("Number of slices in the stack.");
-		numberslice.addChangeListener(new ChangeListener() {
+		numberSlice = new JSpinner(new SpinnerNumberModel(nSlices, 2, 100, 1));
+		numberSlice.setName(LABEL_NSLICES);
+		numberSlice.setToolTipText("Number of slices in the stack.");
+		numberSlice.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				JSpinner spinner = (JSpinner) e.getSource();
-				int val_nslice = (int) spinner.getValue();
+				int nSlices = (int) spinner.getValue();
 
-				int val_slice = (int) slicest.getValue();
-				if (val_slice <= val_nslice - 1) {
-					slicest.setModel(new SpinnerNumberModel(val_slice, 0, val_nslice - 1, 1));
-				} else {
-					slicest.setModel(new SpinnerNumberModel(val_nslice - 1, 0, val_nslice - 1, 1));
-				}
+				// update the slice Sa spinner
+				int sliceSa = Math.min((int) sliceSaSpin.getValue(), nSlices - 1);
+				sliceSaSpin.setModel(new SpinnerNumberModel(sliceSa, 0, nSlices - 1, 1));
 			}
 		});
 
-		deltaz = new JSpinner(new SpinnerNumberModel(deltaZ, -1000, 1000, 0.5));
-		deltaz.setName(LABEL_DELTAZ);
-		deltaz.setToolTipText("Distance (um) between each slice.");
+		deltaZ = new JSpinner(new SpinnerNumberModel(this.deltaZ, -1000, 1000, 0.5));
+		deltaZ.setName(LABEL_DELTAZ);
+		deltaZ.setToolTipText("Distance (um) between each slice.");
 
-		JComboBox<String> zdevices = new JComboBox<String>(zdevices_);
-		zdevices.setSelectedItem(zdevice_);
-		zdevices.setName(LABEL_ZDEVICE);
-		zdevices.setToolTipText("Device performing the multi-slice acquisition.");
+		JComboBox<String> zDevices = new JComboBox<String>(zDevicesName_);
+		zDevices.setSelectedItem(zDevice_);
+		zDevices.setName(LABEL_ZDEVICE);
+		zDevices.setToolTipText("Device performing the multi-slice acquisition.");
 
-		disablefocuslock = new JCheckBox(LABEL_DISABLEFL);
-		disablefocuslock.setSelected(disableFocusLock_);
-		disablefocuslock.setName(LABEL_DISABLEFL);
-		disablefocuslock.setEnabled(zstabProperty_ != null);
-		disablefocuslock.setToolTipText("Check to disable focus stabilization (if applicable).");
+		disableFocusLock = new JCheckBox(LABEL_DISABLE_FL);
+		disableFocusLock.setSelected(disableFocusLock_);
+		disableFocusLock.setName(LABEL_DISABLE_FL);
+		disableFocusLock.setEnabled(zStabilizationProperty_ != null);
+		disableFocusLock.setToolTipText("Check to disable focus stabilization (if applicable).");
 
-		flonlyatz0 = new JCheckBox(LABEL_FLATZ0);
-		flonlyatz0.setName(LABEL_FLATZ0);
-		flonlyatz0.setSelected(focusLockAtZ0_);
-		flonlyatz0.setEnabled(!disableFocusLock_ && zstabProperty_ != null);
-		disablefocuslock
+		flOnlyAtZ0 = new JCheckBox(LABEL_FL_AT_Z0);
+		flOnlyAtZ0.setName(LABEL_FL_AT_Z0);
+		flOnlyAtZ0.setSelected(focusLockAtZ0_);
+		flOnlyAtZ0.setEnabled(!disableFocusLock_ && zStabilizationProperty_ != null);
+		disableFocusLock
 				.setToolTipText("Check to use the focus stabilization only during the first slice of every loop.");
 
-		disablefocuslock.addActionListener(new ActionListener() {
+		disableFocusLock.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
 				AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
 				boolean selected = abstractButton.getModel().isSelected();
 				if (selected) {
-					flonlyatz0.setEnabled(false);
-					flonlyatz0.setSelected(false);
+					flOnlyAtZ0.setEnabled(false);
+					flOnlyAtZ0.setSelected(false);
 				} else {
-					flonlyatz0.setEnabled(true);
+					flOnlyAtZ0.setEnabled(true);
 				}
 			}
 		});
 
+		// arrange elements in the layout
 		int nrow = 6;
 		int ncol = 4;
 		JPanel[][] panelHolder = new JPanel[nrow][ncol];
@@ -295,61 +343,75 @@ public class MultiSliceAcquisition implements Acquisition {
 			}
 		}
 
-		panelHolder[0][0].add(exposurelab);
-		panelHolder[0][1].add(exposurespin);
-		panelHolder[0][2].add(numframelab);
-		panelHolder[0][3].add(numframespin);
+		panelHolder[0][0].add(exposureLabel);
+		panelHolder[0][1].add(exposureSpin);
+		panelHolder[0][2].add(numFrameLabel);
+		panelHolder[0][3].add(numFrameSpin);
 
-		panelHolder[1][0].add(waitinglab);
-		panelHolder[1][1].add(waitingspin);
-		panelHolder[1][2].add(intervallab);
-		panelHolder[1][3].add(intervalspin);
+		panelHolder[1][0].add(waitingLabel);
+		panelHolder[1][1].add(waitingSpin);
+		panelHolder[1][2].add(intervalLabel);
+		panelHolder[1][3].add(intervalSpin);
 
-		panelHolder[2][0].add(waitonmaxlab);
-		panelHolder[2][1].add(waitonmaxspin);
-		panelHolder[2][2].add(stoponmaxcheck);
-		panelHolder[2][3].add(activatecheck);
+		panelHolder[2][0].add(waitOnMaxLabel);
+		panelHolder[2][1].add(waitOnMaxSpin);
+		panelHolder[2][2].add(stopOnMaxCheck);
+		panelHolder[2][3].add(activateCheck);
 
-		panelHolder[3][2].add(activateSt);
-		panelHolder[3][3].add(slicest);
+		panelHolder[3][0].add(activationLabel);
+		panelHolder[3][1].add(activationCombo);
+		panelHolder[3][2].add(activateAtSa);
+		panelHolder[3][3].add(sliceSaSpin);
 
-		panelHolder[4][0].add(zdevicelabel);
-		panelHolder[4][1].add(zdevices);
-		panelHolder[4][2].add(disablefocuslock);
-		panelHolder[4][3].add(flonlyatz0);
+		panelHolder[4][0].add(zDeviceLabel);
+		panelHolder[4][1].add(zDevices);
+		panelHolder[4][2].add(disableFocusLock);
+		panelHolder[4][3].add(flOnlyAtZ0);
 
-		panelHolder[5][0].add(numbLabel);
-		panelHolder[5][1].add(numberloops);
-		panelHolder[5][2].add(numberslice);
-		panelHolder[5][3].add(deltaz);
+		panelHolder[5][0].add(loopLabel);
+		panelHolder[5][1].add(numberLoops);
+		panelHolder[5][2].add(numberSlice);
+		panelHolder[5][3].add(deltaZ);
 
 		return pane;
 	}
 
-	public void setUseActivation(boolean b) {
-		if (!nullActivation_) {
-			useactivation_ = b;
+	/**
+	 * Whether to use the activation.
+	 * @param useActivation True if activation should be used.
+	 */
+	public void setUseActivation(boolean useActivation) {
+		if (!noActivation_) {
+			useActivation_ = useActivation;
 		} else {
-			useactivation_ = false;
+			useActivation_ = false;
 		}
 	}
 
-	public void setUseStopOnMaxUV(boolean b) {
-		stoponmax_ = b;
+	/**
+	 * Whether to use the stop on max activation.
+	 * @param stopOnMaxUV
+	 */
+	public void setUseStopOnMaxUV(boolean stopOnMaxUV) {
+		stopOnMax_ = stopOnMaxUV;
 	}
 
 	public void setUseStopOnMaxUVDelay(int delay) {
-		stoponmaxdelay_ = delay;
+		stopOnMaxDelay_ = delay;
 	}
 
+	private void setActivation(String act){
+		activationName_ = act;
+	}
+	
 	@Override
 	public void readOutAcquisitionParameters(JPanel pane) {
 		if (pane.getName().equals(getPanelName())) {
-			Component[] pancomp = pane.getComponents();
+			Component[] panelComponents = pane.getComponents();
 
-			for (int j = 0; j < pancomp.length; j++) {
-				if (pancomp[j] instanceof JPanel) {
-					Component[] comp = ((JPanel) pancomp[j]).getComponents();
+			for (int j = 0; j < panelComponents.length; j++) {
+				if (panelComponents[j] instanceof JPanel) {
+					Component[] comp = ((JPanel) panelComponents[j]).getComponents();
 					for (int i = 0; i < comp.length; i++) {
 						if (!(comp[i] instanceof JLabel) && comp[i].getName() != null) {
 							if (comp[i].getName().equals(LABEL_EXPOSURE) && comp[i] instanceof JSpinner) {
@@ -367,10 +429,10 @@ public class MultiSliceAcquisition implements Acquisition {
 							} else if (comp[i].getName().equals(LABEL_MAXUVTIME) && comp[i] instanceof JSpinner) {
 								this.setUseStopOnMaxUVDelay((Integer) ((JSpinner) comp[i]).getValue());
 							} else if (comp[i].getName().equals(LABEL_ZDEVICE) && comp[i] instanceof JComboBox) {
-								zdevice_ = ((String) ((JComboBox) comp[i]).getSelectedItem());
-							} else if (comp[i].getName().equals(LABEL_FLATZ0) && comp[i] instanceof JCheckBox) {
+								zDevice_ = ((String) ((JComboBox<String>) comp[i]).getSelectedItem());
+							} else if (comp[i].getName().equals(LABEL_FL_AT_Z0) && comp[i] instanceof JCheckBox) {
 								focusLockAtZ0_ = ((JCheckBox) comp[i]).isSelected();
-							} else if (comp[i].getName().equals(LABEL_DISABLEFL) && comp[i] instanceof JCheckBox) {
+							} else if (comp[i].getName().equals(LABEL_DISABLE_FL) && comp[i] instanceof JCheckBox) {
 								disableFocusLock_ = ((JCheckBox) comp[i]).isSelected();
 							} else if (comp[i].getName().equals(LABEL_NSLICES) && comp[i] instanceof JSpinner) {
 								nSlices = ((Integer) ((JSpinner) comp[i]).getValue());
@@ -378,10 +440,12 @@ public class MultiSliceAcquisition implements Acquisition {
 								nLoops = ((Integer) ((JSpinner) comp[i]).getValue());
 							} else if (comp[i].getName().equals(LABEL_DELTAZ) && comp[i] instanceof JSpinner) {
 								deltaZ = ((Double) ((JSpinner) comp[i]).getValue());
-							} else if (comp[i].getName().equals(LABEL_SLICEST) && comp[i] instanceof JSpinner) {
-								sliceSt = ((Integer) ((JSpinner) comp[i]).getValue());
-							} else if (comp[i].getName().equals(LABEL_ACTATST) && comp[i] instanceof JCheckBox) {
-								actAtSt = ((JCheckBox) comp[i]).isSelected();
+							} else if (comp[i].getName().equals(LABEL_SLICESA) && comp[i] instanceof JSpinner) {
+								sliceSa = ((Integer) ((JSpinner) comp[i]).getValue());
+							} else if (comp[i].getName().equals(LABEL_ACTATSA) && comp[i] instanceof JCheckBox) {
+								actAtSa = ((JCheckBox) comp[i]).isSelected();
+							} else if(comp[i].getName().equals(LABEL_ACTIVATION) && comp[i] instanceof JComboBox){
+								this.setActivation((String) ((JComboBox<String>) comp[i]).getSelectedItem());
 							}
 						}
 					}
@@ -389,36 +453,37 @@ public class MultiSliceAcquisition implements Acquisition {
 			}
 		}
 
-		if (sliceSt >= nSlices) {
-			sliceSt = nSlices - 1;
+		if (sliceSa >= nSlices) {
+			sliceSa = nSlices - 1;
 		}
 	}
 
 	@Override
 	public PropertyFilter getPropertyFilter() {
-		if (zstabProperty_ == null) {
+		if (zStabilizationProperty_ == null) {
 			return new NoPropertyFilter();
 		}
-		return new SinglePropertyFilter(zstabProperty_.getPropertyLabel());
+		return new SinglePropertyFilter(zStabilizationProperty_.getPropertyLabel());
 	}
 
 	@Override
 	public String[] getHumanReadableSettings() {
-		String[] s = new String[14];
+		String[] s = new String[15];
 		s[0] = "Exposure = " + params_.getExposureTime() + " ms";
 		s[1] = "Interval = " + params_.getIntervalMs() + " ms";
 		s[2] = "Number of frames = " + params_.getNumberFrames();
-		s[3] = "Use activation = " + useactivation_;
-		s[4] = "Stop on max UV = " + stoponmax_;
-		s[5] = "Stop on max delay = " + stoponmaxdelay_ + " s";
-		s[6] = "Focus stage = " + zdevice_;
+		s[3] = "Use activation = " + useActivation_;
+		s[4] = "Stop on max UV = " + stopOnMax_;
+		s[5] = "Stop on max delay = " + stopOnMaxDelay_ + " s";
+		s[6] = "Focus stage = " + zDevice_;
 		s[7] = "Use FL at St = " + focusLockAtZ0_;
 		s[8] = "Disable focus-lock = " + disableFocusLock_;
 		s[9] = "Number of loops = " + nLoops;
 		s[10] = "Number of slices = " + nSlices;
 		s[11] = "Z difference = " + deltaZ + " um";
-		s[12] = "Slice St = " + sliceSt;
-		s[13] = "Activate at St = " + actAtSt;
+		s[12] = "Slice St = " + sliceSa;
+		s[13] = "Activate at St = " + actAtSa;
+		s[14] = "Activation = "+activationName_;
 		return s;
 	}
 
@@ -429,19 +494,19 @@ public class MultiSliceAcquisition implements Acquisition {
 
 	@Override
 	public String[][] getAdditionalParameters() {
-		String[][] parameters = new String[11][2];
+		String[][] parameters = new String[NUM_KEYS][2];
 
 		parameters[0][0] = KEY_USEACT;
-		parameters[0][1] = String.valueOf(useactivation_);
+		parameters[0][1] = String.valueOf(useActivation_);
 		parameters[1][0] = KEY_STOPONMAX;
-		parameters[1][1] = String.valueOf(stoponmax_);
+		parameters[1][1] = String.valueOf(stopOnMax_);
 		parameters[2][0] = KEY_STOPDELAY;
-		parameters[2][1] = String.valueOf(stoponmaxdelay_);
+		parameters[2][1] = String.valueOf(stopOnMaxDelay_);
 		parameters[3][0] = KEY_ZDEVICE;
-		parameters[3][1] = zdevice_;
+		parameters[3][1] = zDevice_;
 		parameters[4][0] = KEY_FLATZ0;
 		parameters[4][1] = String.valueOf(focusLockAtZ0_);
-		parameters[5][0] = KEY_DISABLEFL;
+		parameters[5][0] = KEY_DISABLE_FL;
 		parameters[5][1] = String.valueOf(disableFocusLock_);
 		parameters[6][0] = KEY_NLOOPS;
 		parameters[6][1] = String.valueOf(nLoops);
@@ -449,32 +514,47 @@ public class MultiSliceAcquisition implements Acquisition {
 		parameters[7][1] = String.valueOf(nSlices);
 		parameters[8][0] = KEY_DELTAZ;
 		parameters[8][1] = String.valueOf(deltaZ);
-		parameters[9][0] = KEY_SLICEST;
-		parameters[9][1] = String.valueOf(sliceSt);
-		parameters[10][0] = KEY_ACTATST;
-		parameters[10][1] = String.valueOf(actAtSt);
+		parameters[9][0] = KEY_SLICE_SA;
+		parameters[9][1] = String.valueOf(sliceSa);
+		parameters[10][0] = KEY_ACT_AT_SA;
+		parameters[10][1] = String.valueOf(actAtSa);
+		parameters[11][0] = KEY_ACTIVATION;
+		parameters[11][1] = activationName_;
 
 		return parameters;
 	}
 
 	@Override
 	public void setAdditionalParameters(String[][] parameters) {
-		if (parameters.length != 11 || parameters[0].length != 2) {
+		if (parameters.length != NUM_KEYS || parameters[0].length != 2) {
 			throw new IllegalArgumentException("The parameters array has the wrong size: expected (11,2), got ("
 					+ parameters.length + "," + parameters[0].length + ")");
 		}
 
-		useactivation_ = Boolean.parseBoolean(parameters[0][1]);
-		stoponmax_ = Boolean.parseBoolean(parameters[1][1]);
-		stoponmaxdelay_ = Integer.parseInt(parameters[2][1]);
-		zdevice_ = parameters[3][1];
+		useActivation_ = Boolean.parseBoolean(parameters[0][1]);
+		stopOnMax_ = Boolean.parseBoolean(parameters[1][1]);
+		stopOnMaxDelay_ = Integer.parseInt(parameters[2][1]);
+		zDevice_ = parameters[3][1];
 		focusLockAtZ0_ = Boolean.parseBoolean(parameters[4][1]);
 		disableFocusLock_ = Boolean.parseBoolean(parameters[5][1]);
 		nLoops = Integer.parseInt(parameters[6][1]);
 		nSlices = Integer.parseInt(parameters[7][1]);
 		deltaZ = Double.parseDouble(parameters[8][1]);
-		sliceSt = Integer.parseInt(parameters[9][1]);
-		actAtSt = Boolean.parseBoolean(parameters[10][1]);
+		sliceSa = Integer.parseInt(parameters[9][1]);
+		actAtSa = Boolean.parseBoolean(parameters[10][1]);
+		activationName_ = parameters[11][1];
+	}
+
+	private int getActivationIndex(){
+		final String[] acts = activationController_.getActivationPropertiesFriendlyName();
+		int counter = 0;
+		for(String act: acts){
+			if(activationName_.equals(act)){
+				return counter;
+			}
+			counter++;
+		}
+		return counter;
 	}
 
 	@Override
@@ -483,11 +563,11 @@ public class MultiSliceAcquisition implements Acquisition {
 	}
 
 	private void stabilizeFocus(boolean b) {
-		if (zstabProperty_ != null) {
+		if (zStabilizationProperty_ != null) {
 			if (b) {
-				zstabProperty_.setPropertyValue(TwoStateUIProperty.getOnStateLabel());
+				zStabilizationProperty_.setPropertyValue(TwoStateUIProperty.getOnStateLabel());
 			} else {
-				zstabProperty_.setPropertyValue(TwoStateUIProperty.getOffStateLabel());
+				zStabilizationProperty_.setPropertyValue(TwoStateUIProperty.getOffStateLabel());
 			}
 		}
 	}
@@ -503,18 +583,17 @@ public class MultiSliceAcquisition implements Acquisition {
 
 		if (disableFocusLock_ || (!disableFocusLock_ && focusLockAtZ0_)) {
 			stabilizeFocus(false);
-		} else if (!disableFocusLock_) {
+		} else {
 			stabilizeFocus(true);
 		}
 
-		if (useactivation_) {
-			activationTask_.initializeTask();
-			activationTask_.pauseTask();
+		if (useActivation_) {
+			activationController_.initializeTask(getActivationIndex());
 		}
 
 		double z0 = 0;
 		try {
-			z0 = core.getPosition(zdevice_);
+			z0 = core.getPosition(zDevice_);
 		} catch (Exception e1) {
 			running_ = false;
 			e1.printStackTrace();
@@ -523,9 +602,8 @@ public class MultiSliceAcquisition implements Acquisition {
 		if (running_) {
 			for (int i = 0; i < nLoops; i++) {
 				for (int j = 0; j < nSlices; j++) {
-					if (useactivation_ && ((actAtSt && j == sliceSt) || !actAtSt)) {
-						// activationTask_.initializeTask();
-						activationTask_.resumeTask();
+					if (useActivation_ && (!actAtSa || j == sliceSa)) {
+						activationController_.startTask();
 					}
 
 					// set z
@@ -533,22 +611,22 @@ public class MultiSliceAcquisition implements Acquisition {
 
 					try {
 						// moves the stage
-						core.setPosition(zdevice_, z);
+						core.setPosition(zDevice_, z);
 
-						Thread.sleep(1000);
+						Thread.sleep(1_000);
 
 						if (j == 0 && !disableFocusLock_ && focusLockAtZ0_) {
 							stabilizeFocus(true);
 
 							// wait to give time for the stabilization to settle
-							Thread.sleep(3000);
+							Thread.sleep(3_000);
 						}
 
 						// sets-up name
 						// seqBuilder.prefix("L"+i+"S"+j+"_"+name);
 
 						if (stopAcq_) {
-							System.out.println("[htSMLM] Multislice interruption before slice " + j + ".");
+							studio.logs().logDebugMessage("[htSMLM] Multislice interruption before slice " + j + ".");
 							stopAcquisition();
 						}
 
@@ -573,55 +651,55 @@ public class MultiSliceAcquisition implements Acquisition {
 						new Thread(acqThread).start();
 
 						// wait 1sec to make sure we don't miss the start of the experiment
-						Thread.sleep(1000);
+						Thread.sleep(1_000);
 
 						// loops to check if needs to be stopped or not
 						while (acqThread.isRunning()) {
 
 							// checks if reached stop criterion
-							if (useactivation_ && stoponmax_ && ((actAtSt && j == sliceSt) || !actAtSt)
-									&& activationTask_.isCriterionReached()) {
-								Thread.sleep(1000 * stoponmaxdelay_);
+							if (useActivation_ && stopOnMax_ && (!actAtSa || j == sliceSa)
+									&& activationController_.isCriterionReached()) {
+								Thread.sleep(1_000L * stopOnMaxDelay_);
 
 								stopAcquisition();
 							}
 
 							// checks if exit requested
 							if (stopAcq_) {
-								System.out.println("[htSMLM] Multislice interruption during slice " + j + ".");
+								studio.logs().logDebugMessage("[htSMLM] Multislice interruption during slice " + j + ".");
 								break;
 							}
 
-							Thread.sleep(1000);
+							Thread.sleep(100);
 						}
 
 						// disable focus-lock and update z0
 						if (j == 0 && !disableFocusLock_ && focusLockAtZ0_) {
 							// updates z0 for the next iterations
-							z0 = core.getPosition(zdevice_);
+							z0 = core.getPosition(zDevice_);
 
 							stabilizeFocus(false);
 						}
 
 						// pause activation
-						if (useactivation_ && ((actAtSt && j == sliceSt) || !actAtSt)) {
-							activationTask_.pauseTask();
+						if (useActivation_ && (!actAtSa || j == sliceSa)) {
+							activationController_.pauseTask();
 						}
 
 					} catch (Exception e) {
 						running_ = false;
-						System.out.println("[htSMLM] Failed to move stage or query position after slice " + j + ".");
+						studio.logs().logDebugMessage("[htSMLM] Failed to move stage or query position after slice " + j + ".");
 						e.printStackTrace();
 					}
 
 					if (stopAcq_) {
-						System.out.println("[htSMLM] Multislice interruption after slice " + j + ".");
+						studio.logs().logDebugMessage("[htSMLM] Multislice interruption after slice " + j + ".");
 						break;
 					}
 				}
 
 				if (stopAcq_) {
-					System.out.println("[htSMLM] Multislice interruption after loop " + i + ".");
+					studio.logs().logDebugMessage("[htSMLM] Multislice interruption after loop " + i + ".");
 					break;
 				}
 			}
@@ -629,20 +707,21 @@ public class MultiSliceAcquisition implements Acquisition {
 
 		// go back to position z0
 		try {
-			core.setPosition(zdevice_, z0);
+			core.setPosition(zDevice_, z0);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
 		// if focus locked disabled, set to ON state
-		if (zstabProperty_ != null && zstabProperty_.isAssigned()) {
-			if (zstabProperty_.isOffState(zstabProperty_.getPropertyValue())) {
+		if (zStabilizationProperty_ != null && zStabilizationProperty_.isAssigned()) {
+			if (zStabilizationProperty_.isOffState(zStabilizationProperty_.getPropertyValue())) {
 				stabilizeFocus(true);
 			}
 		}
 		
-		if (useactivation_) {
-			activationTask_.initializeTask();
+		if (useActivation_) {
+			activationController_.pauseTask();
+			activationController_.initializeTask(getActivationIndex());
 		}
 
 		running_ = false;
@@ -688,18 +767,18 @@ public class MultiSliceAcquisition implements Acquisition {
 	private static String incrementName(String name) {
 		String newName;
 		int ind = name.length();
-		while (EmuUtils.isInteger(name.substring(ind - 1, ind)) && ind > 0) {
+		while (EmuUtils.isInteger(name.substring(ind - 1, ind))) {
 			ind--;
 		}
 
 		if (ind == name.length()) {
-			if (name.substring(ind - 1, ind).equals("_")) {
+			if (name.charAt(ind - 1) == '_') {
 				newName = name + "1";
 			} else {
 				newName = name + "_1";
 			}
 		} else {
-			if (name.substring(ind - 1, ind).equals("_")) {
+			if (name.charAt(ind - 1) == '_') {
 				int i = Integer.parseInt(name.substring(ind)) + 1;
 				newName = name.substring(0, ind) + i;
 			} else {
@@ -712,13 +791,13 @@ public class MultiSliceAcquisition implements Acquisition {
 	private class RunnableAcq implements Runnable {
 
 		private final Studio studio;
-		private final Datastore.SaveMode savemode;
+		private final Datastore.SaveMode saveMode;
 		private final String path, directory, name;
 		private boolean isRunning_;
 
-		public RunnableAcq(Studio studio, Datastore.SaveMode savemode, String path, String directory, String name) {
+		public RunnableAcq(Studio studio, Datastore.SaveMode saveMode, String path, String directory, String name) {
 			this.studio = studio;
-			this.savemode = savemode;
+			this.saveMode = saveMode;
 			this.path = path;
 			this.directory = directory;
 			this.name = name;
@@ -739,22 +818,28 @@ public class MultiSliceAcquisition implements Acquisition {
 			try {
 				// creates store
 				Datastore store;
+				
+				// get instance of image processor
+				final ActivationProcessor imageProcessor = ActivationProcessor.getInstance();
 
 				// TODO in case users want to generate a metadata.txt, this will not be taken into account here
-				if (Datastore.SaveMode.MULTIPAGE_TIFF == savemode) {
+				if (Datastore.SaveMode.MULTIPAGE_TIFF == saveMode) {
 					store = studio.data().createMultipageTIFFDatastore(path, false, false);
 				} else {
 					store = studio.data().createSinglePlaneTIFFSeriesDatastore(path);
 				}
 
-				store.setSummaryMetadata(generateSummaryMetadata(studio, directory, name, params_.getNumberFrames()));
+				// set summary metadata
+				SummaryMetadata summaryMetaData = generateSummaryMetadata(studio, directory, name, params_.getNumberFrames());
+				store.setSummaryMetadata(summaryMetaData);
+				final ActivationContext processorContext = new ActivationContext(summaryMetaData);
 
 				// display and coordinate builder
 				DisplayWindow display = studio.displays().createDisplay(store);
-				Builder cb = studio.data().getCoordsBuilder().z(0).c(0).p(0).t(0);
+				Builder cb = studio.data().coordsBuilder().z(0).c(0).p(0).t(0);
 
 				core.startSequenceAcquisition(params_.getNumberFrames(), params_.getIntervalMs(), true);
-				Metadata metadata = studio.data().getMetadataBuilder().build();
+				Metadata metadata = studio.data().metadataBuilder().build();
 
 				int curFrame = 0;
 				try {
@@ -763,10 +848,16 @@ public class MultiSliceAcquisition implements Acquisition {
 						if (core.getRemainingImageCount() > 0) {
 							TaggedImage tagged = core.popNextTaggedImage();
 
-							// Convert to an Image at the desired time point
-							Image image = studio.data().convertTaggedImage(tagged, cb.time(curFrame).build(), generateMetadata(studio, metadata));
+							// convert to an Image at the desired time point
+							Image image = studio.data().convertTaggedImage(tagged, cb.t(curFrame).build(), generateMetadata(studio, metadata));
+							
+							// pass image to the processor the activation
+							imageProcessor.processImage(image, processorContext);
 
+							// store image
 							store.putImage(image);
+							
+							// increment frame
 							curFrame++;
 						} else {
 							core.sleep(5);
@@ -781,11 +872,10 @@ public class MultiSliceAcquisition implements Acquisition {
 					e.printStackTrace();
 				}
 
-				// close store
 				store.close();
 			} catch (Exception e) {
 				e.printStackTrace();
-				System.out.println("[htSMLM] Acquisition failed.");
+				studio.logs().logDebugMessage("[htSMLM] Acquisition failed.");
 			}
 
 			isRunning_ = false;
@@ -823,7 +913,8 @@ public class MultiSliceAcquisition implements Acquisition {
 				.xPositionUm(mmstudio.cache().getStageX())
 				.yPositionUm(mmstudio.cache().getStageY())
 				.zPositionUm(mmstudio.cache().getStageZ())
-				.bitDepth(mmstudio.cache().getImageBitDepth());
+				.bitDepth(mmstudio.cache().getImageBitDepth())
+				.positionName("Position "+acquisitionController_.getCurrentPositionIndex());
 
 		try {
 			String binning = studio.core().getPropertyFromCache(camera, "Binning");

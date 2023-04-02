@@ -21,12 +21,13 @@ Selecting or unselecting certain plugin settings will modify the number of prope
 - **Additional FW tab**: Check to use the additional filters tab in the plugin. When selected, a new tab containing two sliders with four positions each. All slider position names and colors can be customized.
 - **Additional FW tab title**: Title of the additional filters tab, if the "Additional FW tab" setting is selected.
 - **Powermeter tab**: Check to use the powermeter tab in the plugin. Causes a new tab to appear, allowing users to read a Micro-manager property and linearly transform it to represent a power in mW. Users can choose a number of names for the channels (wavelengths), as well as the slopes and offsets for the linear transformation.  
-- **QPD tab**: Check to use the QPD tab in the plugin. The QPD tab is aimed at plotting three signals (X, Y, Z) from a quadrant photo-diode in time. The tab contains one graph (X vs Y) and one progress bar (Z). This is part of a focus-locking system. 
+- **QPD tab**: Check to use the QPD tab in the plugin. The QPD tab is aimed at plotting three signals (X, Y, Z) from a quadrant photo-diode in time. The tab contains one graph (X vs Y) and one progress bar (Z). This is part of a focus-locking system.
+- **Resizable**: Makes the GUI resizable, in case names used to customize the GUI do not fit.
 - **Single FW panel**: Check to use a single filter wheel panel. When unchecked, the filter wheel panel contains two rows of filters, with customizable names and colors, corresponding to two different filter wheels.
 - **Trigger tab**: Check to use the trigger tab in the plugin. The trigger tab can be used with MicroFPGA, an FPGA board aimed, among other things, at triggering lasers in a flexible manner.  MicroFPGA can be found on Github (jdeschamps/MicroFPGA).
-- **iBeamSmart #1**: Check to use the iBeamSmart #1 tab. Originally aimed at controlling an iBeamSmart laser from Toptica, the Toptica specific aspects can be disabled to correspond to a simple laser. 
+- **iBeamSmart #1**: Check to use the iBeamSmart #1 tab. Originally aimed at controlling an iBeamSmart laser from Toptica, the Toptica specific aspects can be disabled to correspond to a simple laser.
 - **iBeamSmart #1 name**: Name of iBeamSmart #1 tab, if the "iBeamSmart #1" setting is selected. The corresponding properties and parameters will bear the same name.
-- **iBeamSmart #2**: Check to use the iBeamSmart #2 tab. Originally aimed at controlling an iBeamSmart laser from Toptica, the Toptica specific aspects can be disabled to correspond to a simple laser. 
+- **iBeamSmart #2**: Check to use the iBeamSmart #2 tab. Originally aimed at controlling an iBeamSmart laser from Toptica, the Toptica specific aspects can be disabled to correspond to a simple laser.
 - **iBeamSmart #2 name**: Name of iBeamSmart #2 tab, if the "iBeamSmart #2" setting is selected. The corresponding properties and parameters will bear the same name.
 
 ------
@@ -47,19 +48,19 @@ Finally, some GUI properties are only available when the corresponding Plugin se
 
 - **Laser # enable**: Laser On/Off property. Lasers are numbered from left to right in the main interface. Both on and off values must be set. Consult the Micro-Manager device property browser to determine them  (e.g. "1" and "0" or "On" and Off"). The On/Off button can be disabled in the Parameters tab.
 
-- **Laser # power percentage**: Power percentage of the laser. This property allows rescaling the device property value. If the laser has only a power set point (mW) property instead of a percentage property, then use a slope value equal to (maximum power / 100) to turn to scale the device property to a power percentage. 
+- **Laser # power percentage**: Power percentage of the laser. This property allows rescaling the device property value. If the laser has only a power set point (mW) property instead of a percentage property, then use a slope value equal to (maximum power / 100) to turn to scale the device property to a power percentage.
 
-- **Two-state device #**: Map to this GUI property (button No# in controls panel) a device property with two positions (e.g. On/Off or In/Out). Consult the Micro-Manager device property browser to determine them  (e.g. "1" and "0" or "On" and Off"). The two-state device appears in the interface as a single toggle button. The name of the button can be set in the Parameters tab. 
+- **Two-state device #**: Map to this GUI property (button No# in controls panel) a device property with two positions (e.g. On/Off or In/Out). Consult the Micro-Manager device property browser to determine them  (e.g. "1" and "0" or "On" and Off"). The two-state device appears in the interface as a single toggle button. The name of the button can be set in the Parameters tab.
 
-- **UV pulse duration (activation)**: Pulse length, power or power percentage property of the activation laser. This property is required for the Activation script. Note that it should be mapped to the same device property as "UV pulse duration (main frame)" for consistence.
+- **Pulse duration # (activation)**: Pulse length, power or power percentage property of the activation laser. This property is required for the Activation script. Note that it should be mapped to the same device property as "Pulse duration (main frame)" for consistence. There are two such properties, a single one is sufficient to use the activation.
 
-- **UV pulse duration (main frame)**: Pulse length, power or power percentage property of the activation laser. This property is required for the Activation script. Note that it should be mapped to the same device property as "UV pulse duration (activation)" for consistence.
+- **Pulse duration # (main frame)**: Pulse length, power or power percentage property of the activation laser. This property is required for the Activation script. Note that it should be mapped to the same device property as "Pulse duration (activation)" for consistence. There are two such properties, a single one is sufficient to use the activation.
 
 - **Z stage focus-locking**: Property used to toggle focus stabilization.
 
 - **Z stage position**: Position of the stage, used to move the stage and monitor its position.
 
-  
+
 
 #### Properties requiring a Plugin Setting to be selected:
 
@@ -102,17 +103,25 @@ Note that if **Single FW panel** is unselected, an additional filter wheel is pr
 
 #### Parameters that are always present:
 
-- **Acquisitions - BFP lens**: Choose among the mapped GUI properties that have two states. Originally aimed for a Bertrand lens, this parameter is used by a specific type of acquisition (BFP). Before a BFP acquisition, the selected GUI property is set to its on state, a single frame is recorded, and the property is finally set to its off state. 
+- **Acquisitions - BFP lens**: Choose among the mapped GUI properties that have two states. Originally aimed for a Bertrand lens, this parameter is used by a specific type of acquisition (BFP). Before a BFP acquisition, the selected GUI property is set to its on state, a single frame is recorded, and the property is finally set to its off state.
 
-- **Acquisitions - Bright field**: Choose among the mapped GUI properties that have two states. Originally aimed for a bright-field LED array, this parameter is used by a specific type of acquisition (Bright-field). Before a Bright-field acquisition, the selected GUI property is set to its on state, a single frame is recorded, and the property is finally set to its off state. 
+- **Acquisitions - Bright field**: Choose among the mapped GUI properties that have two states. Originally aimed for a bright-field LED array, this parameter is used by a specific type of acquisition (Bright-field). Before a Bright-field acquisition, the selected GUI property is set to its on state, a single frame is recorded, and the property is finally set to its off state.
 
 - **Acquisitions - Focus stabilization**: Select the "Z stage focus locking" property if it has been mapped in the Properties tab. This allows the acquisition controller to turn on or off the focus stabilization depending on the designed experiments.
 
+- **Activation - Activation # Name**: Name of the activation laser # used in the drop-down menus of both activation panel (top left) and activation tab.
+
+- **Activation - Color**: Color of the activation panel title on the top left of the GUI.
+
 - **Activation - Default feedback**: Default value of the parameter controlling the speed at which the pulse length (or power) of the activation laser is increased when the Activation script is running. A higher value leads to a faster increase.
 
-- **Activation - Default sd coeff**: Default value of the parameter controlling the auto cut-off level when the Activation script is running. A high value leads to a high cut-off level, which in turns decreases the number of molecules detected.
+- **Activation - Def. dynamic factor**: Default value of the parameter controlling the auto cut-off level when the Activation script is running. A high value leads to a high cut-off level, which in turns decreases the number of molecules detected.
 
-- **Activation - Idle time (ms)**: Idle time (ms) between each iteration of the Activation script. 
+- **Activation - Default max pulse**: Default maximum value for the activation laser pulse length (or power). This default value appears in the grey box at the top-left corner of the GUI. The value must be an integer.
+
+- **Activation - Idle time (ms)**: Idle time (ms) between each iteration of the Activation script.
+
+- **Activation - Name**: Name of the activation panel on the top left of the GUI.
 
 - **Activation - Number of points**: Number of points on the x axis of the Activation script graph.
 
@@ -138,15 +147,13 @@ Note that if **Single FW panel** is unselected, an additional filter wheel is pr
 
 - **Laser # - Color**: Color of the laser name as shown in the GUI.
 
-- **Laser 0 - Default max pulse**: Default maximum value for the activation laser pulse length (or power). This default value appears in the grey box at the top-left corner of the GUI. The value must be an integer.
-
 - **Laser # - Name**: Laser name displayed on top of the laser control panel in the GUI.
 
 - **Laser # - Use on/off**: Enable/disable the On/Off button.
 
 - **Laser # - Use slider**: If selected, the laser power percentage control appears as a slider. If disabled the slider is replaced by three pre-defined buttons (1%, 20% and 100%), as well as a user-defined button whose corresponding percentage can be set in a text-field.
 
-  
+
 
 #### Parameters requiring a Plugin Setting to be selected:
 
@@ -180,8 +187,8 @@ The "iBeamSmart #1/2 name" plugin setting influences the name of the following p
 
 ##### Trigger tab selected
 
-- **Laser # trigger - Color**: Color of the laser name as displayed in the laser trigger panel.
-- **Laser # trigger - Name**: Name of the laser as displayed on top of the laser trigger panel.
+- **Laser trigger # - Color**: Color of the laser name as displayed in the laser trigger panel.
+- **Laser trigger # - Name**: Name of the laser as displayed on top of the laser trigger panel.
 
 #### Parameters requiring a Plugin Setting to be unselected:
 
@@ -226,6 +233,3 @@ In such case, the "Lock" button in the focus panel will just be useless, ignore 
 #### Why can we deactivate the on/off button for the lasers
 
 Some lasers do not have on/off properties and are simply off when at 0 power.
-
-
-

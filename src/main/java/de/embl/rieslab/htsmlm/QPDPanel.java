@@ -18,15 +18,19 @@ import de.embl.rieslab.emu.utils.exceptions.UnknownUIParameterException;
 import de.embl.rieslab.emu.utils.exceptions.UnknownUIPropertyException;
 import de.embl.rieslab.htsmlm.graph.Chart;
 import de.embl.rieslab.htsmlm.updaters.ChartUpdater;
-import de.embl.rieslab.htsmlm.updaters.JProgressBarUpdater;
+import de.embl.rieslab.htsmlm.updaters.ProgressBarUpdater;
 
+/**
+ * A panel with a 2D graph and a progress bar showing live the state
+ * of three device properties.
+ */
 public class QPDPanel extends ConfigurablePanel {
 
 	private static final long serialVersionUID = 1L;
 	
 	//////// Thread
-	private ChartUpdater chartupdater_;
-	private JProgressBarUpdater progressbarupdater_;
+	private ChartUpdater chartUpdater_;
+	private ProgressBarUpdater progressBarUpdater_;
 	
 	//////// Properties
 	private final static String QPD_X = "QPD X";
@@ -39,13 +43,13 @@ public class QPDPanel extends ConfigurablePanel {
 	private final static String PARAM_IDLE = "Idle time (ms)";
 	
 	//////// Default parameters
-	private int idle_, xymax_, zmax_; 
+	private int idleTime_, xyMax_, zMax_;
 	
 	//////// Components
 	private JProgressBar progressBar_;
-	private JToggleButton togglebuttonMonitor_;
+	private JToggleButton toggleButtonMonitor_;
 	private Chart graph_;
-	private JPanel graphpanel_;
+	private JPanel graphPanel_;
 	
 	public QPDPanel(String label) {
 		super(label);
@@ -58,12 +62,12 @@ public class QPDPanel extends ConfigurablePanel {
 		
 		graph_ = newGraph();
 		try {
-			chartupdater_ = new ChartUpdater(graph_,getUIProperty(QPD_X),getUIProperty(QPD_Y),idle_);
+			chartUpdater_ = new ChartUpdater(graph_,getUIProperty(QPD_X),getUIProperty(QPD_Y), idleTime_);
 		} catch (UnknownUIPropertyException e) {
 			e.printStackTrace();
 		}
-		graphpanel_ = new JPanel();
-		graphpanel_.add(graph_.getChart());
+		graphPanel_ = new JPanel();
+		graphPanel_.add(graph_.getChart());
 
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
@@ -73,7 +77,7 @@ public class QPDPanel extends ConfigurablePanel {
 		c.gridwidth = 3;
 		c.gridheight = 3;
 		
-		this.add(graphpanel_,c);
+		this.add(graphPanel_,c);
 		
 		c.gridx = 3;
 		c.gridy = 0;
@@ -84,11 +88,11 @@ public class QPDPanel extends ConfigurablePanel {
 
 		progressBar_ = new javax.swing.JProgressBar();
 		progressBar_.setOrientation(SwingConstants.VERTICAL);
-		progressBar_.setMaximum(zmax_);
+		progressBar_.setMaximum(zMax_);
 		progressBar_.setMinimum(0);
 		
 		try {
-			progressbarupdater_ = new JProgressBarUpdater(progressBar_, getUIProperty(QPD_Z), idle_);
+			progressBarUpdater_ = new ProgressBarUpdater(progressBar_, getUIProperty(QPD_Z), idleTime_);
 		} catch (UnknownUIPropertyException e) {
 			e.printStackTrace();
 		}
@@ -100,25 +104,25 @@ public class QPDPanel extends ConfigurablePanel {
 		c.insets = new Insets(2,10,2,10);
 		c.gridwidth = 1;
 		c.gridheight = 1;
-		togglebuttonMonitor_ = new JToggleButton("Monitor");
-		togglebuttonMonitor_.setToolTipText("Start/stop monitoring the values of the QPD signals");
+		toggleButtonMonitor_ = new JToggleButton("Monitor");
+		toggleButtonMonitor_.setToolTipText("Start/stop monitoring the values of the QPD signals");
 		
-		this.add(togglebuttonMonitor_,c);
+		this.add(toggleButtonMonitor_,c);
 
 	}
 	
 	protected void monitorQPD(boolean b) {
 		if(b){
-			chartupdater_.startUpdater();
-			progressbarupdater_.startUpdater();
+			chartUpdater_.startUpdater();
+			progressBarUpdater_.startUpdater();
 		} else {
-			chartupdater_.stopUpdater();
-			progressbarupdater_.stopUpdater();
+			chartUpdater_.stopUpdater();
+			progressBarUpdater_.stopUpdater();
 		}
 	}
 
 	private Chart newGraph(){
-		return new Chart("QPD","X","Y",1,270,270, xymax_);
+		return new Chart("QPD","X","Y",1,270,270, xyMax_);
 	}
 
 	@Override
@@ -132,13 +136,13 @@ public class QPDPanel extends ConfigurablePanel {
 
 	@Override
 	protected void initializeParameters() {
-		xymax_ = 1024;
-		zmax_ = 1024;
-		idle_ = 100;
+		xyMax_ = 1024;
+		zMax_ = 1024;
+		idleTime_ = 100;
 		
-		addUIParameter(new IntegerUIParameter(this, PARAM_XYMAX,"Maximum X and Y signals value in the graph.",xymax_));
-		addUIParameter(new IntegerUIParameter(this, PARAM_ZMAX,"Maximum Z value in the progress bar.",zmax_));
-		addUIParameter(new IntegerUIParameter(this, PARAM_IDLE,"Idle time (ms) between two updates of the QPD signals value.",idle_)); // thread idle time
+		addUIParameter(new IntegerUIParameter(this, PARAM_XYMAX,"Maximum X and Y signals value in the graph.", xyMax_));
+		addUIParameter(new IntegerUIParameter(this, PARAM_ZMAX,"Maximum Z value in the progress bar.", zMax_));
+		addUIParameter(new IntegerUIParameter(this, PARAM_IDLE,"Idle time (ms) between two updates of the QPD signals value.", idleTime_)); // thread idle time
 	}
 
 	@Override
@@ -148,48 +152,52 @@ public class QPDPanel extends ConfigurablePanel {
 
 	@Override
 	public void parameterhasChanged(String label) {
-		if(label.equals(PARAM_XYMAX)){
-			try {
-				int newval = getIntegerUIParameterValue(PARAM_XYMAX);			
-				if(newval != xymax_){
-					xymax_ = newval;
-					graphpanel_.remove(graph_.getChart());
-					graph_ = newGraph();
-					graphpanel_.add(graph_.getChart());
-					graphpanel_.updateUI();
-					chartupdater_.changeChart(graph_);
+		switch (label) {
+			case PARAM_XYMAX:
+				try {
+					int newVal = getIntegerUIParameterValue(PARAM_XYMAX);
+					if (newVal != xyMax_) {
+						xyMax_ = newVal;
+						graphPanel_.remove(graph_.getChart());
+						graph_ = newGraph();
+						graphPanel_.add(graph_.getChart());
+						graphPanel_.updateUI();
+						chartUpdater_.changeChart(graph_);
+					}
+				} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
+					e.printStackTrace();
 				}
-			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
-				e.printStackTrace();
-			}
-		} else if(label.equals(PARAM_ZMAX)){
-			try {
-				int newval = getIntegerUIParameterValue(PARAM_ZMAX);
-				if(newval != zmax_){
-					zmax_ = newval;
-					progressBar_.setMaximum(zmax_);
+				break;
+			case PARAM_ZMAX:
+				try {
+					int newVal = getIntegerUIParameterValue(PARAM_ZMAX);
+					if (newVal != zMax_) {
+						zMax_ = newVal;
+						progressBar_.setMaximum(zMax_);
+					}
+				} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
+					e.printStackTrace();
 				}
-			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
-				e.printStackTrace();
-			}
-		}else if(label.equals(PARAM_IDLE)){
-			try {
-				int newval = getIntegerUIParameterValue(PARAM_IDLE);
-				if(newval != idle_){
-					idle_ = newval;
-					chartupdater_.changeIdleTime(idle_);
-					progressbarupdater_.changeIdleTime(idle_);
+				break;
+			case PARAM_IDLE:
+				try {
+					int newVal = getIntegerUIParameterValue(PARAM_IDLE);
+					if (newVal != idleTime_) {
+						idleTime_ = newVal;
+						chartUpdater_.changeIdleTime(idleTime_);
+						progressBarUpdater_.updateIdleTime(idleTime_);
+					}
+				} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
+					e.printStackTrace();
 				}
-			} catch (IncorrectUIParameterTypeException | UnknownUIParameterException e) {
-				e.printStackTrace();
-			}
+				break;
 		}
 	}
 
 	@Override
 	public void shutDown() {
-		chartupdater_.stopUpdater();
-		progressbarupdater_.stopUpdater();
+		chartUpdater_.stopUpdater();
+		progressBarUpdater_.stopUpdater();
 	}
 
 	@Override
@@ -210,6 +218,6 @@ public class QPDPanel extends ConfigurablePanel {
 
 	@Override
 	protected void addComponentListeners() {
-		SwingUIListeners.addActionListenerToBooleanAction(b -> monitorQPD(b), togglebuttonMonitor_);
+		SwingUIListeners.addActionListenerToBooleanAction(b -> monitorQPD(b), toggleButtonMonitor_);
 	}
 }
