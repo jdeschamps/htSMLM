@@ -1,8 +1,5 @@
 package de.embl.rieslab.htsmlm.updaters;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-
 import javax.swing.JProgressBar;
 
 import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
@@ -21,7 +18,11 @@ public class ProgressBarUpdater extends ComponentUpdater<JProgressBar>{
 
 	@Override
 	public boolean sanityCheck(UIProperty prop) {
-		return prop.isAssigned() && EmuUtils.isNumeric(prop.getPropertyValue());
+		// if the property is not assigned, return true
+		if(prop.isAssigned()) {
+			return EmuUtils.isNumeric(prop.getPropertyValue());
+		}
+		return true;
 	}
 
 	@Override
@@ -31,14 +32,4 @@ public class ProgressBarUpdater extends ComponentUpdater<JProgressBar>{
 			this.getComponent().setValue(value);
 		}
 	}
-
-	// TODO does not belong here
-	public double round(double value, int places) {
-	    if (places < 0) throw new IllegalArgumentException();
-
-	    BigDecimal bd = new BigDecimal(value);
-	    bd = bd.setScale(places, RoundingMode.HALF_UP);
-	    return bd.doubleValue();
-	}
-
 }

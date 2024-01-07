@@ -39,13 +39,13 @@ public class TimeChartUpdater {
 	
 	public void startUpdater(){
 		// performs sanity check
-		if(!initialised_ && property_ != null) {
+		if(!isInitialised() && property_ != null) {
 			if(property_.isAssigned() && EmuUtils.isNumeric(property_.getPropertyValue())) {
 				initialised_ = true;
 			}
 		}
 		
-		if(!running_ && initialised_){
+		if(!running_ && isInitialised()){
 			running_ = true;
 			task_ = new UIUpdater( );
 			task_.execute();

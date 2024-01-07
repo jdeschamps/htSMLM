@@ -93,13 +93,14 @@ public abstract class ComponentUpdater<T extends JComponent> {
 
 		@Override
 		protected Integer doInBackground() throws Exception {
-			while(running_){
-				
-				String s = property_.getPropertyValue();
-				if(s != null && !s.isEmpty()){
-					publish(property_.getPropertyValue());
+			if(property_.isAssigned()) {
+				while (running_) {
+					String s = property_.getPropertyValue();
+					if (s != null && !s.isEmpty()) {
+						publish(property_.getPropertyValue());
+					}
+					Thread.sleep(idleTime_);
 				}
-				Thread.sleep(idleTime_);
 			}
 			return 1;
 		}
