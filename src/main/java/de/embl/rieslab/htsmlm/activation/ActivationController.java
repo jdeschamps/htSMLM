@@ -99,7 +99,9 @@ public class ActivationController {
 			im_.setDisplayRange(im_.getStatistics().min, im_.getStatistics().max);
 			im_.show();
 		} else {
-			im_.close();
+			if(im_ != null) {
+				im_.close();
+			}
 		}
 	}
 
