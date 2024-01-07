@@ -28,6 +28,8 @@ public class ActivationController {
 	private ImagePlus im_;
 	private ImageProcessor ip_;
 	private int nmsCounter_;
+
+	private static final String WINDOW_TITLE = "NMS results";
 	
 	public ActivationController(SystemController systemController, ActivationPanel activationPanel) {
 		
@@ -37,7 +39,7 @@ public class ActivationController {
 
 
     	ip_ = new ShortProcessor(200,200);
-		im_ = new ImagePlus("NMS result");
+		im_ = null;
 		nmsCounter_ = 0;
 	}
 
@@ -93,7 +95,7 @@ public class ActivationController {
 	 */
 	public void showNMS(boolean showNMS){
 		if(showNMS){
-			im_.setProcessor(ip_);
+			im_ = new ImagePlus(WINDOW_TITLE, ip_);
 			im_.setDisplayRange(im_.getStatistics().min, im_.getStatistics().max);
 			im_.show();
 		} else {
@@ -111,12 +113,15 @@ public class ActivationController {
 			ImageProcessor imp = task_.getNMSResult();
 			if(imp != null && imp.getPixels() != null){
 				ip_ = imp;
-				im_.setProcessor(ip_);
 
-				// make sure the display range is tailored to the image
-				im_.setDisplayRange(im_.getStatistics().min, im_.getStatistics().max);
+				if(im_ != null) {
+					im_.setProcessor(ip_);
 
-				im_.updateAndRepaintWindow();
+					// make sure the display range is tailored to the image
+					im_.setDisplayRange(im_.getStatistics().min, im_.getStatistics().max);
+
+					im_.updateAndRepaintWindow();
+				}
 			}
 		} else if(nmsCounter_ == Integer.MAX_VALUE){
 			nmsCounter_ = 0;

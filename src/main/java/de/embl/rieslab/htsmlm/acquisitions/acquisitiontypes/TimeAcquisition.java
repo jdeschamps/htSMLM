@@ -203,10 +203,10 @@ public class TimeAcquisition implements Acquisition{
 	}
 
 	private void interruptAcquisition(Studio studio) {
-		// In MM 2.0.0 and 2.0.1, we used the following snippet to stop acquisitions:
+		// In MM 2.0.0 and 2.0.1 (before 06.04.23), we used the following snippet to stop acquisitions:
 		//((DefaultAcquisitionManager) studio.acquisitions()).getAcquisitionEngine().stop(true);
 
-		// Since MM 2.0.3 PR #16668, abortAcquisition() is exposed
+		// Since MM 2.0.1, PR #16668, abortAcquisition() is exposed
 		// https://github.com/micro-manager/micro-manager/pull/1668
 		try {
 			studio.acquisitions().abortAcquisition();
