@@ -22,7 +22,7 @@
 
    ```bash
    $ cd htsmlm
-   $ ./compileAndDeploy.sh "C:\Path\to\MicroManager2gamma"
+   $ ./compileAndDeploy.sh "C:\Path\to\MicroManager"
    ```
 
    > **Note**: the compilation script has been written for Windows. For unix-like systems, replace "\\" by "/" in the path variables.
