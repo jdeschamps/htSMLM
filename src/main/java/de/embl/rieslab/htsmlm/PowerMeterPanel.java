@@ -192,6 +192,10 @@ public class PowerMeterPanel extends ConfigurablePanel{
 				DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>(vals);
 				comboBox_.removeAllItems();
 				comboBox_.setModel(model);
+
+				if(vals.length > 0){
+					comboBox_.setSelectedIndex(0);
+				}
 			} catch (UnknownUIParameterException e) {
 				e.printStackTrace();
 			}
