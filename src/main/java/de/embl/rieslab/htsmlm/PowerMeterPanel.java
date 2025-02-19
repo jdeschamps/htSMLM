@@ -77,7 +77,7 @@ public class PowerMeterPanel extends ConfigurablePanel{
 		comboBox_ = new JComboBox<String>(temp);
 		comboBox_.addActionListener (new ActionListener () {
 		    public void actionPerformed(ActionEvent e) {
-	    		temp_index = comboBox_.getSelectedIndex();
+	    		int temp_index = comboBox_.getSelectedIndex();
 			if(temp_index != -1){
 				selectedWavelength_ = temp_index;
 			}
