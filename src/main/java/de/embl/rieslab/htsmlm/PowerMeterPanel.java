@@ -77,7 +77,10 @@ public class PowerMeterPanel extends ConfigurablePanel{
 		comboBox_ = new JComboBox<String>(temp);
 		comboBox_.addActionListener (new ActionListener () {
 		    public void actionPerformed(ActionEvent e) {
-	    		selectedWavelength_ = comboBox_.getSelectedIndex();
+	    		int temp_index = comboBox_.getSelectedIndex();
+			if(temp_index != -1){
+				selectedWavelength_ = temp_index;
+			}
 		    }
 		});
 		toggleButton_ = new JToggleButton("Monitor");
@@ -295,13 +298,13 @@ public class PowerMeterPanel extends ConfigurablePanel{
 		int index = getCurrentWavelength();				
 		
 		double slope, offset;
-		if(index < slopes.size()) {
+		if(index >= 0 && index < slopes.size()) {
 			slope = slopes.get(index);
 		} else {
 			slope = 1.;
 		}
 
-		if(index < offsets.size()) {
+		if(index >= 0 && index < offsets.size()) {
 			offset = offsets.get(index);
 		} else {
 			offset = 0.;
